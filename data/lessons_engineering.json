@@ -1,0 +1,362 @@
+[
+  {
+    "id": "web-http-foundation",
+    "order": 1,
+    "title": "Web開発の土台：HTTP・JSON・クライアント/サーバー",
+    "summary": "FastAPIとTypeScriptに入る前に押さえる通信の基礎",
+    "sections": [
+      {
+        "heading": "クライアント/サーバーとHTTPの役割",
+        "body": "Webアプリは、ブラウザ（クライアント）がリクエストを送り、サーバーがレスポンスを返す往復で成り立ちます。HTTP はこの往復の約束事であり、メソッド（GET/POST/PATCH/DELETE）、URL、ヘッダ、ボディ、ステータスコードで意味を表現します。FastAPI はこの HTTP 契約を Python コードで宣言し、TypeScript 側はその契約を型として扱うことで、実装と仕様のズレを早期に減らせます。ここが曖昧だと後続の非同期処理・SSE・認証・キャッシュすべてが混乱するため、まず通信レイヤーの語彙を固定することが最重要です。",
+        "code": "GET /api/lessons HTTP/1.1\nHost: 127.0.0.1:8765\nAccept: application/json"
+      },
+      {
+        "heading": "ステータスコードとエラーハンドリング",
+        "body": "2xx は成功、4xx はクライアント入力起因、5xx はサーバー内部起因、という大枠を運用で徹底するとデバッグ効率が上がります。例えば 422 は入力バリデーション不一致、404 は対象なし、409 は競合、500 は想定外障害です。フロントは `ok` だけ見るのではなく、ステータスとエラーボディの構造を合わせて扱うべきです。FastAPI では HTTPException を使って失敗を明示し、TypeScript 側で `ApiError` のような統一型へ落とし込むと、画面側の分岐が安定します。",
+        "code": "if (!response.ok) {\n  throw new Error(`HTTP ${response.status}`)\n}"
+      },
+      {
+        "heading": "JSON契約とバージョニングの意識",
+        "body": "JSON は軽量ですが、自由度が高すぎるため契約管理が必要です。フィールド名、型、nullable、必須/任意を固定し、将来変更時は後方互換を意識します。安易な breaking change はフロントを即座に壊します。理想は OpenAPI を単一の真実源にし、FastAPI 側の Pydantic モデルと TypeScript 型生成を同期させることです。仕様を自然言語だけで管理すると、実装速度が上がるほど破綻速度も上がります。",
+        "code": "{\n  \"id\": \"lesson-1\",\n  \"title\": \"HTTP Basics\",\n  \"quiz_count\": 2\n}"
+      }
+    ],
+    "quiz": [
+      {
+        "id": "web-http-foundation_q1",
+        "prompt": "バリデーション不一致でFastAPIが返しやすいステータスコードとして最も適切なのはどれですか。",
+        "choices": ["200", "422", "503"],
+        "correct_index": 1,
+        "explanation": "FastAPI/Pydanticの入力不一致は一般に422として表現されます。"
+      },
+      {
+        "id": "web-http-foundation_q2",
+        "prompt": "フロントで `response.ok` だけを見て処理すると起きやすい問題はどれですか。",
+        "choices": [
+          "4xx/5xxの原因分類ができず、UIの復旧導線を作りにくい",
+          "JSONが自動でgzip圧縮されなくなる",
+          "HTTPメソッドがGETに固定される"
+        ],
+        "correct_index": 0,
+        "explanation": "ステータスとエラーボディを分けて扱わないと障害診断が難化します。"
+      }
+    ]
+  },
+  {
+    "id": "typescript-overview",
+    "order": 2,
+    "title": "TypeScript 概要：型で壊れ方を先に制御する",
+    "summary": "any回避・ユニオン・型狭窄・APIレスポンス型の設計",
+    "sections": [
+      {
+        "heading": "TypeScriptを使う理由",
+        "body": "TypeScript は JavaScript の上位互換で、静的型検査を追加する言語です。実行時の挙動は JS ですが、ビルド時に型不一致を検出できます。特に API 駆動開発では「サーバーが返す shape」と「画面が期待する shape」の不一致が主なバグ源なので、型で先に落とす効果が大きいです。`any` を多用すると TypeScript の価値は消えるため、unknown からの型狭窄や明示的な型定義を基本とします。",
+        "code": "type LessonMeta = {\n  id: string\n  title: string\n  order: number\n}"
+      },
+      {
+        "heading": "ユニオン型と型狭窄",
+        "body": "実務データは単一型でないことが多く、ユニオン型（A | B）で扱います。分岐時に `in`、`typeof`、ユーザー定義 type guard を使い、処理可能な型へ狭窄します。これにより「存在しないプロパティアクセス」をコンパイル時に排除できます。レスポンス成功/失敗を discriminated union で定義すると、UI分岐を安全に書けます。",
+        "code": "type Result =\n  | { ok: true; data: LessonMeta[] }\n  | { ok: false; message: string }"
+      },
+      {
+        "heading": "strictモード運用",
+        "body": "tsconfig の `strict: true` を基準にし、必要な箇所だけ局所的に緩和する方針が保守上有利です。`noImplicitAny`、`noUncheckedIndexedAccess`、`exactOptionalPropertyTypes` なども段階導入すると品質が安定します。型エラーは面倒ではなく「将来の事故前払い」です。FastAPI 側変更時にフロントが即エラーになる状態は、むしろ望ましい監視機構です。",
+        "code": "{\n  \"compilerOptions\": {\n    \"strict\": true,\n    \"noUnusedLocals\": true\n  }\n}"
+      }
+    ],
+    "quiz": [
+      {
+        "id": "typescript-overview_q1",
+        "prompt": "APIレスポンス型設計で `any` を常用すると何が失われますか。",
+        "choices": [
+          "型不一致の早期検出",
+          "HTTP通信速度",
+          "ブラウザ互換性"
+        ],
+        "correct_index": 0,
+        "explanation": "any は型検査を迂回するため、契約破綻の検知能力が落ちます。"
+      },
+      {
+        "id": "typescript-overview_q2",
+        "prompt": "ユニオン型の値を安全に扱うための基本操作はどれですか。",
+        "choices": ["型狭窄", "強制キャストの多用", "すべて文字列化"],
+        "correct_index": 0,
+        "explanation": "分岐で型を絞ることで、存在保証されたプロパティにのみアクセスできます。"
+      }
+    ]
+  },
+  {
+    "id": "fastapi-overview",
+    "order": 3,
+    "title": "FastAPI 概要：ルーティング・バリデーション・依存性注入",
+    "summary": "最小構成から実務構成へ進むための基礎",
+    "sections": [
+      {
+        "heading": "ルート関数と自動ドキュメント",
+        "body": "FastAPI は Python の型ヒントを活用して OpenAPI ドキュメントを自動生成します。`@app.get` などでエンドポイントを宣言し、関数シグネチャにクエリ・パス・ボディを記述するだけで、/docs で実行可能な仕様書が得られます。これはバックエンド都合ではなく、フロント連携と QA 自動化に直接効く資産です。まずは「仕様がコードから再現できる」状態を作ることが重要です。",
+        "code": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get('/api/health')\ndef health() -> dict:\n    return {'status': 'ok'}"
+      },
+      {
+        "heading": "Pydanticモデルで入力を閉じる",
+        "body": "リクエストボディは Pydantic モデルで受けることで、型・範囲・必須性を統一的に検証できます。`extra='forbid'` を使えば未定義フィールドを拒否でき、契約逸脱を防げます。入力検証をルート内で手書きすると重複と漏れが増えるため、モデルに寄せるのが合理的です。さらに response_model を指定すると、出力形状まで拘束でき、誤って内部情報を返す事故を減らせます。",
+        "code": "class QuizAnswerIn(BaseModel):\n    model_config = ConfigDict(extra='forbid')\n    lesson_id: str\n    choice_index: int = Field(..., ge=0)"
+      },
+      {
+        "heading": "依存性注入（Depends）の基本",
+        "body": "DB セッション、認証情報、設定値などは `Depends` に切り出すと、ルート関数を薄く保てます。依存関数を差し替えるだけでテストが書きやすくなり、関心分離が進みます。重要なのは「依存を増やすこと」ではなく「責務を薄く保つこと」です。最初から大型DI設計に走らず、まず DB セッションと current_user 程度の抽出から始めるのが安全です。",
+        "code": "@router.get('/items')\ndef list_items(session: Session = Depends(get_session)):\n    return session.scalars(select(Item)).all()"
+      }
+    ],
+    "quiz": [
+      {
+        "id": "fastapi-overview_q1",
+        "prompt": "FastAPIで `response_model` を指定する主な利点はどれですか。",
+        "choices": [
+          "返却JSONの形を拘束し、内部情報漏えいを減らせる",
+          "必ず通信帯域が半分になる",
+          "SQLクエリが自動最適化される"
+        ],
+        "correct_index": 0,
+        "explanation": "出力契約の強制により、想定外フィールドの露出を防ぎやすくなります。"
+      },
+      {
+        "id": "fastapi-overview_q2",
+        "prompt": "Depends の導入で最も直接的に得られる効果はどれですか。",
+        "choices": [
+          "ルート関数の責務分離とテスト容易性の向上",
+          "フロントのCSS自動生成",
+          "SSEの自動実装"
+        ],
+        "correct_index": 0,
+        "explanation": "依存資源を抽象化し、差し替えや再利用を容易にできます。"
+      }
+    ]
+  },
+  {
+    "id": "react-communication-basics",
+    "order": 4,
+    "title": "React + TypeScript 通信基礎：副作用・中断・UI状態",
+    "summary": "fetchの基本からメモリリーク回避まで",
+    "sections": [
+      {
+        "heading": "useEffectでのデータ取得の基本形",
+        "body": "React では描画と副作用を分離するため、通信は通常 useEffect に置きます。依存配列が変わるたびに effect は再実行されるため、「どの値の変化で再取得するか」を明示する設計が必要です。lessonId のようなキーに対して再取得し、不要時は state をクリアする、という基本パターンを固定すると、画面遷移時の不整合を減らせます。",
+        "code": "useEffect(() => {\n  if (!lessonId) return\n  // fetch...\n}, [lessonId])"
+      },
+      {
+        "heading": "AbortControllerで中断可能にする",
+        "body": "非同期リクエストは、画面遷移や再クリックで古い通信が残ると状態競合を起こします。AbortController を毎回生成し cleanup で abort することで、アンマウント後の setState や古いレスポンス反映を抑制できます。これは体感性能よりも整合性の問題です。特に SSE や長時間推論では中断制御がないと、GPU/CPU 使用が無駄に残り続けます。",
+        "code": "const ac = new AbortController()\nfetch(url, { signal: ac.signal })\nreturn () => ac.abort()"
+      },
+      {
+        "heading": "表示状態の分割",
+        "body": "最低限、`loading` / `error` / `data` を分けて管理すると UI の説明責務が明確になります。単一 state に詰め込むより、状態遷移を列挙しやすく、障害時メッセージも制御しやすいです。より複雑になったら reducer や Query ライブラリに移行しますが、まずは素朴な3状態管理を確実に実装する方が学習効果は高いです。",
+        "code": "type ViewState<T> = {\n  loading: boolean\n  error: string | null\n  data: T | null\n}"
+      }
+    ],
+    "quiz": [
+      {
+        "id": "react-communication-basics_q1",
+        "prompt": "AbortController を使わずに画面遷移した場合に起きやすい問題はどれですか。",
+        "choices": [
+          "古いリクエスト完了後に不正な state 更新が走る",
+          "TypeScript が自動無効化される",
+          "HTTPステータスが常に200になる"
+        ],
+        "correct_index": 0,
+        "explanation": "アンマウント後更新や古いレスポンスの上書きが典型的です。"
+      },
+      {
+        "id": "react-communication-basics_q2",
+        "prompt": "通信UIで `loading/error/data` を分ける主目的はどれですか。",
+        "choices": [
+          "状態遷移を明確化し、表示分岐を安全にする",
+          "CSSサイズを削減する",
+          "ブラウザ拡張機能を無効化する"
+        ],
+        "correct_index": 0,
+        "explanation": "非同期画面の曖昧な分岐を減らし、保守性を上げられます。"
+      }
+    ]
+  },
+  {
+    "id": "api-contract-and-modeling",
+    "order": 5,
+    "title": "API契約の厳密化：Pydantic境界と出力整形",
+    "summary": "実装詳細を漏らさないレスポンス設計",
+    "sections": [
+      {
+        "heading": "入力境界を厳密化する",
+        "body": "入力モデルで最大長、数値範囲、必須項目を指定し、業務ルール違反を早期に返す設計が基本です。FastAPI は宣言した制約を OpenAPI に反映するため、ドキュメントと実装の同期コストを抑えられます。運用上は「どこで弾くか」を統一し、フロント・バック双方の期待値を合わせることが重要です。",
+        "code": "class StreamPromptIn(BaseModel):\n    model_config = ConfigDict(extra='forbid')\n    prompt: str = Field(..., min_length=1, max_length=16384)"
+      },
+      {
+        "heading": "内部モデルと公開モデルを分離する",
+        "body": "DB エンティティと API 出力を同一にすると、カラム追加が即 API 変更になる危険があります。公開モデル（DTO）へ投影して返すと、外部仕様を守りながら内部を改善できます。クイズ API で `correct_index` を返さないようにした実装は、まさに境界分離の例です。セキュリティ観点でも、内部識別子や管理メタ情報の漏えい防止に効きます。",
+        "code": "def strip_answers(lesson: dict[str, Any]) -> dict[str, Any]:\n    payload = copy.deepcopy(lesson)\n    for q in payload.get('quiz', []):\n        q.pop('correct_index', None)\n    return payload"
+      },
+      {
+        "heading": "契約変更時の手順",
+        "body": "契約変更は、(1) OpenAPI更新、(2)フロント型更新、(3)後方互換確認、(4)ロールアウト、の順が安全です。破壊的変更を避けるには、旧フィールドを段階廃止し、新フィールド併存期間を設けます。短期的に面倒でも、この運用を守るとリリース頻度を上げても事故率が下がります。",
+        "code": "# 手順例:\n# v1: old_field + new_field 併存\n# v2: old_field 非推奨化\n# v3: old_field 削除"
+      }
+    ],
+    "quiz": [
+      {
+        "id": "api-contract-and-modeling_q1",
+        "prompt": "DBモデルをそのままレスポンス返却する設計の主なリスクはどれですか。",
+        "choices": [
+          "内部変更が外部契約へ漏れ、破壊的変更になりやすい",
+          "Pythonの文法エラーが増える",
+          "HTTP接続数が0になる"
+        ],
+        "correct_index": 0,
+        "explanation": "内部都合が外部仕様へ直結し、保守性と安全性を損ねます。"
+      },
+      {
+        "id": "api-contract-and-modeling_q2",
+        "prompt": "Pydanticで `extra='forbid'` を使う主目的はどれですか。",
+        "choices": [
+          "未定義入力を拒否し、契約逸脱を早期検知する",
+          "必ずレスポンスが高速化する",
+          "SQL文を自動生成しなくする"
+        ],
+        "correct_index": 0,
+        "explanation": "未知フィールドの黙殺を防ぎ、仕様ドリフトを抑制できます。"
+      }
+    ]
+  },
+  {
+    "id": "asyncio-and-sse",
+    "order": 6,
+    "title": "非同期処理の基礎からSSEへ：asyncio実践入門",
+    "summary": "event loop・非ブロッキング・ストリーミング設計",
+    "sections": [
+      {
+        "heading": "event loopと非ブロッキングの考え方",
+        "body": "asyncio は event loop が多数タスクを協調的に切り替えるモデルです。`await` で制御を返すことで他タスクが進みます。逆に time.sleep や重い同期処理を挟むとループ全体が停止し、同時接続性能が落ちます。まず「どの処理がブロッキングか」を見分ける習慣を持つことが、SSE以前の必須基礎です。",
+        "code": "async def handler():\n    await asyncio.sleep(0)\n    return {'ok': True}"
+      },
+      {
+        "heading": "SSEの最小構成",
+        "body": "SSE は `text/event-stream` で逐次テキストを送る方式です。各イベントを `data: ...\\n\\n` で区切る必要があります。本アプリの `/api/llm/stream` はこの形式でトークンを流しています。WebSocket ほど双方向でなくてもよい場面では、実装負荷が低く運用しやすい利点があります。",
+        "code": "yield f\"data: {json.dumps({'token': tok}, ensure_ascii=False)}\\n\\n\""
+      },
+      {
+        "heading": "中断とバックプレッシャ",
+        "body": "ストリーミングは開始より終了制御が難所です。クライアント切断時に生成タスクを止めないと、GPU 推論が裏で走り続けます。さらに受信側が遅いと送信バッファが詰まり、待機が連鎖します。実務では「同時ストリーム数上限」「1ストリームあたり最大トークン」「アイドルタイムアウト」をまず導入し、観測指標（TTFB/切断率/トークン速度）で調整します。",
+        "code": "return StreamingResponse(event_iter(), media_type='text/event-stream')"
+      }
+    ],
+    "quiz": [
+      {
+        "id": "asyncio-and-sse_q1",
+        "prompt": "asyncルート内で time.sleep(1) を使うと起きやすい問題はどれですか。",
+        "choices": [
+          "event loopが止まり、他リクエストも遅延する",
+          "自動で非同期化される",
+          "SSEがWebSocketに変換される"
+        ],
+        "correct_index": 0,
+        "explanation": "同期sleepは非ブロッキングモデルを壊します。"
+      },
+      {
+        "id": "asyncio-and-sse_q2",
+        "prompt": "SSEイベント区切りとして正しい形式はどれですか。",
+        "choices": [
+          "data: <payload> に続けて空行",
+          "JSON配列を1回だけ返す",
+          "必ずHTTP 204を返す"
+        ],
+        "correct_index": 0,
+        "explanation": "SSEは `data:` 行 + 空行で1イベントを構成します。"
+      }
+    ]
+  },
+  {
+    "id": "local-llm-inference-basic",
+    "order": 7,
+    "title": "ローカルLLM推論入門：VRAM・量子化・API化",
+    "summary": "llama.cpp / Transformers の使い分けと最小設計",
+    "sections": [
+      {
+        "heading": "llama.cpp系とTransformers系の位置付け",
+        "body": "llama.cpp 系は GGUF と量子化を前提にした軽量運用に強く、ローカル常駐や配布が比較的容易です。Transformers 系はモデル種類や実験自由度が高く、研究開発に向きます。どちらを選ぶかは「必要な柔軟性」と「運用コスト」の関数です。本番用途では、性能だけでなく起動時間、メモリピーク、依存の壊れやすさを含めて評価します。",
+        "code": "# 擬似: 実装差し替えポイント\n# /api/llm/stream -> token generator backend"
+      },
+      {
+        "heading": "VRAM節約の基礎パラメータ",
+        "body": "VRAM 使用量は、主に重みサイズ、KVキャッシュ、同時セッション数、コンテキスト長で決まります。量子化（4bit/8bit）は重みに効きますが、KV キャッシュや周辺バッファのコストは別に残ります。したがって `max_new_tokens` や `max_context` を無制限にすると、量子化だけでは救えません。まず上限を決める設計が先です。",
+        "code": "config = {\n  'max_context': 4096,\n  'max_new_tokens': 512,\n  'max_parallel_streams': 4\n}"
+      },
+      {
+        "heading": "API化時の責務分離",
+        "body": "推論サーバーとAPIサーバーを分離すると、障害切り分けとスケール方針が明確になります。API層は認証・入力制限・監査ログに集中し、推論層は生成品質とスループット最適化へ集中させる構成が一般的です。将来モデルを差し替えても API 契約を維持しやすく、フロント側改修を最小化できます。",
+        "code": "POST /api/llm/stream\n{\n  \"prompt\": \"...\"\n}"
+      }
+    ],
+    "quiz": [
+      {
+        "id": "local-llm-inference-basic_q1",
+        "prompt": "VRAM削減を狙う際、最初に設計で固定すべき項目として最も適切なのはどれですか。",
+        "choices": [
+          "コンテキスト長と同時セッション上限",
+          "画面のフォントサイズ",
+          "HTTPヘッダの順序"
+        ],
+        "correct_index": 0,
+        "explanation": "KVキャッシュと同時実行がピーク使用量を大きく左右します。"
+      },
+      {
+        "id": "local-llm-inference-basic_q2",
+        "prompt": "量子化を導入した場合の理解として適切なのはどれですか。",
+        "choices": [
+          "重みメモリは減るが、他要素（KV等）を無視するとOOMは残り得る",
+          "すべてのメモリ問題が消える",
+          "必ず品質が向上する"
+        ],
+        "correct_index": 0,
+        "explanation": "量子化は有効ですが万能ではなく、全体設計が必要です。"
+      }
+    ]
+  },
+  {
+    "id": "sqlalchemy-basic-to-nplus1",
+    "order": 8,
+    "title": "SQLAlchemy 2.0 基礎からN+1最適化へ",
+    "summary": "ORM宣言型・selectinload・クエリ観測の実践",
+    "sections": [
+      {
+        "heading": "宣言型モデルの読み方",
+        "body": "SQLAlchemy 2.0 では DeclarativeBase と Mapped/mapped_column を使い、型注釈とスキーマ定義を揃えて記述します。Author と Article の 1対多関係のように、関係性は `relationship` で明示します。まずはモデルが何を表しているかを正確に読むことが、最適化以前の前提です。",
+        "code": "class Author(Base):\n    __tablename__ = 'author'\n    id: Mapped[int] = mapped_column(primary_key=True)\n    articles: Mapped[list['Article']] = relationship(back_populates='author')"
+      },
+      {
+        "heading": "N+1問題の発生条件",
+        "body": "親一覧を取得した後に、ループ内で子関係を都度遅延ロードすると N+1 が発生します。件数が少ないうちは見えませんが、実データで遅延が急増します。`selectinload` は親ID集合を使って子をまとめ取得するため、多くの一覧用途で第一候補になります。`joinedload` は行増殖を伴うため、常に最善とは限りません。",
+        "code": "stmt = select(Author).options(selectinload(Author.articles))\nauthors = session.scalars(stmt).unique().all()"
+      },
+      {
+        "heading": "観測して判断する",
+        "body": "ORM最適化は推測ではなく観測で行います。`engine.echo=True` で SQL 発行数を可視化し、同じ API を `n_plus_one` と `selectin` で比較します。本アプリの `/api/demo/authors` はこの学習用です。将来 PostgreSQL 等へ移行する場合は EXPLAIN まで含めて確認し、インデックス設計とセットで最適化します。",
+        "code": "GET /api/demo/authors?strategy=n_plus_one\nGET /api/demo/authors?strategy=selectin"
+      }
+    ],
+    "quiz": [
+      {
+        "id": "sqlalchemy-basic-to-nplus1_q1",
+        "prompt": "著者M件を取得後、各著者の子記事をループ内で個別取得した場合、典型的なクエリ本数はどれですか。",
+        "choices": ["1 + M", "M * K", "常に2固定"],
+        "correct_index": 0,
+        "explanation": "親1本 + 各親ごとの子取得M本で N+1 になりやすいです。"
+      },
+      {
+        "id": "sqlalchemy-basic-to-nplus1_q2",
+        "prompt": "一覧画面のN+1対策としてまず試す候補はどれですか。",
+        "choices": ["selectinload", "毎回手書きRAW SQL固定", "session.refreshの多用"],
+        "correct_index": 0,
+        "explanation": "selectinload は多くの1対多一覧でバランスが良い初手です。"
+      }
+    ]
+  }
+]
