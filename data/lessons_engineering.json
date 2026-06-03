@@ -358,5 +358,53 @@
         "explanation": "selectinload は多くの1対多一覧でバランスが良い初手です。"
       }
     ]
+  },
+  {
+    "id": "fastapi-di-realworld",
+    "order": 9,
+    "title": "FastAPI RealWorld — 依存性注入（DI）のコード解剖",
+    "summary": "dependencies/ 実コード引用・トップダウン/ボトムアップ二層解説（専用UI）",
+    "sections": [
+      {
+        "heading": "専用チャプター",
+        "body": "本レッスンは React 専用コンポーネント（ターミナルUI）で表示されます。nsidnev/fastapi-realworld-example-app の app/api/dependencies/ を引用し、Depends チェーンと Python 文法を分解します。",
+        "code": null
+      }
+    ],
+    "quiz": [
+      {
+        "id": "fastapi-di-realworld_q1",
+        "prompt": "get_repository(UsersRepository) を Depends に渡す設計の主な利点はどれか。",
+        "choices": [
+          "ルートが Repository 実装を直接 new しなくてよい",
+          "JWT の有効期限が自動延長される",
+          "SQL が不要になる"
+        ],
+        "correct_index": 0,
+        "explanation": "依存として注入することで、ルートは永続化の詳細から切り離される。"
+      },
+      {
+        "id": "fastapi-di-realworld_q2",
+        "prompt": "_get_connection_from_pool で yield を使う主理由はどれか。",
+        "choices": [
+          "リクエスト終了後に接続をプールへ返却するため",
+          "JSON をパースするため",
+          "CORS ヘッダを付与するため"
+        ],
+        "correct_index": 0,
+        "explanation": "ジェネレータ依存は前処理・後処理の両方を持てる。接続のクリーンアップに使う。"
+      },
+      {
+        "id": "fastapi-di-realworld_q3",
+        "prompt": "get_current_user_authorizer(required=False) が返す依存チェーンの意味として正しいのはどれか。",
+        "choices": [
+          "認証必須ではなく、トークンがあれば User を、なければ None を返しうる",
+          "常に 401 を返す",
+          "DB マイグレーションを実行する"
+        ],
+        "correct_index": 0,
+        "explanation": "required=False によりオプショナル認証パスへ切り替えるファクトリパターン。"
+      }
+    ]
   }
 ]

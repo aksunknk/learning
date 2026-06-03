@@ -1,4 +1,4 @@
-export type LessonCatalog = "engineering" | "foundation"
+export type LessonCatalog = "engineering" | "foundation" | "byox"
 
 export type LessonMeta = {
   id: string

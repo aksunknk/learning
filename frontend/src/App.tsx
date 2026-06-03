@@ -11,7 +11,10 @@ import { useLessonList } from "./hooks/useLessonList"
 import { useLLMStream } from "./hooks/useLLMStream"
 import { useProgress } from "./hooks/useProgress"
 import { useQuizCheck } from "./hooks/useQuizCheck"
+import { FastApiDiChapter } from "./components/FastApiDiChapter"
 import type { LessonCatalog, LessonMeta, QuizItem } from "./types"
+
+const DI_LESSON_ID = "fastapi-di-realworld"
 
 type NavRowProps = {
   idx: number
@@ -100,7 +103,7 @@ const CATALOG_STORAGE = "pylearn_catalog_v1"
 function readStoredCatalog(): LessonCatalog {
   try {
     const s = localStorage.getItem(CATALOG_STORAGE)
-    if (s === "foundation" || s === "engineering") return s
+    if (s === "foundation" || s === "engineering" || s === "byox") return s
   } catch {
     /* ignore */
   }
@@ -142,6 +145,16 @@ export function App() {
     }
   }, [lessons, activeId])
 
+  useEffect(() => {
+    const root = document.documentElement
+    if (activeId === DI_LESSON_ID) {
+      root.classList.add("terminal-mode")
+    } else {
+      root.classList.remove("terminal-mode")
+    }
+    return () => root.classList.remove("terminal-mode")
+  }, [activeId])
+
   const onSelect = useCallback((id: string) => setActiveId(id), [])
 
   const nav = lessons?.map((L, i) => (
@@ -155,8 +168,10 @@ export function App() {
     />
   ))
 
+  const terminalMode = activeId === DI_LESSON_ID
+
   return (
-    <div className="layout">
+    <div className={`layout${terminalMode ? " terminal-mode" : ""}`}>
       <nav className="nav">
         <div className="catalog-bar">
           <label className="catalog-label" htmlFor="cat">
@@ -172,6 +187,7 @@ export function App() {
           >
             <option value="engineering">エンジニアリング（改訂後）</option>
             <option value="foundation">基礎トラック（改訂前相当・8章）</option>
+            <option value="byox">Build Your Own X（引用解説・7章）</option>
           </select>
         </div>
         {nav}
@@ -183,37 +199,47 @@ export function App() {
         ) : null}
         {lesson ? (
           <>
-            <h1>{lesson.title}</h1>
-            <p className="lede">{lesson.summary}</p>
-            {lesson.sections.map((s, si) => (
-              <section key={`${lesson.id}-${si}-${s.heading}`}>
-                <h2>{s.heading}</h2>
-                <p>{s.body}</p>
-                {s.code ? <pre className="code">{s.code}</pre> : null}
-              </section>
-            ))}
-            <div className="quiz">
-              <h2>Quiz</h2>
-              {lesson.quiz.map((q) => (
-                <QuizItemView
-                  key={q.id}
-                  lessonId={lesson.id}
-                  item={q}
-                  submit={submit}
-                  disabled={pending}
-                />
-              ))}
-            </div>
-            <div className="row">
-              <button
-                type="button"
-                className="action"
-                onClick={() => mark(lesson.id)}
-              >
-                完了を記録 (SQLite / ORM)
-              </button>
-            </div>
-            {catalog === "engineering" ? (
+            {lesson.id === DI_LESSON_ID ? (
+              <FastApiDiChapter
+                onComplete={() => mark(lesson.id)}
+                submit={submit}
+                pending={pending}
+              />
+            ) : (
+              <>
+                <h1>{lesson.title}</h1>
+                <p className="lede">{lesson.summary}</p>
+                {lesson.sections.map((s, si) => (
+                  <section key={`${lesson.id}-${si}-${s.heading}`}>
+                    <h2>{s.heading}</h2>
+                    <p>{s.body}</p>
+                    {s.code ? <pre className="code">{s.code}</pre> : null}
+                  </section>
+                ))}
+                <div className="quiz">
+                  <h2>Quiz</h2>
+                  {lesson.quiz.map((q) => (
+                    <QuizItemView
+                      key={q.id}
+                      lessonId={lesson.id}
+                      item={q}
+                      submit={submit}
+                      disabled={pending}
+                    />
+                  ))}
+                </div>
+                <div className="row">
+                  <button
+                    type="button"
+                    className="action"
+                    onClick={() => mark(lesson.id)}
+                  >
+                    完了を記録 (SQLite / ORM)
+                  </button>
+                </div>
+              </>
+            )}
+            {catalog === "engineering" && lesson.id !== DI_LESSON_ID ? (
             <div className="tools">
               <div className="tool">
                 <h3>SSE /api/llm/stream</h3>

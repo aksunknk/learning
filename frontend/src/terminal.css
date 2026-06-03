@@ -1,0 +1,180 @@
+/* ターミナル・ハッカー専用（DIチャプター / html.terminal-mode 時） */
+html.terminal-mode,
+html.terminal-mode body,
+html.terminal-mode #root {
+  background: #000000;
+  color: #ffffff;
+}
+
+html.terminal-mode .layout {
+  background: #000000;
+}
+
+html.terminal-mode .nav {
+  background: #000000;
+  border-right: 1px solid #1a1a1a;
+  padding: 8px 6px;
+}
+
+html.terminal-mode .catalog-bar {
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+}
+
+html.terminal-mode .catalog-label,
+html.terminal-mode .nav .meta,
+html.terminal-mode .nav .done {
+  color: #888888;
+}
+
+html.terminal-mode .catalog-select,
+html.terminal-mode .nav button {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #1a1a1a;
+  border-radius: 0;
+  padding: 6px 8px;
+  margin-bottom: 2px;
+}
+
+html.terminal-mode .nav button:hover {
+  background: #0a0a0a;
+}
+
+html.terminal-mode .nav button.active {
+  border-color: #00ff00;
+  background: #000000;
+  color: #00ff00;
+}
+
+html.terminal-mode .main {
+  background: #000000;
+  padding: 12px 16px 24px;
+  max-width: 900px;
+}
+
+html.terminal-mode .di-chapter h1,
+html.terminal-mode .di-chapter h2,
+html.terminal-mode .di-chapter h3 {
+  color: #ffffff;
+  font-weight: 600;
+  margin: 0 0 6px;
+  letter-spacing: 0;
+}
+
+html.terminal-mode .di-chapter .accent {
+  color: #00ff00;
+}
+
+html.terminal-mode .di-chapter .lede {
+  color: #cccccc;
+  margin: 0 0 12px;
+  font-size: 13px;
+}
+
+html.terminal-mode .di-chapter p {
+  color: #eeeeee;
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+html.terminal-mode .di-layer {
+  border: 1px solid #1a1a1a;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  background: #000000;
+}
+
+html.terminal-mode .di-layer-top {
+  border-left: 2px solid #00ff00;
+}
+
+html.terminal-mode .di-layer-bottom {
+  border-left: 2px solid #333333;
+}
+
+html.terminal-mode .di-grammar {
+  border-top: 1px solid #1a1a1a;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+html.terminal-mode .di-grammar h4 {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: #00ff00;
+  font-weight: 600;
+}
+
+html.terminal-mode .di-grammar .why {
+  color: #aaaaaa;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+html.terminal-mode .di-chapter pre,
+html.terminal-mode .di-chapter .code {
+  background: #000000;
+  color: #00ff00;
+  border: 1px solid #1a1a1a;
+  border-radius: 0;
+  padding: 8px 10px;
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 1.45;
+  box-shadow: none;
+}
+
+html.terminal-mode .di-quiz {
+  border: 1px solid #1a1a1a;
+  margin-top: 12px;
+  padding: 8px 10px;
+}
+
+html.terminal-mode .di-quiz .q-block {
+  border: 1px solid #1a1a1a;
+  background: #000000;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 0;
+}
+
+html.terminal-mode label.opt {
+  color: #ffffff;
+  padding: 2px 0;
+}
+
+html.terminal-mode button.action {
+  background: #000000;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  border-radius: 0;
+  padding: 4px 10px;
+}
+
+html.terminal-mode button.action:disabled {
+  color: #555555;
+  border-color: #333333;
+}
+
+html.terminal-mode .feed.ok {
+  color: #00ff00;
+}
+
+html.terminal-mode .feed.ng {
+  color: #ffffff;
+  border-left: 2px solid #ffffff;
+  padding-left: 6px;
+}
+
+html.terminal-mode .err {
+  color: #ffffff;
+}
+
+html.terminal-mode .source {
+  font-size: 11px;
+  color: #666666;
+  margin-bottom: 8px;
+}

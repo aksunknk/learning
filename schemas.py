@@ -36,7 +36,7 @@ class LessonMetaOut(BaseModel):
     summary: str
     order: int
     quiz_count: int
-    catalog: Literal["engineering", "foundation"] = "engineering"
+    catalog: Literal["engineering", "foundation", "byox"] = "engineering"
 
 
 class StreamPromptIn(BaseModel):

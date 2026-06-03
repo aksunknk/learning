@@ -27,6 +27,11 @@ def list_catalogs() -> list[dict]:
             "label": "基礎トラック",
             "note": "Python 言語基礎（改訂前の原本相当）",
         },
+        {
+            "id": "byox",
+            "label": "Build Your Own X",
+            "note": "BYOX 引用コードの詳細解説（Web/Redis/Lispy/JSON/Git）",
+        },
     ]
 
 
@@ -49,7 +54,7 @@ def list_lessons(catalog: _CATALOG_QUERY = "engineering") -> list[LessonMetaOut]
 @router.get("/lessons/{lesson_id}")
 def get_lesson(
     lesson_id: str,
-    catalog: Literal["engineering", "foundation"] | None = Query(
+    catalog: Literal["engineering", "foundation", "byox"] | None = Query(
         default=None,
         description="省略時は両カタログから id で検索（id はカタログ間で重複しない）",
     ),
