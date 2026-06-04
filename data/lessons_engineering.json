@@ -406,5 +406,161 @@
         "explanation": "required=False によりオプショナル認証パスへ切り替えるファクトリパターン。"
       }
     ]
+  },
+  {
+    "id": "fastapi-beginner-guide",
+    "order": 10,
+    "title": "FastAPI 入門 — ゼロから読めるバックエンドの書き方",
+    "summary": "起動・ルート・Pydantic・エラー処理まで、本アプリのコードを例に丁寧に解説",
+    "sections": [
+      {
+        "heading": "FastAPI とは何か（初学者向けの位置づけ）",
+        "body": "FastAPI は Python で HTTP API（JSON を返すサーバー）を書くためのフレームワークです。ブラウザや React アプリが「URL にリクエストを送る → サーバーが JSON を返す」という往復を実現します。従来の Flask 等と比べ、型ヒントと Pydantic による入力検証、OpenAPI（API 仕様書）の自動生成が強みです。初学者が最初に覚えるべきは次の3点です。(1) 関数にデコレータ `@app.get` 等を付けると URL が公開される。(2) 関数の引数と戻り値の型が、その URL の入出力契約になる。(3) 仕様書は `/docs`（本アプリでは `/api/docs`）で自動表示される。PyLearn 自体が FastAPI で動いているため、教材を読みながら実際のソース（main.py, routers/）を対照すると理解が早いです。",
+        "code": "# イメージ: クライアント → GET /api/health → サーバー → {\"status\":\"ok\"}"
+      },
+      {
+        "heading": "ステップ1 — アプリの作成と起動（uvicorn）",
+        "body": "最小構成は「FastAPI インスタンスを1つ作り、エンドポイント関数を1つ書き、uvicorn で起動する」だけです。uvicorn は ASGI サーバーと呼ばれ、FastAPI アプリを本番に近い形で実行します。開発時は `--reload` を付けるとファイル保存のたびに再起動し、試行錯誤が楽になります。ポートは `8765` など空いている番号を指定します。起動ログに `Uvicorn running on http://127.0.0.1:8765` と出れば成功です。ブラウザで `http://127.0.0.1:8765/api/health` にアクセスし JSON が返れば、通信の往復は成立しています。",
+        "code": "python -m uvicorn main:app --reload --host 127.0.0.1 --port 8765"
+      },
+      {
+        "heading": "ステップ2 — ルート（エンドポイント）の基本",
+        "body": "「ルート」とは URL パスと HTTP メソッドの組み合わせに対応する処理関数のことです。GET は取得、POST は作成・送信、PATCH は部分更新、DELETE は削除、という慣習があります（厳密な REST 設計は別途学びます）。FastAPI では `@app.get(\"/api/health\")` のように書きます。パス中の `{lesson_id}` はパスパラメータ、関数引数に `?catalog=engineering` のようなものはクエリパラメータです。本アプリの `GET /api/lessons/{lesson_id}` は、教材 ID をパスで受け取り、任意で catalog をクエリで受け取る典型例です。ルートが増えると main.py が肥大化するため、APIRouter でファイル分割し `app.include_router(..., prefix=\"/api\")` で合体するのが実務の定石です。",
+        "code": "@app.get('/api/health', response_model=HealthOut)\ndef health() -> HealthOut:\n    return HealthOut()"
+      },
+      {
+        "heading": "ステップ3 — Pydantic で「入出力の形」を固定する",
+        "body": "初学者がつまずきやすいのは「dict をそのまま返すと、フィールドの有無や型がブレる」問題です。Pydantic の BaseModel を使うと、入力 JSON を検証して Python オブジェクトにし、出力もモデルで拘束できます。本アプリの `QuizAnswerIn` は lesson_id・question_id・choice_index を必須とし、余計なキーは `extra='forbid'` で拒否します。これにより「フロントが送った想定外の JSON」が早期に 422 で弾かれます。出力側の `LessonMetaOut` は一覧 API が返すフィールドを明示し、誤って内部用データを返す事故を減らします。覚え方: In モデルはリクエストボディ、Out モデルはレスポンス、`response_model=` で公開形を宣言、です。",
+        "code": "class QuizAnswerIn(BaseModel):\n    model_config = ConfigDict(extra='forbid')\n    lesson_id: str = Field(..., min_length=1)\n    question_id: str = Field(..., min_length=1)\n    choice_index: int = Field(..., ge=0)"
+      },
+      {
+        "heading": "ステップ4 — ルーター分割と関心の分離",
+        "body": "小さなアプリでは main.py に全部書いても動きますが、機能が増えると lessons・progress・認証などに分けます。`APIRouter()` を作り、`@router.get(...)` でエンドポイントを定義し、main.py で `app.include_router(lessons.router, prefix=\"/api\")` と登録します。prefix により、router 内の `/lessons` は実際には `/api/lessons` になります。初学者は「prefix を二重に付けていないか」「router のパスが / で始まっているか」を確認すると 404 デバッグが速くなります。PyLearn では lessons / progress / stream_demo の3ルーターが /api 配下にマウントされています。",
+        "code": "router = APIRouter(tags=['lessons'])\n\n@router.get('/lessons', response_model=list[LessonMetaOut])\ndef list_lessons(catalog: _CATALOG_QUERY = 'engineering'):\n    ..."
+      },
+      {
+        "heading": "ステップ5 — エラーを HTTPException で明示する",
+        "body": "「教材が見つからない」「クイズ ID が不正」などは、Python の例外をそのまま 500 にすると利用者に不親切です。FastAPI では `raise HTTPException(status_code=404, detail='lesson not found')` のように、意図したステータスとメッセージを返します。4xx はクライアント側の入力や参照ミス、5xx はサーバー内部の想定外、という切り分けを意識してください。フロント（TypeScript）は status と detail を見て、再試行・入力修正・問い合わせの導線を分けます。バリデーションエラー（422）は FastAPI が自動生成するため、まずは自分で HTTPException を書くケース（404 等）に慣れるとよいです。",
+        "code": "if not found:\n    raise HTTPException(status_code=404, detail='lesson not found')"
+      },
+      {
+        "heading": "ステップ6 — 本アプリ（PyLearn）を読む練習",
+        "body": "学習の最短ルートは、次の順でソースを開くことです。(1) main.py — FastAPI 生成、CORS、ルーター登録、静的 SPA の配信。(2) routers/lessons.py — 教材一覧・詳細・クイズ採点。(3) schemas.py — API 境界の型。(4) lesson_sanitize.py — 正解インデックスを API から隠す処理。ここまで読めれば、「フロントが叩いている URL がバックエンドのどの関数か」を追跡できます。次の章（Swagger UI）では同じ API をブラウザ上の仕様書から操作します。第3章の概要（fastapi-overview）や第9章の DI 解剖とあわせると、基礎→仕様確認→実務パターンの順で知識が繋がります。",
+        "code": "app = FastAPI(title='PyLearn', docs_url='/api/docs')\napp.include_router(lessons.router, prefix='/api')"
+      }
+    ],
+    "quiz": [
+      {
+        "id": "fastapi-beginner-guide_q1",
+        "prompt": "FastAPI で URL と処理関数を結びつける基本的な書き方はどれですか。",
+        "choices": [
+          "関数の上に @app.get や @router.post などのデコレータを付ける",
+          "import 文の直後に URL を文字列で宣言する",
+          "main.py のコメントに URL を書く"
+        ],
+        "correct_index": 0,
+        "explanation": "デコレータがパス・HTTPメソッドと関数を対応づけます。"
+      },
+      {
+        "id": "fastapi-beginner-guide_q2",
+        "prompt": "Pydantic の `extra='forbid'` を付ける主な理由として最も適切なのはどれですか。",
+        "choices": [
+          "未定義フィールドを含む JSON を拒否し、契約外入力を防ぐ",
+          "データベース接続を自動で閉じる",
+          "CORS を無効化する"
+        ],
+        "correct_index": 0,
+        "explanation": "余計なキーは仕様逸脱のサインなので、早期に弾く設計が安全です。"
+      },
+      {
+        "id": "fastapi-beginner-guide_q3",
+        "prompt": "教材が存在しないときに返すのに適切なのはどれですか。",
+        "choices": [
+          "HTTPException(status_code=404, ...)",
+          "return {'error': 'not found'} だけ（ステータスは常に200）",
+          "pass で何も返さない"
+        ],
+        "correct_index": 0,
+        "explanation": "意図した HTTP ステータスで失敗を表現すると、フロントの分岐が明確になります。"
+      }
+    ]
+  },
+  {
+    "id": "swagger-ui-openapi",
+    "order": 11,
+    "title": "Swagger UI 入門 — OpenAPI で API を読み、試す",
+    "summary": "/api/docs の見方・Try it out・スキーマとフロント連携を初学者向けに解説",
+    "sections": [
+      {
+        "heading": "OpenAPI と Swagger UI の関係",
+        "body": "OpenAPI（旧称 Swagger 仕様）は、HTTP API の「パス一覧・メソッド・パラメータ・リクエスト/レスポンスの型・エラー」を機械可読な JSON/YAML で記述する標準です。FastAPI はあなたが書いた型ヒントと Pydantic モデルから、この OpenAPI 定義を自動生成します。Swagger UI はその定義を人間が読める Web 画面にしたもので、FastAPI では通常 `/docs` にマウントされます。本アプリ PyLearn では `docs_url=\"/api/docs\"` としているため、ブラウザで `http://127.0.0.1:8765/api/docs` を開くと、教材アプリ自身の API 仕様書が表示されます。初学者は「コードを読む前に Swagger UI で全体像を掴む」習慣を付けると、迷子になりにくいです。",
+        "code": "app = FastAPI(title='PyLearn', docs_url='/api/docs', redoc_url=None)"
+      },
+      {
+        "heading": "画面の構成（左のパス一覧・中央の詳細）",
+        "body": "Swagger UI の左側にはタグ（例: lessons）ごとにエンドポイントが並びます。各項目を開くと、HTTP メソッド（GET/POST 等）、パス（/api/lessons）、説明文、Parameters（クエリ・パス・ヘッダ）、Request body、Responses が表示されます。緑の GET は取得、青の POST は送信、という色分けは覚えやすい目印です。まずは `GET /api/health` を開き、Responses に 200 とスキーマ `HealthOut` があることを確認してください。次に `GET /api/lessons` で一覧の形、`GET /api/lessons/{lesson_id}` で詳細の形を見比べると、「一覧はメタ情報だけ、詳細は sections/quiz を含む」という設計差が一目で分かります。",
+        "code": "GET /api/health  →  HealthOut { status: 'ok' }\nGET /api/lessons →  LessonMetaOut[]"
+      },
+      {
+        "heading": "Try it out — 実際に API を叩く手順",
+        "body": "各エンドポイントの「Try it out」ボタンを押すと、ブラウザからその場でリクエストを送れます。手順は (1) Try it out → (2) パラメータ入力（例: catalog=engineering）→ (3) Execute → (4) Response body と HTTP ステータスを確認、です。サーバーが起動していないと失敗するため、先に uvicorn を立ち上げてください。`GET /api/lessons` を実行し JSON 配列が返れば成功です。`POST /api/quiz/check` では Request body に JSON を入れます。例: {\"lesson_id\":\"fastapi-beginner-guide\",\"question_id\":\"fastapi-beginner-guide_q1\",\"choice_index\":0}。正誤はサーバー側の教材 JSON と照合され、正解インデックス自体は API からは返りません（lesson_sanitize の設計）。",
+        "code": "{\n  \"lesson_id\": \"web-http-foundation\",\n  \"question_id\": \"web-http-foundation_q1\",\n  \"choice_index\": 1\n}"
+      },
+      {
+        "heading": "Schemas（下部）— 型定義の読み方",
+        "body": "画面下部の Schemas セクションには、Pydantic モデルが展開されています。`QuizAnswerIn` には必須フィールドと制約（min_length, ge）が記載され、`LessonMetaOut` には一覧用フィールドだけが並びます。フロントエンド開発者はここを「TypeScript の型を書くときの設計書」として使えます。`extra: forbid` は OpenAPI 上では additionalProperties: false 相当として現れ、未知キー禁止の意図を伝えます。初学者がよく誤解するのは「Schemas は別ファイルのおまけ」という点で、実際はルート関数の `response_model` や引数型から自動連動しています。コードと Swagger のズレがあれば、型注釈かモデル定義の修正漏れを疑ってください。",
+        "code": "class LessonMetaOut(BaseModel):\n    id: str\n    title: str\n    summary: str\n    order: int\n    quiz_count: int\n    catalog: Literal['engineering', 'foundation', 'byox']"
+      },
+      {
+        "heading": "response_model と実レスポンスの対応",
+        "body": "`response_model=HealthOut` のように指定したルートは、返却 dict がモデルに合わない場合に変換・除外されます。Swagger UI の Responses に表示されるスキーマは、この response_model を基にしています。一覧 API で `list[LessonMetaOut]` と書いてあれば、配列の各要素の形も仕様書に現れます。逆に response_model を付けないと、返した dict の全キーがそのまま露出し、内部フィールドまで見えるリスクがあります。教材詳細 API は dict を返していますが、返却前に `strip_answers` でクイズ正解を除去しており、仕様書上の例と「実際に返る JSON」は一致しつつも、秘密情報は落としています。セキュリティとドキュメントの両立は、モデル化 + サニタイズの組み合わせで実現する典型です。",
+        "code": "@router.get('/lessons', response_model=list[LessonMetaOut])\ndef list_lessons(...): ..."
+      },
+      {
+        "heading": "フロント連携 — 仕様書を単一の真実源にする",
+        "body": "React（本アプリの frontend）から fetch する際、URL・メソッド・JSON の形は Swagger UI と一致させる必要があります。例: `GET /api/lessons?catalog=engineering` はクエリ `catalog` が必須ではなくデフォルト engineering ですが、カタログ切替時は明示的に付与します。型は `types.ts` の `LessonCatalog` と OpenAPI の enum が対応しているべきです。チーム開発では、バックエンド変更 → Swagger UI で差分確認 → フロント型・hooks 更新、の順を徹底すると手戻りが減ります。OpenAPI JSON そのものは `http://127.0.0.1:8765/openapi.json`（本アプリでは `/openapi.json` がルート直下）で取得でき、コード生成ツールの入力にもなります。",
+        "code": "fetch('/api/lessons?catalog=engineering')\n  .then((r) => r.json())"
+      },
+      {
+        "heading": "初学者がつまずくポイントと確認チェックリスト",
+        "body": "(1) サーバー未起動で Try it out して失敗する → uvicorn を先に起動。(2) パスに /api を付け忘れる → include_router の prefix を確認。(3) POST の Content-Type は application/json → Swagger は自動設定。(4) 422 が出た → ボディやクエリの型・必須項目を Schemas で再確認。(5) CORS エラーは Swagger ではなく別オリジンのフロントから叩いたときに起きやすい → 本アプリは開発用に CORS 許可あり。毎回、Execute 後の Curl コマンド表示を読むと、フロントの fetch と同じリクエストか検証できます。",
+        "code": "チェック: 起動 → /api/docs 表示 → GET /api/health 200 → GET /api/lessons 200"
+      }
+    ],
+    "quiz": [
+      {
+        "id": "swagger-ui-openapi_q1",
+        "prompt": "PyLearn で Swagger UI を開く URL はどれですか。",
+        "choices": [
+          "http://127.0.0.1:8765/api/docs",
+          "http://127.0.0.1:8765/swagger.html",
+          "http://127.0.0.1:8765/static/spa/docs"
+        ],
+        "correct_index": 0,
+        "explanation": "main.py の docs_url='/api/docs' に対応します。"
+      },
+      {
+        "id": "swagger-ui-openapi_q2",
+        "prompt": "OpenAPI の定義を FastAPI が自動生成する主な入力はどれですか。",
+        "choices": [
+          "型ヒントと Pydantic モデル（ルートの引数・response_model）",
+          "package.json の dependencies",
+          "CSS ファイルの class 名"
+        ],
+        "correct_index": 0,
+        "explanation": "ルートシグネチャとモデルが仕様書の源泉です。"
+      },
+      {
+        "id": "swagger-ui-openapi_q3",
+        "prompt": "Swagger UI の Try it out で確認すべきものとして最も適切なのはどれですか。",
+        "choices": [
+          "HTTP ステータスと Response body が期待どおりか",
+          "npm のインストールログ",
+          "SQLite ファイルのバイナリ内容"
+        ],
+        "correct_index": 0,
+        "explanation": "仕様どおりの JSON が返るかをその場で検証するのが目的です。"
+      }
+    ]
   }
 ]
