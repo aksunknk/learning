@@ -562,5 +562,120 @@
         "explanation": "仕様どおりの JSON が返るかをその場で検証するのが目的です。"
       }
     ]
+  },
+  {
+    "id": "python-network-automation-1-10",
+    "order": 12,
+    "title": "Python ネットワーク自動化 — 1から10まで完全入門",
+    "summary": "基礎用語・標準ライブラリ・SSH/HTTP・安全な運用まで、初学者向けに10段階で解説",
+    "sections": [
+      {
+        "heading": "1/10 — ネットワーク自動化とは何か",
+        "body": "ネットワーク自動化とは、ルーター・スイッチ・ファイアウォール・ロードバランサーなどの「設定変更」「状態確認」「障害調査」を、人手の CLI 操作だけに頼らず、プログラム（ここでは Python）で再現可能にすることです。例えば「100台のスイッチで VLAN 設定を同じ手順で入れる」「毎朝インターフェースのエラー计数を集計する」「証明書期限切れ前にメール通知する」などが典型です。自動化の目的は単なる「楽をする」ではなく、(1) 人的ミスの削減、(2) 作業時間の短縮、(3) 変更手順の標準化（誰がやっても同じ結果）、(4) 監査証跡（ログ）の確保、にあります。初学者はまず「同じコマンドを何度も手で打っている作業」を1つ思い浮かべ、それをスクリプト1本に置き換えるイメージを持つと理解が早いです。",
+        "code": "# 手作業: 10台に順番に SSH して show ip int brief\n# 自動化: 台数リストを読み、同じ確認をループで実行"
+      },
+      {
+        "heading": "2/10 — 自動化の前に押さえるネットワーク用語",
+        "body": "Python を書く前に、最低限の通信用語を固定します。IP アドレスは機器を識別する番号、サブネットマスク（またはプレフィックス /24 等）は「同じネットワークの範囲」、デフォルトゲートウェイは他ネットワークへ出る出口です。ポート番号は、1台の機器上で「どのアプリケーション/service に届けるか」を区別します（SSH=22, HTTP=80, HTTPS=443 が代表例）。プロトコルは約束事で、SSH は暗号化されたリモート操作、HTTP/HTTPS は Web/API 通信、SNMP は監視向け、など役割が異なります。ネットワーク自動化でよく触るのは SSH（CLI 機器）と HTTPS REST API（現行機器の northbound API）です。ping が通るかどうかだけではアプリ層まで正常とは限らないため、「どの層まで確認するか」を作業設計に含めることが重要です。",
+        "code": "到達確認の層:\n  L3: ping / traceroute（IP 到達）\n  L4: TCP 22/443 が開いているか\n  L7: SSH ログイン / HTTP API が 200 を返すか"
+      },
+      {
+        "heading": "3/10 — なぜ Python か（他言語との位置づけ）",
+        "body": "ネットワーク業界で Python が選ばれやすい理由は、(1) 文法が比較的読みやすい、(2) 標準ライブラリが豊富、(3) Paramiko / Netmiko / NAPALM / requests 等の実務ライブラリが揃っている、(4) Ansible などの運用ツールも Python 系の思想に近い、からです。小さな接続確認は標準ライブラリだけで足り、機器 CLI 自動化は Netmiko、HTTP API ベースは requests、大規模オーケストレーションは Ansible + Python モジュール、という使い分けが一般的です。初学者は「全部 Ansible でやる」より、まず素の Python で SSH 1台・HTTP 1本を動かし、成功体験を作ってからフレームワークへ進む方が挫折しにくいです。本アプリ PyLearn も FastAPI（Python）で API を提供しており、ネットワーク自動化で扱う REST API と同型の考え方をすでに学習できます。",
+        "code": "pip install paramiko netmiko requests\n# 学習初期は venv 内に限定してインストール"
+      },
+      {
+        "heading": "4/10 — Python 環境の準備（venv と依存管理）",
+        "body": "ネットワーク機器向けスクリプトは、OS 標準の Python に直接 pip install すると環境を壊しやすいです。必ず venv（仮想環境）を作成し、その中だけに Paramiko 等を入れてください。手順: (1) プロジェクト用フォルダ作成 (2) `python -m venv .venv` (3) Windows なら `.venv\\Scripts\\activate` (4) `pip install -U pip` (5) 必要ライブラリを `requirements.txt` に固定。本番運用ではバージョン固定が必須です。認証情報（SSH パスワード、API トークン）はコードに直書きせず、環境変数や OS の秘密情報ストア、最低でも `.env`（git 除外）で扱います。初学者が最初にやるべきセキュリティは「GitHub にパスワードを push しない」ことです。",
+        "code": "python -m venv .venv\n.venv\\Scripts\\activate\npip install paramiko requests\npip freeze > requirements.txt"
+      },
+      {
+        "heading": "5/10 — 標準ライブラリで「接続できるか」を調べる",
+        "body": "外部ライブラリの前に、Python 標準の `socket` で TCP ポートが開いているか確認する技法を覚えます。例: 管理 IP の TCP/22 に接続を試み、成功すれば SSH サービスが待ち受けている可能性が高い（ファイアウォールで遮断されていなければ）。`socket.create_connection((host, port), timeout=3)` はシンプルで依存ゼロです。ICMP ping は OS コマンド依存になるため `subprocess` で `ping` を呼ぶ例もありますが、権限・OS 差異に注意してください。自動化スクリプトの第一歩は「対象リスト CSV → 1台ずつ到達確認 → 結果を表で出力」です。ここで重要なのは timeout 設定です。無限待ちすると100台チェックが終わりません。",
+        "code": "import socket\n\ndef port_open(host: str, port: int, timeout: float = 3.0) -> bool:\n    try:\n        with socket.create_connection((host, port), timeout=timeout):\n            return True\n    except OSError:\n        return False"
+      },
+      {
+        "heading": "6/10 — HTTP API 自動化（requests の基本）",
+        "body": "近年のネットワーク機器や SDN コントローラは HTTPS REST API を提供します。Python では `requests` が de facto 標準です。基本パターンは `GET` で状態取得、`POST`/`PATCH`/`PUT` で設定変更、`DELETE` で削除です。必ず `response.raise_for_status()` または `response.status_code` を確認し、JSON なら `response.json()` でパースします。本アプリの `GET /api/health` も同型で、`requests.get('http://127.0.0.1:8765/api/health', timeout=5)` で確認できます。API 自動化の利点は、CLI より構造化された JSON が返りやすい点です。欠点は機器・バージョンごとに API スキーマが異なることです。公式 API ドキュメント（OpenAPI/Swagger）を読む習慣を付けてください。",
+        "code": "import requests\n\nr = requests.get('http://127.0.0.1:8765/api/health', timeout=5)\nr.raise_for_status()\nprint(r.json())  # {'status': 'ok'}"
+      },
+      {
+        "heading": "7/10 — SSH 自動化の考え方（Paramiko 入門）",
+        "body": "CLI ベースの機器（Cisco IOS 系、Junos、Linux サーバー等）は SSH でコマンドを送ります。Paramiko は Pure Python の SSH クライアントです。流れは (1) SSHClient 生成 (2) `connect(hostname, username, password/key)` (3) `exec_command('show version')` (4) stdout を read (5) `close()`。本番ではパスワードより SSH 鍵認証を推奨します。Netmiko は Paramiko をラップし、ベンダーごとのプロンプト待ち・ページング処理（--More--）を吸収してくれるため、機器 CLI 自動化では Netmiko の方が実務的です。初学者は Paramiko で1コマンド成功 → Netmiko で `send_command` に移行、が現実的です。設定変更コマンドは即本番で試さず、必ず検証環境で dry-run 相当の確認を行ってください。",
+        "code": "import paramiko\n\nclient = paramiko.SSHClient()\nclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())\nclient.connect('192.0.2.10', username='admin', password='***', timeout=10)\nstdin, stdout, stderr = client.exec_command('show clock')\nprint(stdout.read().decode())\nclient.close()"
+      },
+      {
+        "heading": "8/10 — 複数台を安全に回す（インベントリとループ）",
+        "body": "自動化の本番価値は「台数スケール」で出ます。対象機器は CSV/YAML/JSON のインベントリファイルで管理し、スクリプト本体からホスト名・IP・ロール・認証情報の参照方法だけを渡します。ループ内では1台失敗しても全体を止めない `try/except`、リトライ回数上限、並列数制限（いきなり100並列 SSH は機器も jump ホストも落ちる）を設計します。結果はコンソール print だけでなく CSV/JSON に書き出し、後から監査できるようにします。変更系ジョブは「対象グループを段階ロールアウト（canary → 残り）」が鉄則です。初学者が陥りやすいのは、テスト1台成功を100台一括適用して全障害にすることです。",
+        "code": "inventory = [\n    {'host': '192.0.2.10', 'role': 'core-sw'},\n    {'host': '192.0.2.11', 'role': 'access-sw'},\n]\nfor item in inventory:\n    try:\n        ...  # 1台ずつ処理\n    except Exception as exc:\n        log_failure(item['host'], exc)"
+      },
+      {
+        "heading": "9/10 — コマンド出力の解析（textfsm / 正規表現）",
+        "body": "CLI 出力は人間向けテキストです。自動化では「Interface」「Status」「IP」などの列を構造化データ（dict/list）に変換する必要があります。手法は (1) 正規表現 `re` でパターンマッチ (2) TextFSM / ntc-templates でテーブル化 (3) JSON/XML を返す API コマンドを優先、の3段階です。正規表現だけに頼るとベンダー微差で壊れやすいです。TextFSM テンプレートはコミュニティ資産（ntc-templates）が豊富で、Netmiko と組み合わせる例が多いです。解析結果をそのまま設定変更に使う前に、必ず人間がサンプル出力と照合してください。空行・ページング・タイムスタンプ行がパースを壊す典型原因です。",
+        "code": "import re\n\nline = 'Gi0/1    192.0.2.1    YES manual up    up'\nm = re.search(r'^(\\S+)\\s+(\\d+\\.\\d+\\.\\d+\\.\\d+)', line)\nif m:\n    iface, ip = m.group(1), m.group(2)"
+      },
+      {
+        "heading": "10/10 — 冪等性・ログ・安全運用と次の学習ステップ",
+        "body": "成熟した自動化は「何度実行しても同じ最終状態になる（冪等性）」ことを目指します。例: VLAN 10 がなければ作成、あれば何もしない、のように状態を先に読んでから変更します。すべての操作をログに残し（いつ・誰の・どのスクリプト版・どのホスト・何を実行・結果）、本番変更は change window とロールバック手順をセットにします。秘密情報は Vault 等へ、破壊的コマンド（reload, erase, format）はガードレール（確認プロンプト・--dry-run フラグ）をコード側に入れます。次の学習ステップ: (1) Netmiko + ntc-templates で show 系収集 (2) Ansible network モジュール (3) NAPALM でマルチベンダー抽象化 (4) Git で設定テンプレート管理（Infrastructure as Code）。本 PyLearn の FastAPI 章・Swagger 章で学んだ API 契約の考え方は、ネットワーク機器 REST API 自動化にもそのまま活きます。",
+        "code": "if 'vlan 10' not in running_config:\n    apply_config(['vlan 10', ' name USERS'])\nelse:\n    logger.info('vlan 10 already exists; skip')"
+      }
+    ],
+    "quiz": [
+      {
+        "id": "python-network-automation-1-10_q1",
+        "prompt": "ネットワーク自動化の主目的として最も適切な説明はどれですか。",
+        "choices": [
+          "作業の標準化と人的ミス削減、再現可能な変更手順の確立",
+          "CLI 画面の配色を統一すること",
+          "ping を完全になくすこと"
+        ],
+        "correct_index": 0,
+        "explanation": "自動化の核心は再現性・効率・監査可能性の向上です。"
+      },
+      {
+        "id": "python-network-automation-1-10_q2",
+        "prompt": "SSH で機器 CLI を操作する際、初学者が最初に試すのに適した最小ステップはどれですか。",
+        "choices": [
+          "1台に接続し、読み取り専用コマンド（show 系）を1本実行する",
+          "100台に同時に write memory を実行する",
+          "パスワードを GitHub に公開する"
+        ],
+        "correct_index": 0,
+        "explanation": "読み取り専用・単一台・短いタイムアウトから始めるのが安全です。"
+      },
+      {
+        "id": "python-network-automation-1-10_q3",
+        "prompt": "TCP ポート 22 が開いていることから言えることとして最も近いのはどれですか。",
+        "choices": [
+          "SSH サービスが待ち受けている可能性が高い（他層の正常までは保証しない）",
+          "アプリケーションの JSON API が必ず正常",
+          "物理ケーブルが必ず正しく配線されている"
+        ],
+        "correct_index": 0,
+        "explanation": "L4 の到達と L7 の正常は別問題です。層ごとに確認します。"
+      },
+      {
+        "id": "python-network-automation-1-10_q4",
+        "prompt": "本番向けスクリプトで認証情報を扱う際のベストプラクティスはどれですか。",
+        "choices": [
+          "コード直書きを避け、環境変数や秘密情報ストアを使う",
+          "README に平文で記載する",
+          "毎回 input() で手入力させる運用を本番で固定する"
+        ],
+        "correct_index": 0,
+        "explanation": "秘密情報の漏えいは自動化事故の最重大リスクの一つです。"
+      },
+      {
+        "id": "python-network-automation-1-10_q5",
+        "prompt": "冪等性（idempotent）の説明として正しいのはどれですか。",
+        "choices": [
+          "同じスクリプトを再実行しても望ましい最終状態が保たれる",
+          "実行するたびに必ずランダム設定になる",
+          "1回しか実行できないスクリプトのこと"
+        ],
+        "correct_index": 0,
+        "explanation": "状態確認のうえ変更する設計が冪等性の基本です。"
+      }
+    ]
   }
 ]
