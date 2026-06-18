@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Python・React・TypeScriptの基礎から実践まで学べるインタラクティブ学習サイト。生成AIでアプリ開発経験のある初級プログラマー向け。">
+  <title>Code Foundations | Python・React・TypeScript 学習ガイド</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== HERO SECTION ===== -->
+  <header class="hero" id="hero">
+    <canvas id="particle-canvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-badge">🚀 AI時代のプログラマーへ</div>
+      <h1 class="hero-title">
+        <span class="gradient-text">Code Foundations</span>
+      </h1>
+      <p class="hero-subtitle">
+        Python・React・TypeScript<br>
+        <span class="highlight-text">基礎から実践まで</span>、手を動かして学ぶ
+      </p>
+      <p class="hero-description">
+        生成AIでアプリを作った経験はあるけど、コードの中身がよくわからない——<br>
+        そんなあなたのための、<strong>「なぜそう書くのか」</strong>を理解するための学習ガイドです。
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number">4</span>
+          <span class="stat-label">言語 / フレームワーク</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">20</span>
+          <span class="stat-label">レッスン</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">24</span>
+          <span class="stat-label">クイズ</span>
+        </div>
+      </div>
+      <a href="#learning-area" class="hero-cta">
+        学習をはじめる
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- ===== MAIN LEARNING AREA ===== -->
+  <main class="main-container" id="learning-area">
+
+    <!-- Progress Overview -->
+    <section class="progress-overview">
+      <div class="progress-header">
+        <h2>📊 学習の進捗</h2>
+        <span class="overall-progress-text" id="overall-progress-text">0% 完了</span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="overall-progress-bar"></div>
+      </div>
+      <div class="progress-cards">
+        <div class="progress-card python-card" data-lang="python">
+          <div class="progress-card-icon">🐍</div>
+          <div class="progress-card-info">
+            <h3>Python</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="python-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="python-progress-text">0%</span>
+          </div>
+        </div>
+        <div class="progress-card react-card" data-lang="react">
+          <div class="progress-card-icon">⚛️</div>
+          <div class="progress-card-info">
+            <h3>React</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="react-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="react-progress-text">0%</span>
+          </div>
+        </div>
+        <div class="progress-card typescript-card" data-lang="typescript">
+          <div class="progress-card-icon">🔷</div>
+          <div class="progress-card-info">
+            <h3>TypeScript</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="typescript-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="typescript-progress-text">0%</span>
+          </div>
+        </div>
+        <div class="progress-card webapi-card" data-lang="webapi">
+          <div class="progress-card-icon">🌐</div>
+          <div class="progress-card-info">
+            <h3>Web/API</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="webapi-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="webapi-progress-text">0%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab Navigation -->
+    <nav class="tab-navigation" id="tab-nav">
+      <div class="tab-list" role="tablist">
+        <button class="tab-button active" data-tab="python" role="tab" aria-selected="true" id="tab-python">
+          <span class="tab-icon">🐍</span>
+          <span class="tab-label">Python</span>
+        </button>
+        <button class="tab-button" data-tab="react" role="tab" aria-selected="false" id="tab-react">
+          <span class="tab-icon">⚛️</span>
+          <span class="tab-label">React</span>
+        </button>
+        <button class="tab-button" data-tab="typescript" role="tab" aria-selected="false" id="tab-typescript">
+          <span class="tab-icon">🔷</span>
+          <span class="tab-label">TypeScript</span>
+        <button class="tab-button" data-tab="webapi" role="tab" aria-selected="false" id="tab-webapi">
+          <span class="tab-icon">🌐</span>
+          <span class="tab-label">Web/API</span>
+        </button>
+      </div>
+      <div class="tab-indicator" id="tab-indicator"></div>
+    </nav>
+
+    <!-- ==================== -->
+    <!-- PYTHON TAB CONTENT   -->
+    <!-- ==================== -->
+    <div class="tab-content active" id="content-python" role="tabpanel">
+      <div class="tab-intro python-intro">
+        <h2>🐍 Python — シンプルで強力な言語</h2>
+        <p>Pythonは読みやすさを重視した言語で、AI・データ分析・Web開発など幅広い分野で使われています。<br>
+        生成AIが書いたPythonコードを理解し、自分で修正・拡張できるようになりましょう。</p>
+      </div>
+
+      <!-- Lesson 1: Variables & Data Types -->
+      <article class="lesson-card" data-section="python-1" id="python-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>変数とデータ型 — データの「入れ物」を理解する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 AIが書いたコードでよく見るもの</h4>
+            <p>生成AIにアプリを作らせると、<code>name = "太郎"</code> や <code>count = 0</code> のようなコードが必ず登場します。<br>
+            これは<strong>変数</strong>にデータを格納している処理です。変数は「名前のついた箱」だと思ってください。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment"># 文字列型（str）— テキストデータ</span>
+name = <span class="code-string">"太郎"</span>
+greeting = <span class="code-string">"こんにちは"</span>
+
+<span class="code-comment"># 数値型（int, float）— 数字データ</span>
+age = <span class="code-number">25</span>
+height = <span class="code-number">170.5</span>
+
+<span class="code-comment"># ブール型（bool）— True か False</span>
+is_student = <span class="code-keyword">True</span>
+
+<span class="code-comment"># 型を確認する</span>
+<span class="code-function">print</span>(<span class="code-function">type</span>(name))      <span class="code-comment"># &lt;class 'str'&gt;</span>
+<span class="code-function">print</span>(<span class="code-function">type</span>(age))       <span class="code-comment"># &lt;class 'int'&gt;</span>
+<span class="code-function">print</span>(<span class="code-function">type</span>(is_student)) <span class="code-comment"># &lt;class 'bool'&gt;</span></code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🔍 なぜ型が重要？</h4>
+            <p>AIが生成したコードでエラーが出たとき、<strong>型の不一致</strong>が原因であることが非常に多いです。<br>
+            例えば、数字の <code>25</code> と文字列の <code>"25"</code> は Python では別物です。</p>
+            <div class="code-block compact">
+              <pre><code><span class="code-comment"># ❌ エラーになる例</span>
+age = <span class="code-string">"25"</span>         <span class="code-comment"># これは文字列</span>
+new_age = age + <span class="code-number">1</span>  <span class="code-comment"># TypeError! 文字列と数値は足せない</span>
+
+<span class="code-comment"># ✅ 正しい書き方</span>
+age = <span class="code-function">int</span>(<span class="code-string">"25"</span>)     <span class="code-comment"># 文字列を数値に変換</span>
+new_age = age + <span class="code-number">1</span>  <span class="code-comment"># → 26</span></code></pre>
+            </div>
+          </div>
+
+          <div class="tip-box">
+            <h4>🎯 実践ポイント</h4>
+            <p>AIが書いたコードを見たら、まず変数名と型を確認しましょう。<br>
+            <code>type()</code> 関数を使えば、いつでも変数の型をチェックできます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2: Lists & Dictionaries -->
+      <article class="lesson-card" data-section="python-2" id="python-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>リストと辞書 — データをまとめて管理する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜリストと辞書を学ぶ？</h4>
+            <p>AIが生成するアプリでは、ユーザーのリスト、商品カタログ、設定データなど、<strong>複数のデータをまとめて扱う</strong>場面が頻出します。<br>
+            Pythonでは <code>list</code>（リスト）と <code>dict</code>（辞書）がその役割を担います。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment"># リスト — 順番のあるデータの集まり</span>
+fruits = [<span class="code-string">"りんご"</span>, <span class="code-string">"バナナ"</span>, <span class="code-string">"みかん"</span>]
+
+<span class="code-comment"># インデックス（番号）でアクセス ※0から始まる！</span>
+<span class="code-function">print</span>(fruits[<span class="code-number">0</span>])   <span class="code-comment"># → "りんご"</span>
+<span class="code-function">print</span>(fruits[<span class="code-number">-1</span>])  <span class="code-comment"># → "みかん"（最後の要素）</span>
+
+<span class="code-comment"># 要素の追加・削除</span>
+fruits.<span class="code-function">append</span>(<span class="code-string">"ぶどう"</span>)  <span class="code-comment"># 末尾に追加</span>
+fruits.<span class="code-function">remove</span>(<span class="code-string">"バナナ"</span>)  <span class="code-comment"># 指定した要素を削除</span>
+
+<span class="code-comment"># リストの長さ</span>
+<span class="code-function">print</span>(<span class="code-function">len</span>(fruits))  <span class="code-comment"># → 3</span></code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment"># 辞書 — キーと値のペア（JSONとほぼ同じ構造！）</span>
+user = {
+    <span class="code-string">"name"</span>: <span class="code-string">"太郎"</span>,
+    <span class="code-string">"age"</span>: <span class="code-number">25</span>,
+    <span class="code-string">"email"</span>: <span class="code-string">"taro@example.com"</span>,
+    <span class="code-string">"hobbies"</span>: [<span class="code-string">"読書"</span>, <span class="code-string">"プログラミング"</span>]
+}
+
+<span class="code-comment"># キーで値にアクセス</span>
+<span class="code-function">print</span>(user[<span class="code-string">"name"</span>])     <span class="code-comment"># → "太郎"</span>
+<span class="code-function">print</span>(user[<span class="code-string">"hobbies"</span>])  <span class="code-comment"># → ["読書", "プログラミング"]</span>
+
+<span class="code-comment"># 値の更新と追加</span>
+user[<span class="code-string">"age"</span>] = <span class="code-number">26</span>           <span class="code-comment"># 更新</span>
+user[<span class="code-string">"city"</span>] = <span class="code-string">"東京"</span>      <span class="code-comment"># 新しいキーを追加</span>
+
+<span class="code-comment"># 安全にアクセス（キーが無くてもエラーにならない）</span>
+phone = user.<span class="code-function">get</span>(<span class="code-string">"phone"</span>, <span class="code-string">"未設定"</span>)  <span class="code-comment"># → "未設定"</span></code></pre>
+          </div>
+
+          <div class="tip-box">
+            <h4>🎯 AIコードを読むコツ</h4>
+            <p>APIレスポンスは辞書（dict）形式で返ってくることがほとんどです。<br>
+            <code>response["data"]["items"]</code> のようなネストされたアクセスを見たら、「辞書の中の辞書の中のリスト」と読み解きましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3: Functions -->
+      <article class="lesson-card" data-section="python-3" id="python-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>関数 — 処理をまとめて再利用する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 関数とは？</h4>
+            <p>関数は<strong>「名前をつけた処理のかたまり」</strong>です。同じ処理を何度も書かずに済むようにするためのしくみです。<br>
+            AIが生成するコードでは <code>def</code> キーワードで始まる関数が大量に出てきます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment"># 基本的な関数</span>
+<span class="code-keyword">def</span> <span class="code-function">greet</span>(name):
+    <span class="code-string">"""名前を受け取って挨拶を返す関数"""</span>
+    <span class="code-keyword">return</span> <span class="code-string">f"こんにちは、</span>{name}<span class="code-string">さん！"</span>
+
+<span class="code-comment"># 関数を呼び出す</span>
+message = <span class="code-function">greet</span>(<span class="code-string">"太郎"</span>)
+<span class="code-function">print</span>(message)  <span class="code-comment"># → "こんにちは、太郎さん！"</span>
+
+<span class="code-comment"># デフォルト引数 — 引数を省略できるようにする</span>
+<span class="code-keyword">def</span> <span class="code-function">create_user</span>(name, role=<span class="code-string">"一般"</span>, active=<span class="code-keyword">True</span>):
+    <span class="code-keyword">return</span> {
+        <span class="code-string">"name"</span>: name,
+        <span class="code-string">"role"</span>: role,
+        <span class="code-string">"active"</span>: active
+    }
+
+<span class="code-comment"># いろいろな呼び方</span>
+user1 = <span class="code-function">create_user</span>(<span class="code-string">"太郎"</span>)                    <span class="code-comment"># デフォルト値を使用</span>
+user2 = <span class="code-function">create_user</span>(<span class="code-string">"花子"</span>, role=<span class="code-string">"管理者"</span>)       <span class="code-comment"># roleだけ指定</span>
+user3 = <span class="code-function">create_user</span>(<span class="code-string">"次郎"</span>, active=<span class="code-keyword">False</span>)       <span class="code-comment"># activeだけ指定</span></code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🔍 f文字列（f-string）を理解する</h4>
+            <p><code>f"..."</code> はPython 3.6以降の便利機能で、文字列の中に変数を埋め込めます。<br>
+            AIが書くコードで頻出するので、しっかり覚えましょう。</p>
+            <div class="code-block compact">
+              <pre><code>name = <span class="code-string">"太郎"</span>
+age = <span class="code-number">25</span>
+
+<span class="code-comment"># 古い書き方（AIが生成することもある）</span>
+msg1 = <span class="code-string">"私は"</span> + name + <span class="code-string">"で、"</span> + <span class="code-function">str</span>(age) + <span class="code-string">"歳です"</span>
+
+<span class="code-comment"># f文字列（推奨！読みやすい）</span>
+msg2 = <span class="code-string">f"私は</span>{name}<span class="code-string">で、</span>{age}<span class="code-string">歳です"</span>
+
+<span class="code-comment"># 式も埋め込める</span>
+msg3 = <span class="code-string">f"来年は</span>{age + <span class="code-number">1</span>}<span class="code-string">歳です"</span></code></pre>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4: Control Flow -->
+      <article class="lesson-card" data-section="python-4" id="python-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>条件分岐とループ — 処理の流れを制御する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment"># if文 — 条件によって処理を分ける</span>
+score = <span class="code-number">85</span>
+
+<span class="code-keyword">if</span> score >= <span class="code-number">90</span>:
+    grade = <span class="code-string">"A"</span>
+<span class="code-keyword">elif</span> score >= <span class="code-number">70</span>:
+    grade = <span class="code-string">"B"</span>
+<span class="code-keyword">elif</span> score >= <span class="code-number">50</span>:
+    grade = <span class="code-string">"C"</span>
+<span class="code-keyword">else</span>:
+    grade = <span class="code-string">"D"</span>
+
+<span class="code-function">print</span>(<span class="code-string">f"成績: </span>{grade}<span class="code-string">"</span>)  <span class="code-comment"># → "成績: B"</span></code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment"># for文 — リストの各要素に対して処理する</span>
+tasks = [<span class="code-string">"メール確認"</span>, <span class="code-string">"会議準備"</span>, <span class="code-string">"コードレビュー"</span>]
+
+<span class="code-keyword">for</span> task <span class="code-keyword">in</span> tasks:
+    <span class="code-function">print</span>(<span class="code-string">f"タスク: </span>{task}<span class="code-string">"</span>)
+
+<span class="code-comment"># リスト内包表記（AIがよく生成するパターン）</span>
+numbers = [<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>]
+doubled = [n * <span class="code-number">2</span> <span class="code-keyword">for</span> n <span class="code-keyword">in</span> numbers]
+<span class="code-function">print</span>(doubled)  <span class="code-comment"># → [2, 4, 6, 8, 10]</span>
+
+<span class="code-comment"># フィルタ付きリスト内包表記</span>
+even_numbers = [n <span class="code-keyword">for</span> n <span class="code-keyword">in</span> numbers <span class="code-keyword">if</span> n % <span class="code-number">2</span> == <span class="code-number">0</span>]
+<span class="code-function">print</span>(even_numbers)  <span class="code-comment"># → [2, 4]</span></code></pre>
+          </div>
+
+          <div class="tip-box">
+            <h4>🎯 Pythonの特徴：インデント</h4>
+            <p>Pythonでは<strong>インデント（字下げ）が文法の一部</strong>です。他の言語では <code>{}</code> で囲みますが、Pythonではスペース4つで構造を表します。<br>
+            AIが生成したコードのインデントがずれるとエラーになるので注意！</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5: Practical Python -->
+      <article class="lesson-card" data-section="python-5" id="python-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>実践編 — API通信とファイル操作</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 実際のアプリでよくやること</h4>
+            <p>AIがアプリを作るとき、外部APIからデータを取得したり、ファイルを読み書きしたりするコードを生成します。<br>
+            これらのパターンを理解しておくと、AIのコードを修正・拡張する力がつきます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-keyword">import</span> requests
+<span class="code-keyword">import</span> json
+
+<span class="code-comment"># APIからデータを取得する典型パターン</span>
+<span class="code-keyword">def</span> <span class="code-function">fetch_weather</span>(city):
+    <span class="code-string">"""天気情報を取得する"""</span>
+    url = <span class="code-string">f"https://api.example.com/weather?city=</span>{city}<span class="code-string">"</span>
+
+    <span class="code-keyword">try</span>:
+        response = requests.<span class="code-function">get</span>(url)
+        response.<span class="code-function">raise_for_status</span>()  <span class="code-comment"># エラーなら例外を投げる</span>
+
+        data = response.<span class="code-function">json</span>()  <span class="code-comment"># JSONを辞書に変換</span>
+        <span class="code-keyword">return</span> {
+            <span class="code-string">"city"</span>: data[<span class="code-string">"name"</span>],
+            <span class="code-string">"temp"</span>: data[<span class="code-string">"main"</span>][<span class="code-string">"temp"</span>],
+            <span class="code-string">"desc"</span>: data[<span class="code-string">"weather"</span>][<span class="code-number">0</span>][<span class="code-string">"description"</span>]
+        }
+    <span class="code-keyword">except</span> requests.RequestException <span class="code-keyword">as</span> e:
+        <span class="code-function">print</span>(<span class="code-string">f"エラー: </span>{e}<span class="code-string">"</span>)
+        <span class="code-keyword">return</span> <span class="code-keyword">None</span>
+
+<span class="code-comment"># 使い方</span>
+weather = <span class="code-function">fetch_weather</span>(<span class="code-string">"Tokyo"</span>)
+<span class="code-keyword">if</span> weather:
+    <span class="code-function">print</span>(<span class="code-string">f"</span>{weather[<span class="code-string">'city'</span>]}<span class="code-string">の気温: </span>{weather[<span class="code-string">'temp'</span>]}<span class="code-string">°C"</span>)</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🔍 try-except を理解する</h4>
+            <p><code>try-except</code> は<strong>エラーハンドリング</strong>の仕組みです。ネットワークエラーやファイルの読み取りエラーなど、<br>
+            予期しないエラーでアプリが落ちないようにするために使います。<br>
+            AIが生成するコードでは必ずと言っていいほど登場します。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Python Quiz -->
+      <div class="quiz-section" id="python-quiz">
+        <h3>🧪 Python 理解度チェック</h3>
+        <p class="quiz-intro">学んだ内容を確認しましょう。全5問です。</p>
+        <div id="python-quiz-container"></div>
+        <div class="quiz-result" id="python-quiz-result"></div>
+      </div>
+    </div>
+
+    <!-- ==================== -->
+    <!-- REACT TAB CONTENT    -->
+    <!-- ==================== -->
+    <div class="tab-content" id="content-react" role="tabpanel">
+      <div class="tab-intro react-intro">
+        <h2>⚛️ React — モダンUIを構築する</h2>
+        <p>ReactはFacebookが開発したUIライブラリで、現代のWebアプリ開発の主流です。<br>
+        コンポーネントという「部品」を組み合わせてUIを作る考え方を学びましょう。</p>
+      </div>
+
+      <!-- Lesson 1: JSX -->
+      <article class="lesson-card" data-section="react-1" id="react-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>JSX — HTMLのようでHTMLではない</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 JSXとは？</h4>
+            <p>JSX（JavaScript XML）は、JavaScript の中にHTMLのようなコードを書ける特別な構文です。<br>
+            AIがReactアプリを生成すると、必ず <code>return (&lt;div&gt;...&lt;/div&gt;)</code> のようなJSXが登場します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">React (JSX)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment">// JSXの基本 — HTMLに似ているが、JavaScriptの式が使える</span>
+<span class="code-keyword">function</span> <span class="code-function">WelcomeCard</span>() {
+  <span class="code-keyword">const</span> userName = <span class="code-string">"太郎"</span>;
+  <span class="code-keyword">const</span> isLoggedIn = <span class="code-keyword">true</span>;
+
+  <span class="code-keyword">return</span> (
+    <span class="code-tag">&lt;div</span> <span class="code-attr">className</span>=<span class="code-string">"card"</span><span class="code-tag">&gt;</span>
+      <span class="code-comment">{/* 中カッコ {} でJavaScriptの式を埋め込む */}</span>
+      <span class="code-tag">&lt;h2&gt;</span>こんにちは、{userName}さん！<span class="code-tag">&lt;/h2&gt;</span>
+
+      <span class="code-comment">{/* 条件付きレンダリング */}</span>
+      {isLoggedIn ? (
+        <span class="code-tag">&lt;p&gt;</span>ログイン中です ✅<span class="code-tag">&lt;/p&gt;</span>
+      ) : (
+        <span class="code-tag">&lt;p&gt;</span>ログインしてください<span class="code-tag">&lt;/p&gt;</span>
+      )}
+
+      <span class="code-comment">{/* 注意: class ではなく className */}</span>
+      <span class="code-tag">&lt;button</span> <span class="code-attr">className</span>=<span class="code-string">"btn-primary"</span><span class="code-tag">&gt;</span>クリック<span class="code-tag">&lt;/button&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+          </div>
+
+          <div class="warning-box">
+            <h4>⚠️ JSXの注意点</h4>
+            <ul>
+              <li><code>class</code> → <code>className</code>（classはJSの予約語）</li>
+              <li><code>for</code> → <code>htmlFor</code>（forもJSの予約語）</li>
+              <li>必ず<strong>1つのルート要素</strong>で囲む（<code>&lt;div&gt;</code> か <code>&lt;&gt;...&lt;/&gt;</code>）</li>
+              <li>タグは必ず閉じる（<code>&lt;img /&gt;</code>、<code>&lt;br /&gt;</code>）</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2: Components & Props -->
+      <article class="lesson-card" data-section="react-2" id="react-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>コンポーネントとProps — UIの部品化</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 コンポーネントとは？</h4>
+            <p>コンポーネントは<strong>UIの再利用可能な部品</strong>です。レゴブロックのように小さな部品を組み合わせてUIを作ります。<br>
+            <strong>Props</strong>（プロップス）は、部品に渡す「設定値」のことです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">React (JSX)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment">// UserCard コンポーネント — 再利用可能なUIパーツ</span>
+<span class="code-keyword">function</span> <span class="code-function">UserCard</span>({ name, role, avatar }) {
+  <span class="code-keyword">return</span> (
+    <span class="code-tag">&lt;div</span> <span class="code-attr">className</span>=<span class="code-string">"user-card"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;img</span> <span class="code-attr">src</span>={avatar} <span class="code-attr">alt</span>={name} <span class="code-tag">/&gt;</span>
+      <span class="code-tag">&lt;h3&gt;</span>{name}<span class="code-tag">&lt;/h3&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>{role}<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="code-comment">// 親コンポーネントで使う — 同じ部品を異なるデータで表示</span>
+<span class="code-keyword">function</span> <span class="code-function">TeamPage</span>() {
+  <span class="code-keyword">return</span> (
+    <span class="code-tag">&lt;div&gt;</span>
+      <span class="code-tag">&lt;h1&gt;</span>チームメンバー<span class="code-tag">&lt;/h1&gt;</span>
+      <span class="code-tag">&lt;UserCard</span>
+        <span class="code-attr">name</span>=<span class="code-string">"太郎"</span>
+        <span class="code-attr">role</span>=<span class="code-string">"エンジニア"</span>
+        <span class="code-attr">avatar</span>=<span class="code-string">"/images/taro.jpg"</span>
+      <span class="code-tag">/&gt;</span>
+      <span class="code-tag">&lt;UserCard</span>
+        <span class="code-attr">name</span>=<span class="code-string">"花子"</span>
+        <span class="code-attr">role</span>=<span class="code-string">"デザイナー"</span>
+        <span class="code-attr">avatar</span>=<span class="code-string">"/images/hanako.jpg"</span>
+      <span class="code-tag">/&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🔍 分割代入（Destructuring）</h4>
+            <p><code>{ name, role, avatar }</code> という書き方は<strong>分割代入</strong>です。<br>
+            propsオブジェクトから必要な値を取り出しています。AIが書くコードではほぼ100%使われます。</p>
+            <div class="code-block compact">
+              <pre><code><span class="code-comment">// これと同じ意味</span>
+<span class="code-keyword">function</span> <span class="code-function">UserCard</span>(props) {
+  <span class="code-keyword">const</span> name = props.name;
+  <span class="code-keyword">const</span> role = props.role;
+  <span class="code-comment">// ...</span>
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3: useState -->
+      <article class="lesson-card" data-section="react-3" id="react-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>useState — 画面の状態を管理する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜ useState が必要？</h4>
+            <p>普通の変数 (<code>let count = 0</code>) を変更しても、Reactは画面を更新しません。<br>
+            画面と連動するデータには <code>useState</code> を使う必要があります。<br>
+            これがReactの<strong>最も重要な概念</strong>の一つです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">React (JSX)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-keyword">import</span> { useState } <span class="code-keyword">from</span> <span class="code-string">'react'</span>;
+
+<span class="code-keyword">function</span> <span class="code-function">Counter</span>() {
+  <span class="code-comment">// [現在の値, 値を更新する関数] = useState(初期値)</span>
+  <span class="code-keyword">const</span> [count, setCount] = <span class="code-function">useState</span>(<span class="code-number">0</span>);
+  <span class="code-keyword">const</span> [name, setName] = <span class="code-function">useState</span>(<span class="code-string">""</span>);
+
+  <span class="code-keyword">return</span> (
+    <span class="code-tag">&lt;div&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>カウント: {count}<span class="code-tag">&lt;/p&gt;</span>
+
+      <span class="code-comment">{/* ボタンクリックで状態を更新 → 画面も自動更新 */}</span>
+      <span class="code-tag">&lt;button</span> <span class="code-attr">onClick</span>={() =&gt; <span class="code-function">setCount</span>(count + <span class="code-number">1</span>)}<span class="code-tag">&gt;</span>
+        +1
+      <span class="code-tag">&lt;/button&gt;</span>
+      <span class="code-tag">&lt;button</span> <span class="code-attr">onClick</span>={() =&gt; <span class="code-function">setCount</span>(<span class="code-number">0</span>)}<span class="code-tag">&gt;</span>
+        リセット
+      <span class="code-tag">&lt;/button&gt;</span>
+
+      <span class="code-comment">{/* 入力欄と状態の連動 */}</span>
+      <span class="code-tag">&lt;input</span>
+        <span class="code-attr">value</span>={name}
+        <span class="code-attr">onChange</span>={(e) =&gt; <span class="code-function">setName</span>(e.target.value)}
+        <span class="code-attr">placeholder</span>=<span class="code-string">"名前を入力"</span>
+      <span class="code-tag">/&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>入力値: {name}<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+          </div>
+
+          <div class="warning-box">
+            <h4>⚠️ よくある間違い</h4>
+            <ul>
+              <li><strong>直接代入しない</strong>: <code>count = count + 1</code> ❌ → <code>setCount(count + 1)</code> ✅</li>
+              <li><strong>stateは非同期で更新される</strong>: setCountの直後にcountを読むと古い値になることがある</li>
+              <li><strong>オブジェクトのstateは新しいオブジェクトで更新</strong>: <code>setUser({...user, name: "new"})</code></li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4: useEffect -->
+      <article class="lesson-card" data-section="react-4" id="react-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>useEffect — 副作用を管理する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 副作用（Side Effect）とは？</h4>
+            <p>「画面の描画」以外の処理のことです。例えば：</p>
+            <ul>
+              <li>APIからデータを取得する</li>
+              <li>タイマーをセットする</li>
+              <li>ブラウザのタイトルを変更する</li>
+              <li>localStorageにデータを保存する</li>
+            </ul>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">React (JSX)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-keyword">import</span> { useState, useEffect } <span class="code-keyword">from</span> <span class="code-string">'react'</span>;
+
+<span class="code-keyword">function</span> <span class="code-function">UserProfile</span>({ userId }) {
+  <span class="code-keyword">const</span> [user, setUser] = <span class="code-function">useState</span>(<span class="code-keyword">null</span>);
+  <span class="code-keyword">const</span> [loading, setLoading] = <span class="code-function">useState</span>(<span class="code-keyword">true</span>);
+
+  <span class="code-comment">// useEffect(実行する処理, [依存する値の配列])</span>
+  <span class="code-function">useEffect</span>(() =&gt; {
+    <span class="code-comment">// userIdが変わるたびにデータを再取得</span>
+    <span class="code-function">setLoading</span>(<span class="code-keyword">true</span>);
+
+    <span class="code-function">fetch</span>(<span class="code-string">`/api/users/</span>${userId}<span class="code-string">`</span>)
+      .<span class="code-function">then</span>(res =&gt; res.<span class="code-function">json</span>())
+      .<span class="code-function">then</span>(data =&gt; {
+        <span class="code-function">setUser</span>(data);
+        <span class="code-function">setLoading</span>(<span class="code-keyword">false</span>);
+      });
+  }, [userId]);  <span class="code-comment">// ← 依存配列：userIdが変わったら再実行</span>
+
+  <span class="code-keyword">if</span> (loading) <span class="code-keyword">return</span> <span class="code-tag">&lt;p&gt;</span>読み込み中...<span class="code-tag">&lt;/p&gt;</span>;
+
+  <span class="code-keyword">return</span> (
+    <span class="code-tag">&lt;div&gt;</span>
+      <span class="code-tag">&lt;h2&gt;</span>{user.name}<span class="code-tag">&lt;/h2&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>{user.email}<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🔍 依存配列のパターン</h4>
+            <div class="code-block compact">
+              <pre><code><span class="code-comment">// パターン1: マウント時に1回だけ実行</span>
+<span class="code-function">useEffect</span>(() =&gt; {
+  <span class="code-function">console.log</span>(<span class="code-string">"コンポーネントが表示された"</span>);
+}, []);  <span class="code-comment">// 空の配列 = 最初の1回だけ</span>
+
+<span class="code-comment">// パターン2: 特定の値が変わったら実行</span>
+<span class="code-function">useEffect</span>(() =&gt; {
+  document.title = <span class="code-string">`メッセージ(</span>${count}<span class="code-string">)`</span>;
+}, [count]);  <span class="code-comment">// countが変わるたびに実行</span>
+
+<span class="code-comment">// パターン3: クリーンアップ付き</span>
+<span class="code-function">useEffect</span>(() =&gt; {
+  <span class="code-keyword">const</span> timer = <span class="code-function">setInterval</span>(() =&gt; {
+    <span class="code-function">console.log</span>(<span class="code-string">"tick"</span>);
+  }, <span class="code-number">1000</span>);
+
+  <span class="code-keyword">return</span> () =&gt; <span class="code-function">clearInterval</span>(timer);  <span class="code-comment">// クリーンアップ</span>
+}, []);</code></pre>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5: Practical React -->
+      <article class="lesson-card" data-section="react-5" id="react-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>実践編 — Todoアプリを読み解く</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 AIが作ったTodoアプリを解剖する</h4>
+            <p>ここまでの知識を使って、AIが生成しそうなTodoアプリのコードを読み解きましょう。<br>
+            useState、イベントハンドリング、リストのレンダリング、条件付き表示がすべて含まれています。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">React (JSX)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-keyword">import</span> { useState } <span class="code-keyword">from</span> <span class="code-string">'react'</span>;
+
+<span class="code-keyword">function</span> <span class="code-function">TodoApp</span>() {
+  <span class="code-keyword">const</span> [todos, setTodos] = <span class="code-function">useState</span>([]);
+  <span class="code-keyword">const</span> [input, setInput] = <span class="code-function">useState</span>(<span class="code-string">""</span>);
+
+  <span class="code-comment">// タスクを追加する関数</span>
+  <span class="code-keyword">const</span> <span class="code-function">addTodo</span> = () =&gt; {
+    <span class="code-keyword">if</span> (!input.<span class="code-function">trim</span>()) <span class="code-keyword">return</span>;  <span class="code-comment">// 空文字は追加しない</span>
+
+    <span class="code-function">setTodos</span>([
+      ...todos,  <span class="code-comment">// 既存のタスクを展開（スプレッド構文）</span>
+      { id: Date.<span class="code-function">now</span>(), text: input, done: <span class="code-keyword">false</span> }
+    ]);
+    <span class="code-function">setInput</span>(<span class="code-string">""</span>);  <span class="code-comment">// 入力欄をクリア</span>
+  };
+
+  <span class="code-comment">// タスクの完了状態を切り替える関数</span>
+  <span class="code-keyword">const</span> <span class="code-function">toggleTodo</span> = (id) =&gt; {
+    <span class="code-function">setTodos</span>(
+      todos.<span class="code-function">map</span>(todo =&gt;
+        todo.id === id
+          ? { ...todo, done: !todo.done }  <span class="code-comment">// 該当タスクのdoneを反転</span>
+          : todo                            <span class="code-comment">// それ以外はそのまま</span>
+      )
+    );
+  };
+
+  <span class="code-keyword">return</span> (
+    <span class="code-tag">&lt;div&gt;</span>
+      <span class="code-tag">&lt;h1&gt;</span>📝 Todoリスト<span class="code-tag">&lt;/h1&gt;</span>
+
+      <span class="code-tag">&lt;div&gt;</span>
+        <span class="code-tag">&lt;input</span>
+          <span class="code-attr">value</span>={input}
+          <span class="code-attr">onChange</span>={(e) =&gt; <span class="code-function">setInput</span>(e.target.value)}
+          <span class="code-attr">placeholder</span>=<span class="code-string">"新しいタスク"</span>
+          <span class="code-attr">onKeyDown</span>={(e) =&gt; e.key === <span class="code-string">"Enter"</span> &amp;&amp; <span class="code-function">addTodo</span>()}
+        <span class="code-tag">/&gt;</span>
+        <span class="code-tag">&lt;button</span> <span class="code-attr">onClick</span>={addTodo}<span class="code-tag">&gt;</span>追加<span class="code-tag">&lt;/button&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
+
+      <span class="code-comment">{/* リストをmapで描画 */}</span>
+      <span class="code-tag">&lt;ul&gt;</span>
+        {todos.<span class="code-function">map</span>(todo =&gt; (
+          <span class="code-tag">&lt;li</span>
+            <span class="code-attr">key</span>={todo.id}
+            <span class="code-attr">onClick</span>={() =&gt; <span class="code-function">toggleTodo</span>(todo.id)}
+            <span class="code-attr">style</span>={{
+              textDecoration: todo.done ? <span class="code-string">"line-through"</span> : <span class="code-string">"none"</span>
+            }}
+          <span class="code-tag">&gt;</span>
+            {todo.text}
+          <span class="code-tag">&lt;/li&gt;</span>
+        ))}
+      <span class="code-tag">&lt;/ul&gt;</span>
+
+      <span class="code-tag">&lt;p&gt;</span>残り: {todos.<span class="code-function">filter</span>(t =&gt; !t.done).length} 件<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+          </div>
+
+          <div class="tip-box">
+            <h4>🎯 覚えておくべきパターン</h4>
+            <ul>
+              <li><code>...todos</code> — <strong>スプレッド構文</strong>。配列やオブジェクトを展開する</li>
+              <li><code>todos.map()</code> — 配列の各要素をJSXに変換して描画</li>
+              <li><code>key={todo.id}</code> — Reactがどの要素が変わったか判別するために必要</li>
+              <li><code>todos.filter()</code> — 条件に合う要素だけを抽出</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- React Quiz -->
+      <div class="quiz-section" id="react-quiz">
+        <h3>🧪 React 理解度チェック</h3>
+        <p class="quiz-intro">学んだ内容を確認しましょう。全5問です。</p>
+        <div id="react-quiz-container"></div>
+        <div class="quiz-result" id="react-quiz-result"></div>
+      </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- TYPESCRIPT TAB CONTENT    -->
+    <!-- ========================= -->
+    <div class="tab-content" id="content-typescript" role="tabpanel">
+      <div class="tab-intro typescript-intro">
+        <h2>🔷 TypeScript — 型で安全なコードを書く</h2>
+        <p>TypeScriptはJavaScriptに「型」を追加した言語です。<br>
+        AIが生成するReactアプリの多くがTypeScriptで書かれています。型があることでバグを未然に防げます。</p>
+      </div>
+
+      <!-- Lesson 1: Basic Types -->
+      <article class="lesson-card" data-section="typescript-1" id="typescript-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>基本の型 — TypeScriptの第一歩</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜTypeScript？</h4>
+            <p>JavaScriptでは <code>let x = "hello"; x = 42;</code> のように、同じ変数に違う型を入れてもエラーになりません。<br>
+            これが大きなアプリではバグの原因になります。TypeScriptは<strong>コードを書いている段階でミスを教えてくれる</strong>ツールです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment">// 基本の型注釈 — 変数名: 型</span>
+<span class="code-keyword">let</span> userName: <span class="code-type">string</span> = <span class="code-string">"太郎"</span>;
+<span class="code-keyword">let</span> age: <span class="code-type">number</span> = <span class="code-number">25</span>;
+<span class="code-keyword">let</span> isActive: <span class="code-type">boolean</span> = <span class="code-keyword">true</span>;
+
+<span class="code-comment">// 配列の型</span>
+<span class="code-keyword">let</span> scores: <span class="code-type">number[]</span> = [<span class="code-number">85</span>, <span class="code-number">90</span>, <span class="code-number">78</span>];
+<span class="code-keyword">let</span> names: <span class="code-type">string[]</span> = [<span class="code-string">"太郎"</span>, <span class="code-string">"花子"</span>];
+
+<span class="code-comment">// ❌ 型エラー！ — エディタが赤線で警告してくれる</span>
+userName = <span class="code-number">42</span>;              <span class="code-comment">// Error: number を string に代入できません</span>
+scores.<span class="code-function">push</span>(<span class="code-string">"百点"</span>);       <span class="code-comment">// Error: string を number[] に追加できません</span>
+
+<span class="code-comment">// 関数の型 — 引数と戻り値に型をつける</span>
+<span class="code-keyword">function</span> <span class="code-function">greet</span>(name: <span class="code-type">string</span>): <span class="code-type">string</span> {
+  <span class="code-keyword">return</span> <span class="code-string">`こんにちは、</span>${name}<span class="code-string">さん！`</span>;
+}
+
+<span class="code-comment">// アロー関数の型</span>
+<span class="code-keyword">const</span> <span class="code-function">add</span> = (a: <span class="code-type">number</span>, b: <span class="code-type">number</span>): <span class="code-type">number</span> =&gt; a + b;</code></pre>
+          </div>
+
+          <div class="tip-box">
+            <h4>🎯 型推論</h4>
+            <p>TypeScriptは賢いので、多くの場合<strong>型を自動で推測</strong>してくれます。<br>
+            <code>let x = "hello"</code> と書けば、自動的に <code>string</code> 型だと判断されます。<br>
+            AIが書くコードで型注釈がない場合も、TypeScriptが内部で型を管理しています。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2: Interfaces & Types -->
+      <article class="lesson-card" data-section="typescript-2" id="typescript-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>interfaceとtype — オブジェクトの形を定義する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜ形を定義する？</h4>
+            <p>APIから返ってくるデータやコンポーネントのpropsなど、オブジェクトの構造を明確にすると、<br>
+            <strong>タイポや必須フィールドの漏れをコードを書く段階で検出</strong>できます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment">// interface — オブジェクトの「設計図」</span>
+<span class="code-keyword">interface</span> <span class="code-type">User</span> {
+  id: <span class="code-type">number</span>;
+  name: <span class="code-type">string</span>;
+  email: <span class="code-type">string</span>;
+  age?: <span class="code-type">number</span>;        <span class="code-comment">// ? = オプショナル（なくてもOK）</span>
+  role: <span class="code-string">"admin"</span> | <span class="code-string">"user"</span>;  <span class="code-comment">// ユニオン型（どちらか）</span>
+}
+
+<span class="code-comment">// 使い方</span>
+<span class="code-keyword">const</span> user: <span class="code-type">User</span> = {
+  id: <span class="code-number">1</span>,
+  name: <span class="code-string">"太郎"</span>,
+  email: <span class="code-string">"taro@example.com"</span>,
+  role: <span class="code-string">"admin"</span>
+};
+
+<span class="code-comment">// ❌ エラー: 'manager' は 'admin' | 'user' に代入できません</span>
+<span class="code-keyword">const</span> badUser: <span class="code-type">User</span> = {
+  id: <span class="code-number">2</span>,
+  name: <span class="code-string">"花子"</span>,
+  email: <span class="code-string">"hanako@example.com"</span>,
+  role: <span class="code-string">"manager"</span>  <span class="code-comment">// Error!</span>
+};
+
+<span class="code-comment">// type エイリアス — 型に名前をつける</span>
+<span class="code-keyword">type</span> <span class="code-type">Status</span> = <span class="code-string">"pending"</span> | <span class="code-string">"active"</span> | <span class="code-string">"inactive"</span>;
+<span class="code-keyword">type</span> <span class="code-type">UserList</span> = <span class="code-type">User[]</span>;</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🔍 interface vs type</h4>
+            <p>基本的にはどちらを使っても大丈夫です。AIが書くコードでは両方出てきます。<br>
+            一般的なガイドライン：</p>
+            <ul>
+              <li><strong>interface</strong>: オブジェクトの形を定義するとき（拡張しやすい）</li>
+              <li><strong>type</strong>: ユニオン型やプリミティブ型の別名をつけるとき</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3: Generics -->
+      <article class="lesson-card" data-section="typescript-3" id="typescript-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>ジェネリクス — 型を「引数」にする</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ジェネリクスとは？</h4>
+            <p>ジェネリクスは<strong>「使う側が型を決められる」</strong>しくみです。<br>
+            AIが書くコードで <code>&lt;T&gt;</code> のような記法を見かけたら、それがジェネリクスです。<br>
+            最初は難しく感じますが、「型の変数」だと思えばシンプルです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment">// ジェネリクスなし — 型ごとに関数を作る必要がある</span>
+<span class="code-keyword">function</span> <span class="code-function">getFirstString</span>(arr: <span class="code-type">string[]</span>): <span class="code-type">string</span> {
+  <span class="code-keyword">return</span> arr[<span class="code-number">0</span>];
+}
+<span class="code-keyword">function</span> <span class="code-function">getFirstNumber</span>(arr: <span class="code-type">number[]</span>): <span class="code-type">number</span> {
+  <span class="code-keyword">return</span> arr[<span class="code-number">0</span>];
+}
+
+<span class="code-comment">// ジェネリクスあり — どんな型でも使える1つの関数！</span>
+<span class="code-keyword">function</span> <span class="code-function">getFirst</span>&lt;<span class="code-type">T</span>&gt;(arr: <span class="code-type">T[]</span>): <span class="code-type">T</span> {
+  <span class="code-keyword">return</span> arr[<span class="code-number">0</span>];
+}
+
+<span class="code-comment">// 使う側で型が決まる</span>
+<span class="code-keyword">const</span> name = <span class="code-function">getFirst</span>&lt;<span class="code-type">string</span>&gt;([<span class="code-string">"太郎"</span>, <span class="code-string">"花子"</span>]);  <span class="code-comment">// string型</span>
+<span class="code-keyword">const</span> num = <span class="code-function">getFirst</span>([<span class="code-number">10</span>, <span class="code-number">20</span>, <span class="code-number">30</span>]);          <span class="code-comment">// number型（型推論）</span>
+
+<span class="code-comment">// 実践: APIレスポンスの型</span>
+<span class="code-keyword">interface</span> <span class="code-type">ApiResponse</span>&lt;<span class="code-type">T</span>&gt; {
+  data: <span class="code-type">T</span>;
+  status: <span class="code-type">number</span>;
+  message: <span class="code-type">string</span>;
+}
+
+<span class="code-comment">// ユーザー一覧のレスポンス</span>
+<span class="code-keyword">type</span> <span class="code-type">UsersResponse</span> = <span class="code-type">ApiResponse</span>&lt;<span class="code-type">User[]</span>&gt;;
+<span class="code-comment">// 単一ユーザーのレスポンス</span>
+<span class="code-keyword">type</span> <span class="code-type">UserResponse</span> = <span class="code-type">ApiResponse</span>&lt;<span class="code-type">User</span>&gt;;</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4: TypeScript with React -->
+      <article class="lesson-card" data-section="typescript-4" id="typescript-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>TypeScript × React — 型安全なコンポーネント</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ReactでTypeScriptを使うメリット</h4>
+            <p>コンポーネントのpropsに型をつけると、<strong>間違ったpropsを渡したときにエディタが警告</strong>してくれます。<br>
+            大規模なアプリほど、このメリットが大きくなります。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript + React</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment">// Propsの型を定義</span>
+<span class="code-keyword">interface</span> <span class="code-type">ButtonProps</span> {
+  label: <span class="code-type">string</span>;
+  variant?: <span class="code-string">"primary"</span> | <span class="code-string">"secondary"</span> | <span class="code-string">"danger"</span>;
+  disabled?: <span class="code-type">boolean</span>;
+  onClick: () =&gt; <span class="code-type">void</span>;  <span class="code-comment">// 戻り値なしの関数</span>
+}
+
+<span class="code-comment">// 型付きコンポーネント</span>
+<span class="code-keyword">function</span> <span class="code-function">Button</span>({ label, variant = <span class="code-string">"primary"</span>, disabled, onClick }: <span class="code-type">ButtonProps</span>) {
+  <span class="code-keyword">return</span> (
+    <span class="code-tag">&lt;button</span>
+      <span class="code-attr">className</span>={<span class="code-string">`btn btn-</span>${variant}<span class="code-string">`</span>}
+      <span class="code-attr">disabled</span>={disabled}
+      <span class="code-attr">onClick</span>={onClick}
+    <span class="code-tag">&gt;</span>
+      {label}
+    <span class="code-tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="code-comment">// 使用例</span>
+<span class="code-tag">&lt;Button</span> <span class="code-attr">label</span>=<span class="code-string">"保存"</span> <span class="code-attr">onClick</span>={() =&gt; <span class="code-function">save</span>()} <span class="code-tag">/&gt;</span>          <span class="code-comment">// ✅ OK</span>
+<span class="code-tag">&lt;Button</span> <span class="code-attr">label</span>=<span class="code-string">"削除"</span> <span class="code-attr">variant</span>=<span class="code-string">"danger"</span> <span class="code-attr">onClick</span>={del} <span class="code-tag">/&gt;</span> <span class="code-comment">// ✅ OK</span>
+<span class="code-tag">&lt;Button</span> <span class="code-attr">onClick</span>={() =&gt; {}} <span class="code-tag">/&gt;</span>                       <span class="code-comment">// ❌ label が必要！</span>
+
+<span class="code-comment">// useStateの型</span>
+<span class="code-keyword">const</span> [users, setUsers] = <span class="code-function">useState</span>&lt;<span class="code-type">User[]</span>&gt;([]);
+<span class="code-keyword">const</span> [selected, setSelected] = <span class="code-function">useState</span>&lt;<span class="code-type">User</span> | <span class="code-keyword">null</span>&gt;(<span class="code-keyword">null</span>);</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5: Advanced TypeScript -->
+      <article class="lesson-card" data-section="typescript-5" id="typescript-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>実践編 — 型ガードとユーティリティ型</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 型ガード（Type Guard）とは？</h4>
+            <p>変数の型が複数の可能性がある場合に、<strong>条件分岐で型を絞り込む</strong>テクニックです。<br>
+            AIが生成するコードでは、APIレスポンスの型チェックなどで頻出します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code><span class="code-comment">// ユニオン型と型ガード</span>
+<span class="code-keyword">type</span> <span class="code-type">Result</span> =
+  | { success: <span class="code-keyword">true</span>; data: <span class="code-type">User</span> }
+  | { success: <span class="code-keyword">false</span>; error: <span class="code-type">string</span> };
+
+<span class="code-keyword">function</span> <span class="code-function">handleResult</span>(result: <span class="code-type">Result</span>) {
+  <span class="code-keyword">if</span> (result.success) {
+    <span class="code-comment">// ✅ TypeScriptが自動でresult.dataの型を認識</span>
+    <span class="code-function">console.log</span>(result.data.name);
+  } <span class="code-keyword">else</span> {
+    <span class="code-comment">// ✅ TypeScriptが自動でresult.errorの型を認識</span>
+    <span class="code-function">console.error</span>(result.error);
+  }
+}
+
+<span class="code-comment">// よく使うユーティリティ型</span>
+<span class="code-keyword">interface</span> <span class="code-type">User</span> {
+  id: <span class="code-type">number</span>;
+  name: <span class="code-type">string</span>;
+  email: <span class="code-type">string</span>;
+  password: <span class="code-type">string</span>;
+}
+
+<span class="code-comment">// Partial — すべてオプショナルに</span>
+<span class="code-keyword">type</span> <span class="code-type">UpdateUser</span> = <span class="code-type">Partial</span>&lt;<span class="code-type">User</span>&gt;;
+<span class="code-comment">// → { id?: number; name?: string; ... }</span>
+
+<span class="code-comment">// Pick — 一部だけ取り出す</span>
+<span class="code-keyword">type</span> <span class="code-type">PublicUser</span> = <span class="code-type">Pick</span>&lt;<span class="code-type">User</span>, <span class="code-string">"id"</span> | <span class="code-string">"name"</span>&gt;;
+<span class="code-comment">// → { id: number; name: string }</span>
+
+<span class="code-comment">// Omit — 一部を除外</span>
+<span class="code-keyword">type</span> <span class="code-type">SafeUser</span> = <span class="code-type">Omit</span>&lt;<span class="code-type">User</span>, <span class="code-string">"password"</span>&gt;;
+<span class="code-comment">// → { id: number; name: string; email: string }</span></code></pre>
+          </div>
+
+          <div class="tip-box">
+            <h4>🎯 AIが書いたTypeScriptを修正するコツ</h4>
+            <ul>
+              <li>赤い波線が出たら、エディタのホバーで<strong>型エラーの内容を確認</strong></li>
+              <li><code>any</code> 型が多い場合は、具体的な型に置き換えるとバグが減る</li>
+              <li><code>as</code> による型キャストは最終手段。まずは型ガードを試す</li>
+              <li>わからない型があったら <code>Ctrl + クリック</code> で定義にジャンプ</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- TypeScript Quiz -->
+      <div class="quiz-section" id="typescript-quiz">
+        <h3>🧪 TypeScript 理解度チェック</h3>
+        <p class="quiz-intro">学んだ内容を確認しましょう。全5問です。</p>
+        <div id="typescript-quiz-container"></div>
+        <div class="quiz-result" id="typescript-quiz-result"></div>
+      </div>
+    </div>
+
+            <!-- === Web/API === -->
+      <div class="tab-content" id="content-webapi" role="tabpanel">
+        <div class="tab-intro webapi-intro">
+          <h2>🌐 Web / API 実践</h2>
+          <p>フロントとバックエンドを繋ぐ「通信と型」の契約を学びます。</p>
+        </div>
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="webapi-1" id="webapi-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>Web開発の土台：HTTP・JSON・クライアント/サーバー</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 FastAPIとTypeScriptに入る前に押さえる通信の基礎</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>クライアント/サーバーとHTTPの役割</h4>
+            <p>Webアプリは、ブラウザ（クライアント）がリクエストを送り、サーバーがレスポンスを返す往復で成り立ちます。HTTP はこの往復の約束事であり、メソッド（GET/POST/PATCH/DELETE）、URL、ヘッダ、ボディ、ステータスコードで意味を表現します。FastAPI はこの HTTP 契約を Python コードで宣言し、TypeScript 側はその契約を型として扱うことで、実装と仕様のズレを早期に減らせます。ここが曖昧だと後続の非同期処理・SSE・認証・キャッシュすべてが混乱するため、まず通信レイヤーの語彙を固定することが最重要です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>GET /api/lessons HTTP/1.1
+Host: 127.0.0.1:8765
+Accept: application/json</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>ステータスコードとエラーハンドリング</h4>
+            <p>2xx は成功、4xx はクライアント入力起因、5xx はサーバー内部起因、という大枠を運用で徹底するとデバッグ効率が上がります。例えば 422 は入力バリデーション不一致、404 は対象なし、409 は競合、500 は想定外障害です。フロントは `ok` だけ見るのではなく、ステータスとエラーボディの構造を合わせて扱うべきです。FastAPI では HTTPException を使って失敗を明示し、TypeScript 側で `ApiError` のような統一型へ落とし込むと、画面側の分岐が安定します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>if (!response.ok) {
+  throw new Error(`HTTP ${response.status}`)
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>JSON契約とバージョニングの意識</h4>
+            <p>JSON は軽量ですが、自由度が高すぎるため契約管理が必要です。フィールド名、型、nullable、必須/任意を固定し、将来変更時は後方互換を意識します。安易な breaking change はフロントを即座に壊します。理想は OpenAPI を単一の真実源にし、FastAPI 側の Pydantic モデルと TypeScript 型生成を同期させることです。仕様を自然言語だけで管理すると、実装速度が上がるほど破綻速度も上がります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>{
+  "id": "lesson-1",
+  "title": "HTTP Basics",
+  "quiz_count": 2
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="webapi-2" id="webapi-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>TypeScript 概要：型で壊れ方を先に制御する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 any回避・ユニオン・型狭窄・APIレスポンス型の設計</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>TypeScriptを使う理由</h4>
+            <p>TypeScript は JavaScript の上位互換で、静的型検査を追加する言語です。実行時の挙動は JS ですが、ビルド時に型不一致を検出できます。特に API 駆動開発では「サーバーが返す shape」と「画面が期待する shape」の不一致が主なバグ源なので、型で先に落とす効果が大きいです。`any` を多用すると TypeScript の価値は消えるため、unknown からの型狭窄や明示的な型定義を基本とします。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>type LessonMeta = {
+  id: string
+  title: string
+  order: number
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>ユニオン型と型狭窄</h4>
+            <p>実務データは単一型でないことが多く、ユニオン型（A | B）で扱います。分岐時に `in`、`typeof`、ユーザー定義 type guard を使い、処理可能な型へ狭窄します。これにより「存在しないプロパティアクセス」をコンパイル時に排除できます。レスポンス成功/失敗を discriminated union で定義すると、UI分岐を安全に書けます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>type Result =
+  | { ok: true; data: LessonMeta[] }
+  | { ok: false; message: string }</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>strictモード運用</h4>
+            <p>tsconfig の `strict: true` を基準にし、必要な箇所だけ局所的に緩和する方針が保守上有利です。`noImplicitAny`、`noUncheckedIndexedAccess`、`exactOptionalPropertyTypes` なども段階導入すると品質が安定します。型エラーは面倒ではなく「将来の事故前払い」です。FastAPI 側変更時にフロントが即エラーになる状態は、むしろ望ましい監視機構です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>{
+  "compilerOptions": {
+    "strict": true,
+    "noUnusedLocals": true
+  }
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="webapi-3" id="webapi-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>FastAPI 概要：ルーティング・バリデーション・依存性注入</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 最小構成から実務構成へ進むための基礎</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>ルート関数と自動ドキュメント</h4>
+            <p>FastAPI は Python の型ヒントを活用して OpenAPI ドキュメントを自動生成します。`@app.get` などでエンドポイントを宣言し、関数シグネチャにクエリ・パス・ボディを記述するだけで、/docs で実行可能な仕様書が得られます。これはバックエンド都合ではなく、フロント連携と QA 自動化に直接効く資産です。まずは「仕様がコードから再現できる」状態を作ることが重要です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get('/api/health')
+def health() -> dict:
+    return {'status': 'ok'}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Pydanticモデルで入力を閉じる</h4>
+            <p>リクエストボディは Pydantic モデルで受けることで、型・範囲・必須性を統一的に検証できます。`extra='forbid'` を使えば未定義フィールドを拒否でき、契約逸脱を防げます。入力検証をルート内で手書きすると重複と漏れが増えるため、モデルに寄せるのが合理的です。さらに response_model を指定すると、出力形状まで拘束でき、誤って内部情報を返す事故を減らせます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>class QuizAnswerIn(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    lesson_id: str
+    choice_index: int = Field(..., ge=0)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>依存性注入（Depends）の基本</h4>
+            <p>DB セッション、認証情報、設定値などは `Depends` に切り出すと、ルート関数を薄く保てます。依存関数を差し替えるだけでテストが書きやすくなり、関心分離が進みます。重要なのは「依存を増やすこと」ではなく「責務を薄く保つこと」です。最初から大型DI設計に走らず、まず DB セッションと current_user 程度の抽出から始めるのが安全です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>@router.get('/items')
+def list_items(session: Session = Depends(get_session)):
+    return session.scalars(select(Item)).all()</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="webapi-4" id="webapi-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>React + TypeScript 通信基礎：副作用・中断・UI状態</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 fetchの基本からメモリリーク回避まで</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>useEffectでのデータ取得の基本形</h4>
+            <p>React では描画と副作用を分離するため、通信は通常 useEffect に置きます。依存配列が変わるたびに effect は再実行されるため、「どの値の変化で再取得するか」を明示する設計が必要です。lessonId のようなキーに対して再取得し、不要時は state をクリアする、という基本パターンを固定すると、画面遷移時の不整合を減らせます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>useEffect(() => {
+  if (!lessonId) return
+  // fetch...
+}, [lessonId])</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>AbortControllerで中断可能にする</h4>
+            <p>非同期リクエストは、画面遷移や再クリックで古い通信が残ると状態競合を起こします。AbortController を毎回生成し cleanup で abort することで、アンマウント後の setState や古いレスポンス反映を抑制できます。これは体感性能よりも整合性の問題です。特に SSE や長時間推論では中断制御がないと、GPU/CPU 使用が無駄に残り続けます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const ac = new AbortController()
+fetch(url, { signal: ac.signal })
+return () => ac.abort()</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>表示状態の分割</h4>
+            <p>最低限、`loading` / `error` / `data` を分けて管理すると UI の説明責務が明確になります。単一 state に詰め込むより、状態遷移を列挙しやすく、障害時メッセージも制御しやすいです。より複雑になったら reducer や Query ライブラリに移行しますが、まずは素朴な3状態管理を確実に実装する方が学習効果は高いです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>type ViewState<T> = {
+  loading: boolean
+  error: string | null
+  data: T | null
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="webapi-5" id="webapi-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>非同期処理の基礎からSSEへ：asyncio実践入門</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 event loop・非ブロッキング・ストリーミング設計</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>event loopと非ブロッキングの考え方</h4>
+            <p>asyncio は event loop が多数タスクを協調的に切り替えるモデルです。`await` で制御を返すことで他タスクが進みます。逆に time.sleep や重い同期処理を挟むとループ全体が停止し、同時接続性能が落ちます。まず「どの処理がブロッキングか」を見分ける習慣を持つことが、SSE以前の必須基礎です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>async def handler():
+    await asyncio.sleep(0)
+    return {'ok': True}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>SSEの最小構成</h4>
+            <p>SSE は `text/event-stream` で逐次テキストを送る方式です。各イベントを `data: ...
+
+` で区切る必要があります。本アプリの `/api/llm/stream` はこの形式でトークンを流しています。WebSocket ほど双方向でなくてもよい場面では、実装負荷が低く運用しやすい利点があります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>yield f"data: {json.dumps({'token': tok}, ensure_ascii=False)}
+
+"</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>中断とバックプレッシャ</h4>
+            <p>ストリーミングは開始より終了制御が難所です。クライアント切断時に生成タスクを止めないと、GPU 推論が裏で走り続けます。さらに受信側が遅いと送信バッファが詰まり、待機が連鎖します。実務では「同時ストリーム数上限」「1ストリームあたり最大トークン」「アイドルタイムアウト」をまず導入し、観測指標（TTFB/切断率/トークン速度）で調整します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>return StreamingResponse(event_iter(), media_type='text/event-stream')</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Quiz Section -->
+      <div class="quiz-section">
+        <div class="quiz-header">
+          <h3>📝 知識の確認クイズ</h3>
+          <p>これまでのレッスンの理解度をチェックしましょう。</p>
+        </div>
+        <div id="webapi-quiz-container"></div>
+        <div class="quiz-result" id="webapi-quiz-result"></div>
+      </div>
+    </div>
+
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="gradient-text footer-logo">Code Foundations</span>
+          <p>AIと共に成長するプログラマーのために</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>学習コンテンツ</h4>
+            <a href="#" onclick="switchTab('python'); return false;">Python</a>
+            <a href="#" onclick="switchTab('react'); return false;">React</a>
+            <a href="#" onclick="switchTab('typescript'); return false;">TypeScript</a>
+          </div>
+          <div class="footer-column">
+            <h4>ヒント</h4>
+            <p class="footer-tip">💡 AIに聞くときは「なぜこう書くのか」も質問してみましょう</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Code Foundations. Built for learners in the AI era.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
