@@ -34,11 +34,11 @@
           <span class="stat-label">言語 / フレームワーク</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">20</span>
+          <span class="stat-number">38</span>
           <span class="stat-label">レッスン</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">24</span>
+          <span class="stat-number">42</span>
           <span class="stat-label">クイズ</span>
         </div>
       </div>
@@ -486,6 +486,301 @@ weather = <span class="code-function">fetch_weather</span>(<span class="code-str
         </div>
       </article>
 
+            <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="python-6" id="python-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>データ構造の極意（辞書とタプルの使い分け）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 リストだけでは対応できない実務のデータ設計</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>なぜリスト以外が必要なのか？</h4>
+            <p>リストは「順番のあるデータの列」を扱うのには最適ですが、「名前で検索したい」「絶対に書き換えられたくない」場合には不向きです。実務では辞書（dict）やタプル（tuple）を使い分けます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>user = {'id': 1, 'name': 'Alice'}
+point = (10, 20)  # 一度作ったら変更できない（イミュータブル）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>辞書の高度な使い方</h4>
+            <p>APIのJSONレスポンスはPythonではほぼ辞書として扱われます。キーの存在確認やデフォルト値の取得は、エラーを防ぐ基本です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ❌ キーがないとエラーになる
+# name = user['nickname']
+
+# ✅ getメソッドで安全に取得
+nickname = user.get('nickname', '名無し')
+
+# キーと値のループ
+for key, value in user.items():
+    print(f'{key}: {value}')</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="python-7" id="python-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>堅牢なコードの要（try-exceptによる例外処理）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 AIのコードによく欠けている「エラー発生時の備え」</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>プログラムを止めないためのtry-except</h4>
+            <p>API通信のエラー、ファイルの読み込み失敗、0での割り算など、予期せぬエラーでアプリ全体がクラッシュするのを防ぎます。AIは正常系のコードを書きがちなので、手動で補強するスキルが重要です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>try:
+    result = 10 / 0
+except ZeroDivisionError as e:
+    print(f'ゼロで割れません: {e}')
+except Exception as e:
+    print(f'予期せぬエラー: {e}')
+finally:
+    print('処理が終了しました')</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="python-8" id="python-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>よくあるエラーとアンチパターン</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 初学者が陥りやすい罠と解決策</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>インデントエラーとスコープ</h4>
+            <p>Pythonはインデント（字下げ）でブロックを認識します。スペース4つが標準ですが、タブとスペースが混在するとエラーになります。また、ループの中で変数を定義すると思わぬ上書き（スコープの汚染）が起きます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ❌ 悪い例（リストの破壊的変更）
+nums = [1, 2, 3]
+for n in nums:
+    if n == 2:
+        nums.remove(n)  # ループ中に要素を消すと挙動がおかしくなる
+
+# ✅ 良い例（新しいリストを作る）
+new_nums = [n for n in nums if n != 2]</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="python-9" id="python-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>Final Mission: FastAPIによるTodoバックエンド構築</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 APIサーバーを作って、フロントと通信してみよう</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>FastAPIとPydanticの連携</h4>
+            <p>実際のAPIでは、「どんなデータが送られてくるか」をPydanticのSchema（型）で定義し、FastAPIのルーターと結びつけます。これにより、自動的にバリデーション（入力値チェック）が行われます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List
+
+app = FastAPI()
+
+class Task(BaseModel):
+    id: int
+    title: str
+    completed: bool = False
+
+tasks_db = []
+
+@app.get('/tasks', response_model=List[Task])
+def get_tasks():
+    return tasks_db
+
+@app.post('/tasks', response_model=Task)
+def create_task(task: Task):
+    tasks_db.append(task)
+    return task</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>CORS（Cross-Origin Resource Sharing）の設定</h4>
+            <p>Reactなどのフロントエンド（例: localhost:3000）からAPI（localhost:8000）を呼び出す場合、ポート番号が違うためブラウザが通信をブロックします。これを許可するのがCORS設定です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],  # 実際はフロントのURLを指定する
+    allow_methods=['*'],
+    allow_headers=['*'],
+)</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="python-10" id="python-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>上級編: デコレータの魔法</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 関数の外側から機能を「トッピング」する技術</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>デコレータとは？</h4>
+            <p>FastAPIの @app.get('/') などで頻出するデコレータは、既存の関数を変更せずに、実行前後の処理（ログ出力や権限チェック）を追加する仕組みです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>def my_logger(func):
+    def wrapper(*args, **kwargs):
+        print(f'{func.__name__} が呼ばれました')
+        result = func(*args, **kwargs)
+        print(f'{func.__name__} が終了しました')
+        return result
+    return wrapper
+
+@my_logger
+def say_hello(name):
+    print(f'Hello, {name}!')</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="python-11" id="python-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>上級編: ジェネレータとメモリ節約</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 大量のデータを少しずつ処理するエコな仕組み</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>yield キーワード</h4>
+            <p>AIのチャット応答が「少しずつ流れてくる」のもジェネレータの仕組みです。リストで全件を一度にメモリに載せるのではなく、必要な分だけ順番に取り出します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>def count_up_to(max_num):
+    count = 1
+    while count <= max_num:
+        yield count  # ここで一時停止して値を返す
+        count += 1
+
+counter = count_up_to(3)
+print(next(counter))  # 1
+print(next(counter))  # 2</code></pre>
+          </div>
+        </div>
+      </article>
+
+
       <!-- Python Quiz -->
       <div class="quiz-section" id="python-quiz">
         <h3>🧪 Python 理解度チェック</h3>
@@ -907,6 +1202,396 @@ weather = <span class="code-function">fetch_weather</span>(<span class="code-str
         </div>
       </article>
 
+            <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="react-6" id="react-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>副作用の統制（useEffectと依存配列の正しい使い方）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 APIデータの取得やDOMの直接操作など、Reactの描画以外の処理</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>useEffectの基本</h4>
+            <p>Reactではコンポーネントが画面に表示された後や、特定の値が変わった時に処理を走らせるために useEffect を使います。データのfetch処理によく使われます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import { useEffect, useState } from 'react';
+
+function App() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    // 初回マウント時に一度だけ実行される
+    fetch('/api/tasks')
+      .then(res => res.json())
+      .then(data => setData(data));
+  }, []); // 依存配列が空なので一度だけ実行
+
+  return <div>{data.length} tasks</div>;
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="react-7" id="react-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>状態のバケツリレー回避（PropsとContext）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 コンポーネントが深くなるとPropsを渡すのが辛くなる</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>Prop Drilling（バケツリレー）とは？</h4>
+            <p>親から子、子から孫へとPropsを渡し続けると、中間のコンポーネントが不要なデータを持ち回ることになります。これを解決するために Context API や Zustand などの状態管理ライブラリが使われます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// Contextの例
+import { createContext, useContext } from 'react';
+
+const UserContext = createContext(null);
+
+function App() {
+  return (
+    <UserContext.Provider value={{ name: 'Alice' }}>
+      <DeepComponent />
+    </UserContext.Provider>
+  );
+}
+
+function DeepComponent() {
+  // 途中のProps渡しなしで直接値を取得
+  const user = useContext(UserContext);
+  return <div>{user.name}</div>;
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="react-8" id="react-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>よくあるエラーとアンチパターン</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Reactで初学者が必ず踏む罠</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>無限レンダリング</h4>
+            <p>useEffectの依存配列を書き忘れたり、レンダリング中に直接状態を更新したりすると、コンポーネントが無限に再描画されてブラウザがフリーズします。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ❌ 無限ループの罠
+function BadCounter() {
+  const [count, setCount] = useState(0);
+  
+  // レンダリングされるたびに呼ばれ、さらにレンダリングを引き起こす
+  // setCount(count + 1);
+  
+  return <div>{count}</div>;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Stateの直接変更</h4>
+            <p>Reactは「オブジェクトの参照が変わったか」で再描画を判定します。配列にpushしても参照は変わらないため、画面が更新されません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ❌ Stateの直接変更（画面が更新されない）
+// list.push('new item');
+// setList(list);
+
+// ✅ スプレッド構文で新しい配列を作る
+setList([...list, 'new item']);</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="react-9" id="react-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>Final Mission: フルスタックTodoアプリ構築・フロントエンド編</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 useStateを使った状態管理でTodoリストのUIを作る</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>Todoアプリの実装</h4>
+            <p>タスクの追加、完了の切り替え、削除をReactで実装します。以下のコードは機能の基礎です。実際に下のデモ画面で触ってみましょう！</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>function TodoApp() {
+  const [tasks, setTasks] = useState([]);
+  const [text, setText] = useState('');
+
+  const addTask = () => {
+    if(!text) return;
+    setTasks([...tasks, { id: Date.now(), text, done: false }]);
+    setText('');
+  };
+
+  return (
+    <div>
+      <input value={text} onChange={e => setText(e.target.value)} />
+      <button onClick={addTask}>追加</button>
+      <ul>
+        {tasks.map(t => (
+          <li key={t.id}>{t.text}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}</code></pre>
+          </div>
+
+          <div class="demo-box" style="margin-top: 2rem; padding: 1.5rem; background: var(--color-surface-raised); border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+            <h4 style="margin-top:0; color: var(--react-cyan); display: flex; align-items: center; gap: 0.5rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+              Todoアプリ モックアップ体験
+            </h4>
+            <p style="font-size: 0.9rem; color: var(--color-text-secondary); margin-bottom: 1rem;">
+              Reactで作るTodoアプリのUIを実際に触ってみましょう。これはフロントエンド（HTML/JS）だけで動作するデモです。
+            </p>
+            <div id="todo-mockup-app" style="background: var(--color-base); padding: 1rem; border-radius: var(--radius-sm);">
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                <input type="text" id="todo-input" placeholder="新しいタスクを入力..." style="flex: 1; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text-primary);">
+                <button onclick="addTodoMockup()" style="background: var(--react-cyan); color: #000; font-weight: bold; padding: 0 1rem; border-radius: 4px; border: none; cursor: pointer;">追加</button>
+              </div>
+              <ul id="todo-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--color-surface); border-radius: 4px; border: 1px solid var(--color-border);">
+                  <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" checked onchange="toggleTodoMockup(this)">
+                    <span style="text-decoration: line-through; opacity: 0.5;">Reactの基礎を学ぶ</span>
+                  </label>
+                  <button onclick="deleteTodoMockup(this)" style="background: transparent; color: var(--color-error); border: none; cursor: pointer;">削除</button>
+                </li>
+                <li style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--color-surface); border-radius: 4px; border: 1px solid var(--color-border);">
+                  <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" onchange="toggleTodoMockup(this)">
+                    <span>FastAPIと通信する</span>
+                  </label>
+                  <button onclick="deleteTodoMockup(this)" style="background: transparent; color: var(--color-error); border: none; cursor: pointer;">削除</button>
+                </li>
+              </ul>
+            </div>
+            
+            <script>
+              function addTodoMockup() {
+                const input = document.getElementById('todo-input');
+                const text = input.value.trim();
+                if (!text) return;
+                
+                const ul = document.getElementById('todo-list');
+                const li = document.createElement('li');
+                li.style.cssText = 'display: flex; justify-content: space-between; padding: 0.75rem; background: var(--color-surface); border-radius: 4px; border: 1px solid var(--color-border);';
+                li.innerHTML = '<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">' +
+                  '<input type="checkbox" onchange="toggleTodoMockup(this)">' +
+                  '<span>' + text + '</span>' +
+                  '</label>' +
+                  '<button onclick="deleteTodoMockup(this)" style="background: transparent; color: var(--color-error); border: none; cursor: pointer;">削除</button>';
+                ul.appendChild(li);
+                input.value = '';
+              }
+              function deleteTodoMockup(btn) {
+                btn.closest('li').remove();
+              }
+              function toggleTodoMockup(checkbox) {
+                const span = checkbox.nextElementSibling;
+                if (checkbox.checked) {
+                  span.style.textDecoration = 'line-through';
+                  span.style.opacity = '0.5';
+                } else {
+                  span.style.textDecoration = 'none';
+                  span.style.opacity = '1';
+                }
+              }
+              document.addEventListener('DOMContentLoaded', () => {
+                  setTimeout(() => {
+                    const input = document.getElementById('todo-input');
+                    if(input) {
+                        input.addEventListener('keypress', function (e) {
+                          if (e.key === 'Enter') addTodoMockup();
+                        });
+                    }
+                  }, 1000);
+              });
+            </script>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="react-10" id="react-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>上級編: カスタムフック（Custom Hooks）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 複雑なロジックを切り出してコンポーネントをスッキリさせる</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>ロジックの再利用</h4>
+            <p>APIの取得処理や、ローカルストレージの管理など、複数のコンポーネントで使い回す処理を「自分専用のHook（use○○）」として独立させます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import { useState, useEffect } from 'react';
+
+// カスタムフックの定義
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(url).then(res => res.json()).then(data => {
+      setData(data);
+      setLoading(false);
+    });
+  }, [url]);
+
+  return { data, loading };
+}
+
+// 使う側はとてもシンプルに
+function UserProfile() {
+  const { data, loading } = useFetch('/api/user');
+  if (loading) return <div>Loading...</div>;
+  return <div>{data.name}</div>;
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="react-11" id="react-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>上級編: パフォーマンス最適化（メモ化）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 不要な再レンダリングを防ぎ、アプリを高速に保つ</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>useMemo と useCallback</h4>
+            <p>Reactは親が再描画されると子も全て再描画されます。重い計算結果を保存する useMemo や、関数の再生成を防ぐ useCallback を使いこなすとプロレベルに近づきます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import { useState, useMemo, useCallback } from 'react';
+
+function HeavyComponent({ list }) {
+  // listが変わらない限り、この重いソート処理はスキップされる
+  const sortedList = useMemo(() => {
+    return list.sort((a, b) => b.score - a.score);
+  }, [list]);
+
+  // 関数もメモ化して、子コンポーネントの不要な再描画を防ぐ
+  const handleClick = useCallback((id) => {
+    console.log('Clicked', id);
+  }, []);
+
+  return <Child items={sortedList} onClick={handleClick} />;
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+
       <!-- React Quiz -->
       <div class="quiz-section" id="react-quiz">
         <h3>🧪 React 理解度チェック</h3>
@@ -1253,6 +1938,295 @@ scores.<span class="code-function">push</span>(<span class="code-string">"百点
         </div>
       </article>
 
+            <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="typescript-6" id="typescript-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>型の柔軟性（ジェネリクス/Generics）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 どんな型でも受け入れつつ、型安全を保つ魔法</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>ジェネリクスとは？</h4>
+            <p>関数やクラスを作るときに「後から型を決める」仕組みです。配列の定義によく見る Array<string> もジェネリクスの一種です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 型引数Tを受け取る関数
+function getFirstItem<T>(arr: T[]): T | undefined {
+  return arr[0];
+}
+
+// 使うときに型が決まる
+const num = getFirstItem<number>([1, 2, 3]); // num は number 型
+const str = getFirstItem<string>(['a', 'b']); // str は string 型</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="typescript-7" id="typescript-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>型の合成と防衛（Union型、Intersection型、Interface）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 複雑なデータを正確に表現する</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>Union（ユニオン）とIntersection（インターセクション）</h4>
+            <p>Union型は「A または B」、Intersection型は「A かつ B」を表します。実務ではAPIのステータス表現などで非常に多く使われます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// Union型（パイプライン記号）
+type Status = 'loading' | 'success' | 'error';
+let currentStatus: Status = 'loading';
+
+// Intersection型（アンパサンド記号）
+type User = { id: number; name: string };
+type Admin = { privileges: string[] };
+
+type AdminUser = User & Admin; // 両方のプロパティを持つ</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="typescript-8" id="typescript-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>よくあるエラーとアンチパターン</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 TypeScriptを使う意味をなくしてしまう書き方</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>any型への逃避</h4>
+            <p>型エラーが解決できないとき、とりあえず any を使ってしまうのは最悪のアンチパターンです。型チェックが完全に無効になり、バグの温床になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ❌ anyの濫用
+function processData(data: any) {
+  return data.toUpperCase(); // 実行時にdataが数値ならクラッシュする
+}
+
+// ✅ unknown型を使って安全にチェックする
+function safeProcess(data: unknown) {
+  if (typeof data === 'string') {
+    return data.toUpperCase();
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Object is possibly null</h4>
+            <p>APIのレスポンスやDOMの取得など、「値が存在しないかもしれない（null/undefined）」ケースでそのままプロパティにアクセスしようとすると怒られます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ❌ エラーになる
+// const el = document.getElementById('my-btn');
+// el.click(); // Object is possibly 'null'
+
+// ✅ オプショナルチェーン（?.）を使う
+document.getElementById('my-btn')?.click();</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="typescript-9" id="typescript-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>Final Mission: Todoアプリ構築（結合・API通信編）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 フロントとバックエンドを型で繋ぐ</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>InterfaceによるAPIスキーマの定義</h4>
+            <p>FastAPIのPydanticモデル（Task）と全く同じ構造をTypeScriptのInterfaceで定義することで、通信データを安全に扱えます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>interface Task {
+  id: number;
+  title: string;
+  completed: boolean;
+}
+
+// fetch通信にも型をつける
+async function fetchTasks(): Promise<Task[]> {
+  const response = await fetch('http://localhost:8000/tasks');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return await response.json();
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="typescript-10" id="typescript-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>上級編: ユーティリティ型（Utility Types）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 既存の型をパズルのように変形して使い回す</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>Partial, Omit, Pick</h4>
+            <p>「あの型のIDだけ抜いた型が欲しい」「全ての項目を任意（?）にした型が欲しい」といった実務の要求に、一瞬で応えることができる組み込みの機能です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>interface User {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;
+}
+
+// Partial: すべてのプロパティを任意（?付き）にする
+type UpdateUserDto = Partial<User>;
+
+// Omit: 指定したプロパティ（id）だけを除外する
+type CreateUserDto = Omit<User, 'id'>;
+
+// Pick: 指定したプロパティ（name, email）だけを抽出する
+type ContactInfo = Pick<User, 'name' | 'email'>;</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="typescript-11" id="typescript-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>上級編: 型ガードと絞り込み（Type Narrowing）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 不確実なデータを安全な型に「確定」させる</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>ユーザー定義型ガード</h4>
+            <p>APIから取得した unknown なデータが、本当に目的の型（Interface）を満たしているかを実行時にチェックし、TypeScriptに「これは安全だ」と教えます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>interface Bird {
+  fly: () => void;
+}
+
+// 戻り値の「obj is Bird」が型ガードの印
+function isBird(obj: any): obj is Bird {
+  return obj !== null && typeof obj.fly === 'function';
+}
+
+function move(animal: unknown) {
+  if (isBird(animal)) {
+    // ここに入ると animal は完全に Bird 型として扱われる
+    animal.fly();
+  } else {
+    console.log('飛べません');
+  }
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+
       <!-- TypeScript Quiz -->
       <div class="quiz-section" id="typescript-quiz">
         <h3>🧪 TypeScript 理解度チェック</h3>
@@ -1593,981 +2567,6 @@ return () => ac.abort()</code></pre>
           </div>
         </div>
       </article>
-
-      <!-- Lesson 6 -->
-      <article class="lesson-card" data-section="python-6" id="python-lesson-6">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">06</span>
-            <h3>データ構造の極意（辞書とタプルの使い分け）</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-6')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 リストだけでは対応できない実務のデータ設計</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>なぜリスト以外が必要なのか？</h4>
-            <p>リストは「順番のあるデータの列」を扱うのには最適ですが、「名前で検索したい」「絶対に書き換えられたくない」場合には不向きです。実務では辞書（dict）やタプル（tuple）を使い分けます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">PYTHON</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>user = {'id': 1, 'name': 'Alice'}
-point = (10, 20)  # 一度作ったら変更できない（イミュータブル）</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>辞書の高度な使い方</h4>
-            <p>APIのJSONレスポンスはPythonではほぼ辞書として扱われます。キーの存在確認やデフォルト値の取得は、エラーを防ぐ基本です。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">PYTHON</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code># ❌ キーがないとエラーになる
-# name = user['nickname']
-
-# ✅ getメソッドで安全に取得
-nickname = user.get('nickname', '名無し')
-
-# キーと値のループ
-for key, value in user.items():
-    print(f'{key}: {value}')</code></pre>
-          </div>
-      <!-- Lesson 7 -->
-      <article class="lesson-card" data-section="python-7" id="python-lesson-7">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">07</span>
-            <h3>堅牢なコードの要（try-exceptによる例外処理）</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-7')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 AIのコードによく欠けている「エラー発生時の備え」</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>プログラムを止めないためのtry-except</h4>
-            <p>API通信のエラー、ファイルの読み込み失敗、0での割り算など、予期せぬエラーでアプリ全体がクラッシュするのを防ぎます。AIは正常系のコードを書きがちなので、手動で補強するスキルが重要です。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">PYTHON</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>try:
-    result = 10 / 0
-except ZeroDivisionError as e:
-    print(f'ゼロで割れません: {e}')
-except Exception as e:
-    print(f'予期せぬエラー: {e}')
-finally:
-    print('処理が終了しました')</code></pre>
-          </div>
-      <!-- Lesson 8 -->
-      <article class="lesson-card" data-section="python-8" id="python-lesson-8">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">08</span>
-            <h3>よくあるエラーとアンチパターン</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-8')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 初学者が陥りやすい罠と解決策</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>インデントエラーとスコープ</h4>
-            <p>Pythonはインデント（字下げ）でブロックを認識します。スペース4つが標準ですが、タブとスペースが混在するとエラーになります。また、ループの中で変数を定義すると思わぬ上書き（スコープの汚染）が起きます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">PYTHON</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code># ❌ 悪い例（リストの破壊的変更）
-nums = [1, 2, 3]
-for n in nums:
-    if n == 2:
-        nums.remove(n)  # ループ中に要素を消すと挙動がおかしくなる
-
-# ✅ 良い例（新しいリストを作る）
-new_nums = [n for n in nums if n != 2]</code></pre>
-          </div>
-      <!-- Lesson 9 -->
-      <article class="lesson-card" data-section="python-9" id="python-lesson-9">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">09</span>
-            <h3>Final Mission: FastAPIによるTodoバックエンド構築</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-9')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 APIサーバーを作って、フロントと通信してみよう</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>FastAPIとPydanticの連携</h4>
-            <p>実際のAPIでは、「どんなデータが送られてくるか」をPydanticのSchema（型）で定義し、FastAPIのルーターと結びつけます。これにより、自動的にバリデーション（入力値チェック）が行われます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">PYTHON</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import List
-
-app = FastAPI()
-
-class Task(BaseModel):
-    id: int
-    title: str
-    completed: bool = False
-
-tasks_db = []
-
-@app.get('/tasks', response_model=List[Task])
-def get_tasks():
-    return tasks_db
-
-@app.post('/tasks', response_model=Task)
-def create_task(task: Task):
-    tasks_db.append(task)
-    return task</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>CORS（Cross-Origin Resource Sharing）の設定</h4>
-            <p>Reactなどのフロントエンド（例: localhost:3000）からAPI（localhost:8000）を呼び出す場合、ポート番号が違うためブラウザが通信をブロックします。これを許可するのがCORS設定です。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">PYTHON</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>from fastapi.middleware.cors import CORSMiddleware
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['*'],  # 実際はフロントのURLを指定する
-    allow_methods=['*'],
-    allow_headers=['*'],
-)</code></pre>
-          </div>
-
-      <!-- Lesson 6 -->
-      <article class="lesson-card" data-section="react-6" id="react-lesson-6">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">06</span>
-            <h3>副作用の統制（useEffectと依存配列の正しい使い方）</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-6')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 APIデータの取得やDOMの直接操作など、Reactの描画以外の処理</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>useEffectの基本</h4>
-            <p>Reactではコンポーネントが画面に表示された後や、特定の値が変わった時に処理を走らせるために useEffect を使います。データのfetch処理によく使われます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">REACT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>import { useEffect, useState } from 'react';
-
-function App() {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    // 初回マウント時に一度だけ実行される
-    fetch('/api/tasks')
-      .then(res => res.json())
-      .then(data => setData(data));
-  }, []); // 依存配列が空なので一度だけ実行
-
-  return <div>{data.length} tasks</div>;
-}</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 7 -->
-      <article class="lesson-card" data-section="react-7" id="react-lesson-7">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">07</span>
-            <h3>状態のバケツリレー回避（PropsとContext）</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-7')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 コンポーネントが深くなるとPropsを渡すのが辛くなる</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>Prop Drilling（バケツリレー）とは？</h4>
-            <p>親から子、子から孫へとPropsを渡し続けると、中間のコンポーネントが不要なデータを持ち回ることになります。これを解決するために Context API や Zustand などの状態管理ライブラリが使われます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">REACT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>// Contextの例
-import { createContext, useContext } from 'react';
-
-const UserContext = createContext(null);
-
-function App() {
-  return (
-    <UserContext.Provider value={{ name: 'Alice' }}>
-      <DeepComponent />
-    </UserContext.Provider>
-  );
-}
-
-function DeepComponent() {
-  // 途中のProps渡しなしで直接値を取得
-  const user = useContext(UserContext);
-  return <div>{user.name}</div>;
-}</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 8 -->
-      <article class="lesson-card" data-section="react-8" id="react-lesson-8">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">08</span>
-            <h3>よくあるエラーとアンチパターン</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-8')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 Reactで初学者が必ず踏む罠</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>無限レンダリング</h4>
-            <p>useEffectの依存配列を書き忘れたり、レンダリング中に直接状態を更新したりすると、コンポーネントが無限に再描画されてブラウザがフリーズします。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">REACT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>// ❌ 無限ループの罠
-function BadCounter() {
-  const [count, setCount] = useState(0);
-  
-  // レンダリングされるたびに呼ばれ、さらにレンダリングを引き起こす
-  // setCount(count + 1);
-  
-  return <div>{count}</div>;
-}</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>Stateの直接変更</h4>
-            <p>Reactは「オブジェクトの参照が変わったか」で再描画を判定します。配列にpushしても参照は変わらないため、画面が更新されません。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">REACT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>// ❌ Stateの直接変更（画面が更新されない）
-// list.push('new item');
-// setList(list);
-
-// ✅ スプレッド構文で新しい配列を作る
-setList([...list, 'new item']);</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 9 -->
-      <article class="lesson-card" data-section="react-9" id="react-lesson-9">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">09</span>
-            <h3>Final Mission: フルスタックTodoアプリ構築・フロントエンド編</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-9')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 useStateを使った状態管理でTodoリストのUIを作る</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>Todoアプリの実装</h4>
-            <p>タスクの追加、完了の切り替え、削除をReactで実装します。以下のコードは機能の基礎です。実際に下のデモ画面で触ってみましょう！</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">REACT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>function TodoApp() {
-  const [tasks, setTasks] = useState([]);
-  const [text, setText] = useState('');
-
-  const addTask = () => {
-    if(!text) return;
-    setTasks([...tasks, { id: Date.now(), text, done: false }]);
-    setText('');
-  };
-
-  return (
-    <div>
-      <input value={text} onChange={e => setText(e.target.value)} />
-      <button onClick={addTask}>追加</button>
-      <ul>
-        {tasks.map(t => (
-          <li key={t.id}>{t.text}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}</code></pre>
-          </div>
-
-          <div class="demo-box" style="margin-top: 2rem; padding: 1.5rem; background: var(--color-surface-raised); border-radius: var(--radius-md); border: 1px solid var(--color-border);">
-            <h4 style="margin-top:0; color: var(--react-cyan); display: flex; align-items: center; gap: 0.5rem;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
-              Todoアプリ モックアップ体験
-            </h4>
-            <p style="font-size: 0.9rem; color: var(--color-text-secondary); margin-bottom: 1rem;">
-              Reactで作るTodoアプリのUIを実際に触ってみましょう。これはフロントエンド（HTML/JS）だけで動作するデモです。
-            </p>
-            <div id="todo-mockup-app" style="background: var(--color-base); padding: 1rem; border-radius: var(--radius-sm);">
-              <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                <input type="text" id="todo-input" placeholder="新しいタスクを入力..." style="flex: 1; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text-primary);">
-                <button onclick="addTodoMockup()" style="background: var(--react-cyan); color: #000; font-weight: bold; padding: 0 1rem; border-radius: 4px; border: none; cursor: pointer;">追加</button>
-              </div>
-              <ul id="todo-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
-                <li style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--color-surface); border-radius: 4px; border: 1px solid var(--color-border);">
-                  <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                    <input type="checkbox" checked onchange="toggleTodoMockup(this)">
-                    <span style="text-decoration: line-through; opacity: 0.5;">Reactの基礎を学ぶ</span>
-                  </label>
-                  <button onclick="deleteTodoMockup(this)" style="background: transparent; color: var(--color-error); border: none; cursor: pointer;">削除</button>
-                </li>
-                <li style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--color-surface); border-radius: 4px; border: 1px solid var(--color-border);">
-                  <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                    <input type="checkbox" onchange="toggleTodoMockup(this)">
-                    <span>FastAPIと通信する</span>
-                  </label>
-                  <button onclick="deleteTodoMockup(this)" style="background: transparent; color: var(--color-error); border: none; cursor: pointer;">削除</button>
-                </li>
-              </ul>
-            </div>
-            
-            <script>
-              function addTodoMockup() {
-                const input = document.getElementById('todo-input');
-                const text = input.value.trim();
-                if (!text) return;
-                
-                const ul = document.getElementById('todo-list');
-                const li = document.createElement('li');
-                li.style.cssText = 'display: flex; justify-content: space-between; padding: 0.75rem; background: var(--color-surface); border-radius: 4px; border: 1px solid var(--color-border);';
-                li.innerHTML = '<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">' +
-                  '<input type="checkbox" onchange="toggleTodoMockup(this)">' +
-                  '<span>' + text + '</span>' +
-                  '</label>' +
-                  '<button onclick="deleteTodoMockup(this)" style="background: transparent; color: var(--color-error); border: none; cursor: pointer;">削除</button>';
-                ul.appendChild(li);
-                input.value = '';
-              }
-              function deleteTodoMockup(btn) {
-                btn.closest('li').remove();
-              }
-              function toggleTodoMockup(checkbox) {
-                const span = checkbox.nextElementSibling;
-                if (checkbox.checked) {
-                  span.style.textDecoration = 'line-through';
-                  span.style.opacity = '0.5';
-                } else {
-                  span.style.textDecoration = 'none';
-                  span.style.opacity = '1';
-                }
-              }
-              document.addEventListener('DOMContentLoaded', () => {
-                  setTimeout(() => {
-                    const input = document.getElementById('todo-input');
-                    if(input) {
-                        input.addEventListener('keypress', function (e) {
-                          if (e.key === 'Enter') addTodoMockup();
-                        });
-                    }
-                  }, 1000);
-              });
-            </script>
-          </div>
-        </div>
-      </article>
-
-
-      <!-- Lesson 6 -->
-      <article class="lesson-card" data-section="typescript-6" id="typescript-lesson-6">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">06</span>
-            <h3>型の柔軟性（ジェネリクス/Generics）</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-6')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 どんな型でも受け入れつつ、型安全を保つ魔法</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>ジェネリクスとは？</h4>
-            <p>関数やクラスを作るときに「後から型を決める」仕組みです。配列の定義によく見る Array<string> もジェネリクスの一種です。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">TYPESCRIPT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>// 型引数Tを受け取る関数
-function getFirstItem<T>(arr: T[]): T | undefined {
-  return arr[0];
-}
-
-// 使うときに型が決まる
-const num = getFirstItem<number>([1, 2, 3]); // num は number 型
-const str = getFirstItem<string>(['a', 'b']); // str は string 型</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 7 -->
-      <article class="lesson-card" data-section="typescript-7" id="typescript-lesson-7">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">07</span>
-            <h3>型の合成と防衛（Union型、Intersection型、Interface）</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-7')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 複雑なデータを正確に表現する</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>Union（ユニオン）とIntersection（インターセクション）</h4>
-            <p>Union型は「A または B」、Intersection型は「A かつ B」を表します。実務ではAPIのステータス表現などで非常に多く使われます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">TYPESCRIPT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>// Union型（パイプライン記号）
-type Status = 'loading' | 'success' | 'error';
-let currentStatus: Status = 'loading';
-
-// Intersection型（アンパサンド記号）
-type User = { id: number; name: string };
-type Admin = { privileges: string[] };
-
-type AdminUser = User & Admin; // 両方のプロパティを持つ</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 8 -->
-      <article class="lesson-card" data-section="typescript-8" id="typescript-lesson-8">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">08</span>
-            <h3>よくあるエラーとアンチパターン</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-8')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 TypeScriptを使う意味をなくしてしまう書き方</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>any型への逃避</h4>
-            <p>型エラーが解決できないとき、とりあえず any を使ってしまうのは最悪のアンチパターンです。型チェックが完全に無効になり、バグの温床になります。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">TYPESCRIPT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>// ❌ anyの濫用
-function processData(data: any) {
-  return data.toUpperCase(); // 実行時にdataが数値ならクラッシュする
-}
-
-// ✅ unknown型を使って安全にチェックする
-function safeProcess(data: unknown) {
-  if (typeof data === 'string') {
-    return data.toUpperCase();
-  }
-}</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>Object is possibly null</h4>
-            <p>APIのレスポンスやDOMの取得など、「値が存在しないかもしれない（null/undefined）」ケースでそのままプロパティにアクセスしようとすると怒られます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">TYPESCRIPT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>// ❌ エラーになる
-// const el = document.getElementById('my-btn');
-// el.click(); // Object is possibly 'null'
-
-// ✅ オプショナルチェーン（?.）を使う
-document.getElementById('my-btn')?.click();</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 9 -->
-      <article class="lesson-card" data-section="typescript-9" id="typescript-lesson-9">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">09</span>
-            <h3>Final Mission: Todoアプリ構築（結合・API通信編）</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-9')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 フロントとバックエンドを型で繋ぐ</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>InterfaceによるAPIスキーマの定義</h4>
-            <p>FastAPIのPydanticモデル（Task）と全く同じ構造をTypeScriptのInterfaceで定義することで、通信データを安全に扱えます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">TYPESCRIPT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>interface Task {
-  id: number;
-  title: string;
-  completed: boolean;
-}
-
-// fetch通信にも型をつける
-async function fetchTasks(): Promise<Task[]> {
-  const response = await fetch('http://localhost:8000/tasks');
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  return await response.json();
-}</code></pre>
-          </div>
-        </div>
-      </article>
-
-
-      <!-- Lesson 10 -->
-      <article class="lesson-card" data-section="python-10" id="python-lesson-10">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">10</span>
-            <h3>上級編: デコレータの魔法</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-10')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 関数の外側から機能を「トッピング」する技術</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>デコレータとは？</h4>
-            <p>FastAPIの @app.get('/') などで頻出するデコレータは、既存の関数を変更せずに、実行前後の処理（ログ出力や権限チェック）を追加する仕組みです。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">PYTHON</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>def my_logger(func):
-    def wrapper(*args, **kwargs):
-        print(f'{func.__name__} が呼ばれました')
-        result = func(*args, **kwargs)
-        print(f'{func.__name__} が終了しました')
-        return result
-    return wrapper
-
-@my_logger
-def say_hello(name):
-    print(f'Hello, {name}!')
-
-say_hello('Alice')
-# 出力:
-# say_hello が呼ばれました
-# Hello, Alice!
-# say_hello が終了しました</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 11 -->
-      <article class="lesson-card" data-section="python-11" id="python-lesson-11">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">11</span>
-            <h3>上級編: ジェネレータとメモリ節約</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-11')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 大量のデータを少しずつ処理するエコな仕組み</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>yield キーワード</h4>
-            <p>AIのチャット応答が「少しずつ流れてくる」のもジェネレータの仕組みです。リストで全件を一度にメモリに載せるのではなく、必要な分だけ順番に取り出します。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">PYTHON</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>def count_up_to(max_num):
-    count = 1
-    while count <= max_num:
-        yield count  # ここで一時停止して値を返す
-        count += 1
-
-counter = count_up_to(3)
-print(next(counter))  # 1
-print(next(counter))  # 2
-
-# forループでも使える
-for num in count_up_to(5):
-    pass</code></pre>
-          </div>
-        </div>
-      </article>
-
-
-      <!-- Lesson 10 -->
-      <article class="lesson-card" data-section="react-10" id="react-lesson-10">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">10</span>
-            <h3>上級編: カスタムフック（Custom Hooks）</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-10')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 複雑なロジックを切り出してコンポーネントをスッキリさせる</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>ロジックの再利用</h4>
-            <p>APIの取得処理や、ローカルストレージの管理など、複数のコンポーネントで使い回す処理を「自分専用のHook（use○○）」として独立させます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">REACT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>import { useState, useEffect } from 'react';
-
-// カスタムフックの定義
-function useFetch(url) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch(url).then(res => res.json()).then(data => {
-      setData(data);
-      setLoading(false);
-    });
-  }, [url]);
-
-  return { data, loading };
-}
-
-// 使う側はとてもシンプルに
-function UserProfile() {
-  const { data, loading } = useFetch('/api/user');
-  if (loading) return <div>Loading...</div>;
-  return <div>{data.name}</div>;
-}</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 11 -->
-      <article class="lesson-card" data-section="react-11" id="react-lesson-11">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">11</span>
-            <h3>上級編: パフォーマンス最適化（メモ化）</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-11')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 不要な再レンダリングを防ぎ、アプリを高速に保つ</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>useMemo と useCallback</h4>
-            <p>Reactは親が再描画されると子も全て再描画されます。重い計算結果を保存する useMemo や、関数の再生成を防ぐ useCallback を使いこなすとプロレベルに近づきます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">REACT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>import { useState, useMemo, useCallback } from 'react';
-
-function HeavyComponent({ list }) {
-  // listが変わらない限り、この重いソート処理はスキップされる
-  const sortedList = useMemo(() => {
-    return list.sort((a, b) => b.score - a.score);
-  }, [list]);
-
-  // 関数もメモ化して、子コンポーネントの不要な再描画を防ぐ
-  const handleClick = useCallback((id) => {
-    console.log('Clicked', id);
-  }, []);
-
-  return <Child items={sortedList} onClick={handleClick} />;
-}</code></pre>
-          </div>
-        </div>
-      </article>
-
-
-      <!-- Lesson 10 -->
-      <article class="lesson-card" data-section="typescript-10" id="typescript-lesson-10">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">10</span>
-            <h3>上級編: ユーティリティ型（Utility Types）</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-10')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 既存の型をパズルのように変形して使い回す</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>Partial, Omit, Pick</h4>
-            <p>「あの型のIDだけ抜いた型が欲しい」「全ての項目を任意（?）にした型が欲しい」といった実務の要求に、一瞬で応えることができる組み込みの機能です。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">TYPESCRIPT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>interface User {
-  id: number;
-  name: string;
-  email: string;
-  age?: number;
-}
-
-// Partial: すべてのプロパティを任意（?付き）にする
-type UpdateUserDto = Partial<User>;
-
-// Omit: 指定したプロパティ（id）だけを除外する
-type CreateUserDto = Omit<User, 'id'>;
-
-// Pick: 指定したプロパティ（name, email）だけを抽出する
-type ContactInfo = Pick<User, 'name' | 'email'>;</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 11 -->
-      <article class="lesson-card" data-section="typescript-11" id="typescript-lesson-11">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">11</span>
-            <h3>上級編: 型ガードと絞り込み（Type Narrowing）</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-11')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 不確実なデータを安全な型に「確定」させる</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>ユーザー定義型ガード</h4>
-            <p>APIから取得した unknown なデータが、本当に目的の型（Interface）を満たしているかを実行時にチェックし、TypeScriptに「これは安全だ」と教えます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">TYPESCRIPT</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>interface Bird {
-  fly: () => void;
-}
-
-// 戻り値の「obj is Bird」が型ガードの印
-function isBird(obj: any): obj is Bird {
-  return obj !== null && typeof obj.fly === 'function';
-}
-
-function move(animal: unknown) {
-  if (isBird(animal)) {
-    // ここに入ると animal は完全に Bird 型として扱われる
-    animal.fly();
-  } else {
-    console.log('飛べません');
-  }
-}</code></pre>
-          </div>
-        </div>
-      </article>
-
 
       <!-- Quiz Section -->
       <div class="quiz-section">
