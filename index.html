@@ -806,6 +806,28 @@ print(next(gen)) # 1</code></pre>
         <p class="quiz-intro">学んだ内容を確認しましょう。全5問です。</p>
         <div id="python-quiz-container"></div>
         <div class="quiz-result" id="python-quiz-result"></div>
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="python-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="python-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="python-puzzle-source">
+            <!-- 選択肢となるピースがここに並ぶ -->
+          </div>
+          <div class="puzzle-dropzone" id="python-puzzle-dropzone">
+            <!-- ここにピースをドロップする -->
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('python')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('python')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="python-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
       </div>
     </div>
 
@@ -1583,6 +1605,28 @@ function App({ list }) {
         <p class="quiz-intro">学んだ内容を確認しましょう。全5問です。</p>
         <div id="react-quiz-container"></div>
         <div class="quiz-result" id="react-quiz-result"></div>
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="react-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="react-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="react-puzzle-source">
+            <!-- 選択肢となるピースがここに並ぶ -->
+          </div>
+          <div class="puzzle-dropzone" id="react-puzzle-dropzone">
+            <!-- ここにピースをドロップする -->
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('react')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('react')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="react-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
       </div>
     </div>
 
@@ -2254,6 +2298,28 @@ function move(animal: unknown) {
         <p class="quiz-intro">学んだ内容を確認しましょう。全5問です。</p>
         <div id="typescript-quiz-container"></div>
         <div class="quiz-result" id="typescript-quiz-result"></div>
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="typescript-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="typescript-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="typescript-puzzle-source">
+            <!-- 選択肢となるピースがここに並ぶ -->
+          </div>
+          <div class="puzzle-dropzone" id="typescript-puzzle-dropzone">
+            <!-- ここにピースをドロップする -->
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('typescript')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('typescript')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="typescript-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
       </div>
     </div>
 
@@ -2597,6 +2663,28 @@ return () => ac.abort()</code></pre>
         </div>
         <div id="webapi-quiz-container"></div>
         <div class="quiz-result" id="webapi-quiz-result"></div>
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="webapi-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="webapi-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="webapi-puzzle-source">
+            <!-- 選択肢となるピースがここに並ぶ -->
+          </div>
+          <div class="puzzle-dropzone" id="webapi-puzzle-dropzone">
+            <!-- ここにピースをドロップする -->
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('webapi')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('webapi')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="webapi-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
       </div>
     </div>
 
@@ -3052,6 +3140,28 @@ class SafeDog:
         <p class="quiz-intro">試験で問われる細かい仕様やひっかけ問題を確認しましょう。全6問です。</p>
         <div id="python-cert-quiz-container"></div>
         <div class="quiz-result" id="python-cert-quiz-result"></div>
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="python-cert-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="python-cert-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="python-cert-puzzle-source">
+            <!-- 選択肢となるピースがここに並ぶ -->
+          </div>
+          <div class="puzzle-dropzone" id="python-cert-puzzle-dropzone">
+            <!-- ここにピースをドロップする -->
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('python-cert')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('python-cert')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="python-cert-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
       </div>
     </div>
 

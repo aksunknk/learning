@@ -859,3 +859,222 @@ window.toggleComplete = toggleComplete;
 window.copyCode = copyCode;
 window.switchTab = switchTab;
 window.handleQuizAnswer = handleQuizAnswer;
+
+
+
+// ==========================================
+// Puzzle Logic
+// ==========================================
+
+const puzzleData = {
+  python: {
+    question: "以下のブロックを正しく並べ替えて、エラーが起きても処理を継続する「0除算の例外処理」を完成させてください。",
+    pieces: [
+      { id: "p1", text: "def divide(a, b):" },
+      { id: "p2", text: "    try:" },
+      { id: "p3", text: "        return a / b" },
+      { id: "p4", text: "    except ZeroDivisionError:" },
+      { id: "p5", text: "        return '0で割ることはできません'" }
+    ],
+    correctOrder: ["p1", "p2", "p3", "p4", "p5"],
+    explanation: "try-exceptブロックを使うことで、エラー時でもプログラムをクラッシュさせずに安全に処理を継続できます。"
+  },
+  "python-cert": {
+    question: "以下のブロックを正しく並べ替えて、リストのすべての要素を処理し、もしbreakされなかった場合のみメッセージを出す「for...else」構文を完成させてください。",
+    pieces: [
+      { id: "c1", text: "for item in [1, 2, 3]:" },
+      { id: "c2", text: "    if item == 5:" },
+      { id: "c3", text: "        break" },
+      { id: "c4", text: "else:" },
+      { id: "c5", text: "    print('5は見つかりませんでした')" }
+    ],
+    correctOrder: ["c1", "c2", "c3", "c4", "c5"],
+    explanation: "for...else 構文は、ループが break されずに自然に終了した場合のみ else ブロックが実行される、試験頻出の特殊構文です。"
+  },
+  react: {
+    question: "以下のブロックを正しく並べ替えて、APIからデータを取得する「useEffect」を用いたコンポーネントを完成させてください。",
+    pieces: [
+      { id: "r1", text: "function UserProfile() {" },
+      { id: "r2", text: "  const [data, setData] = useState(null);" },
+      { id: "r3", text: "  useEffect(() => {" },
+      { id: "r4", text: "    fetch('/api/user').then(res => res.json()).then(setData);" },
+      { id: "r5", text: "  }, []);" }
+    ],
+    correctOrder: ["r1", "r2", "r3", "r4", "r5"],
+    explanation: "コンポーネント関数内でまずStateを宣言し、次にuseEffectを呼び出します。useEffectの第二引数を空配列 [] にすることで初回マウント時のみ実行させます。"
+  },
+  typescript: {
+    question: "以下のブロックを並べ替えて、「User」の型定義を作り、それを引数に取る関数を完成させてください。",
+    pieces: [
+      { id: "t1", text: "interface User {" },
+      { id: "t2", text: "  id: number;" },
+      { id: "t3", text: "  name: string;" },
+      { id: "t4", text: "}" },
+      { id: "t5", text: "function printUser(user: User) {" }
+    ],
+    correctOrder: ["t1", "t2", "t3", "t4", "t5"],
+    explanation: "まず interface でオブジェクトの構造（型）を定義し、関数の引数に対してその Interface 名を指定することで、強力な型チェックを有効にします。"
+  },
+  webapi: {
+    question: "以下のブロックを並べ替えて、非同期処理（async/await）を使った安全なAPIリクエストを完成させてください。",
+    pieces: [
+      { id: "w1", text: "async function fetchData() {" },
+      { id: "w2", text: "  try {" },
+      { id: "w3", text: "    const response = await fetch('https://api.example.com/data');" },
+      { id: "w4", text: "    const data = await response.json();" },
+      { id: "w5", text: "  } catch (error) {" }
+    ],
+    correctOrder: ["w1", "w2", "w3", "w4", "w5"],
+    explanation: "async 関数内で、エラーハンドリングのために try-catch ブロックを配置し、その中で await を使って fetch と json() の非同期処理を待ち受けます。"
+  }
+};
+
+let draggedPiece = null;
+
+function initPuzzleDropzones() {
+  const dropzones = document.querySelectorAll('.puzzle-source, .puzzle-dropzone');
+  
+  dropzones.forEach(zone => {
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      zone.classList.add('drag-over');
+      
+      const afterElement = getDragAfterElement(zone, e.clientY);
+      const draggable = document.querySelector('.dragging');
+      if (draggable) {
+        if (afterElement == null) {
+          zone.appendChild(draggable);
+        } else {
+          zone.insertBefore(draggable, afterElement);
+        }
+      }
+    });
+    
+    zone.addEventListener('dragleave', e => {
+      zone.classList.remove('drag-over');
+    });
+    
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      
+      // Remove placeholder if present
+      const placeholder = zone.querySelector('.dropzone-placeholder');
+      if (placeholder && zone.contains(draggable)) {
+          // actually the placeholder stays or is hidden via CSS? Let's just remove it dynamically if pieces are inside
+      }
+    });
+  });
+}
+
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.puzzle-piece:not(.dragging)')];
+  
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+function loadPuzzle(lang) {
+  const data = puzzleData[lang];
+  if (!data) return;
+  
+  const questionEl = document.getElementById(lang + '-puzzle-question');
+  const sourceZone = document.getElementById(lang + '-puzzle-source');
+  const dropZone = document.getElementById(lang + '-puzzle-dropzone');
+  const resultEl = document.getElementById(lang + '-puzzle-result');
+  
+  if (!questionEl || !sourceZone || !dropZone) return;
+  
+  questionEl.textContent = data.question;
+  resultEl.innerHTML = '';
+  resultEl.className = 'quiz-result'; // reset class
+  
+  // Clear zones
+  sourceZone.innerHTML = '';
+  dropZone.innerHTML = '<div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>';
+  
+  // Shuffle pieces
+  const shuffled = [...data.pieces].sort(() => Math.random() - 0.5);
+  
+  shuffled.forEach(piece => {
+    const el = document.createElement('div');
+    el.className = 'puzzle-piece';
+    el.draggable = true;
+    el.textContent = piece.text;
+    el.dataset.id = piece.id;
+    
+    el.addEventListener('dragstart', () => {
+      el.classList.add('dragging');
+      draggedPiece = el;
+      
+      // Hide placeholder if any
+      const placeholder = dropZone.querySelector('.dropzone-placeholder');
+      if (placeholder) placeholder.style.display = 'none';
+    });
+    
+    el.addEventListener('dragend', () => {
+      el.classList.remove('dragging');
+      draggedPiece = null;
+      
+      // Show placeholder if empty
+      const placeholder = dropZone.querySelector('.dropzone-placeholder');
+      const piecesInDropzone = dropZone.querySelectorAll('.puzzle-piece');
+      if (placeholder) {
+        placeholder.style.display = piecesInDropzone.length === 0 ? 'block' : 'none';
+      }
+    });
+    
+    sourceZone.appendChild(el);
+  });
+}
+
+function checkPuzzle(lang) {
+  const data = puzzleData[lang];
+  if (!data) return;
+  
+  const dropZone = document.getElementById(lang + '-puzzle-dropzone');
+  const resultEl = document.getElementById(lang + '-puzzle-result');
+  const pieces = dropZone.querySelectorAll('.puzzle-piece');
+  
+  if (pieces.length !== data.correctOrder.length) {
+    resultEl.innerHTML = '❌ 全てのブロックをドロップエリアに配置してください。';
+    resultEl.className = 'quiz-result incorrect';
+    return;
+  }
+  
+  let isCorrect = true;
+  pieces.forEach((piece, index) => {
+    if (piece.dataset.id !== data.correctOrder[index]) {
+      isCorrect = false;
+      piece.classList.add('error-anim');
+      setTimeout(() => piece.classList.remove('error-anim'), 500);
+    } else {
+      piece.classList.add('correct-anim');
+      setTimeout(() => piece.classList.remove('correct-anim'), 500);
+    }
+  });
+  
+  if (isCorrect) {
+    resultEl.innerHTML = `✅ <strong>正解！完璧です。</strong><br><br>${data.explanation}`;
+    resultEl.className = 'quiz-result correct';
+  } else {
+    resultEl.innerHTML = '❌ 順番が間違っている箇所があります。赤く揺れたブロックを見直してください。';
+    resultEl.className = 'quiz-result incorrect';
+  }
+}
+
+// Attach to global window load to initialize puzzles
+window.addEventListener('DOMContentLoaded', () => {
+  initPuzzleDropzones();
+  // Load initially for all languages
+  ['python', 'python-cert', 'react', 'typescript', 'webapi'].forEach(lang => {
+    loadPuzzle(lang);
+  });
+});
