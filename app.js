@@ -17,14 +17,7 @@ const quizData = {
         "var name = 'Alice'",
         "name = 'Alice'",
         "string name = 'Alice'"
-    ,
-{"question": "Pythonの辞書（dict）から安全に値を取得するメソッドはどれですか？", "options": ["fetch()", "get()", "pull()", "extract()"], "correct": 1, "explanation": "get() メソッドを使うと、キーが存在しない場合でもエラーでプログラムが止まらず、None または指定したデフォルト値を返します。"},
-{"question": "例外処理（エラー対策）で、エラーが起きても処理を継続させるためのキーワードは？", "options": ["try - catch", "try - except", "attempt - fail", "do - catch"], "correct": 1, "explanation": "Pythonでは try と except を使って例外処理を書きます。JSなどの try-catch とはキーワードが異なります。"},
-{"question": "リストの要素をループ処理で削除する際の問題を防ぐ最も一般的な方法は？", "options": ["新しいリストを作成する（リスト内包表記など）", "remove()を複数回呼ぶ", "del文を使う", "ループのインデックスを-1ずつ減らす"], "correct": 0, "explanation": "ループ中にリスト自身を変更（破壊的変更）するとインデックスがずれ、バグの原因になります。新しいリストを生成するのが安全です。"},
-{"question": "FastAPIでAPIの期待するデータ構造（型）を定義するために使われるライブラリは？", "options": ["SQLAlchemy", "Requests", "Pydantic", "Jinja2"], "correct": 2, "explanation": "Pydantic の BaseModel を継承したクラスを定義することで、FastAPIは自動的にデータのバリデーションと型変換を行います。"},
-{"question": "Pythonのデコレータ（@app.get など）の主な役割は何ですか？", "options": ["関数の中身を自動で暗号化する", "関数を呼び出す前後に、既存のコードを変えずに別の処理を追加する", "関数の実行速度を2倍にする", "エラーを完全に握りつぶす"], "correct": 1, "explanation": "デコレータは、既存の関数に後から機能（ログ出力や権限チェックなど）を「トッピング」するための仕組みです。"},
-{"question": "yield キーワードを使った「ジェネレータ」の最大のメリットは？", "options": ["コードが1行で書ける", "メモリを大量に消費して高速化する", "必要な分だけデータを生成するため、メモリを節約できる", "自動的にバックアップを取る"], "correct": 2, "explanation": "何万行もあるファイルを読む際など、一度にすべてリストに入れるとメモリがパンクしますが、yield を使えば1行ずつ処理できて安全です。"}
-  ],
+      ],
       correct: 2,
       explanation: "Pythonでは型宣言やキーワード（let, var）は不要です。変数名 = 値 の形式でそのまま代入できます。"
     },
@@ -67,7 +60,14 @@ const quizData = {
       correct: 1,
       explanation: "dict.get(key, default) を使うと、キーが存在しない場合にデフォルト値を返します。user['email'] はキーがないと KeyError になります。"
     }
-  ],
+  ,
+{"question": "Pythonの辞書（dict）から安全に値を取得するメソッドはどれですか？", "options": ["fetch()", "get()", "pull()", "extract()"], "correct": 1, "explanation": "get() メソッドを使うと、キーが存在しない場合でもエラーでプログラムが止まらず、None または指定したデフォルト値を返します。"},
+{"question": "例外処理（エラー対策）で、エラーが起きても処理を継続させるためのキーワードは？", "options": ["try - catch", "try - except", "attempt - fail", "do - catch"], "correct": 1, "explanation": "Pythonでは try と except を使って例外処理を書きます。JSなどの try-catch とはキーワードが異なります。"},
+{"question": "リストの要素をループ処理で削除する際の問題を防ぐ最も一般的な方法は？", "options": ["新しいリストを作成する（リスト内包表記など）", "remove()を複数回呼ぶ", "del文を使う", "ループのインデックスを-1ずつ減らす"], "correct": 0, "explanation": "ループ中にリスト自身を変更（破壊的変更）するとインデックスがずれ、バグの原因になります。新しいリストを生成するのが安全です。"},
+{"question": "FastAPIでAPIの期待するデータ構造（型）を定義するために使われるライブラリは？", "options": ["SQLAlchemy", "Requests", "Pydantic", "Jinja2"], "correct": 2, "explanation": "Pydantic の BaseModel を継承したクラスを定義することで、FastAPIは自動的にデータのバリデーションと型変換を行います。"},
+{"question": "Pythonのデコレータ（@app.get など）の主な役割は何ですか？", "options": ["関数の中身を自動で暗号化する", "関数を呼び出す前後に、既存のコードを変えずに別の処理を追加する", "関数の実行速度を2倍にする", "エラーを完全に握りつぶす"], "correct": 1, "explanation": "デコレータは、既存の関数に後から機能（ログ出力や権限チェックなど）を「トッピング」するための仕組みです。"},
+{"question": "yield キーワードを使った「ジェネレータ」の最大のメリットは？", "options": ["コードが1行で書ける", "メモリを大量に消費して高速化する", "必要な分だけデータを生成するため、メモリを節約できる", "自動的にバックアップを取る"], "correct": 2, "explanation": "何万行もあるファイルを読む際など、一度にすべてリストに入れるとメモリがパンクしますが、yield を使えば1行ずつ処理できて安全です。"}
+],
   react: [
     {
       question: "ReactのJSXで正しいのはどれですか？",
@@ -76,14 +76,7 @@ const quizData = {
         "<div className='box'>Hello</div>",
         "<div css='box'>Hello</div>",
         "<div style='box'>Hello</div>"
-    ,
-{"question": "useEffectの第二引数（依存配列）を空の配列 [] にするとどうなりますか？", "options": ["毎回レンダリング時に実行される", "一度も実行されない", "初回マウント時のみ実行される", "エラーになる"], "correct": 2, "explanation": "空の配列を渡すと「依存する値がない＝変化する値がない」とみなされ、最初の1回しか実行されません。API取得によく使われます。"},
-{"question": "深い階層のコンポーネントへPropsをバケツリレーせずにデータを渡すReactの機能は？", "options": ["Context API", "Redux", "React Router", "React Query"], "correct": 0, "explanation": "Context API（createContext / useContext）を使うと、中間のコンポーネントを飛ばして直接データを参照できます。"},
-{"question": "Reactで無限レンダリングを引き起こす最もよくある原因は？", "options": ["不要なdivタグを使う", "レンダリング中に状態（State）を更新してしまう", "classNameを間違える", "アロー関数を使わない"], "correct": 1, "explanation": "コンポーネントの本体で setState などを直接呼ぶと、状態が更新される→再レンダリングされる→またsetStateが呼ばれる、というループに陥ります。"},
-{"question": "Reactの状態（State）として配列を更新する際の正しい書き方は？", "options": ["array.push(newItem)", "array.append(newItem)", "setArray([...array, newItem])", "setArray(array.push(newItem))"], "correct": 2, "explanation": "Reactは「新しい配列/オブジェクトになったか」で変更を検知します。スプレッド構文（...）を使って新しい配列を作る必要があります。"},
-{"question": "Reactでカスタムフックを作る際のルールとして正しいものは？", "options": ["関数名を必ず 'use' から始める", "必ず 'function' キーワードを使わないといけない", "中で useEffect を使ってはいけない", "ファイル名を必ず大文字から始める"], "correct": 0, "explanation": "Reactのルールとして、フックは必ず「use」から始まる名前にする必要があります（useFetchなど）。これによりReactがフックとして認識します。"},
-{"question": "重い計算処理の結果をキャッシュして、不要な再計算を防ぐReactのフックは？", "options": ["useContext", "useMemo", "useReducer", "useRef"], "correct": 1, "explanation": "useMemoは「計算結果（値）」をメモ化（キャッシュ）します。関数の再生成を防ぐには useCallback を使います。"}
-  ],
+      ],
       correct: 1,
       explanation: "JSXではHTMLのclass属性の代わりにclassNameを使います。classはJavaScriptの予約語なので、衝突を避けるためです。"
     },
@@ -126,7 +119,14 @@ const quizData = {
       correct: 1,
       explanation: "useEffectの第2引数に空の配列 [] を渡すと、マウント時に1回だけ実行されます。依存配列を省略すると毎レンダー時に実行されます。"
     }
-  ],
+  ,
+{"question": "useEffectの第二引数（依存配列）を空の配列 [] にするとどうなりますか？", "options": ["毎回レンダリング時に実行される", "一度も実行されない", "初回マウント時のみ実行される", "エラーになる"], "correct": 2, "explanation": "空の配列を渡すと「依存する値がない＝変化する値がない」とみなされ、最初の1回しか実行されません。API取得によく使われます。"},
+{"question": "深い階層のコンポーネントへPropsをバケツリレーせずにデータを渡すReactの機能は？", "options": ["Context API", "Redux", "React Router", "React Query"], "correct": 0, "explanation": "Context API（createContext / useContext）を使うと、中間のコンポーネントを飛ばして直接データを参照できます。"},
+{"question": "Reactで無限レンダリングを引き起こす最もよくある原因は？", "options": ["不要なdivタグを使う", "レンダリング中に状態（State）を更新してしまう", "classNameを間違える", "アロー関数を使わない"], "correct": 1, "explanation": "コンポーネントの本体で setState などを直接呼ぶと、状態が更新される→再レンダリングされる→またsetStateが呼ばれる、というループに陥ります。"},
+{"question": "Reactの状態（State）として配列を更新する際の正しい書き方は？", "options": ["array.push(newItem)", "array.append(newItem)", "setArray([...array, newItem])", "setArray(array.push(newItem))"], "correct": 2, "explanation": "Reactは「新しい配列/オブジェクトになったか」で変更を検知します。スプレッド構文（...）を使って新しい配列を作る必要があります。"},
+{"question": "Reactでカスタムフックを作る際のルールとして正しいものは？", "options": ["関数名を必ず 'use' から始める", "必ず 'function' キーワードを使わないといけない", "中で useEffect を使ってはいけない", "ファイル名を必ず大文字から始める"], "correct": 0, "explanation": "Reactのルールとして、フックは必ず「use」から始まる名前にする必要があります（useFetchなど）。これによりReactがフックとして認識します。"},
+{"question": "重い計算処理の結果をキャッシュして、不要な再計算を防ぐReactのフックは？", "options": ["useContext", "useMemo", "useReducer", "useRef"], "correct": 1, "explanation": "useMemoは「計算結果（値）」をメモ化（キャッシュ）します。関数の再生成を防ぐには useCallback を使います。"}
+],
   typescript: [
     {
       question: "TypeScriptで変数の型を指定する正しい書き方は？",
@@ -135,14 +135,7 @@ const quizData = {
         "let string name = 'Alice';",
         "let name = (string) 'Alice';",
         "string let name = 'Alice';"
-    ,
-{"question": "関数を利用する側で後から型を決定できるTypeScriptの機能は？", "options": ["Any", "Generics（ジェネリクス）", "Interface", "Type Alias"], "correct": 1, "explanation": "ジェネリクス（<T> など）を使うと、関数の再利用性が高まり、かつ実行時に型安全性が保たれます。"},
-{"question": "「文字列か数値のどちらか」を表す型定義（Union型）はどれですか？", "options": ["string & number", "string | number", "string || number", "string, number"], "correct": 1, "explanation": "Union型は |（パイプ）を使って定義します。複数の型のうちどれか一つであることを示します。"},
-{"question": "TypeScriptで値が null や undefined かもしれない場合に安全にプロパティにアクセスする記号は？", "options": ["!!", "??", "?.", "!"], "correct": 2, "explanation": "オプショナルチェーン（?.）を使うと、値が null/undefined の場合でもエラーにならず undefined を返して安全に処理を続けます。"},
-{"question": "TypeScriptで any 型を避けるべき最大の理由は？", "options": ["コンパイルが遅くなるから", "型チェックが完全に無効になりバグに気づけなくなるから", "コードが長くなるから", "他の言語と互換性がなくなるから"], "correct": 1, "explanation": "anyを使うとTypeScriptの最大のメリットである「事前エラー検知」が働かなくなり、単なるJavaScriptと同じになってしまいます。"},
-{"question": "TypeScriptの Utility Types のうち、型 T のすべてのプロパティを「任意（省略可能）」にするのはどれ？", "options": ["Omit<T>", "Pick<T>", "Partial<T>", "Record<T>"], "correct": 2, "explanation": "Partial（パーシャル）を使うと、指定した型のすべてのプロパティに ? がつき、部分的な更新APIなどに便利です。"},
-{"question": "「obj is Bird」のように、戻り値の型として記述し、TypeScriptに型を教え込む仕組みを何と呼ぶ？", "options": ["Type Casting", "Type Assertion", "Type Guard（ユーザー定義型ガード）", "Type Inference"], "correct": 2, "explanation": "ユーザー定義型ガードを使うと、実行時のバリデーション結果をもとに、コンパイル時にも安全な型付けを強制できます。"}
-  ],
+      ],
       correct: 0,
       explanation: "TypeScriptでは 変数名: 型 の形式で型注釈を付けます。コロン(:)の後に型を書くのがTypeScriptの構文です。"
     },
@@ -190,7 +183,14 @@ const quizData = {
       correct: 2,
       explanation: "typeof演算子と厳密等価演算子(===)を使って型を判定します。TypeScriptはこのパターンで型を自動的に絞り込みます。"
     }
-  ],
+  ,
+{"question": "関数を利用する側で後から型を決定できるTypeScriptの機能は？", "options": ["Any", "Generics（ジェネリクス）", "Interface", "Type Alias"], "correct": 1, "explanation": "ジェネリクス（<T> など）を使うと、関数の再利用性が高まり、かつ実行時に型安全性が保たれます。"},
+{"question": "「文字列か数値のどちらか」を表す型定義（Union型）はどれですか？", "options": ["string & number", "string | number", "string || number", "string, number"], "correct": 1, "explanation": "Union型は |（パイプ）を使って定義します。複数の型のうちどれか一つであることを示します。"},
+{"question": "TypeScriptで値が null や undefined かもしれない場合に安全にプロパティにアクセスする記号は？", "options": ["!!", "??", "?.", "!"], "correct": 2, "explanation": "オプショナルチェーン（?.）を使うと、値が null/undefined の場合でもエラーにならず undefined を返して安全に処理を続けます。"},
+{"question": "TypeScriptで any 型を避けるべき最大の理由は？", "options": ["コンパイルが遅くなるから", "型チェックが完全に無効になりバグに気づけなくなるから", "コードが長くなるから", "他の言語と互換性がなくなるから"], "correct": 1, "explanation": "anyを使うとTypeScriptの最大のメリットである「事前エラー検知」が働かなくなり、単なるJavaScriptと同じになってしまいます。"},
+{"question": "TypeScriptの Utility Types のうち、型 T のすべてのプロパティを「任意（省略可能）」にするのはどれ？", "options": ["Omit<T>", "Pick<T>", "Partial<T>", "Record<T>"], "correct": 2, "explanation": "Partial（パーシャル）を使うと、指定した型のすべてのプロパティに ? がつき、部分的な更新APIなどに便利です。"},
+{"question": "「obj is Bird」のように、戻り値の型として記述し、TypeScriptに型を教え込む仕組みを何と呼ぶ？", "options": ["Type Casting", "Type Assertion", "Type Guard（ユーザー定義型ガード）", "Type Inference"], "correct": 2, "explanation": "ユーザー定義型ガードを使うと、実行時のバリデーション結果をもとに、コンパイル時にも安全な型付けを強制できます。"}
+],
   webapi: [
     {
       question: "バリデーション不一致でFastAPIが返しやすいステータスコードとして最も適切なのはどれですか。",
