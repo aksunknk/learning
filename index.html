@@ -34,11 +34,11 @@
           <span class="stat-label">言語 / フレームワーク</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">38</span>
+          <span class="stat-number">44</span>
           <span class="stat-label">レッスン</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">42</span>
+          <span class="stat-number">51</span>
           <span class="stat-label">クイズ</span>
         </div>
       </div>
@@ -94,7 +94,24 @@
             <span class="progress-percent" id="typescript-progress-text">0%</span>
           </div>
         </div>
-        <div class="progress-card webapi-card" data-lang="webapi">
+                <div class="progress-card python-card" data-lang="python-cert">
+          <div class="card-header">
+            <div class="icon-wrapper">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <h3>Python認定基礎</h3>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" id="python-cert-progress"></div>
+          </div>
+          <div class="progress-stats">
+            <span>完了</span>
+            <span class="progress-count" id="python-cert-progress-count">0/6</span>
+          </div>
+        </div>
+<div class="progress-card webapi-card" data-lang="webapi">
           <div class="progress-card-icon">🌐</div>
           <div class="progress-card-info">
             <h3>Web/API</h3>
@@ -2615,4 +2632,427 @@ return () => ac.abort()</code></pre>
 
   <script src="app.js"></script>
 </body>
-</html>
+</html>        <button class="tab-btn" data-tab="python-cert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          Python認定基礎
+        </button>
+    <!-- Python Cert Tab -->
+    <div class="tab-content" id="content-python-cert">
+      <div class="lessons-container" id="python-cert-lessons">
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="python-cert-1" id="python-cert-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>基礎構文とデータ型の落とし穴</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-cert-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 試験で頻出する「文字列・リストの仕様」や特殊な操作</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>文字列の不変性（イミュータブル）とスライス</h4>
+            <p>Pythonの文字列は一度作成すると変更できません（イミュータブル）。一部の文字だけを書き換えようとするとエラーになります。また、スライス（`[start:stop:step]`）の挙動は試験で必ず問われます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>word = 'Python'
+# word[0] = 'J'  # ❌ TypeError: 'str' object does not support item assignment
+
+# スライスの基本
+print(word[0:2])   # 'Py' (インデックス2の手前まで)
+print(word[2:])    # 'thon' (インデックス2から最後まで)
+print(word[-2:])   # 'on' (後ろから2文字)
+
+# ステップ（飛ばし読みや逆順）
+print(word[::2])   # 'Pto' (2文字ごと)
+print(word[::-1])  # 'nohtyP' (逆順)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>リストの強力なメソッドと参照渡し</h4>
+            <p>リストは変更可能（ミュータブル）です。メソッドによる操作と、変数の代入時の「参照渡し（アドレスのコピー）」による罠に注意が必要です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>a = [1, 2, 3]
+# 要素の追加と拡張
+a.append(4)      # 末尾に4を追加: [1, 2, 3, 4]
+a.extend([5, 6]) # リストを結合: [1, 2, 3, 4, 5, 6]
+
+# 参照の罠（試験で超頻出！）
+b = a
+b[0] = 99
+print(a) # [99, 2, 3, 4, 5, 6] (aも変わってしまう！)
+
+# 浅いコピー（別々のリストにする）
+c = a[:] # または a.copy()
+c[0] = 1
+print(a) # aは99のまま</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="python-cert-2" id="python-cert-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>制御構造の特殊仕様（for...else等）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-cert-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 他言語の経験者が引っかかるPython特有の文法</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>for...else 構文と while...else 構文</h4>
+            <p>ループ文に `else` を付けることができます。これは「ループが `break` されずに最後まで正常に完走した場合」のみ実行されます。検索処理などでフラグ変数を使わずに済む便利な機能ですが、初見では混乱しやすく試験で狙われます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>for n in range(2, 10):
+    for x in range(2, n):
+        if n % x == 0:
+            print(n, 'equals', x, '*', n//x)
+            break
+    else:
+        # breakでループを抜けなかった場合のみここに来る
+        print(n, 'is a prime number')
+
+# 出力例:
+# 2 is a prime number
+# 3 is a prime number
+# 4 equals 2 * 2...</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>pass, break, continue の違い</h4>
+            <p>`break` はループを完全に抜け出し、`continue` は現在の周をスキップして次の周へ行きます。`pass` は「何もしない」ための文で、構文上文が必要な場所（空のクラスや関数など）のプレースホルダーとして使われます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>for num in range(2, 10):
+    if num % 2 == 0:
+        print("Found an even number", num)
+        continue # これ以下の処理を飛ばして次のループへ
+    print("Found a number", num)
+
+def initlog(*args):
+    pass   # あとで実装するためのダミー</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="python-cert-3" id="python-cert-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>関数の引数と高度な使い方</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-cert-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 デフォルト引数の罠とキーワード引数</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>デフォルト引数の評価タイミング（罠）</h4>
+            <p>関数のデフォルト値は「関数が定義された時に一度だけ」評価されます。そのため、リストや辞書などのミュータブルなオブジェクトをデフォルト値にすると、呼び出し間で値が共有されてしまいます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ❌ 危険なデフォルト引数（試験頻出）
+def f(a, L=[]):
+    L.append(a)
+    return L
+
+print(f(1)) # [1]
+print(f(2)) # [1, 2] <- 空にならない！
+print(f(3)) # [1, 2, 3]
+
+# ✅ 正しい書き方
+def f_safe(a, L=None):
+    if L is None:
+        L = []
+    L.append(a)
+    return L</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>位置引数、キーワード引数、任意引数（*args, **kwargs）</h4>
+            <p>引数の指定方法には厳格な順番のルールがあります。位置引数を先に書き、キーワード引数はその後にしなければなりません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>def parrot(voltage, state='a stiff', action='voom', type='Norwegian Blue'):
+    print("-- This parrot wouldn't", action, end=' ')
+
+# 有効な呼び出し
+parrot(1000)                                          # 位置引数1つ
+parrot(voltage=1000)                                  # キーワード引数1つ
+parrot(voltage=1000000, action='VOOOOOM')             # キーワード引数2つ
+parrot('a thousand', state='pushing up the daisies')  # 位置1つ, キーワード1つ
+
+# ❌ 無効な呼び出し（エラーになる）
+# parrot()                     # 必須引数がない
+# parrot(voltage=5.0, 'dead')  # キーワード引数の後に位置引数を書いている</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="python-cert-4" id="python-cert-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>モジュールと標準ライブラリ</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-cert-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 importの仕組みと便利な組み込み機能</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>モジュールの検索パス（sys.path）</h4>
+            <p>モジュールをインポートする際、Pythonは `sys.path` というリストに格納されたディレクトリの順番に従ってモジュールを探します。これにはカレントディレクトリが含まれます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import sys
+
+# モジュールの検索パスを表示
+for p in sys.path:
+    print(p)
+
+# コマンドライン引数の取得
+# python script.py arg1 arg2 のように実行した場合
+# sys.argv[0] にはスクリプト名が入る
+print(sys.argv)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>試験で狙われる標準ライブラリ</h4>
+            <p>認定基礎試験では、特定の標準ライブラリの用途が問われます。`os`, `math`, `re`, `datetime`, `urllib.request` などの基本的な役割を覚えておく必要があります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import os
+print(os.getcwd()) # 現在の作業ディレクトリ
+
+import math
+print(math.pi) # 円周率 3.14159...
+
+import re # 正規表現
+result = re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest')
+print(result) # ['foot', 'fell', 'fastest']</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="python-cert-5" id="python-cert-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>エラーと例外処理の階層</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-cert-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 例外クラスの継承ツリーとraiseの使い方</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>例外処理のキャッチ順序</h4>
+            <p>例外クラスには階層（継承ツリー）があります。例えば、`FileNotFoundError` は `OSError` の子クラス、さらにその親は `Exception` です。`except` 節は上から順に評価されるため、子クラスから先に書かないと、親クラスがすべてをキャッチしてしまいます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>class B(Exception):
+    pass
+class C(B):
+    pass
+class D(C):
+    pass
+
+for cls in [B, C, D]:
+    try:
+        raise cls()
+    except D:
+        print("D")
+    except C:
+        print("C")
+    except B:
+        print("B")
+
+# 出力は B, C, D の順になる</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>raise文と例外の連鎖</h4>
+            <p>意図的に例外を発生させるには `raise` を使います。また、`except` ブロック内で別の例外を発生させる際に元の例外情報を保持するには `from` を使います。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>try:
+    raise ValueError('不正な値です')
+except ValueError as e:
+    print('エラーを検知:', e)
+    # 元の例外情報を保持したまま別の例外を投げる
+    # raise RuntimeError('変換失敗') from e</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="python-cert-6" id="python-cert-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>クラスとオブジェクト指向</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-cert-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 クラス変数とインスタンス変数の違い</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>クラス定義と __init__ メソッド</h4>
+            <p>Pythonのクラスは実行時にオブジェクトとして作成されます。`__init__` はコンストラクタ（初期化メソッド）で、インスタンス作成時に自動で呼ばれます。メソッドの第一引数には必ず `self`（自分自身のインスタンス）を指定します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>class Complex:
+    def __init__(self, realpart, imagpart):
+        self.r = realpart
+        self.i = imagpart
+
+x = Complex(3.0, -4.5)
+print(x.r, x.i) # 3.0 -4.5</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>クラス変数とインスタンス変数の罠</h4>
+            <p>クラス変数（`def`の外に書く）は全てのインスタンスで共有され、インスタンス変数（`self.`で書く）は個別のインスタンス専用になります。ミュータブルなオブジェクト（リストなど）をクラス変数にすると悲劇が起きます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON-CERT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ❌ 危険なクラス変数
+class Dog:
+    tricks = []             # すべての犬で共有されるリスト
+    def __init__(self, name):
+        self.name = name
+    def add_trick(self, trick):
+        self.tricks.append(trick)
+
+d = Dog('Fido')
+e = Dog('Buddy')
+d.add_trick('roll over')
+print(e.tricks) # ['roll over'] <- Buddyも芸を覚えてしまう！
+
+# ✅ 正しいインスタンス変数
+class SafeDog:
+    def __init__(self, name):
+        self.name = name
+        self.tricks = []    # 犬ごとに個別のリスト
+    def add_trick(self, trick):
+        self.tricks.append(trick)</code></pre>
+          </div>
+        </div>
+      </article>
+
+
+      </div>
+      <!-- Python Cert Quiz -->
+      <div class="quiz-section" id="python-cert-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック（認定基礎試験対策）</h3>
+        </div>
+        <p class="quiz-intro">試験で問われる細かい仕様やひっかけ問題を確認しましょう。全6問です。</p>
+        <div id="python-cert-quiz-container"></div>
+        <div class="quiz-result" id="python-cert-quiz-result"></div>
+      </div>
+    </div>
+
+
