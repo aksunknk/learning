@@ -958,10 +958,11 @@ function initPuzzleDropzones() {
       e.preventDefault();
       zone.classList.remove('drag-over');
       
-      // Remove placeholder if present
+      // Hide placeholder if pieces are present
       const placeholder = zone.querySelector('.dropzone-placeholder');
-      if (placeholder && zone.contains(draggable)) {
-          // actually the placeholder stays or is hidden via CSS? Let's just remove it dynamically if pieces are inside
+      const pieces = zone.querySelectorAll('.puzzle-piece');
+      if (placeholder) {
+        placeholder.style.display = pieces.length > 0 ? 'none' : 'block';
       }
     });
   });
@@ -1045,7 +1046,7 @@ function checkPuzzle(lang) {
   
   if (pieces.length !== data.correctOrder.length) {
     resultEl.innerHTML = '❌ 全てのブロックをドロップエリアに配置してください。';
-    resultEl.className = 'quiz-result incorrect';
+    resultEl.className = 'quiz-result show needs-work';
     return;
   }
   
@@ -1063,10 +1064,10 @@ function checkPuzzle(lang) {
   
   if (isCorrect) {
     resultEl.innerHTML = `✅ <strong>正解！完璧です。</strong><br><br>${data.explanation}`;
-    resultEl.className = 'quiz-result correct';
+    resultEl.className = 'quiz-result show excellent';
   } else {
     resultEl.innerHTML = '❌ 順番が間違っている箇所があります。赤く揺れたブロックを見直してください。';
-    resultEl.className = 'quiz-result incorrect';
+    resultEl.className = 'quiz-result show needs-work';
   }
 }
 
