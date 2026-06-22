@@ -508,7 +508,7 @@ function saveProgress() {
 }
 
 function updateAllProgress() {
-  const languages = ['python', 'react', 'typescript', 'webapi'];
+  const languages = ['python', 'react', 'typescript', 'python-cert', 'webapi'];
   let totalSections = 0;
   let totalCompleted = 0;
 
@@ -538,7 +538,7 @@ function updateAllProgress() {
 // 8. クイズシステム
 // --------------------------------------------------
 function initQuizzes() {
-  ['python', 'react', 'typescript', 'webapi'].forEach(lang => {
+  ['python', 'react', 'typescript', 'python-cert', 'webapi'].forEach(lang => {
     const container = document.getElementById(`${lang}-quiz-container`);
     if (!container) return;
 

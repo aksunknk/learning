@@ -41,6 +41,10 @@
           <span class="stat-number">51</span>
           <span class="stat-label">クイズ</span>
         </div>
+        <div class="stat-item">
+          <span class="stat-number">5</span>
+          <span class="stat-label">パズル</span>
+        </div>
       </div>
       <a href="#learning-area" class="hero-cta">
         学習をはじめる
@@ -94,24 +98,17 @@
             <span class="progress-percent" id="typescript-progress-text">0%</span>
           </div>
         </div>
-                <div class="progress-card python-card" data-lang="python-cert">
-          <div class="card-header">
-            <div class="icon-wrapper">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-              </svg>
-            </div>
+        <div class="progress-card cert-card" data-lang="python-cert">
+          <div class="progress-card-icon">📜</div>
+          <div class="progress-card-info">
             <h3>Python認定基礎</h3>
-          </div>
-          <div class="progress-bar-container">
-            <div class="progress-bar" id="python-cert-progress"></div>
-          </div>
-          <div class="progress-stats">
-            <span>完了</span>
-            <span class="progress-count" id="python-cert-progress-count">0/10</span>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="python-cert-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="python-cert-progress-text">0%</span>
           </div>
         </div>
-<div class="progress-card webapi-card" data-lang="webapi">
+        <div class="progress-card webapi-card" data-lang="webapi">
           <div class="progress-card-icon">🌐</div>
           <div class="progress-card-info">
             <h3>Web/API</h3>
@@ -138,6 +135,11 @@
         <button class="tab-button" data-tab="typescript" role="tab" aria-selected="false" id="tab-typescript">
           <span class="tab-icon">🔷</span>
           <span class="tab-label">TypeScript</span>
+        </button>
+        <button class="tab-button" data-tab="python-cert" role="tab" aria-selected="false" id="tab-python-cert">
+          <span class="tab-icon">📜</span>
+          <span class="tab-label">Python認定基礎</span>
+        </button>
         <button class="tab-button" data-tab="webapi" role="tab" aria-selected="false" id="tab-webapi">
           <span class="tab-icon">🌐</span>
           <span class="tab-label">Web/API</span>
@@ -146,10 +148,9 @@
       <div class="tab-indicator" id="tab-indicator"></div>
     </nav>
 
-    <!-- ==================== -->
-    <!-- PYTHON TAB CONTENT   -->
-    <!-- ==================== -->
+    <!-- PYTHON TAB CONTENT -->
     <div class="tab-content active" id="content-python" role="tabpanel">
+
       <!-- Lesson 1 -->
       <article class="lesson-card" data-section="python-1" id="python-lesson-1">
         <div class="lesson-header" onclick="toggleSection(this)">
@@ -802,10 +803,14 @@ print(next(gen)) # 1</code></pre>
 
       <!-- Python Quiz -->
       <div class="quiz-section" id="python-quiz">
-        <h3>🧪 Python 理解度チェック</h3>
-        <p class="quiz-intro">学んだ内容を確認しましょう。全5問です。</p>
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">Pythonの基礎から実践までの知識を確認しましょう。</p>
         <div id="python-quiz-container"></div>
         <div class="quiz-result" id="python-quiz-result"></div>
+      </div>
+
       <!-- Puzzle Section -->
       <div class="puzzle-section" id="python-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
         <div class="quiz-header">
@@ -814,11 +819,8 @@ print(next(gen)) # 1</code></pre>
         <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
         <div class="puzzle-question" id="python-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
         <div class="puzzle-board">
-          <div class="puzzle-source" id="python-puzzle-source">
-            <!-- 選択肢となるピースがここに並ぶ -->
-          </div>
+          <div class="puzzle-source" id="python-puzzle-source"></div>
           <div class="puzzle-dropzone" id="python-puzzle-dropzone">
-            <!-- ここにピースをドロップする -->
             <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
           </div>
         </div>
@@ -828,13 +830,10 @@ print(next(gen)) # 1</code></pre>
         </div>
         <div class="quiz-result" id="python-puzzle-result" style="margin-top: 1rem;"></div>
       </div>
-      </div>
     </div>
-
-    <!-- ==================== -->
-    <!-- REACT TAB CONTENT    -->
-    <!-- ==================== -->
+    <!-- REACT TAB CONTENT -->
     <div class="tab-content" id="content-react" role="tabpanel">
+
       <!-- Lesson 1 -->
       <article class="lesson-card" data-section="react-1" id="react-lesson-1">
         <div class="lesson-header" onclick="toggleSection(this)">
@@ -1601,10 +1600,14 @@ function App({ list }) {
 
       <!-- React Quiz -->
       <div class="quiz-section" id="react-quiz">
-        <h3>🧪 React 理解度チェック</h3>
-        <p class="quiz-intro">学んだ内容を確認しましょう。全5問です。</p>
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">React の核心を理解できているか確認しましょう。</p>
         <div id="react-quiz-container"></div>
         <div class="quiz-result" id="react-quiz-result"></div>
+      </div>
+
       <!-- Puzzle Section -->
       <div class="puzzle-section" id="react-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
         <div class="quiz-header">
@@ -1613,11 +1616,8 @@ function App({ list }) {
         <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
         <div class="puzzle-question" id="react-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
         <div class="puzzle-board">
-          <div class="puzzle-source" id="react-puzzle-source">
-            <!-- 選択肢となるピースがここに並ぶ -->
-          </div>
+          <div class="puzzle-source" id="react-puzzle-source"></div>
           <div class="puzzle-dropzone" id="react-puzzle-dropzone">
-            <!-- ここにピースをドロップする -->
             <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
           </div>
         </div>
@@ -1627,13 +1627,10 @@ function App({ list }) {
         </div>
         <div class="quiz-result" id="react-puzzle-result" style="margin-top: 1rem;"></div>
       </div>
-      </div>
     </div>
-
-    <!-- ========================= -->
-    <!-- TYPESCRIPT TAB CONTENT    -->
-    <!-- ========================= -->
+    <!-- TYPESCRIPT TAB CONTENT -->
     <div class="tab-content" id="content-typescript" role="tabpanel">
+
       <!-- Lesson 1 -->
       <article class="lesson-card" data-section="typescript-1" id="typescript-lesson-1">
         <div class="lesson-header" onclick="toggleSection(this)">
@@ -2292,12 +2289,16 @@ function move(animal: unknown) {
       </article>
 
 
-      <!-- TypeScript Quiz -->
+      <!-- Typescript Quiz -->
       <div class="quiz-section" id="typescript-quiz">
-        <h3>🧪 TypeScript 理解度チェック</h3>
-        <p class="quiz-intro">学んだ内容を確認しましょう。全5問です。</p>
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">TypeScript の型システムの理解度を確認しましょう。</p>
         <div id="typescript-quiz-container"></div>
         <div class="quiz-result" id="typescript-quiz-result"></div>
+      </div>
+
       <!-- Puzzle Section -->
       <div class="puzzle-section" id="typescript-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
         <div class="quiz-header">
@@ -2306,11 +2307,8 @@ function move(animal: unknown) {
         <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
         <div class="puzzle-question" id="typescript-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
         <div class="puzzle-board">
-          <div class="puzzle-source" id="typescript-puzzle-source">
-            <!-- 選択肢となるピースがここに並ぶ -->
-          </div>
+          <div class="puzzle-source" id="typescript-puzzle-source"></div>
           <div class="puzzle-dropzone" id="typescript-puzzle-dropzone">
-            <!-- ここにピースをドロップする -->
             <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
           </div>
         </div>
@@ -2320,415 +2318,10 @@ function move(animal: unknown) {
         </div>
         <div class="quiz-result" id="typescript-puzzle-result" style="margin-top: 1rem;"></div>
       </div>
-      </div>
     </div>
+    <!-- PYTHON-CERT TAB CONTENT -->
+    <div class="tab-content" id="content-python-cert" role="tabpanel">
 
-            <!-- === Web/API === -->
-      <div class="tab-content" id="content-webapi" role="tabpanel">
-        <div class="tab-intro webapi-intro">
-          <h2>🌐 Web / API 実践</h2>
-          <p>フロントとバックエンドを繋ぐ「通信と型」の契約を学びます。</p>
-        </div>
-
-      <!-- Lesson 1 -->
-      <article class="lesson-card" data-section="webapi-1" id="webapi-lesson-1">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">01</span>
-            <h3>Web開発の土台：HTTP・JSON・クライアント/サーバー</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-1')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 FastAPIとTypeScriptに入る前に押さえる通信の基礎</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>クライアント/サーバーとHTTPの役割</h4>
-            <p>Webアプリは、ブラウザ（クライアント）がリクエストを送り、サーバーがレスポンスを返す往復で成り立ちます。HTTP はこの往復の約束事であり、メソッド（GET/POST/PATCH/DELETE）、URL、ヘッダ、ボディ、ステータスコードで意味を表現します。FastAPI はこの HTTP 契約を Python コードで宣言し、TypeScript 側はその契約を型として扱うことで、実装と仕様のズレを早期に減らせます。ここが曖昧だと後続の非同期処理・SSE・認証・キャッシュすべてが混乱するため、まず通信レイヤーの語彙を固定することが最重要です。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>GET /api/lessons HTTP/1.1
-Host: 127.0.0.1:8765
-Accept: application/json</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>ステータスコードとエラーハンドリング</h4>
-            <p>2xx は成功、4xx はクライアント入力起因、5xx はサーバー内部起因、という大枠を運用で徹底するとデバッグ効率が上がります。例えば 422 は入力バリデーション不一致、404 は対象なし、409 は競合、500 は想定外障害です。フロントは `ok` だけ見るのではなく、ステータスとエラーボディの構造を合わせて扱うべきです。FastAPI では HTTPException を使って失敗を明示し、TypeScript 側で `ApiError` のような統一型へ落とし込むと、画面側の分岐が安定します。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>if (!response.ok) {
-  throw new Error(`HTTP ${response.status}`)
-}</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>JSON契約とバージョニングの意識</h4>
-            <p>JSON は軽量ですが、自由度が高すぎるため契約管理が必要です。フィールド名、型、nullable、必須/任意を固定し、将来変更時は後方互換を意識します。安易な breaking change はフロントを即座に壊します。理想は OpenAPI を単一の真実源にし、FastAPI 側の Pydantic モデルと TypeScript 型生成を同期させることです。仕様を自然言語だけで管理すると、実装速度が上がるほど破綻速度も上がります。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>{
-  "id": "lesson-1",
-  "title": "HTTP Basics",
-  "quiz_count": 2
-}</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 2 -->
-      <article class="lesson-card" data-section="webapi-2" id="webapi-lesson-2">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">02</span>
-            <h3>TypeScript 概要：型で壊れ方を先に制御する</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-2')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 any回避・ユニオン・型狭窄・APIレスポンス型の設計</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>TypeScriptを使う理由</h4>
-            <p>TypeScript は JavaScript の上位互換で、静的型検査を追加する言語です。実行時の挙動は JS ですが、ビルド時に型不一致を検出できます。特に API 駆動開発では「サーバーが返す shape」と「画面が期待する shape」の不一致が主なバグ源なので、型で先に落とす効果が大きいです。`any` を多用すると TypeScript の価値は消えるため、unknown からの型狭窄や明示的な型定義を基本とします。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>type LessonMeta = {
-  id: string
-  title: string
-  order: number
-}</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>ユニオン型と型狭窄</h4>
-            <p>実務データは単一型でないことが多く、ユニオン型（A | B）で扱います。分岐時に `in`、`typeof`、ユーザー定義 type guard を使い、処理可能な型へ狭窄します。これにより「存在しないプロパティアクセス」をコンパイル時に排除できます。レスポンス成功/失敗を discriminated union で定義すると、UI分岐を安全に書けます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>type Result =
-  | { ok: true; data: LessonMeta[] }
-  | { ok: false; message: string }</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>strictモード運用</h4>
-            <p>tsconfig の `strict: true` を基準にし、必要な箇所だけ局所的に緩和する方針が保守上有利です。`noImplicitAny`、`noUncheckedIndexedAccess`、`exactOptionalPropertyTypes` なども段階導入すると品質が安定します。型エラーは面倒ではなく「将来の事故前払い」です。FastAPI 側変更時にフロントが即エラーになる状態は、むしろ望ましい監視機構です。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>{
-  "compilerOptions": {
-    "strict": true,
-    "noUnusedLocals": true
-  }
-}</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 3 -->
-      <article class="lesson-card" data-section="webapi-3" id="webapi-lesson-3">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">03</span>
-            <h3>FastAPI 概要：ルーティング・バリデーション・依存性注入</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-3')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 最小構成から実務構成へ進むための基礎</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>ルート関数と自動ドキュメント</h4>
-            <p>FastAPI は Python の型ヒントを活用して OpenAPI ドキュメントを自動生成します。`@app.get` などでエンドポイントを宣言し、関数シグネチャにクエリ・パス・ボディを記述するだけで、/docs で実行可能な仕様書が得られます。これはバックエンド都合ではなく、フロント連携と QA 自動化に直接効く資産です。まずは「仕様がコードから再現できる」状態を作ることが重要です。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>from fastapi import FastAPI
-
-app = FastAPI()
-
-@app.get('/api/health')
-def health() -> dict:
-    return {'status': 'ok'}</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>Pydanticモデルで入力を閉じる</h4>
-            <p>リクエストボディは Pydantic モデルで受けることで、型・範囲・必須性を統一的に検証できます。`extra='forbid'` を使えば未定義フィールドを拒否でき、契約逸脱を防げます。入力検証をルート内で手書きすると重複と漏れが増えるため、モデルに寄せるのが合理的です。さらに response_model を指定すると、出力形状まで拘束でき、誤って内部情報を返す事故を減らせます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>class QuizAnswerIn(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-    lesson_id: str
-    choice_index: int = Field(..., ge=0)</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>依存性注入（Depends）の基本</h4>
-            <p>DB セッション、認証情報、設定値などは `Depends` に切り出すと、ルート関数を薄く保てます。依存関数を差し替えるだけでテストが書きやすくなり、関心分離が進みます。重要なのは「依存を増やすこと」ではなく「責務を薄く保つこと」です。最初から大型DI設計に走らず、まず DB セッションと current_user 程度の抽出から始めるのが安全です。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>@router.get('/items')
-def list_items(session: Session = Depends(get_session)):
-    return session.scalars(select(Item)).all()</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 4 -->
-      <article class="lesson-card" data-section="webapi-4" id="webapi-lesson-4">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">04</span>
-            <h3>React + TypeScript 通信基礎：副作用・中断・UI状態</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-4')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 fetchの基本からメモリリーク回避まで</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>useEffectでのデータ取得の基本形</h4>
-            <p>React では描画と副作用を分離するため、通信は通常 useEffect に置きます。依存配列が変わるたびに effect は再実行されるため、「どの値の変化で再取得するか」を明示する設計が必要です。lessonId のようなキーに対して再取得し、不要時は state をクリアする、という基本パターンを固定すると、画面遷移時の不整合を減らせます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>useEffect(() => {
-  if (!lessonId) return
-  // fetch...
-}, [lessonId])</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>AbortControllerで中断可能にする</h4>
-            <p>非同期リクエストは、画面遷移や再クリックで古い通信が残ると状態競合を起こします。AbortController を毎回生成し cleanup で abort することで、アンマウント後の setState や古いレスポンス反映を抑制できます。これは体感性能よりも整合性の問題です。特に SSE や長時間推論では中断制御がないと、GPU/CPU 使用が無駄に残り続けます。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>const ac = new AbortController()
-fetch(url, { signal: ac.signal })
-return () => ac.abort()</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>表示状態の分割</h4>
-            <p>最低限、`loading` / `error` / `data` を分けて管理すると UI の説明責務が明確になります。単一 state に詰め込むより、状態遷移を列挙しやすく、障害時メッセージも制御しやすいです。より複雑になったら reducer や Query ライブラリに移行しますが、まずは素朴な3状態管理を確実に実装する方が学習効果は高いです。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>type ViewState<T> = {
-  loading: boolean
-  error: string | null
-  data: T | null
-}</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Lesson 5 -->
-      <article class="lesson-card" data-section="webapi-5" id="webapi-lesson-5">
-        <div class="lesson-header" onclick="toggleSection(this)">
-          <div class="lesson-title-area">
-            <span class="lesson-number">05</span>
-            <h3>非同期処理の基礎からSSEへ：asyncio実践入門</h3>
-          </div>
-          <div class="lesson-controls">
-            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-5')" title="完了にする">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </button>
-            <span class="chevron">▼</span>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="concept-box">
-            <h4>💡 event loop・非ブロッキング・ストリーミング設計</h4>
-          </div>
-          <div class="explanation-box">
-            <h4>event loopと非ブロッキングの考え方</h4>
-            <p>asyncio は event loop が多数タスクを協調的に切り替えるモデルです。`await` で制御を返すことで他タスクが進みます。逆に time.sleep や重い同期処理を挟むとループ全体が停止し、同時接続性能が落ちます。まず「どの処理がブロッキングか」を見分ける習慣を持つことが、SSE以前の必須基礎です。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>async def handler():
-    await asyncio.sleep(0)
-    return {'ok': True}</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>SSEの最小構成</h4>
-            <p>SSE は `text/event-stream` で逐次テキストを送る方式です。各イベントを `data: ...
-
-` で区切る必要があります。本アプリの `/api/llm/stream` はこの形式でトークンを流しています。WebSocket ほど双方向でなくてもよい場面では、実装負荷が低く運用しやすい利点があります。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>yield f"data: {json.dumps({'token': tok}, ensure_ascii=False)}
-
-"</code></pre>
-          </div>
-          <div class="explanation-box">
-            <h4>中断とバックプレッシャ</h4>
-            <p>ストリーミングは開始より終了制御が難所です。クライアント切断時に生成タスクを止めないと、GPU 推論が裏で走り続けます。さらに受信側が遅いと送信バッファが詰まり、待機が連鎖します。実務では「同時ストリーム数上限」「1ストリームあたり最大トークン」「アイドルタイムアウト」をまず導入し、観測指標（TTFB/切断率/トークン速度）で調整します。</p>
-          </div>
-          <div class="code-block">
-            <div class="code-header">
-              <span class="code-lang">Python/TS</span>
-              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-            </div>
-            <pre><code>return StreamingResponse(event_iter(), media_type='text/event-stream')</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- Quiz Section -->
-      <div class="quiz-section">
-        <div class="quiz-header">
-          <h3>📝 知識の確認クイズ</h3>
-          <p>これまでのレッスンの理解度をチェックしましょう。</p>
-        </div>
-        <div id="webapi-quiz-container"></div>
-        <div class="quiz-result" id="webapi-quiz-result"></div>
-      <!-- Puzzle Section -->
-      <div class="puzzle-section" id="webapi-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
-        <div class="quiz-header">
-          <h3>🧩 コード組み立てパズル</h3>
-        </div>
-        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
-        <div class="puzzle-question" id="webapi-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
-        <div class="puzzle-board">
-          <div class="puzzle-source" id="webapi-puzzle-source">
-            <!-- 選択肢となるピースがここに並ぶ -->
-          </div>
-          <div class="puzzle-dropzone" id="webapi-puzzle-dropzone">
-            <!-- ここにピースをドロップする -->
-            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
-          </div>
-        </div>
-        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
-          <button class="check-btn" onclick="checkPuzzle('webapi')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
-          <button class="reset-btn" onclick="loadPuzzle('webapi')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
-        </div>
-        <div class="quiz-result" id="webapi-puzzle-result" style="margin-top: 1rem;"></div>
-      </div>
-      </div>
-    </div>
-
-
-  </main>
-
-  <!-- ===== FOOTER ===== -->
-  <footer class="site-footer">
-    <div class="footer-content">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <span class="gradient-text footer-logo">Code Foundations</span>
-          <p>AIと共に成長するプログラマーのために</p>
-        </div>
-        <div class="footer-links">
-          <div class="footer-column">
-            <h4>学習コンテンツ</h4>
-            <a href="#" onclick="switchTab('python'); return false;">Python</a>
-            <a href="#" onclick="switchTab('react'); return false;">React</a>
-            <a href="#" onclick="switchTab('typescript'); return false;">TypeScript</a>
-          </div>
-          <div class="footer-column">
-            <h4>ヒント</h4>
-            <p class="footer-tip">💡 AIに聞くときは「なぜこう書くのか」も質問してみましょう</p>
-          </div>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; 2026 Code Foundations. Built for learners in the AI era.</p>
-      </div>
-    </div>
-  </footer>
-
-  <script src="app.js"></script>
-</body>
-</html>        <button class="tab-btn" data-tab="python-cert">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-          Python認定基礎
-        </button>
-    <!-- Python Cert Tab -->
-    <div class="tab-content" id="content-python-cert">
-      <div class="lessons-container" id="python-cert-lessons">
       <!-- Lesson 1 -->
       <article class="lesson-card" data-section="python-cert-1" id="python-cert-lesson-1">
         <div class="lesson-header" onclick="toggleSection(this)">
@@ -3446,15 +3039,17 @@ doctest.testmod()   # docstring内のテストを自動実行</code></pre>
         </div>
       </article>
 
-      </div>
-      <!-- Python Cert Quiz -->
+
+      <!-- Python-cert Quiz -->
       <div class="quiz-section" id="python-cert-quiz">
         <div class="quiz-header">
           <h3>🧠 理解度チェック（認定基礎試験対策）</h3>
         </div>
-        <p class="quiz-intro">試験で問われる細かい仕様やひっかけ問題を確認しましょう。全6問です。</p>
+        <p class="quiz-intro">試験で問われる細かい仕様やひっかけ問題を確認しましょう。</p>
         <div id="python-cert-quiz-container"></div>
         <div class="quiz-result" id="python-cert-quiz-result"></div>
+      </div>
+
       <!-- Puzzle Section -->
       <div class="puzzle-section" id="python-cert-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
         <div class="quiz-header">
@@ -3463,11 +3058,8 @@ doctest.testmod()   # docstring内のテストを自動実行</code></pre>
         <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
         <div class="puzzle-question" id="python-cert-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
         <div class="puzzle-board">
-          <div class="puzzle-source" id="python-cert-puzzle-source">
-            <!-- 選択肢となるピースがここに並ぶ -->
-          </div>
+          <div class="puzzle-source" id="python-cert-puzzle-source"></div>
           <div class="puzzle-dropzone" id="python-cert-puzzle-dropzone">
-            <!-- ここにピースをドロップする -->
             <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
           </div>
         </div>
@@ -3477,7 +3069,378 @@ doctest.testmod()   # docstring内のテストを自動実行</code></pre>
         </div>
         <div class="quiz-result" id="python-cert-puzzle-result" style="margin-top: 1rem;"></div>
       </div>
+    </div>
+    <!-- WEBAPI TAB CONTENT -->
+    <div class="tab-content" id="content-webapi" role="tabpanel">
+      <div class="tab-intro webapi-intro">
+        <h2>🌐 Web / API 実践</h2>
+        <p>フロントとバックエンドを繋ぐ「通信と型」の契約を学びます。</p>
+      </div>
+<article class="lesson-card" data-section="webapi-1" id="webapi-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>Web開発の土台：HTTP・JSON・クライアント/サーバー</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 FastAPIとTypeScriptに入る前に押さえる通信の基礎</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>クライアント/サーバーとHTTPの役割</h4>
+            <p>Webアプリは、ブラウザ（クライアント）がリクエストを送り、サーバーがレスポンスを返す往復で成り立ちます。HTTP はこの往復の約束事であり、メソッド（GET/POST/PATCH/DELETE）、URL、ヘッダ、ボディ、ステータスコードで意味を表現します。FastAPI はこの HTTP 契約を Python コードで宣言し、TypeScript 側はその契約を型として扱うことで、実装と仕様のズレを早期に減らせます。ここが曖昧だと後続の非同期処理・SSE・認証・キャッシュすべてが混乱するため、まず通信レイヤーの語彙を固定することが最重要です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>GET /api/lessons HTTP/1.1
+Host: 127.0.0.1:8765
+Accept: application/json</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>ステータスコードとエラーハンドリング</h4>
+            <p>2xx は成功、4xx はクライアント入力起因、5xx はサーバー内部起因、という大枠を運用で徹底するとデバッグ効率が上がります。例えば 422 は入力バリデーション不一致、404 は対象なし、409 は競合、500 は想定外障害です。フロントは `ok` だけ見るのではなく、ステータスとエラーボディの構造を合わせて扱うべきです。FastAPI では HTTPException を使って失敗を明示し、TypeScript 側で `ApiError` のような統一型へ落とし込むと、画面側の分岐が安定します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>if (!response.ok) {
+  throw new Error(`HTTP ${response.status}`)
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>JSON契約とバージョニングの意識</h4>
+            <p>JSON は軽量ですが、自由度が高すぎるため契約管理が必要です。フィールド名、型、nullable、必須/任意を固定し、将来変更時は後方互換を意識します。安易な breaking change はフロントを即座に壊します。理想は OpenAPI を単一の真実源にし、FastAPI 側の Pydantic モデルと TypeScript 型生成を同期させることです。仕様を自然言語だけで管理すると、実装速度が上がるほど破綻速度も上がります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>{
+  "id": "lesson-1",
+  "title": "HTTP Basics",
+  "quiz_count": 2
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="webapi-2" id="webapi-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>TypeScript 概要：型で壊れ方を先に制御する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 any回避・ユニオン・型狭窄・APIレスポンス型の設計</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>TypeScriptを使う理由</h4>
+            <p>TypeScript は JavaScript の上位互換で、静的型検査を追加する言語です。実行時の挙動は JS ですが、ビルド時に型不一致を検出できます。特に API 駆動開発では「サーバーが返す shape」と「画面が期待する shape」の不一致が主なバグ源なので、型で先に落とす効果が大きいです。`any` を多用すると TypeScript の価値は消えるため、unknown からの型狭窄や明示的な型定義を基本とします。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>type LessonMeta = {
+  id: string
+  title: string
+  order: number
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>ユニオン型と型狭窄</h4>
+            <p>実務データは単一型でないことが多く、ユニオン型（A | B）で扱います。分岐時に `in`、`typeof`、ユーザー定義 type guard を使い、処理可能な型へ狭窄します。これにより「存在しないプロパティアクセス」をコンパイル時に排除できます。レスポンス成功/失敗を discriminated union で定義すると、UI分岐を安全に書けます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>type Result =
+  | { ok: true; data: LessonMeta[] }
+  | { ok: false; message: string }</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>strictモード運用</h4>
+            <p>tsconfig の `strict: true` を基準にし、必要な箇所だけ局所的に緩和する方針が保守上有利です。`noImplicitAny`、`noUncheckedIndexedAccess`、`exactOptionalPropertyTypes` なども段階導入すると品質が安定します。型エラーは面倒ではなく「将来の事故前払い」です。FastAPI 側変更時にフロントが即エラーになる状態は、むしろ望ましい監視機構です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>{
+  "compilerOptions": {
+    "strict": true,
+    "noUnusedLocals": true
+  }
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="webapi-3" id="webapi-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>FastAPI 概要：ルーティング・バリデーション・依存性注入</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 最小構成から実務構成へ進むための基礎</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>ルート関数と自動ドキュメント</h4>
+            <p>FastAPI は Python の型ヒントを活用して OpenAPI ドキュメントを自動生成します。`@app.get` などでエンドポイントを宣言し、関数シグネチャにクエリ・パス・ボディを記述するだけで、/docs で実行可能な仕様書が得られます。これはバックエンド都合ではなく、フロント連携と QA 自動化に直接効く資産です。まずは「仕様がコードから再現できる」状態を作ることが重要です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get('/api/health')
+def health() -> dict:
+    return {'status': 'ok'}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Pydanticモデルで入力を閉じる</h4>
+            <p>リクエストボディは Pydantic モデルで受けることで、型・範囲・必須性を統一的に検証できます。`extra='forbid'` を使えば未定義フィールドを拒否でき、契約逸脱を防げます。入力検証をルート内で手書きすると重複と漏れが増えるため、モデルに寄せるのが合理的です。さらに response_model を指定すると、出力形状まで拘束でき、誤って内部情報を返す事故を減らせます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>class QuizAnswerIn(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    lesson_id: str
+    choice_index: int = Field(..., ge=0)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>依存性注入（Depends）の基本</h4>
+            <p>DB セッション、認証情報、設定値などは `Depends` に切り出すと、ルート関数を薄く保てます。依存関数を差し替えるだけでテストが書きやすくなり、関心分離が進みます。重要なのは「依存を増やすこと」ではなく「責務を薄く保つこと」です。最初から大型DI設計に走らず、まず DB セッションと current_user 程度の抽出から始めるのが安全です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>@router.get('/items')
+def list_items(session: Session = Depends(get_session)):
+    return session.scalars(select(Item)).all()</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="webapi-4" id="webapi-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>React + TypeScript 通信基礎：副作用・中断・UI状態</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 fetchの基本からメモリリーク回避まで</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>useEffectでのデータ取得の基本形</h4>
+            <p>React では描画と副作用を分離するため、通信は通常 useEffect に置きます。依存配列が変わるたびに effect は再実行されるため、「どの値の変化で再取得するか」を明示する設計が必要です。lessonId のようなキーに対して再取得し、不要時は state をクリアする、という基本パターンを固定すると、画面遷移時の不整合を減らせます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>useEffect(() => {
+  if (!lessonId) return
+  // fetch...
+}, [lessonId])</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>AbortControllerで中断可能にする</h4>
+            <p>非同期リクエストは、画面遷移や再クリックで古い通信が残ると状態競合を起こします。AbortController を毎回生成し cleanup で abort することで、アンマウント後の setState や古いレスポンス反映を抑制できます。これは体感性能よりも整合性の問題です。特に SSE や長時間推論では中断制御がないと、GPU/CPU 使用が無駄に残り続けます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const ac = new AbortController()
+fetch(url, { signal: ac.signal })
+return () => ac.abort()</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>表示状態の分割</h4>
+            <p>最低限、`loading` / `error` / `data` を分けて管理すると UI の説明責務が明確になります。単一 state に詰め込むより、状態遷移を列挙しやすく、障害時メッセージも制御しやすいです。より複雑になったら reducer や Query ライブラリに移行しますが、まずは素朴な3状態管理を確実に実装する方が学習効果は高いです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>type ViewState<T> = {
+  loading: boolean
+  error: string | null
+  data: T | null
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="webapi-5" id="webapi-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>非同期処理の基礎からSSEへ：asyncio実践入門</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 event loop・非ブロッキング・ストリーミング設計</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>event loopと非ブロッキングの考え方</h4>
+            <p>asyncio は event loop が多数タスクを協調的に切り替えるモデルです。`await` で制御を返すことで他タスクが進みます。逆に time.sleep や重い同期処理を挟むとループ全体が停止し、同時接続性能が落ちます。まず「どの処理がブロッキングか」を見分ける習慣を持つことが、SSE以前の必須基礎です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>async def handler():
+    await asyncio.sleep(0)
+    return {'ok': True}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>SSEの最小構成</h4>
+            <p>SSE は `text/event-stream` で逐次テキストを送る方式です。各イベントを `data: ...
+
+` で区切る必要があります。本アプリの `/api/llm/stream` はこの形式でトークンを流しています。WebSocket ほど双方向でなくてもよい場面では、実装負荷が低く運用しやすい利点があります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>yield f"data: {json.dumps({'token': tok}, ensure_ascii=False)}
+
+"</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>中断とバックプレッシャ</h4>
+            <p>ストリーミングは開始より終了制御が難所です。クライアント切断時に生成タスクを止めないと、GPU 推論が裏で走り続けます。さらに受信側が遅いと送信バッファが詰まり、待機が連鎖します。実務では「同時ストリーム数上限」「1ストリームあたり最大トークン」「アイドルタイムアウト」をまず導入し、観測指標（TTFB/切断率/トークン速度）で調整します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python/TS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>return StreamingResponse(event_iter(), media_type='text/event-stream')</code></pre>
+          </div>
+        </div>
+      </article>
+      <!-- Webapi Quiz -->
+      <div class="quiz-section" id="webapi-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">Web APIの基礎知識を確認しましょう。</p>
+        <div id="webapi-quiz-container"></div>
+        <div class="quiz-result" id="webapi-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="webapi-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="webapi-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="webapi-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="webapi-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('webapi')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('webapi')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="webapi-puzzle-result" style="margin-top: 1rem;"></div>
       </div>
     </div>
 
+  </main>
 
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-main">
+        <p>&copy; 2026 Code Foundations. Built for learners in the AI era.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
