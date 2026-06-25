@@ -21,6 +21,56 @@ const quizData = {
 {"question": "標準ライブラリの `math` モジュールを使って円周率を取得する正しい方法は？", "options": ["math.pi", "math.PI", "math.pi()", "math.get_pi()"], "correct": 0, "explanation": "`math.pi` は数学定数 π を利用できる変数（属性）です。メソッドではありません。"}
   ],
 
+  algorithm: [
+    {
+      question: "計算量 O(n log n) に該当するアルゴリズムはどれですか？",
+      options: ["線形探索", "バブルソート", "マージソート", "二分探索"],
+      correct: 2,
+      explanation: "マージソートは分割統治法により常に O(n log n) の計算量を達成します。バブルソートは O(n²)、線形探索は O(n)、二分探索は O(log n) です。"
+    },
+    {
+      question: "二分探索を使用するための前提条件は何ですか？",
+      options: ["データが整数であること", "データがソート済みであること", "データの件数が偶数であること", "データに重複がないこと"],
+      correct: 1,
+      explanation: "二分探索は中央の要素と比較して探索範囲を半分に絞る手法のため、データが昇順または降順にソートされていることが絶対条件です。"
+    },
+    {
+      question: "スタック（Stack）のデータ取り出し順序は？",
+      options: ["FIFO（先入れ先出し）", "LIFO（後入れ先出し）", "ランダム", "優先度順"],
+      correct: 1,
+      explanation: "スタックは LIFO（Last In, First Out）方式です。最後に追加した要素が最初に取り出されます。FIFOはキュー（Queue）の特徴です。"
+    },
+    {
+      question: "Pythonの辞書（dict）の検索・追加・削除の平均計算量はどれですか？",
+      options: ["O(n)", "O(log n)", "O(1)", "O(n²)"],
+      correct: 2,
+      explanation: "Pythonの辞書はハッシュテーブルで実装されており、ハッシュ関数でキーから直接格納位置を計算するため、平均 O(1) でアクセスできます。"
+    },
+    {
+      question: "BFS（幅優先探索）で使用するデータ構造はどれですか？",
+      options: ["スタック", "キュー", "ヒープ", "連結リスト"],
+      correct: 1,
+      explanation: "BFSはキュー（FIFO）を使って、スタート地点から近い順にノードを探索します。DFSはスタック（LIFO）を使います。"
+    },
+    {
+      question: "再帰関数に必ず必要な要素は何ですか？",
+      options: ["グローバル変数", "ベースケース（終了条件）", "try-except文", "デコレータ"],
+      correct: 1,
+      explanation: "再帰関数にはベースケース（終了条件）が不可欠です。これがないと無限に自分自身を呼び出し続け、スタックオーバーフロー（RecursionError）が発生します。"
+    },
+    {
+      question: "クイックソートの最悪計算量はどれですか？",
+      options: ["O(n)", "O(n log n)", "O(n²)", "O(log n)"],
+      correct: 2,
+      explanation: "クイックソートはピボットの選び方が偏ると（例：すでにソート済みのデータ）最悪 O(n²) に劣化します。ただし平均では O(n log n) です。"
+    },
+    {
+      question: "100万件のソート済みデータから特定の値を二分探索で見つけるのに必要な最大比較回数はおよそ何回？",
+      options: ["約100回", "約1,000回", "約20回", "約100万回"],
+      correct: 2,
+      explanation: "二分探索は毎回データを半分に絞るため、log₂(1,000,000) ≈ 20回の比較で答えが見つかります。これが O(log n) の威力です。"
+    }
+  ],
   python: [
     {
       question: "Pythonで変数に値を代入する正しい方法はどれですか？",
@@ -508,7 +558,7 @@ function saveProgress() {
 }
 
 function updateAllProgress() {
-  const languages = ['python', 'react', 'typescript', 'python-cert', 'webapi'];
+  const languages = ['python', 'react', 'typescript', 'python-cert', 'algorithm', 'webapi'];
   let totalSections = 0;
   let totalCompleted = 0;
 
@@ -538,7 +588,7 @@ function updateAllProgress() {
 // 8. クイズシステム
 // --------------------------------------------------
 function initQuizzes() {
-  ['python', 'react', 'typescript', 'python-cert', 'webapi'].forEach(lang => {
+  ['python', 'react', 'typescript', 'python-cert', 'algorithm', 'webapi'].forEach(lang => {
     const container = document.getElementById(`${lang}-quiz-container`);
     if (!container) return;
 
@@ -867,6 +917,18 @@ window.handleQuizAnswer = handleQuizAnswer;
 // ==========================================
 
 const puzzleData = {
+  algorithm: {
+    question: "二分探索（Binary Search）の関数を正しい順番に組み立ててください",
+    pieces: [
+      { id: "a1", text: "def binary_search(lst, target):" },
+      { id: "a2", text: "    left, right = 0, len(lst) - 1" },
+      { id: "a3", text: "    while left <= right:" },
+      { id: "a4", text: "        mid = (left + right) // 2" },
+      { id: "a5", text: "        if lst[mid] == target: return mid" }
+    ],
+    correctOrder: ["a1", "a2", "a3", "a4", "a5"],
+    explanation: "二分探索は左右の境界（left, right）を設定し、ループで中央値を計算して探索範囲を半分に絞っていきます。"
+  },
   python: {
     question: "以下のブロックを正しく並べ替えて、エラーが起きても処理を継続する「0除算の例外処理」を完成させてください。",
     pieces: [
@@ -1075,7 +1137,7 @@ function checkPuzzle(lang) {
 window.addEventListener('DOMContentLoaded', () => {
   initPuzzleDropzones();
   // Load initially for all languages
-  ['python', 'python-cert', 'react', 'typescript', 'webapi'].forEach(lang => {
+  ['python', 'python-cert', 'react', 'typescript', 'algorithm', 'webapi'].forEach(lang => {
     loadPuzzle(lang);
   });
 });
