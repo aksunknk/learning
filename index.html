@@ -3166,6 +3166,79 @@ def has_duplicate_smart(lst):
             <h4>💼 プロのTips</h4>
             <p><strong>面接やコーディング試験では、コードを書いた後に「この解法の計算量は O(n) です」と自分で説明できることが求められます。</strong>最初は難しく感じますが、「ループが1重なら O(n)、2重なら O(n²)、ループの中でデータを半分に絞っているなら O(n log n)」と覚えるだけでもかなり役立ちます。常に「このコード、データが100万件になっても大丈夫？」と自問する習慣をつけましょう。</p>
           </div>
+        
+          <div class="explanation-box">
+            <h4>🔬 ステップ実行で理解する計算量の違い</h4>
+            <p>同じ「リストの中から重複を探す」問題でも、アルゴリズム次第で処理時間が天と地ほど変わります。以下のコードでは、実際に処理時間を計測して <code>O(n²)</code> と <code>O(n)</code> の差を体感できます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 計算量の差を「実際に計測」して体感する
+import time
+
+def measure_time(func, *args):
+    """関数の実行時間を計測するヘルパー"""
+    start = time.perf_counter()
+    result = func(*args)
+    elapsed = time.perf_counter() - start
+    return result, elapsed
+
+# ---------- O(n²) のナイーブ解法 ----------
+def find_first_duplicate_naive(lst):
+    """全ペアを比較 → 二重ループ → O(n²)
+    
+    ステップ解説:
+    lst = [3, 1, 4, 1, 5] の場合
+      i=0: 3 vs 1, 3 vs 4, 3 vs 1, 3 vs 5  → 一致なし
+      i=1: 1 vs 4, 1 vs 1 → 一致！ return 1
+    最悪ケースでは n*(n-1)/2 回の比較が必要
+    """
+    for i in range(len(lst)):
+        for j in range(i + 1, len(lst)):
+            if lst[i] == lst[j]:
+                return lst[i]
+    return None
+
+# ---------- O(n) のハッシュ解法 ----------
+def find_first_duplicate_hash(lst):
+    """セットで既出チェック → 1回のループ → O(n)
+    
+    ステップ解説:
+    lst = [3, 1, 4, 1, 5] の場合
+      3 → seen={3}
+      1 → seen={3, 1}
+      4 → seen={3, 1, 4}
+      1 → 1 は seen に存在！ return 1
+    各要素を1回ずつ見るだけなので O(n)
+    """
+    seen = set()
+    for item in lst:
+        if item in seen:   # set の in は O(1)
+            return item
+        seen.add(item)
+    return None
+
+# 性能比較（データ量を変えて実験）
+import random
+for size in [1000, 5000, 10000]:
+    data = list(range(size)) + [0]  # 最後に重複を仕込む
+    random.shuffle(data)
+
+    _, t_naive = measure_time(find_first_duplicate_naive, data)
+    _, t_hash  = measure_time(find_first_duplicate_hash, data)
+
+    print(f"データ {size:>6}件: O(n²)={t_naive:.4f}秒, O(n)={t_hash:.6f}秒, "
+          f"差={t_naive/max(t_hash, 1e-9):.0f}倍")</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>📊 実行結果の読み方</h4>
+            <p>上のコードを実行すると、データが5,000件の時点で O(n²) は数百ミリ秒かかるのに対し、O(n) はほぼ0秒です。10,000件では差が<strong>数千倍</strong>にまで広がります。これが「アルゴリズムの選択が重要」と言われる理由です。</p>
+            <p>現場のWebアプリで「画面の読み込みが遅い」というクレームがあった場合、多くはデータベースクエリやループの計算量に問題があります。計算量の知識があれば、<strong>ボトルネックを特定して適切な改善策を提案できる</strong>ようになります。</p>
+          </div>
+
         </div>
       </article>
 
@@ -3262,6 +3335,123 @@ print(f"bisect で見つけた位置: {pos}")  # => 4</code></pre>
             <h4>💼 プロのTips</h4>
             <p>Pythonの <code>in</code> 演算子（<code>if x in my_list</code>）は内部的に線形探索を行います。リストへの <code>in</code> は <code>O(n)</code> ですが、<strong>セット（set）への <code>in</code> は <code>O(1)</code></strong> です。頻繁に「ある値が含まれているか」を調べる場面では、リストをセットに変換するだけで劇的に高速化できます。これは実務で最も効果の大きい最適化テクニックの一つです。</p>
           </div>
+        
+          <div class="explanation-box">
+            <h4>🔬 二分探索のステップ実行を可視化する</h4>
+            <p>二分探索は「抽象的で分かりにくい」と感じる人が多いアルゴリズムです。以下のコードでは、<strong>各ステップで何が起きているかを可視化</strong>して、探索範囲がどう絞られるかを目で追えるようにしています。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 二分探索を「可視化」するバージョン
+def binary_search_visual(sorted_lst, target):
+    """各ステップを出力して探索過程を可視化する"""
+    left = 0
+    right = len(sorted_lst) - 1
+    step = 0
+
+    while left <= right:
+        step += 1
+        mid = (left + right) // 2
+        mid_val = sorted_lst[mid]
+
+        # 現在の探索範囲を表示
+        visual = ""
+        for i, v in enumerate(sorted_lst):
+            if i == mid:
+                visual += f"[{v}]"   # 中央値を強調
+            elif left <= i <= right:
+                visual += f" {v} "   # 探索範囲内
+            else:
+                visual += " . "      # 探索範囲外
+        
+        print(f"ステップ{step}: {visual}")
+        print(f"  → 中央値 = {mid_val} (index={mid}), ", end="")
+
+        if mid_val == target:
+            print(f"ターゲット {target} と一致！ 発見！")
+            return mid
+        elif mid_val < target:
+            print(f"{mid_val} < {target} なので右半分を探索")
+            left = mid + 1
+        else:
+            print(f"{mid_val} > {target} なので左半分を探索")
+            right = mid - 1
+
+    print(f"ターゲット {target} は見つかりませんでした")
+    return -1
+
+# 実行例
+data = [2, 5, 8, 12, 16, 23, 38, 56, 72, 91]
+print(f"データ: {data}")
+print(f"ターゲット: 23\n")
+result = binary_search_visual(data, 23)
+# 出力例:
+# ステップ1:  2   5   8   12  [16]  23   38   56   72   91 
+#   → 中央値 = 16 (index=4), 16 < 23 なので右半分を探索
+# ステップ2:  .   .   .   .   .  [38]  56   72   91 
+#   → 中央値 = 38 (index=6), 38 > 23 なので左半分を探索
+# ステップ3:  .   .   .   .   . [23]  .   .   . 
+#   → 中央値 = 23 (index=5), ターゲット 23 と一致！ 発見！</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>📐 再帰版の二分探索と実務での使い分け</h4>
+            <p>二分探索はループ版（反復版）と再帰版の2通りで書けます。再帰版はコードがシンプルですが、探索範囲が非常に大きい場合にスタックオーバーフローのリスクがあるため、<strong>実務ではループ版が推奨</strong>されます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 再帰版の二分探索
+def binary_search_recursive(lst, target, left=0, right=None):
+    """再帰で書く二分探索
+    
+    メリット: コードが短く直感的
+    デメリット: 深い再帰でスタックオーバーフローの可能性
+    """
+    if right is None:
+        right = len(lst) - 1
+    
+    if left > right:
+        return -1  # 見つからなかった
+
+    mid = (left + right) // 2
+    if lst[mid] == target:
+        return mid
+    elif lst[mid] < target:
+        return binary_search_recursive(lst, target, mid + 1, right)
+    else:
+        return binary_search_recursive(lst, target, left, mid - 1)
+
+# 実務で多用する bisect モジュールの詳細
+import bisect
+
+scores = [55, 62, 71, 78, 85, 91, 95]
+
+# bisect_left: target が入るべき「左端」の位置を返す
+pos = bisect.bisect_left(scores, 78)
+print(f"78 の挿入位置(左): {pos}")  # => 3 (78がある位置)
+
+# bisect_right: target が入るべき「右端」の位置を返す
+pos_r = bisect.bisect_right(scores, 78)
+print(f"78 の挿入位置(右): {pos_r}")  # => 4 (78の次の位置)
+
+# 応用: 成績のランク判定（bisect で書くと簡潔）
+def grade(score):
+    """点数からランクを判定する（bisect の実践的な使い方）"""
+    breakpoints = [60, 70, 80, 90]  # ボーダーライン
+    grades = ['F', 'D', 'C', 'B', 'A']
+    idx = bisect.bisect(breakpoints, score)
+    return grades[idx]
+
+for s in [45, 65, 75, 85, 95]:
+    print(f"  {s}点 → ランク {grade(s)}")
+# => 45点 → ランク F, 65点 → ランク D, ... 95点 → ランク A</code></pre>
+          </div>
+
         </div>
       </article>
 
@@ -3353,6 +3543,133 @@ print(selection_sort(data))  # => [11, 12, 22, 25, 34, 64, 90]</code></pre>
             <h4>💼 プロのTips</h4>
             <p>バブルソートや選択ソートを本番のコードで使うことはありません。Pythonの <code>sorted()</code> や <code>list.sort()</code> は内部的に <strong>Timsort</strong>（計算量 <code>O(n log n)</code>）という高性能なアルゴリズムを使っており、自作のソートよりも遥かに高速です。しかし、<strong>面接では「バブルソートを実装してください」と言われることが非常に多い</strong>ため、手が動くようにしておきましょう。</p>
           </div>
+        
+          <div class="explanation-box">
+            <h4>🔬 バブルソートの各パスを可視化する</h4>
+            <p>バブルソートが「なぜ遅いのか」を理解するには、各パス（通過）で何が起きているかを可視化するのが最も効果的です。以下のコードは交換の過程を1ステップずつ表示します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># バブルソートの完全可視化
+def bubble_sort_visual(lst):
+    """交換過程を全て表示するバブルソート"""
+    arr = lst.copy()
+    n = len(arr)
+    total_swaps = 0
+    
+    print(f"初期状態: {arr}\n")
+    
+    for i in range(n):
+        print(f"--- パス {i+1} ---")
+        swapped = False
+        for j in range(0, n - i - 1):
+            # 比較対象を表示
+            mark = list('  ' * n)
+            mark[j] = '^^'
+            
+            if arr[j] > arr[j + 1]:
+                # 交換が必要
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                total_swaps += 1
+                swapped = True
+                print(f"  {arr}  ← {arr[j+1]} と {arr[j]} を交換")
+            else:
+                print(f"  {arr}  (交換なし)")
+        
+        if not swapped:
+            print("  ソート完了！（交換なしで早期終了）")
+            break
+    
+    print(f"\n結果: {arr}")
+    print(f"交換回数: {total_swaps}回")
+    return arr
+
+bubble_sort_visual([5, 3, 8, 1, 2])
+# パス1: 5と3を交換→3と8は交換なし→8と1を交換→8と2を交換
+# パス2: ...
+# 各パスで最大の要素が末尾に「泡のように浮かぶ」様子が分かる</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>📐 挿入ソート — もう一つの基本ソート</h4>
+            <p>バブルソートと選択ソートに加えて、<strong>挿入ソート</strong>も O(n²) の基本ソートとして重要です。挿入ソートは「ほぼソート済みのデータ」に対しては O(n) で動作するため、Timsortの内部パーツとしても使われています。トランプを手に持って並べ替えるときの手順がまさに挿入ソートです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 挿入ソート（Insertion Sort）
+def insertion_sort(lst):
+    """未ソート部分の先頭要素を、ソート済み部分の正しい位置に挿入する。
+    
+    計算量: 最悪 O(n²)、最良 O(n)（ほぼソート済みの場合）
+    特徴: ほぼソート済みデータに強い、安定ソート、追加メモリ不要
+    
+    ステップ解説（lst = [5, 3, 1, 4, 2]）:
+      ソート済み | 未ソート
+      [5]       | [3, 1, 4, 2]  ← 3 を挿入 → [3, 5]
+      [3, 5]    | [1, 4, 2]     ← 1 を挿入 → [1, 3, 5]
+      [1, 3, 5] | [4, 2]        ← 4 を挿入 → [1, 3, 4, 5]
+      [1,3,4,5] | [2]           ← 2 を挿入 → [1, 2, 3, 4, 5]
+    """
+    arr = lst.copy()
+    for i in range(1, len(arr)):
+        key = arr[i]           # 挿入する要素
+        j = i - 1
+        # key より大きい要素を右にずらす
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key       # 正しい位置に挿入
+        print(f"  ステップ{i}: key={key} → {arr}")
+    return arr
+
+print("挿入ソート:")
+insertion_sort([5, 3, 1, 4, 2])
+
+# 3つの O(n²) ソートの比較
+import time, random
+
+def benchmark_sorts(n):
+    """3つの基本ソートの速度を比較"""
+    data = list(range(n))
+    random.shuffle(data)
+    
+    for name, func in [("バブル", bubble_sort), 
+                        ("選択", selection_sort),
+                        ("挿入", insertion_sort)]:
+        arr = data.copy()
+        start = time.perf_counter()
+        func(arr)
+        elapsed = time.perf_counter() - start
+        print(f"  {name}ソート ({n}件): {elapsed:.4f}秒")
+
+def bubble_sort(lst):
+    arr = lst.copy()
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    return arr
+
+def selection_sort(lst):
+    arr = lst.copy()
+    n = len(arr)
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr
+
+benchmark_sorts(3000)</code></pre>
+          </div>
+
         </div>
       </article>
 
@@ -3458,6 +3775,146 @@ print(quick_sort([38, 27, 43, 3, 9, 82, 10]))
             <h4>💼 プロのTips — sorted() の裏側</h4>
             <p>Pythonの <code>sorted()</code> はマージソートと挿入ソートのハイブリッドである <strong>Timsort</strong> を使っています。Timsortは「すでにある程度ソートされたデータ」に対して特に高速で、現実のデータに非常に適しています。JavaScriptの <code>Array.sort()</code> も多くのエンジンでTimsortを採用しています。</p>
           </div>
+        
+          <div class="explanation-box">
+            <h4>🔬 マージソートの分割・統合プロセスを追跡する</h4>
+            <p>マージソートは「分割」と「統合」の2フェーズで動きますが、再帰が絡むため初学者には動作イメージを掴みにくいアルゴリズムです。以下のコードはインデントで再帰の深さを表現し、どのように分割・統合されるかを追跡できます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># マージソートの動作をトレースする
+def merge_sort_traced(lst, depth=0):
+    """再帰の各段階を出力して動作を可視化"""
+    indent = "  " * depth
+    print(f"{indent}分割: {lst}")
+    
+    if len(lst) <= 1:
+        print(f"{indent}  → 要素1つなのでそのまま返す: {lst}")
+        return lst
+    
+    mid = len(lst) // 2
+    left = merge_sort_traced(lst[:mid], depth + 1)
+    right = merge_sort_traced(lst[mid:], depth + 1)
+    
+    merged = merge_traced(left, right, depth)
+    print(f"{indent}統合結果: {merged}")
+    return merged
+
+def merge_traced(left, right, depth=0):
+    """マージの過程を詳細に出力"""
+    indent = "  " * depth
+    print(f"{indent}  マージ: {left} + {right}")
+    result = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+
+print("=== マージソートのトレース ===")
+merge_sort_traced([38, 27, 43, 3])
+# 出力:
+# 分割: [38, 27, 43, 3]
+#   分割: [38, 27]
+#     分割: [38]
+#       → 要素1つなのでそのまま返す: [38]
+#     分割: [27]
+#       → 要素1つなのでそのまま返す: [27]
+#     マージ: [38] + [27]
+#   統合結果: [27, 38]
+#   ...（右半分も同様に処理）
+# 統合結果: [3, 27, 38, 43]</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>📐 クイックソートの「ピボット選択」が性能を左右する</h4>
+            <p>クイックソートで最も重要なのは<strong>ピボットの選び方</strong>です。ピボットが常に最小値や最大値になると、分割が偏って O(n²) に劣化します。これを避けるために、「先頭・中央・末尾の3つの中央値を選ぶ」（median-of-three）戦略や、ランダムにピボットを選ぶ戦略が使われます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># インプレース版クイックソート（メモリ効率が良い実用版）
+import random
+
+def quicksort_inplace(arr, low=0, high=None):
+    """メモリを追加使用しないクイックソート
+    
+    リスト内で要素を直接入れ替えるため、
+    新しいリストを作るPythonic版よりもメモリ効率が良い。
+    実際のソートライブラリの実装に近い方式。
+    """
+    if high is None:
+        high = len(arr) - 1
+    
+    if low < high:
+        # ランダムピボットで最悪ケースを回避
+        pivot_idx = random.randint(low, high)
+        arr[pivot_idx], arr[high] = arr[high], arr[pivot_idx]
+        
+        pivot = arr[high]
+        i = low - 1  # 「ピボット未満の領域」の右端
+        
+        for j in range(low, high):
+            if arr[j] <= pivot:
+                i += 1
+                arr[i], arr[j] = arr[j], arr[i]
+        
+        arr[i + 1], arr[high] = arr[high], arr[i + 1]
+        partition_pos = i + 1
+        
+        # 再帰で左右をソート
+        quicksort_inplace(arr, low, partition_pos - 1)
+        quicksort_inplace(arr, partition_pos + 1, high)
+
+# ソートアルゴリズムの速度比較
+import time
+
+def compare_sorts(n):
+    """O(n²) vs O(n log n) vs Python組み込みの比較"""
+    data = list(range(n))
+    random.shuffle(data)
+    
+    results = {}
+    
+    # O(n²): バブルソート
+    if n <= 5000:  # 大きすぎると遅すぎるので制限
+        arr = data.copy()
+        start = time.perf_counter()
+        for i in range(len(arr)):
+            for j in range(len(arr) - i - 1):
+                if arr[j] > arr[j+1]:
+                    arr[j], arr[j+1] = arr[j+1], arr[j]
+        results["バブルソート O(n²)"] = time.perf_counter() - start
+    
+    # O(n log n): クイックソート
+    arr = data.copy()
+    start = time.perf_counter()
+    quicksort_inplace(arr)
+    results["クイックソート O(n log n)"] = time.perf_counter() - start
+    
+    # Python組み込み（Timsort）
+    arr = data.copy()
+    start = time.perf_counter()
+    arr.sort()
+    results["sorted() Timsort"] = time.perf_counter() - start
+    
+    print(f"\n--- {n}件のソート速度比較 ---")
+    for name, elapsed in results.items():
+        print(f"  {name}: {elapsed:.6f}秒")
+
+compare_sorts(3000)</code></pre>
+          </div>
+
         </div>
       </article>
 
@@ -3537,6 +3994,123 @@ print(fib_fast(50))  # => 12586269025（一瞬で計算完了）</code></pre>
             <h4>💼 プロのTips</h4>
             <p>再帰は「コードの見た目がエレガント」になりますが、常にループ（反復）でも書き換え可能です。実務では<strong>スタックの深さやパフォーマンスを考慮して、再帰よりもループを選ぶことが多い</strong>です。ただし、ツリー構造の走査やJSON/XMLのパースなど、データ構造自体が再帰的な場合は、再帰のほうが自然で読みやすいコードになります。</p>
           </div>
+        
+          <div class="explanation-box">
+            <h4>🔬 再帰のコールスタックを可視化する</h4>
+            <p>再帰は「関数が自分自身を呼び出す」仕組みですが、内部的には<strong>コールスタック</strong>に各呼び出しの情報が積まれています。この「スタックの積み重なり」を可視化することで、再帰の動作原理を直感的に理解できます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 再帰のコールスタックを可視化
+def factorial_traced(n, depth=0):
+    """階乗の計算過程をスタックの深さ付きで表示"""
+    indent = "│ " * depth
+    print(f"{indent}├─ factorial({n}) を呼び出し")
+    
+    if n <= 1:
+        print(f"{indent}│  ベースケース到達！ return 1")
+        return 1
+    
+    result = n * factorial_traced(n - 1, depth + 1)
+    print(f"{indent}├─ factorial({n}) = {n} × ... = {result} を返す")
+    return result
+
+print("=== factorial(5) のコールスタック ===")
+print(f"結果: {factorial_traced(5)}")
+
+# 出力イメージ:
+# ├─ factorial(5) を呼び出し
+# │ ├─ factorial(4) を呼び出し
+# │ │ ├─ factorial(3) を呼び出し
+# │ │ │ ├─ factorial(2) を呼び出し
+# │ │ │ │ ├─ factorial(1) を呼び出し
+# │ │ │ │ │  ベースケース到達！ return 1
+# │ │ │ │ ├─ factorial(2) = 2 × ... = 2 を返す
+# │ │ │ ├─ factorial(3) = 3 × ... = 6 を返す
+# │ │ ├─ factorial(4) = 4 × ... = 24 を返す
+# ├─ factorial(5) = 5 × ... = 120 を返す</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>📐 再帰 vs ループ — 同じ問題を両方の方法で解く</h4>
+            <p>再帰で書ける処理は、必ずループ（反復）でも書き換え可能です。以下の例で両者のメリット・デメリットを比較します。フィボナッチ数列を「素朴な再帰」「メモ化再帰」「ループ」の3パターンで実装し、性能差を確認してみましょう。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import time
+from functools import lru_cache
+
+# 方法1: 素朴な再帰 — O(2^n) で超遅い
+def fib_naive(n):
+    """同じ計算を何度も繰り返すので指数関数的に遅い
+    fib(5) の計算で fib(2) が3回も呼ばれる！"""
+    if n <= 1: return n
+    return fib_naive(n-1) + fib_naive(n-2)
+
+# 方法2: メモ化再帰 — O(n) に改善
+@lru_cache(maxsize=None)
+def fib_memo(n):
+    """一度計算した結果をキャッシュ → 同じ計算は1回だけ"""
+    if n <= 1: return n
+    return fib_memo(n-1) + fib_memo(n-2)
+
+# 方法3: ループ（反復）— O(n)、スタック不要で最もメモリ効率が良い
+def fib_loop(n):
+    """ボトムアップで積み上げる（動的計画法の基本形）"""
+    if n <= 1: return n
+    a, b = 0, 1           # fib(0), fib(1)
+    for _ in range(2, n + 1):
+        a, b = b, a + b   # fib(n-2), fib(n-1) → fib(n)
+    return b
+
+# 速度比較
+n_small = 30  # 素朴な再帰は30が限界
+start = time.perf_counter()
+fib_naive(n_small)
+t_naive = time.perf_counter() - start
+
+start = time.perf_counter()
+fib_memo(n_small)
+t_memo = time.perf_counter() - start
+
+start = time.perf_counter()
+fib_loop(n_small)
+t_loop = time.perf_counter() - start
+
+print(f"fib({n_small}):")
+print(f"  素朴な再帰:  {t_naive:.4f}秒")
+print(f"  メモ化再帰:  {t_memo:.6f}秒")
+print(f"  ループ:      {t_loop:.6f}秒")
+
+# ループ版なら巨大な値も一瞬
+print(f"\nfib(1000) = {fib_loop(1000)}")  # 巨大な数値も即座に計算
+
+# 実践例: ディレクトリの再帰走査
+import os
+
+def list_files_recursive(path, indent=0):
+    """ディレクトリを再帰的に走査してファイル一覧を表示
+    これはデータ構造（ファイルシステム）自体が再帰的なので、
+    再帰で書くのが自然で読みやすい好例。"""
+    prefix = "  " * indent
+    try:
+        for entry in os.scandir(path):
+            if entry.is_file():
+                print(f"{prefix}📄 {entry.name}")
+            elif entry.is_dir():
+                print(f"{prefix}📁 {entry.name}/")
+                list_files_recursive(entry.path, indent + 1)
+    except PermissionError:
+        print(f"{prefix}🔒 (アクセス権なし)")
+
+# list_files_recursive(".")  # 実行するとカレントディレクトリを走査</code></pre>
+          </div>
+
         </div>
       </article>
 
@@ -3638,6 +4212,128 @@ print(list(queue))          # => ['タスクB', 'タスクC']
             <h4>💼 プロのTips</h4>
             <p>Webアプリケーション開発では、ジョブキュー（Celery, Sidekiq等）やメッセージキュー（RabbitMQ, Amazon SQS等）として、キューの概念が至るところで使われています。「リクエストを受け付けて順番に処理する」「重い処理をバックグラウンドで非同期に実行する」など、スケーラブルなシステム設計の基盤となるデータ構造です。</p>
           </div>
+        
+          <div class="explanation-box">
+            <h4>🔬 スタックの実践問題 — 逆ポーランド記法の計算機</h4>
+            <p>スタックの典型的な応用例が<strong>逆ポーランド記法（RPN）の計算</strong>です。通常の数式「3 + 4」を「3 4 +」と書く記法で、括弧が不要になる利点があります。電卓やコンパイラの内部で実際に使われている方式です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 逆ポーランド記法（RPN）電卓 — スタックの実践
+def rpn_calculator(tokens):
+    """逆ポーランド記法の式を評価する
+    
+    通常の式: (3 + 4) × 2  →  RPN: 3 4 + 2 ×
+    
+    アルゴリズム:
+      1. 数値ならスタックに積む（push）
+      2. 演算子なら2つ取り出して（pop）計算し、結果を積む
+      3. 最後にスタックに残った値が答え
+    """
+    stack = []
+    operators = {'+', '-', '*', '/'}
+    
+    for token in tokens:
+        if token in operators:
+            b = stack.pop()  # 後に積んだ方が右辺
+            a = stack.pop()  # 先に積んだ方が左辺
+            if token == '+': result = a + b
+            elif token == '-': result = a - b
+            elif token == '*': result = a * b
+            elif token == '/': result = int(a / b)  # 整数除算
+            stack.append(result)
+            print(f"  {a} {token} {b} = {result}  スタック: {stack}")
+        else:
+            stack.append(int(token))
+            print(f"  Push {token}  スタック: {stack}")
+    
+    return stack[0]
+
+# (3 + 4) × 2 = 14
+print("式: (3 + 4) × 2")
+print(f"答え: {rpn_calculator(['3', '4', '+', '2', '*'])}")
+
+# ブラウザの「戻る／進む」ボタンの実装
+class BrowserHistory:
+    """2つのスタックでブラウザ履歴を実装"""
+    def __init__(self, homepage):
+        self.back_stack = []      # 「戻る」用スタック
+        self.forward_stack = []   # 「進む」用スタック
+        self.current = homepage
+    
+    def visit(self, url):
+        self.back_stack.append(self.current)
+        self.current = url
+        self.forward_stack.clear()  # 新しいページに行ったら「進む」はクリア
+        print(f"  訪問: {url}")
+    
+    def back(self):
+        if self.back_stack:
+            self.forward_stack.append(self.current)
+            self.current = self.back_stack.pop()
+            print(f"  ← 戻る: {self.current}")
+    
+    def forward(self):
+        if self.forward_stack:
+            self.back_stack.append(self.current)
+            self.current = self.forward_stack.pop()
+            print(f"  → 進む: {self.current}")
+
+browser = BrowserHistory("google.com")
+browser.visit("qiita.com")
+browser.visit("github.com")
+browser.back()           # → qiita.com
+browser.back()           # → google.com
+browser.forward()        # → qiita.com</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>📐 キューの実践 — タスクスケジューラのシミュレーション</h4>
+            <p>キューの最も身近な応用例は<strong>タスクの順番管理</strong>です。OSのプロセススケジューラ、プリンターのジョブ管理、Webサーバーのリクエスト処理など、「先に来たものから順番に処理する」場面すべてにキューが使われています。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from collections import deque
+import heapq
+
+# ラウンドロビン方式のタスクスケジューラ
+def round_robin_scheduler(tasks, time_quantum=2):
+    """各タスクに均等に時間を割り当てるスケジューラ
+    
+    OSのCPUスケジューリングの基本方式。
+    各タスクに time_quantum 秒ずつ実行権を与え、
+    終わらなければキューの末尾に戻す。
+    """
+    queue = deque()
+    for name, duration in tasks:
+        queue.append({"name": name, "remaining": duration})
+    
+    time = 0
+    print(f"タイムクォンタム: {time_quantum}秒\n")
+    
+    while queue:
+        task = queue.popleft()
+        # 実行（time_quantum か残り時間の短い方）
+        exec_time = min(time_quantum, task["remaining"])
+        task["remaining"] -= exec_time
+        time += exec_time
+        
+        if task["remaining"] > 0:
+            print(f"  t={time:>3}: {task['name']} を{exec_time}秒実行"
+                  f"（残り{task['remaining']}秒）→ キューに戻す")
+            queue.append(task)
+        else:
+            print(f"  t={time:>3}: {task['name']} を{exec_time}秒実行 → 完了！✅")
+
+tasks = [("メール送信", 3), ("画像変換", 5), ("ログ出力", 1)]
+round_robin_scheduler(tasks)</code></pre>
+          </div>
+
         </div>
       </article>
 
@@ -3718,6 +4414,140 @@ print(two_sum([2, 7, 11, 15], 9))  # => [0, 1]（2 + 7 = 9）</code></pre>
             <h4>💼 プロのTips</h4>
             <p>「このアルゴリズムの計算量を改善したい」と思ったら、<strong>まずハッシュテーブル（辞書/セット）が使えないか考える</strong>のが鉄則です。O(n²) の二重ループを O(n) に改善できるケースの大半は、内側のループを辞書のルックアップに置き換えることで実現できます。コーディング面接の8割はこの考え方で解けると言っても過言ではありません。</p>
           </div>
+        
+          <div class="explanation-box">
+            <h4>🔬 ハッシュテーブルを自作して内部の仕組みを理解する</h4>
+            <p>Pythonの <code>dict</code> は便利すぎて中身を意識する機会がありませんが、<strong>自分でハッシュテーブルを実装してみる</strong>と、なぜ O(1) でアクセスできるのかが腑に落ちます。以下は最もシンプルなハッシュテーブルの実装です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ハッシュテーブルを自作する
+class SimpleHashTable:
+    """チェイン法によるハッシュテーブルの実装
+    
+    仕組み:
+    1. キーをハッシュ関数で数値に変換
+    2. その数値を配列サイズで割った余りをインデックスにする
+    3. 同じインデックスになったら連結リスト（チェイン）で繋ぐ
+    """
+    def __init__(self, size=10):
+        self.size = size
+        self.table = [[] for _ in range(size)]  # バケット配列
+    
+    def _hash(self, key):
+        """キーからインデックスを計算"""
+        return hash(key) % self.size
+    
+    def put(self, key, value):
+        """キーと値を格納"""
+        idx = self._hash(key)
+        # 同じキーが既にあれば更新
+        for i, (k, v) in enumerate(self.table[idx]):
+            if k == key:
+                self.table[idx][i] = (key, value)
+                return
+        self.table[idx].append((key, value))
+        print(f"  put('{key}', {value}) → バケット[{idx}]に格納")
+    
+    def get(self, key):
+        """キーから値を取得"""
+        idx = self._hash(key)
+        for k, v in self.table[idx]:
+            if k == key:
+                return v
+        raise KeyError(key)
+    
+    def display(self):
+        """内部構造を表示"""
+        print("\n  バケット構造:")
+        for i, bucket in enumerate(self.table):
+            if bucket:
+                items = ", ".join(f"{k}:{v}" for k, v in bucket)
+                print(f"    [{i}] → {items}")
+            else:
+                print(f"    [{i}] → (空)")
+
+# 使ってみる
+ht = SimpleHashTable(size=5)
+ht.put("apple", 150)
+ht.put("banana", 200)
+ht.put("cherry", 300)
+ht.put("date", 400)
+ht.put("elderberry", 500)
+ht.display()
+# 同じバケットに複数の要素が入る「衝突」が観察できる
+
+print(f"\n  get('cherry') = {ht.get('cherry')}")  # => 300</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>📐 ハッシュテーブルを使った頻出面接問題</h4>
+            <p>コーディング面接でハッシュテーブルが活躍する典型的な問題パターンを紹介します。「辞書を使えば O(n) で解ける」と分かるかどうかが合否を分けます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 面接問題1: アナグラム判定
+def are_anagrams(s1, s2):
+    """2つの文字列がアナグラム（並べ替え）かどうか判定
+    "listen" と "silent" → True
+    
+    ❌ ソートして比較: O(n log n)
+    ✅ 文字の出現回数を比較: O(n)
+    """
+    if len(s1) != len(s2):
+        return False
+    
+    freq = {}
+    for c in s1:
+        freq[c] = freq.get(c, 0) + 1
+    for c in s2:
+        freq[c] = freq.get(c, 0) - 1
+        if freq[c] < 0:
+            return False
+    return True
+
+print(are_anagrams("listen", "silent"))  # True
+print(are_anagrams("hello", "world"))    # False
+
+# 面接問題2: 最も多く出現する要素
+def most_frequent(lst):
+    """リスト内で最も多く出現する要素を返す
+    [1,3,2,1,4,1,3] → 1（3回出現）"""
+    freq = {}
+    max_count = 0
+    max_item = None
+    for item in lst:
+        freq[item] = freq.get(item, 0) + 1
+        if freq[item] > max_count:
+            max_count = freq[item]
+            max_item = item
+    return max_item, max_count
+
+item, count = most_frequent([1, 3, 2, 1, 4, 1, 3])
+print(f"最頻出: {item} ({count}回)")
+
+# 面接問題3: グループ化（アナグラムごとにまとめる）
+from collections import defaultdict
+
+def group_anagrams(words):
+    """アナグラム同士をグループ化する
+    ["eat","tea","tan","ate","nat","bat"]
+    → [["eat","tea","ate"], ["tan","nat"], ["bat"]]
+    """
+    groups = defaultdict(list)
+    for word in words:
+        key = tuple(sorted(word))  # ソートした文字列をキーに
+        groups[key].append(word)
+    return list(groups.values())
+
+print(group_anagrams(["eat","tea","tan","ate","nat","bat"]))</code></pre>
+          </div>
+
         </div>
       </article>
 
@@ -3846,6 +4676,193 @@ dfs_recursive(graph, 'A')
             <h4>💼 プロのTips</h4>
             <p>グラフ問題はコーディング面接で最も出題頻度が高いカテゴリの一つです。「BFSはキュー、DFSはスタック（または再帰）」という対応関係を暗記しておき、問題を見たらまず「これはBFSで解くべきか、DFSで解くべきか？」を判断する訓練をしましょう。また、<strong>「訪問済みチェック」を忘れると無限ループ</strong>になるので、<code>visited</code> セットは必ず用意してください。</p>
           </div>
+        
+          <div class="explanation-box">
+            <h4>🔬 BFSで最短経路を見つける — 迷路の解法</h4>
+            <p>BFSの最も実用的な応用が<strong>最短経路の探索</strong>です。以下のコードでは、2次元のグリッド（迷路）上でスタートからゴールまでの最短ルートを BFS で見つけ、経路を可視化します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from collections import deque
+
+# BFS による迷路の最短経路探索
+def solve_maze(maze, start, goal):
+    """2Dグリッド迷路をBFSで解く
+    
+    0 = 通路、1 = 壁
+    最短経路の距離と経路そのものを返す
+    """
+    rows, cols = len(maze), len(maze[0])
+    # 上下左右の4方向に移動
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    direction_names = ['↑', '↓', '←', '→']
+    
+    visited = set()
+    visited.add(start)
+    # キュー: (現在位置, ここまでの経路)
+    queue = deque([(start, [start])])
+    
+    while queue:
+        (row, col), path = queue.popleft()
+        
+        if (row, col) == goal:
+            return path  # ゴールに到達！
+        
+        for (dr, dc), dname in zip(directions, direction_names):
+            new_row, new_col = row + dr, col + dc
+            new_pos = (new_row, new_col)
+            
+            if (0 <= new_row < rows and 
+                0 <= new_col < cols and
+                maze[new_row][new_col] == 0 and
+                new_pos not in visited):
+                
+                visited.add(new_pos)
+                queue.append((new_pos, path + [new_pos]))
+    
+    return None  # ゴールに到達できない
+
+# 迷路を定義（0=通路, 1=壁）
+maze = [
+    [0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 1],
+    [0, 0, 0, 1, 0],
+    [1, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0]
+]
+
+start = (0, 0)  # 左上
+goal = (4, 4)   # 右下
+
+path = solve_maze(maze, start, goal)
+
+# 結果を可視化
+if path:
+    print(f"最短経路（{len(path)-1}歩）:")
+    path_set = set(path)
+    for r in range(len(maze)):
+        row_str = ""
+        for c in range(len(maze[0])):
+            if (r, c) == start:
+                row_str += " S "
+            elif (r, c) == goal:
+                row_str += " G "
+            elif (r, c) in path_set:
+                row_str += " * "
+            elif maze[r][c] == 1:
+                row_str += " █ "
+            else:
+                row_str += " · "
+        print(row_str)
+else:
+    print("ゴールに到達できません")</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>📐 DFS の実践 — 島の数を数える問題</h4>
+            <p>DFS の典型的な応用問題として「島の数を数える」問題があります。これはコーディング面接で非常によく出題される問題で、2Dグリッド上で隣接する '1'（陸地）の塊をDFSで探索して島の数をカウントします。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 「島の数を数える」問題（面接超頻出）
+def count_islands(grid):
+    """グリッド上で隣接する 1 の塊（島）の数を数える
+    
+    1 = 陸地、0 = 水
+    上下左右に隣接する 1 は同じ島として数える
+    
+    アルゴリズム:
+    1. グリッドを走査して 1 を見つけたら島のカウント+1
+    2. その 1 から DFS で隣接する全ての 1 を訪問済みにする
+    3. 走査を続ける（既に訪問済みの 1 はスキップ）
+    """
+    if not grid:
+        return 0
+    
+    rows, cols = len(grid), len(grid[0])
+    visited = set()
+    islands = 0
+    
+    def dfs(r, c):
+        """(r, c) から隣接する陸地を全て訪問する"""
+        if (r < 0 or r >= rows or c < 0 or c >= cols or
+            grid[r][c] == 0 or (r, c) in visited):
+            return
+        
+        visited.add((r, c))
+        # 上下左右に探索を広げる
+        dfs(r - 1, c)  # 上
+        dfs(r + 1, c)  # 下
+        dfs(r, c - 1)  # 左
+        dfs(r, c + 1)  # 右
+    
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 1 and (r, c) not in visited:
+                islands += 1
+                print(f"  島 #{islands} を発見！ 起点: ({r}, {c})")
+                dfs(r, c)
+    
+    return islands
+
+grid = [
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 1]
+]
+
+print("グリッド:")
+for row in grid:
+    print("  ", " ".join(str(x) for x in row))
+print(f"\n島の数: {count_islands(grid)}")  # => 3
+
+# ダイクストラ法（最短経路の重み付き版）の概要
+import heapq
+
+def dijkstra(graph, start):
+    """重み付きグラフの最短経路（ダイクストラ法）
+    
+    BFS は「全ての辺の重みが等しい」場合の最短経路。
+    重みが異なる場合はダイクストラ法を使う。
+    優先度キュー（ヒープ）で「最もコストの低い頂点」を選ぶ。
+    """
+    distances = {node: float('inf') for node in graph}
+    distances[start] = 0
+    pq = [(0, start)]  # (距離, ノード) の優先度キュー
+    
+    while pq:
+        dist, node = heapq.heappop(pq)
+        if dist > distances[node]:
+            continue
+        
+        for neighbor, weight in graph[node]:
+            new_dist = dist + weight
+            if new_dist < distances[neighbor]:
+                distances[neighbor] = new_dist
+                heapq.heappush(pq, (new_dist, neighbor))
+    
+    return distances
+
+# 重み付きグラフ（各エッジに「コスト」がある）
+weighted_graph = {
+    'A': [('B', 4), ('C', 2)],
+    'B': [('D', 3), ('C', 1)],
+    'C': [('B', 1), ('D', 5)],
+    'D': []
+}
+
+result = dijkstra(weighted_graph, 'A')
+print("\nダイクストラ法（Aからの最短距離）:")
+for node, dist in sorted(result.items()):
+    print(f"  A → {node}: コスト {dist}")</code></pre>
+          </div>
+
         </div>
       </article>
 
