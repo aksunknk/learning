@@ -815,6 +815,241 @@ print(next(gen)) # 1</code></pre>
       </article>
 
 
+
+      <!-- Lesson 12: OSS コードリーディング -->
+      <article class="lesson-card" data-section="python-12" id="python-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>実践OSSコードリーディング — 有名ライブラリの中身を読む</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 プロのコードを「読む」ことが最強の学習法</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>なぜOSSのコードを読むのか？</h4>
+            <p>教科書やチュートリアルのコードは「教えるために簡略化」されています。一方、<strong>実際に何百万人が使っているOSSライブラリのコード</strong>は、エラーハンドリング、拡張性、後方互換性、パフォーマンスなど、現実の制約と戦った結果です。これらを読み解くことで、「プロがどのような設計判断をするか」を直接学べます。</p>
+            <p>ここでは、Pythonで最も有名なOSSライブラリ3つ（<strong>Flask</strong>、<strong>Requests</strong>、<strong>Click</strong>）の実際のソースコードを一行ずつ解説します。</p>
+          </div>
+
+          <!-- ===== Flask: Scaffold.__init__ ===== -->
+          <div class="explanation-box">
+            <h4>📖 ① Flask — Scaffold クラスの初期化</h4>
+            <p><strong>リポジトリ:</strong> <code>pallets/flask</code>（License: BSD-3-Clause）<br>
+            <strong>ファイル:</strong> <code>src/flask/sansio/scaffold.py</code><br>
+            <strong>概要:</strong> Flaskアプリの基盤クラスです。<code>Flask</code> クラスも <code>Blueprint</code> クラスも、この <code>Scaffold</code> を継承しています。「Webフレームワークの骨格がどう作られるか」の実例です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Flask (pallets/flask)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 出典: pallets/flask — src/flask/sansio/scaffold.py
+# License: BSD-3-Clause
+# https://github.com/pallets/flask
+
+from __future__ import annotations          # ← ① 型ヒントの後方互換性
+import os                                    # ← ② OSレベルのパス操作
+import typing as t                           # ← ③ typing を t として短縮インポート
+from collections import defaultdict          # ← ④ デフォルト値付き辞書
+from functools import update_wrapper         # ← ⑤ デコレータのメタデータ保持
+
+class Scaffold:
+    """Flask と Blueprint の共通基盤クラス"""
+
+    _static_folder: str | None = None        # ← ⑥ クラス変数でデフォルト値を定義
+    _static_url_path: str | None = None
+
+    def __init__(
+        self,
+        import_name: str,                    # ← ⑦ 通常は __name__ を渡す
+        static_folder: str | os.PathLike[str] | None = None,
+        static_url_path: str | None = None,
+        template_folder: str | os.PathLike[str] | None = None,
+        root_path: str | None = None,        # ← ⑧ 全引数に型ヒントがついている
+    ):
+        self.import_name = import_name        # ← ⑨ パッケージ名を記録
+
+        self.static_folder = static_folder
+        self.static_url_path = static_url_path
+        self.template_folder = template_folder
+
+        if root_path is None:                 # ← ⑩ 明示的に指定されなければ
+            root_path = get_root_path(self.import_name)  # 自動検出
+
+        self.root_path = root_path            # ← ⑪ 絶対パスとして保存
+
+        # ↓ ⑫ URLのエンドポイント名 → ビュー関数 のマッピング辞書
+        self.view_functions: dict[str, ft.RouteCallable] = {}
+
+        # ↓ ⑬ エラーハンドラ: {スコープ: {HTTPコード: {例外クラス: 処理関数}}}
+        self.error_handler_spec: dict[
+            ft.AppOrBlueprintKey,
+            dict[int | None, dict[type[Exception], ft.ErrorHandlerCallable]],
+        ] = defaultdict(lambda: defaultdict(dict))
+
+        # ↓ ⑭ リクエスト前に実行する関数リスト
+        self.before_request_funcs: dict[
+            ft.AppOrBlueprintKey, list[ft.BeforeRequestCallable]
+        ] = defaultdict(list)
+
+        # ↓ ⑮ リクエスト後に実行する関数リスト
+        self.after_request_funcs: dict[
+            ft.AppOrBlueprintKey, list[ft.AfterRequestCallable[t.Any]]
+        ] = defaultdict(list)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 一行ずつ解説</h4>
+            <p><strong>① <code>from __future__ import annotations</code></strong> — Python 3.7以降で使える機能で、型ヒントの評価を遅延させます。これにより <code>str | None</code> のような新しい記法を古いバージョンでも使えるようにしています。OSSでは後方互換性が命なので、このインポートは非常に一般的です。</p>
+            <p><strong>③ <code>import typing as t</code></strong> — <code>typing</code> モジュールを <code>t</code> と短く別名をつけてインポートしています。型ヒントは頻繁に書くので、タイピング量を減らすためのOSSの慣習です。</p>
+            <p><strong>④ <code>defaultdict</code></strong> — 通常の <code>dict</code> は存在しないキーにアクセスすると <code>KeyError</code> が出ますが、<code>defaultdict</code> は自動でデフォルト値を生成します。Flaskでは「まだ登録されていないBlueprint名のキー」にアクセスされた時にも安全に動作するよう使われています。</p>
+            <p><strong>⑤ <code>update_wrapper</code></strong> — デコレータを適用すると元の関数名やdocstringが消えてしまいます。<code>update_wrapper</code> はそれを防ぐためのもので、Flask の <code>@app.route</code> の内部で使われています。</p>
+            <p><strong>⑥ クラス変数でのデフォルト値</strong> — <code>_static_folder = None</code> のようにクラス直下で定義しています。アンダースコア始まりは「外部から直接アクセスしないでね」という慣習（プライベート変数の規約）です。</p>
+            <p><strong>⑧ 全引数に型ヒント</strong> — <code>str | os.PathLike[str] | None</code> のように、引数が取りうる型を全て明示しています。<code>os.PathLike</code> は <code>pathlib.Path</code> などのパスオブジェクトも受け入れることを意味しています。</p>
+            <p><strong>⑬ ネストされた defaultdict</strong> — <code>defaultdict(lambda: defaultdict(dict))</code> は「辞書の辞書の辞書」を自動生成する構造です。エラーハンドラをスコープ（全体 or Blueprint単位）× HTTPステータスコード × 例外の種類の3階層で管理する設計です。</p>
+          </div>
+
+          <!-- ===== Requests: api.py ===== -->
+          <div class="explanation-box">
+            <h4>📖 ② Requests — HTTP リクエストの中核関数</h4>
+            <p><strong>リポジトリ:</strong> <code>psf/requests</code>（License: Apache-2.0）<br>
+            <strong>ファイル:</strong> <code>src/requests/api.py</code><br>
+            <strong>概要:</strong> <code>requests.get()</code> を呼んだとき、内部で何が起きているかの全貌です。わずか数行で「セッション管理」「リソースの確実な解放」「関数の委譲」という重要パターンが凝縮されています。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Requests (psf/requests)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 出典: psf/requests — src/requests/api.py
+# License: Apache-2.0
+# https://github.com/psf/requests
+
+from . import sessions                        # ← ① 同パッケージの sessions モジュール
+from .models import Response                  # ← ② レスポンスの型
+
+def request(method, url, **kwargs):           # ← ③ 全HTTPメソッドの共通関数
+    """Constructs and sends a Request.
+
+    :param method: GET, POST, PUT, DELETE など
+    :param url: リクエスト先のURL
+    :param kwargs: headers, params, data, json など全てのオプション
+    """
+    with sessions.Session() as session:       # ← ④ with文でセッションを自動管理
+        return session.request(               # ← ⑤ 実際の処理はSession に委譲
+            method=method, url=url, **kwargs
+        )
+
+def get(url, params=None, **kwargs):          # ← ⑥ ユーザーが直接呼ぶ関数
+    """Sends a GET request."""
+    return request("GET", url,                # ← ⑦ request() に委譲するだけ
+                   params=params, **kwargs)
+
+def post(url, data=None, json=None, **kwargs):
+    """Sends a POST request."""
+    return request("POST", url,               # ← ⑧ POST も同じパターン
+                   data=data, json=json, **kwargs)
+
+def put(url, data=None, **kwargs):
+    return request("PUT", url, data=data, **kwargs)
+
+def delete(url, **kwargs):
+    return request("DELETE", url, **kwargs)
+
+def head(url, **kwargs):
+    kwargs.setdefault("allow_redirects", False)  # ← ⑨ HEAD特有のデフォルト設定
+    return request("HEAD", url, **kwargs)
+
+def patch(url, data=None, **kwargs):
+    return request("PATCH", url, data=data, **kwargs)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 一行ずつ解説</h4>
+            <p><strong>③ <code>**kwargs</code></strong> — 「キーワード引数の辞書」です。<code>headers</code>, <code>timeout</code>, <code>cookies</code> など、任意のオプションを全て受け取れるようにしています。ユーザーが <code>requests.get(url, timeout=5)</code> と呼ぶと、<code>kwargs = {"timeout": 5}</code> として渡されます。</p>
+            <p><strong>④ <code>with sessions.Session() as session:</code></strong> — これがこのファイルの最重要ポイントです。<strong>コンテキストマネージャ</strong>（with文）により、リクエスト完了後にTCP接続が確実にクローズされます。<code>try-finally</code> と同等ですが、遥かに読みやすいコードになっています。</p>
+            <p><strong>⑤ <code>session.request()</code> への委譲</strong> — <code>request()</code> 関数自身は何も処理をしていません。全ての実際の処理（DNS解決、接続確立、データ送受信）は <code>Session</code> クラスに委譲しています。これが<strong>単一責任の原則（SRP）</strong>の実践例です。</p>
+            <p><strong>⑥⑦ <code>get()</code> は <code>request("GET", ...)</code> を呼ぶだけ</strong> — <code>get()</code>, <code>post()</code>, <code>put()</code> などは全て <code>request()</code> のラッパーです。「ユーザーにとって使いやすいインターフェース」を提供しつつ、内部的にはコードの重複を避けています。これが<strong>ファサードパターン</strong>です。</p>
+            <p><strong>⑨ <code>kwargs.setdefault()</code></strong> — <code>head()</code> メソッドだけ、デフォルトでリダイレクトを追跡しないよう設定しています。<code>setdefault</code> は「まだそのキーが設定されていなければデフォルト値を入れる」メソッドで、ユーザーが明示的に指定した場合はそちらが優先されます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💡 このコードから学べるプロの設計パターン</h4>
+            <p><strong>1. ファサードパターン:</strong> 複雑な内部処理をシンプルなインターフェースで覆い隠す。<code>requests.get(url)</code> の裏では DNS解決、TCP接続、SSL/TLSハンドシェイク、ヘッダー構築、レスポンス解析が全自動で行われています。</p>
+            <p><strong>2. DRY原則:</strong> <code>get()</code>, <code>post()</code> 等は全て <code>request()</code> に委譲。HTTPメソッドごとにコードを書かないことで、バグの混入を防いでいます。</p>
+            <p><strong>3. コンテキストマネージャ:</strong> リソース管理（接続のクローズ）を <code>with</code> 文で自動化。これを忘れると接続リークが起きます。</p>
+          </div>
+
+          <!-- ===== Click: デコレータの仕組み ===== -->
+          <div class="explanation-box">
+            <h4>📖 ③ Click — CLIフレームワークのデコレータ設計</h4>
+            <p><strong>リポジトリ:</strong> <code>pallets/click</code>（License: BSD-3-Clause）<br>
+            <strong>ファイル:</strong> <code>src/click/decorators.py</code><br>
+            <strong>概要:</strong> Pythonのデコレータの実用例として最も美しいOSSの一つです。<code>@click.command()</code> や <code>@click.option()</code> がどのように動くかを解き明かします。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Click (pallets/click)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 出典: pallets/click — src/click/decorators.py
+# License: BSD-3-Clause
+# https://github.com/pallets/click
+
+import inspect                                # ← ① 関数の引数情報を取得するモジュール
+from functools import update_wrapper          # ← ② デコレータ適用後も元の関数情報を保持
+
+def command(name=None, cls=None, **attrs):    # ← ③ デコレータファクトリ
+    """@click.command() デコレータの実装"""
+    if cls is None:
+        cls = Command                         # ← ④ デフォルトは Command クラス
+
+    def decorator(func):                      # ← ⑤ 実際のデコレータ関数
+        cmd = cls(                            # ← ⑥ 関数を Command オブジェクトに変換
+            name=name or func.__name__.lower().replace("_", "-"),
+            callback=func,                    # ← ⑦ 元の関数をコールバックとして保存
+            params=_params_from_func(func),   # ← ⑧ 関数の引数から自動でパラメータ生成
+            **attrs,
+        )
+        cmd.__doc__ = func.__doc__            # ← ⑨ docstring を引き継ぐ
+        return cmd                            # ← ⑩ 関数の代わりに Command を返す
+    return decorator                          # ← ⑪ デコレータファクトリ → デコレータを返す
+
+def option(*param_decls, **attrs):            # ← ⑫ @click.option() の実装
+    """オプション引数（--verbose 等）をコマンドに追加する"""
+    def decorator(func):
+        # ↓ ⑬ 関数に __click_params__ 属性を追加
+        if not hasattr(func, "__click_params__"):
+            func.__click_params__ = []
+        # ↓ ⑭ Option オブジェクトをリストに積む
+        func.__click_params__.append(Option(param_decls, **attrs))
+        return func                           # ← ⑮ 関数自体はそのまま返す
+    return decorator</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 一行ずつ解説</h4>
+            <p><strong>③ デコレータファクトリ</strong> — <code>@click.command()</code> は「括弧付き」で呼ばれています。これは <code>command()</code> が直接デコレータではなく、<strong>デコレータを「生成して返す」ファクトリ関数</strong>だということです。この2段階構造により、<code>@click.command(name="greet")</code> のようにオプションを渡せるようになります。</p>
+            <p><strong>⑥⑩ 関数を Command オブジェクトに変換</strong> — ここが Click の核心です。<code>@click.command()</code> を付けた関数は、<strong>関数ではなく Command オブジェクトに差し替えられます</strong>。つまり「デコレータが関数を全く別のモノに変えてしまう」のです。これにより、ヘルプ表示や引数のバリデーションなどの機能が自動的に追加されます。</p>
+            <p><strong>⑧ <code>_params_from_func(func)</code></strong> — 関数の引数定義（名前、デフォルト値、型ヒント）を自動的に解析して、CLIのパラメータに変換します。<code>inspect</code> モジュールを使って関数のシグネチャを読み取る高度なテクニックです。</p>
+            <p><strong>⑬⑭ 関数にカスタム属性を追加</strong> — <code>func.__click_params__ = []</code> という行は、Pythonの「関数もオブジェクト」という特性を活用しています。関数に独自の属性を自由に追加でき、後から別のコードがその情報を読み取れます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 OSSコードリーディングのコツ</h4>
+            <p><strong>1. 「呼び出し元」から読む:</strong> いきなり内部実装を読まず、まず「このコードがどう使われるか」から理解しましょう。<code>requests.get(url)</code> → <code>request("GET", url)</code> → <code>session.request()</code> の流れを追うイメージです。</p>
+            <p><strong>2. テストコードを読む:</strong> OSSのテストファイル（<code>tests/</code> ディレクトリ）は「このコードの正しい使い方」の宝庫です。ドキュメントより正確で、実動するサンプルコードでもあります。</p>
+            <p><strong>3. git blame を活用する:</strong> 「なぜこのコードがこう書かれているか」を知るには、<code>git blame</code> で変更履歴を追い、そのコミットメッセージやPull Requestの議論を読むのが最も確実な方法です。</p>
+          </div>
+        </div>
+      </article>
+
       <!-- Python Quiz -->
       <div class="quiz-section" id="python-quiz">
         <div class="quiz-header">
@@ -1611,6 +1846,289 @@ function App({ list }) {
         </div>
       </article>
 
+
+
+      <!-- Lesson 12: OSS コードリーディング -->
+      <article class="lesson-card" data-section="react-12" id="react-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>実践OSSコードリーディング — 人気Reactライブラリの中身を読む</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 世界中の開発者が書いたReactコードから「設計の型」を学ぶ</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>なぜReactのOSSコードを読むのか？</h4>
+            <p>React エコシステムには、状態管理（Zustand, Jotai）、データフェッチ（SWR, TanStack Query）、ルーティング（React Router）など、<strong>「Reactをどう使うべきか」の模範解答</strong>とも言えるOSSが多数存在します。これらのソースコードを読むことで、カスタムフックの設計パターン、パフォーマンス最適化、型安全なAPI設計などの実践的テクニックを学べます。</p>
+          </div>
+
+          <!-- ===== Zustand: createStore ===== -->
+          <div class="explanation-box">
+            <h4>📖 ① Zustand — たった40行で作れる状態管理ライブラリ</h4>
+            <p><strong>リポジトリ:</strong> <code>pmndrs/zustand</code>（License: MIT）<br>
+            <strong>ファイル:</strong> <code>src/vanilla.ts</code><br>
+            <strong>概要:</strong> Zustand は「Reactの状態管理を最もシンプルに」をコンセプトにしたライブラリです。Reduxの複雑さを排除し、<strong>数十行のコードで状態管理の核心</strong>を実現しています。そのコア（<code>createStore</code>）を一行ずつ解読します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT — Zustand (pmndrs/zustand)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 出典: pmndrs/zustand — src/vanilla.ts
+// License: MIT
+// https://github.com/pmndrs/zustand
+
+// ↓ ① StoreApi: ストアが外部に公開する4つのメソッドの型定義
+export interface StoreApi&lt;T&gt; {
+  setState: SetStateInternal&lt;T&gt;        // 状態を更新する
+  getState: () =&gt; T                    // 現在の状態を取得する
+  getInitialState: () =&gt; T             // 初期状態を取得する
+  subscribe: (listener: (              // 状態変更を購読する
+    state: T, prevState: T
+  ) =&gt; void) =&gt; () =&gt; void            // 購読解除関数を返す
+}
+
+// ↓ ② ストアの生成関数（Zustand のコア）
+const createStoreImpl = (createState) =&gt; {
+  let state;                            // ← ③ 状態をクロージャで保持
+  const listeners = new Set();          // ← ④ 購読者リスト（Set で重複防止）
+
+  // ↓ ⑤ setState: 状態を更新して全購読者に通知
+  const setState = (partial, replace) =&gt; {
+    const nextState =                   // ← ⑥ 関数なら現在のstateを渡して実行
+      typeof partial === 'function'
+        ? partial(state)
+        : partial;
+
+    if (!Object.is(nextState, state)) { // ← ⑦ 同一参照なら何もしない（最適化）
+      const previousState = state;
+      state =                           // ← ⑧ replace=true なら完全置換、
+        replace                         //    そうでなければマージ（スプレッド）
+          ? nextState
+          : Object.assign({}, state, nextState);
+
+      // ↓ ⑨ 全ての購読者に「前の状態」と「新しい状態」を通知
+      listeners.forEach((listener) =&gt; listener(state, previousState));
+    }
+  };
+
+  // ↓ ⑩ getState: 現在の状態を返す（クロージャ変数への参照）
+  const getState = () =&gt; state;
+
+  // ↓ ⑪ subscribe: リスナーを登録し、解除関数を返す
+  const subscribe = (listener) =&gt; {
+    listeners.add(listener);            // Set に追加
+    return () =&gt; listeners.delete(listener);  // ← ⑫ 解除関数（クリーンアップ）
+  };
+
+  // ↓ ⑬ ストアの初期化: ユーザーの createState 関数を実行
+  const initialState = (state = createState(setState, getState, api));
+
+  const api = { setState, getState, getInitialState: () =&gt; initialState, subscribe };
+  return api;                           // ← ⑭ 4つのメソッドを持つオブジェクトを返す
+};</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 一行ずつ解説</h4>
+            <p><strong>③ <code>let state;</code> — クロージャによる状態の隠蔽</strong><br>Zustandの状態はグローバル変数でも <code>this</code> でもなく、<strong>クロージャ</strong>（関数スコープの中に閉じ込められた変数）で管理されています。外部からは <code>getState()</code> を通じてしかアクセスできず、直接書き換えることができません。これが「カプセル化」の実例です。</p>
+            <p><strong>④ <code>new Set()</code> — 購読者リスト</strong><br><code>Set</code> を使うことで、同じリスナーが重複登録されることを防いでいます。<code>Array</code> ではなく <code>Set</code> を選んだのは、<code>delete</code> 操作が <code>O(1)</code> で高速だからです。</p>
+            <p><strong>⑥ <code>typeof partial === 'function'</code></strong><br><code>setState</code> は「値」でも「関数」でも受け取れます。<code>setState({ count: 5 })</code> のように値を渡すことも、<code>setState(state =&gt; ({ count: state.count + 1 }))</code> のように現在の状態を参照する関数を渡すこともできます。Reactの <code>useState</code> と同じパターンです。</p>
+            <p><strong>⑦ <code>Object.is(nextState, state)</code></strong><br>新しい状態が以前と<strong>参照的に同一</strong>なら、更新処理をスキップします。不要な再レンダリングを防ぐための重要な最適化です。</p>
+            <p><strong>⑫ 購読解除関数を返す</strong><br><code>subscribe()</code> は「解除関数」を返します。これはReactの <code>useEffect</code> のクリーンアップパターンと完全に一致しており、メモリリークを防ぐための設計です。</p>
+          </div>
+
+          <!-- ===== SWR: useSWR パターン ===== -->
+          <div class="explanation-box">
+            <h4>📖 ② SWR — データフェッチの設計パターン</h4>
+            <p><strong>リポジトリ:</strong> <code>vercel/swr</code>（License: MIT）<br>
+            <strong>概要:</strong> SWR（Stale-While-Revalidate）はVercel社が開発したデータフェッチライブラリです。名前はHTTPのキャッシュ戦略に由来し、「古いデータを即座に表示しつつ、裏で最新データを取得する」パターンを実現します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JSX — SWR の使用パターン (vercel/swr)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// SWR の使い方と内部動作の解説
+// 出典: vercel/swr (MIT License)
+
+import useSWR from 'swr';
+
+// ↓ ① fetcher: SWR に「データの取得方法」を教える関数
+const fetcher = (url) =&gt;
+  fetch(url).then((res) =&gt; res.json());   // fetch API でJSON取得
+
+// ↓ ② カスタムフック: SWR をラップして型安全なAPIを提供
+function useUser(userId) {
+  const { data, error, isLoading, mutate } = useSWR(
+    userId ? `/api/users/${userId}` : null,  // ← ③ null を渡すとフェッチしない
+    fetcher,
+    {
+      revalidateOnFocus: true,    // ← ④ タブが再アクティブ時に再取得
+      revalidateOnReconnect: true,// ← ⑤ ネットワーク復帰時に再取得
+      dedupingInterval: 2000,     // ← ⑥ 2秒以内の同一リクエストは重複排除
+    }
+  );
+
+  return {
+    user: data,                    // ← ⑦ データ（最初は undefined）
+    isLoading,                     // ← ⑧ ローディング状態
+    isError: error,                // ← ⑨ エラー状態
+    mutate,                        // ← ⑩ データの手動更新関数
+  };
+}
+
+// ↓ ⑪ コンポーネントでの使用
+function UserProfile({ userId }) {
+  const { user, isLoading, isError } = useUser(userId);
+
+  if (isLoading) return &lt;div&gt;読み込み中...&lt;/div&gt;;
+  if (isError) return &lt;div&gt;エラーが発生しました&lt;/div&gt;;
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{user.name}&lt;/h1&gt;           {/* ← ⑫ データが確実に存在する */}
+      &lt;p&gt;{user.email}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+// ↓ ⑬ SWR の Optimistic Update（楽観的更新）パターン
+async function updateUserName(userId, newName) {
+  const { mutate } = useSWR(`/api/users/${userId}`);
+
+  await mutate(
+    async (currentData) =&gt; {       // ← ⑭ API呼び出しの結果で更新
+      const res = await fetch(`/api/users/${userId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ name: newName }),
+      });
+      return res.json();
+    },
+    {
+      optimisticData: (current) =&gt; // ← ⑮ APIレスポンス前に即座にUIを更新
+        ({ ...current, name: newName }),
+      rollbackOnError: true,       // ← ⑯ 失敗したら元のデータに戻す
+    }
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 一行ずつ解説</h4>
+            <p><strong>① fetcher 関数</strong> — SWR は「データの取得方法」と「キャッシュのキー」を分離して設計されています。<code>fetcher</code> を差し替えるだけで、REST API でも GraphQL でも localStorage でも同じ <code>useSWR</code> の仕組みが使えます。</p>
+            <p><strong>③ <code>null</code> を渡すとフェッチしない</strong> — これは<strong>条件付きフェッチ</strong>のパターンです。<code>userId</code> が未定（ログイン前など）の場合にAPIを叩かないようにできます。SWR はキーが <code>null</code> や <code>undefined</code> の場合、フェッチを一時停止します。</p>
+            <p><strong>④⑤ 自動再検証</strong> — ユーザーがタブを離れて戻った時、Wi-Fiが切れて繋がり直した時に、<strong>自動でデータを最新版に更新</strong>します。これにより「古いデータを見続ける」問題が自動的に解決されます。</p>
+            <p><strong>⑥ 重複排除</strong> — 同じURLへのリクエストが2秒以内に複数回発生した場合、実際のHTTPリクエストは1回だけ実行されます。コンポーネントが複数回レンダリングされても、無駄なAPIコールを防ぎます。</p>
+            <p><strong>⑮⑯ 楽観的更新（Optimistic Update）</strong> — APIレスポンスを待たずに<strong>即座にUIを更新し、失敗したらロールバック</strong>するパターンです。SNSの「いいね」ボタンが押した瞬間に反映されるのと同じ仕組みです。</p>
+          </div>
+
+          <!-- ===== React Router: ルーティングの仕組み ===== -->
+          <div class="explanation-box">
+            <h4>📖 ③ React Router — 宣言的ルーティングの内部</h4>
+            <p><strong>リポジトリ:</strong> <code>remix-run/react-router</code>（License: MIT）<br>
+            <strong>概要:</strong> React Router はSPA（Single Page Application）のルーティングを実現するライブラリです。URLが変わってもページ全体をリロードせず、コンポーネントだけを切り替える仕組みの内部を見ていきます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JSX — React Router の設計パターン</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// React Router の核心的な設計パターンを解説
+// 出典: remix-run/react-router (MIT License)
+
+import { createContext, useContext, useState, useEffect } from 'react';
+
+// ↓ ① Context でルーティング情報を全コンポーネントに共有
+const RouterContext = createContext(null);     // 現在のURL情報
+const NavigateContext = createContext(null);   // ナビゲーション関数
+
+// ↓ ② BrowserRouter の簡略版（実際のコアロジック）
+function BrowserRouter({ children }) {
+  const [location, setLocation] = useState(   // ← ③ 現在のURLをstateで管理
+    window.location.pathname
+  );
+
+  useEffect(() =&gt; {
+    // ↓ ④ ブラウザの「戻る/進む」ボタンを検知
+    const handlePopState = () =&gt; {
+      setLocation(window.location.pathname);
+    };
+    window.addEventListener('popstate', handlePopState);
+
+    return () =&gt; {                             // ← ⑤ クリーンアップ（メモリリーク防止）
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // ↓ ⑥ navigate 関数: URLを変更してstateを更新
+  const navigate = (to) =&gt; {
+    window.history.pushState({}, '', to);      // ← ⑦ ブラウザ履歴にURLを追加
+    setLocation(to);                           // ← ⑧ Reactの再レンダリングを発火
+  };
+
+  return (
+    // ↓ ⑨ 2つの Context Provider でネストしてルーティング情報を配信
+    &lt;RouterContext.Provider value={location}&gt;
+      &lt;NavigateContext.Provider value={navigate}&gt;
+        {children}
+      &lt;/NavigateContext.Provider&gt;
+    &lt;/RouterContext.Provider&gt;
+  );
+}
+
+// ↓ ⑩ Route コンポーネント: URLに基づいてコンポーネントを出し分ける
+function Route({ path, element }) {
+  const location = useContext(RouterContext);
+  return location === path ? element : null;   // ← ⑪ パスが一致する時だけ描画
+}
+
+// ↓ ⑫ useNavigate: 任意のコンポーネントからページ遷移を実行
+function useNavigate() {
+  return useContext(NavigateContext);
+}
+
+// ↓ ⑬ Link: aタグの代わりに使うナビゲーションコンポーネント
+function Link({ to, children }) {
+  const navigate = useNavigate();
+  return (
+    &lt;a
+      href={to}
+      onClick={(e) =&gt; {
+        e.preventDefault();                    // ← ⑭ ページリロードを防止
+        navigate(to);                          // ← ⑮ SPAナビゲーションを実行
+      }}
+    &gt;
+      {children}
+    &lt;/a&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 一行ずつ解説</h4>
+            <p><strong>① Context による情報共有</strong> — React Router は <code>createContext</code> を使って、アプリ全体に「現在のURL」と「ナビゲーション関数」を配信しています。これにより、深くネストされたコンポーネントからも <code>useNavigate()</code> で直接ページ遷移ができるのです。</p>
+            <p><strong>③ URLを useState で管理</strong> — 「現在のURL」をReactのstateとして管理することで、URLが変わると自動的にReactの再レンダリングが発火します。<strong>ブラウザのURL変更 → React state変更 → コンポーネント再描画</strong>という流れが、SPAルーティングの本質です。</p>
+            <p><strong>⑦ <code>history.pushState()</code></strong> — ブラウザの History API を使ってURLを変更します。これは<strong>ページリロードなしでURLだけを書き換える</strong>ブラウザのネイティブ機能です。SPAの根幹技術です。</p>
+            <p><strong>⑪ <code>location === path ? element : null</code></strong> — Route の実装は驚くほどシンプルです。現在のURLとパスが一致すればコンポーネントを表示し、一致しなければ <code>null</code>（何も表示しない）を返すだけです。</p>
+            <p><strong>⑭⑮ <code>e.preventDefault()</code></strong> — 通常の <code>&lt;a&gt;</code> タグはクリックするとページ全体がリロードされます。<code>Link</code> コンポーネントはこのデフォルト動作を<strong>キャンセル</strong>して、代わりにJavaScriptでURLだけを書き換えます。これがSPAの「ページ遷移が速い」理由です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 OSSコードリーディングのコツ（React編）</h4>
+            <p><strong>1. npm パッケージのサイズを見る:</strong> <code>bundlephobia.com</code> で「このライブラリを使うとバンドルサイズがどれだけ増えるか」を事前に確認しましょう。Zustand が人気な理由の一つは、わずか 1KB（gzip後）という極小サイズです。</p>
+            <p><strong>2. TypeScript の型定義を先に読む:</strong> OSSの <code>*.d.ts</code> ファイルや <code>interface</code> 定義は、「このライブラリが何をできるか」の完全な仕様書です。実装コードより先に型定義を読むと、全体像を把握しやすくなります。</p>
+            <p><strong>3. カスタムフックのパターンを盗む:</strong> SWR の <code>useSWR</code> や React Router の <code>useNavigate</code> のように、「ロジックをフックに切り出して再利用可能にする」パターンは、自分のプロジェクトにもそのまま応用できます。</p>
+          </div>
+        </div>
+      </article>
 
       <!-- React Quiz -->
       <div class="quiz-section" id="react-quiz">
