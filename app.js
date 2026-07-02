@@ -9,6 +9,16 @@
 // 1. クイズデータ
 // --------------------------------------------------
 const quizData = {
+  "htmlcss": [
+{"question": "HTML5でページの主要なコンテンツを囲むセマンティックタグはどれですか？", "options": ["<div>", "<section>", "<main>", "<content>"], "correct": 2, "explanation": "<main>タグはページの主要なコンテンツ領域を示すセマンティックタグです。検索エンジンやスクリーンリーダーがページ構造を理解するのに役立ちます。"},
+{"question": "CSSで box-sizing: border-box を指定すると、width の値にはどの部分まで含まれますか？", "options": ["contentのみ", "content + padding", "content + padding + border", "content + padding + border + margin"], "correct": 2, "explanation": "border-boxではwidthにcontent + padding + borderが含まれます。marginは含まれません。これにより直感的なサイズ計算ができます。"},
+{"question": "Flexboxで子要素を水平・垂直の両方で中央に配置するためのプロパティの組み合わせはどれですか？", "options": ["text-align: center と vertical-align: middle", "justify-content: center と align-items: center", "margin: 0 auto と padding: auto", "position: absolute と transform: translate(-50%, -50%)"], "correct": 1, "explanation": "Flexboxの親要素にjustify-content: center（水平中央）とalign-items: center（垂直中央）を指定するのが最もシンプルな中央配置の方法です。"},
+{"question": "CSSアニメーションでパフォーマンスに最も優れたプロパティはどれですか？", "options": ["width と height", "margin と padding", "transform と opacity", "top と left"], "correct": 2, "explanation": "transformとopacityはGPU（グラフィックカード）で処理されるため、レイアウトの再計算が不要で60fpsのスムーズなアニメーションが実現できます。"},
+{"question": "レスポンシブデザインで clamp(1.5rem, 4vw, 3rem) と書いた場合の意味はどれですか？", "options": ["常に4vwのサイズを使う", "1.5remから3remの間で4vwに基づいてサイズが変わる", "最小3rem、最大1.5rem", "ビューポート幅の4%を固定値として使う"], "correct": 1, "explanation": "clamp(最小値, 推奨値, 最大値)は、推奨値を使いつつ最小値と最大値の範囲にクランプ（制限）します。画面サイズに応じて流動的にフォントサイズが変化します。"},
+{"question": "imgタグにwidthとheightを指定する主な理由はどれですか？", "options": ["画像のファイルサイズを小さくするため", "CLS（レイアウトシフト）を防止するため", "画像の解像度を上げるため", "レスポンシブデザインのため"], "correct": 1, "explanation": "width/heightを指定することで、画像読み込み前にブラウザがスペースを確保でき、読み込み後のレイアウトのガタつき（CLS）を防止できます。Core Web Vitalsの重要指標です。"},
+{"question": "CSS Gridで repeat(auto-fit, minmax(280px, 1fr)) を使うと何が実現できますか？", "options": ["固定3列のグリッド", "メディアクエリなしのレスポンシブグリッド", "アニメーション付きのグリッド", "グリッドアイテムの重なり"], "correct": 1, "explanation": "auto-fitとminmax()の組み合わせにより、画面幅に応じて自動的に列数が増減するレスポンシブグリッドがメディアクエリなしで実現できます。"},
+{"question": "target='_blank'でリンクを開くとき、セキュリティ上追加すべき属性はどれですか？", "options": ["rel='nofollow'", "rel='noopener noreferrer'", "aria-label='external'", "data-external='true'"], "correct": 1, "explanation": "rel='noopener noreferrer'を付けないと、開いた先のページからwindow.openerを通じて元のページを操作される可能性があります（タブナビング攻撃）。"}
+  ],
   "python-cert": [
 {"question": "Pythonの文字列に対するスライス操作 `s = 'Python'` について、`s[1:4]` の結果として正しいものは？", "options": ["'Pyt'", "'yth'", "'ytho'", "'thon'"], "correct": 1, "explanation": "スライス `[start:stop]` は start番目のインデックスを含み、stop番目のインデックスを含みません。インデックス1は 'y'、インデックス4は 'o' なので 'yth' となります。"},
 {"question": "リストに対する操作で、`a = [1, 2, 3]` に対して `b = a` とした後、`b[0] = 99` を実行しました。`print(a[0])` の結果は？", "options": ["1", "99", "エラーになる", "None"], "correct": 1, "explanation": "`b = a` はリストのコピーではなく「参照渡し」です。同じリストを指しているため、bを変更するとaも変更されます。別々のリストにするには `b = a[:]` などを使います。"},
@@ -558,7 +568,7 @@ function saveProgress() {
 }
 
 function updateAllProgress() {
-  const languages = ['python', 'react', 'typescript', 'python-cert', 'algorithm', 'webapi'];
+  const languages = ['python', 'react', 'typescript', 'python-cert', 'algorithm', 'webapi', 'htmlcss'];
   let totalSections = 0;
   let totalCompleted = 0;
 
@@ -917,6 +927,18 @@ window.handleQuizAnswer = handleQuizAnswer;
 // ==========================================
 
 const puzzleData = {
+  htmlcss: {
+    question: "HTMLの基本構造を正しい順番に組み立ててください",
+    pieces: [
+      { id: "h1", text: "<!DOCTYPE html>" },
+      { id: "h2", text: "<html lang=\"ja\">" },
+      { id: "h3", text: "<head><meta charset=\"UTF-8\"><title>My Page</title></head>" },
+      { id: "h4", text: "<body>" },
+      { id: "h5", text: "<h1>Hello, World!</h1></body></html>" }
+    ],
+    correctOrder: ["h1", "h2", "h3", "h4", "h5"],
+    explanation: "HTML文書は必ず <!DOCTYPE html> 宣言から始まり、<html>、<head>（メタ情報）、<body>（コンテンツ）の順に構成されます。"
+  },
   algorithm: {
     question: "二分探索（Binary Search）の関数を正しい順番に組み立ててください",
     pieces: [

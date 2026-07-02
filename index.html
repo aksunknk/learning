@@ -34,7 +34,7 @@
           <span class="stat-label">言語 / フレームワーク</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">48</span>
+          <span class="stat-number">72</span>
           <span class="stat-label">レッスン</span>
         </div>
         <div class="stat-item">
@@ -157,6 +157,10 @@
         <button class="tab-button" data-tab="webapi" role="tab" aria-selected="false" id="tab-webapi">
           <span class="tab-icon">🌐</span>
           <span class="tab-label">Web/API</span>
+        </button>
+        <button class="tab-button" data-tab="htmlcss" role="tab" aria-selected="false" id="tab-htmlcss">
+          <span class="tab-icon">🎨</span>
+          <span class="tab-label">HTML/CSS</span>
         </button>
       </div>
       <div class="tab-indicator" id="tab-indicator"></div>
@@ -1415,6 +1419,329 @@ class Message(AbstractMessage):
             <p><strong>1. コメントで「なぜ」を書く:</strong> Zulipのコードには「何をしているか」だけでなく「なぜそうしたか」が必ずコメントされています。DM_TOPICの <code>\x07</code> が良い例です。</p>
             <p><strong>2. 抽象化で重複を排除:</strong> <code>AbstractMessage</code> → <code>Message</code> / <code>ArchivedMessage</code> の継承構造は、DRY原則の教科書的実装です。</p>
             <p><strong>3. 計測しないものは改善できない:</strong> 全リクエストの処理時間・DB呼び出し・キャッシュヒットを自動計測するミドルウェアは、パフォーマンス問題の早期発見に不可欠です。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- Lesson 14: FastAPI -->
+      <article class="lesson-card" data-section="python-14" id="python-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>FastAPI — 高速&型安全なWeb APIフレームワーク</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 FastAPI = Flask の簡潔さ + 自動ドキュメント + 非同期処理</h4>
+          </div>
+
+          <!-- FastAPI 概要 -->
+          <div class="explanation-box">
+            <h4>FastAPI とは？</h4>
+            <p><strong>FastAPI</strong> は、Python 3.7 以降の型ヒント（Type Hints）を最大限に活用した<strong>モダンな Web API フレームワーク</strong>です。Flask と同じくらいシンプルに書けて、Django REST Framework 並みの機能（バリデーション、シリアライゼーション、認証）を自動で提供します。</p>
+            <p><strong>主な特長:</strong></p>
+            <p>• <strong>高速:</strong> Starlette + Uvicorn ベースで、Node.js や Go に匹敵するパフォーマンス<br>
+            • <strong>型安全:</strong> Python の型ヒントからバリデーション・ドキュメントを自動生成<br>
+            • <strong>自動ドキュメント:</strong> Swagger UI（/docs）と ReDoc（/redoc）が標準搭載<br>
+            • <strong>非同期対応:</strong> <code>async/await</code> をネイティブサポート<br>
+            • <strong>GitHub ★80k+</strong>、Netflix、Uber、Microsoft が採用</p>
+          </div>
+
+          <!-- 基本的な API 作成 -->
+          <div class="explanation-box">
+            <h4>📖 ① はじめてのFastAPI — Hello World</h4>
+            <p>Flask と比較しながら、FastAPI の基本構文を学びます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — FastAPI 基本</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ① FastAPI のインポートと初期化
+from fastapi import FastAPI          # FastAPI クラスをインポート
+
+app = FastAPI(                       # アプリケーションインスタンスを作成
+    title="My API",                  # ← Swagger UI に表示されるタイトル
+    description="はじめての FastAPI",  # ← API の説明
+    version="1.0.0",                 # ← バージョン情報
+)
+
+# ② GET エンドポイント — Flask の @app.route("/") に相当
+@app.get("/")                        # デコレータで HTTP メソッドとパスを指定
+def read_root():                     # 関数名は自由（ドキュメントに表示される）
+    return {"message": "Hello, World!"}  # ← 辞書を返すと自動で JSON に変換
+
+# ③ パスパラメータ — URL の一部を変数として受け取る
+@app.get("/users/{user_id}")         # {user_id} がパスパラメータ
+def get_user(user_id: int):          # ← int 型ヒントで自動バリデーション
+    return {"user_id": user_id}      # "abc" を渡すと自動で 422 エラー
+
+# ④ クエリパラメータ — ?key=value 形式のパラメータ
+@app.get("/items")
+def list_items(
+    skip: int = 0,                   # ← デフォルト値あり = 省略可能
+    limit: int = 10,                 # ← /items?skip=5&amp;limit=20
+    q: str | None = None,            # ← None許容 = 任意パラメータ
+):
+    return {"skip": skip, "limit": limit, "query": q}
+
+# 起動コマンド: uvicorn main:app --reload
+# → http://localhost:8000/docs で Swagger UI が自動表示</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 Flask との比較</h4>
+            <p><strong>Flask:</strong> <code>@app.route("/users/&lt;int:user_id&gt;")</code> + 手動で <code>jsonify()</code><br>
+            <strong>FastAPI:</strong> <code>@app.get("/users/{user_id}")</code> + 型ヒント <code>user_id: int</code> で自動バリデーション + 自動 JSON 変換</p>
+            <p>FastAPI では <strong>型ヒントを書くだけ</strong> で、入力チェック、エラーメッセージ生成、API ドキュメント生成が全て自動化されます。「型を書く = ドキュメントとテストを同時に書く」のです。</p>
+          </div>
+
+          <!-- Pydantic モデル -->
+          <div class="explanation-box">
+            <h4>📖 ② Pydantic モデル — リクエストボディのバリデーション</h4>
+            <p>FastAPI の最大の強みは <strong>Pydantic</strong> との統合です。Python のクラス定義がそのままバリデーションルール + API ドキュメントになります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Pydantic モデル</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from pydantic import BaseModel, Field, EmailStr
+from datetime import datetime
+
+# ① Pydantic モデル = データの「設計図」
+class UserCreate(BaseModel):
+    """ユーザー作成リクエストのスキーマ"""
+    name: str = Field(               # ← Field() で詳細なバリデーションルール
+        min_length=1,                # 最低1文字
+        max_length=50,               # 最大50文字
+        examples=["田中太郎"],        # ← Swagger UI のサンプル値
+    )
+    email: EmailStr                  # ← メールアドレス形式を自動検証
+    age: int = Field(ge=0, le=150)   # ← ge=0（0以上）、le=150（150以下）
+    is_active: bool = True           # ← デフォルト値
+
+# ② レスポンスモデル（返却時のデータ形状を定義）
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    created_at: datetime
+    # ↑ パスワードなど、返してはいけないフィールドはここに含めない
+
+# ③ POST エンドポイントでモデルを使う
+@app.post("/users", response_model=UserResponse, status_code=201)
+def create_user(user: UserCreate):   # ← 型ヒント = リクエストボディの自動解析
+    """
+    新しいユーザーを作成します。
+
+    - **name**: ユーザーの表示名（1〜50文字）
+    - **email**: メールアドレス（重複不可）
+    - **age**: 年齢（0〜150）
+    """
+    # ↑ docstring が Swagger UI の説明文になる
+    new_user = save_to_db(user)      # Pydantic モデルのまま DB に保存
+    return new_user                  # response_model で自動フィルタリング
+
+# ④ バリデーションエラーの自動レスポンス例
+# POST /users に {"name": "", "age": -5} を送ると:
+# → 422 Unprocessable Entity
+# {
+#   "detail": [
+#     {"loc": ["body", "name"], "msg": "最低1文字必要", "type": "string_too_short"},
+#     {"loc": ["body", "age"], "msg": "0以上の値が必要", "type": "greater_than_equal"},
+#     {"loc": ["body", "email"], "msg": "必須フィールド", "type": "missing"}
+#   ]
+# }</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 response_model の役割</h4>
+            <p><code>response_model=UserResponse</code> を指定すると、<strong>レスポンスから UserResponse に含まれないフィールド（例: パスワード）が自動的に除外</strong>されます。これはセキュリティ上非常に重要で、「うっかりパスワードハッシュをAPIで返してしまう」事故を構造的に防ぎます。</p>
+          </div>
+
+          <!-- 非同期処理 -->
+          <div class="explanation-box">
+            <h4>📖 ③ 非同期処理（async/await）— 高速な並行処理</h4>
+            <p>FastAPI は Python の <code>async/await</code> をネイティブサポートしており、I/O バウンド（DB読み書き、外部API呼び出し）の処理を効率的に並行実行できます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — 非同期 FastAPI</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import httpx                          # ← 非同期対応の HTTP クライアント
+from fastapi import FastAPI
+
+app = FastAPI()
+
+# ① 同期関数 — 1リクエストずつ順番に処理
+@app.get("/sync")
+def sync_endpoint():
+    # このリクエストの処理中、他のリクエストはブロックされる
+    result = slow_database_query()    # 2秒かかる
+    return {"data": result}
+
+# ② 非同期関数 — 待ち時間中に他のリクエストを処理可能
+@app.get("/async")
+async def async_endpoint():          # ← async キーワードを追加
+    async with httpx.AsyncClient() as client:
+        # await 中に他のリクエストを処理できる
+        response = await client.get(  # ← await で非同期に待機
+            "https://api.example.com/data"
+        )
+    return response.json()
+
+# ③ 複数の外部APIを並行呼び出し
+import asyncio
+
+@app.get("/dashboard")
+async def get_dashboard():
+    async with httpx.AsyncClient() as client:
+        # ↓ 3つのAPIを「同時に」呼び出す（順番に呼ぶと3倍遅い）
+        user_task = client.get("https://api.example.com/user")
+        orders_task = client.get("https://api.example.com/orders")
+        stats_task = client.get("https://api.example.com/stats")
+
+        user, orders, stats = await asyncio.gather(
+            user_task, orders_task, stats_task  # ← 全部まとめて並行実行
+        )
+
+    return {
+        "user": user.json(),
+        "orders": orders.json(),
+        "stats": stats.json(),
+    }
+# 同期: 1秒 + 1秒 + 1秒 = 3秒
+# 非同期: max(1秒, 1秒, 1秒) = 1秒 ← 3倍速い！</code></pre>
+          </div>
+
+          <!-- 依存性注入 -->
+          <div class="explanation-box">
+            <h4>📖 ④ 依存性注入（Dependency Injection）— 認証・DB接続の共通化</h4>
+            <p>FastAPI の依存性注入は、「このエンドポイントには認証が必要」「DB接続を自動で開閉する」といった<strong>共通処理を簡潔に定義</strong>できる仕組みです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — 依存性注入</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+security = HTTPBearer()              # ← Bearer トークン認証スキーム
+
+# ① 認証の依存関数 — トークンを検証してユーザーを返す
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):                                   # ← Depends() で自動注入
+    token = credentials.credentials
+    user = await verify_token(token)  # トークンからユーザーを特定
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="無効なトークンです",
+        )
+    return user
+
+# ② DB セッションの依存関数 — 接続の開閉を自動管理
+async def get_db():
+    db = SessionLocal()              # DB接続を開く
+    try:
+        yield db                     # ← yield でエンドポイントに渡す
+    finally:
+        db.close()                   # ← リクエスト完了後に必ず閉じる
+
+# ③ エンドポイントで依存関数を使う
+@app.get("/me")
+async def get_my_profile(
+    user = Depends(get_current_user),  # ← 認証済みユーザーを自動注入
+    db = Depends(get_db),              # ← DB接続を自動注入
+):
+    profile = await db.get(User, user.id)
+    return profile
+
+# ④ 管理者権限のチェック（依存関数のチェーン）
+async def require_admin(
+    user = Depends(get_current_user)   # ← 別の依存関数を入れ子にできる
+):
+    if not user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="管理者権限が必要です"
+        )
+    return user
+
+@app.delete("/users/{user_id}")
+async def delete_user(
+    user_id: int,
+    admin = Depends(require_admin),    # ← 管理者のみ実行可能
+    db = Depends(get_db),
+):
+    await db.delete(User, user_id)
+    return {"message": "ユーザーを削除しました"}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 なぜ依存性注入が重要か</h4>
+            <p><strong>1. コードの重複排除:</strong> 認証チェックを全エンドポイントに書く代わりに、<code>Depends(get_current_user)</code> と1行書くだけ。</p>
+            <p><strong>2. テスタビリティ:</strong> テスト時に <code>get_db</code> をモックDBに差し替えるだけで、本番コードを一切変更せずにテスト可能。</p>
+            <p><strong>3. 安全なリソース管理:</strong> <code>yield</code> を使った依存関数は、エラーが起きても <code>finally</code> で必ずリソースを解放する。</p>
+          </div>
+
+          <!-- FastAPI プロジェクト構成 -->
+          <div class="explanation-box">
+            <h4>📖 ⑤ 実務レベルのプロジェクト構成</h4>
+            <p>実際のFastAPIプロジェクトの推奨ディレクトリ構成です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">プロジェクト構成例</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>my_api/
+├── main.py                # ← アプリのエントリーポイント
+├── config.py              # ← 環境変数・設定管理
+├── database.py            # ← DB接続設定
+│
+├── models/                # ← SQLAlchemy モデル（DBテーブル定義）
+│   ├── __init__.py
+│   ├── user.py
+│   └── item.py
+│
+├── schemas/               # ← Pydantic スキーマ（リクエスト/レスポンス定義）
+│   ├── __init__.py
+│   ├── user.py            #   UserCreate, UserResponse, UserUpdate
+│   └── item.py
+│
+├── routers/               # ← APIエンドポイントをグループ化
+│   ├── __init__.py
+│   ├── users.py           #   /users 関連のエンドポイント
+│   └── items.py           #   /items 関連のエンドポイント
+│
+├── services/              # ← ビジネスロジック層
+│   ├── __init__.py
+│   └── user_service.py    #   DB操作のロジックを分離
+│
+├── dependencies.py        # ← 共通の依存関数（認証、DB接続）
+├── middleware.py           # ← ミドルウェア（ログ、CORS）
+└── tests/                 # ← テストコード
+    ├── test_users.py
+    └── conftest.py        # ← テスト用のフィクスチャ</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💡 FastAPI のまとめ</h4>
+            <p><strong>型ヒントを書くだけで:</strong> バリデーション + ドキュメント + エディタ補完が全て自動。<br>
+            <strong>async/await:</strong> I/Oバウンド処理を並行実行し、高スループットを実現。<br>
+            <strong>依存性注入:</strong> 認証・DB接続などの横断的関心事を簡潔に管理。<br>
+            <strong>Pydantic:</strong> リクエスト/レスポンスの型安全をコンパイル時に保証。</p>
           </div>
         </div>
       </article>
@@ -6555,6 +6882,743 @@ return () => ac.abort()</code></pre>
           <button class="reset-btn" onclick="loadPuzzle('webapi')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
         </div>
         <div class="quiz-result" id="webapi-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
+    </div>
+
+
+
+    <!-- HTML/CSS TAB CONTENT -->
+    <div class="tab-content" id="content-htmlcss" role="tabpanel">
+
+      <!-- Lesson 1: HTML の基本構造 -->
+      <article class="lesson-card" data-section="htmlcss-1" id="htmlcss-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>HTML の基本構造 — Webページの骨格を理解する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 全てのWebページは HTML で始まる</h4></div>
+          <div class="explanation-box">
+            <h4>HTML（HyperText Markup Language）とは？</h4>
+            <p>HTML は Web ページの<strong>構造と意味</strong>を定義するマークアップ言語です。ブラウザは HTML ファイルを受け取り、その「タグ」を解釈してページを画面に描画します。見た目（色やレイアウト）は CSS の仕事ですが、「この文章は見出しである」「これはリンクである」「ここにフォームがある」といった<strong>意味の構造</strong>を定義するのが HTML の役割です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!DOCTYPE html&gt;                    &lt;!-- ① HTML5 であることを宣言 --&gt;
+&lt;html lang="ja"&gt;                   &lt;!-- ② ルート要素、言語を日本語に設定 --&gt;
+
+&lt;head&gt;                             &lt;!-- ③ メタ情報（画面には表示されない） --&gt;
+  &lt;meta charset="UTF-8"&gt;           &lt;!-- ④ 文字コード（日本語を正しく表示） --&gt;
+  &lt;meta name="viewport"            &lt;!-- ⑤ スマホ対応の必須設定 --&gt;
+    content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;ページタイトル&lt;/title&gt;     &lt;!-- ⑥ ブラウザのタブに表示される --&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;  &lt;!-- ⑦ 外部CSSファイルの読み込み --&gt;
+&lt;/head&gt;
+
+&lt;body&gt;                             &lt;!-- ⑧ ページの実際の内容 --&gt;
+  &lt;header&gt;                         &lt;!-- ⑨ ヘッダー領域 --&gt;
+    &lt;h1&gt;サイトのタイトル&lt;/h1&gt;       &lt;!-- ⑩ 最上位の見出し（1ページに1つ） --&gt;
+    &lt;nav&gt;                          &lt;!-- ⑪ ナビゲーション --&gt;
+      &lt;a href="/"&gt;ホーム&lt;/a&gt;
+      &lt;a href="/about"&gt;概要&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;                           &lt;!-- ⑫ メインコンテンツ --&gt;
+    &lt;article&gt;                      &lt;!-- ⑬ 独立した記事 --&gt;
+      &lt;h2&gt;記事のタイトル&lt;/h2&gt;
+      &lt;p&gt;段落テキスト。HTMLは&lt;strong&gt;意味&lt;/strong&gt;を定義します。&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;                         &lt;!-- ⑭ フッター --&gt;
+    &lt;p&gt;&amp;copy; 2026 My Website&lt;/p&gt;
+  &lt;/footer&gt;
+
+  &lt;script src="app.js"&gt;&lt;/script&gt;   &lt;!-- ⑮ JavaScript（bodyの最後に配置） --&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 重要ポイント</h4>
+            <p><strong>④ <code>charset="UTF-8"</code></strong> — これがないと日本語が文字化けします。全てのHTMLファイルに必須です。</p>
+            <p><strong>⑤ viewport 設定</strong> — スマホでページを正しく表示するために必須。これを忘れるとスマホでページが極小表示されます。</p>
+            <p><strong>⑨〜⑭ セマンティックHTML</strong> — <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;footer&gt;</code> は「意味を持つタグ」です。<code>&lt;div&gt;</code> の代わりにこれらを使うことで、検索エンジンやスクリーンリーダーがページの構造を正しく理解できます（<strong>SEO とアクセシビリティ</strong>に直結）。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2: テキスト・リスト・リンク -->
+      <article class="lesson-card" data-section="htmlcss-2" id="htmlcss-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>テキスト・リスト・リンク — コンテンツの基本要素</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 見出し・段落・リスト・リンクは Web の四大要素</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- 見出し: h1〜h6（数字が小さいほど重要） --&gt;
+&lt;h1&gt;最も重要な見出し&lt;/h1&gt;          &lt;!-- 1ページに1つだけ --&gt;
+&lt;h2&gt;セクションの見出し&lt;/h2&gt;
+&lt;h3&gt;サブセクション&lt;/h3&gt;
+
+&lt;!-- 段落とインラインテキスト --&gt;
+&lt;p&gt;通常の段落です。&lt;strong&gt;太字（重要）&lt;/strong&gt;と
+   &lt;em&gt;斜体（強調）&lt;/em&gt;が使えます。&lt;/p&gt;
+&lt;p&gt;&lt;mark&gt;ハイライト表示&lt;/mark&gt;、&lt;small&gt;小さい文字&lt;/small&gt;、
+   &lt;del&gt;取り消し線&lt;/del&gt;もあります。&lt;/p&gt;
+
+&lt;!-- 順序付きリスト（1. 2. 3.） --&gt;
+&lt;ol&gt;
+  &lt;li&gt;最初のステップ&lt;/li&gt;
+  &lt;li&gt;次のステップ&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;!-- 順序なしリスト（・ ・ ・） --&gt;
+&lt;ul&gt;
+  &lt;li&gt;項目A&lt;/li&gt;
+  &lt;li&gt;項目B&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- リンク --&gt;
+&lt;a href="https://example.com"&gt;外部リンク&lt;/a&gt;
+&lt;a href="/about"&gt;サイト内リンク&lt;/a&gt;
+&lt;a href="#section1"&gt;ページ内リンク&lt;/a&gt;
+&lt;a href="https://example.com" target="_blank"
+   rel="noopener noreferrer"&gt;      &lt;!-- ← セキュリティ対策 --&gt;
+  新しいタブで開くリンク
+&lt;/a&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 <code>rel="noopener noreferrer"</code> の重要性</h4>
+            <p><code>target="_blank"</code> で新しいタブを開く場合、<code>rel="noopener noreferrer"</code> を付けないと、開いたページから元ページの <code>window.opener</code> にアクセスされる<strong>セキュリティリスク</strong>があります。外部リンクには必ず付けましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3: 画像・メディア・テーブル -->
+      <article class="lesson-card" data-section="htmlcss-3" id="htmlcss-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>画像・メディア・テーブル — リッチコンテンツの埋め込み</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 画像には必ず alt 属性を付ける（アクセシビリティの基本）</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- 基本的な画像 --&gt;
+&lt;img src="photo.jpg" alt="桜が咲いている公園の写真"
+     width="800" height="600"&gt;       &lt;!-- ← width/height でCLS防止 --&gt;
+
+&lt;!-- レスポンシブ画像（デバイスに応じて最適な画像を配信） --&gt;
+&lt;picture&gt;
+  &lt;source media="(max-width: 768px)" srcset="photo-sm.webp"&gt;
+  &lt;source media="(max-width: 1200px)" srcset="photo-md.webp"&gt;
+  &lt;img src="photo-lg.jpg" alt="風景写真"&gt;  &lt;!-- フォールバック --&gt;
+&lt;/picture&gt;
+
+&lt;!-- テーブル --&gt;
+&lt;table&gt;
+  &lt;caption&gt;月別売上&lt;/caption&gt;       &lt;!-- テーブルの説明 --&gt;
+  &lt;thead&gt;                           &lt;!-- ヘッダー行 --&gt;
+    &lt;tr&gt;
+      &lt;th scope="col"&gt;月&lt;/th&gt;       &lt;!-- scope で列の見出しと明示 --&gt;
+      &lt;th scope="col"&gt;売上&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;                           &lt;!-- データ行 --&gt;
+    &lt;tr&gt;
+      &lt;td&gt;1月&lt;/td&gt;
+      &lt;td&gt;¥1,200,000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 CLS（Cumulative Layout Shift）とは？</h4>
+            <p>画像に <code>width</code> と <code>height</code> を指定しないと、画像読み込み時にレイアウトが「ガクッ」とずれます。これが<strong>CLS（累積レイアウトシフト）</strong>で、Google の Core Web Vitals の評価指標の一つです。SEO に直結するため、必ず指定しましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4: フォーム -->
+      <article class="lesson-card" data-section="htmlcss-4" id="htmlcss-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>フォーム — ユーザー入力を受け取る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 HTMLのフォームだけで強力なバリデーションが可能</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;form action="/api/register" method="POST"&gt;
+  &lt;!-- テキスト入力 --&gt;
+  &lt;label for="username"&gt;ユーザー名&lt;/label&gt;     &lt;!-- ← label は必須 --&gt;
+  &lt;input type="text" id="username" name="username"
+         required minlength="3" maxlength="20"
+         placeholder="3〜20文字"&gt;
+
+  &lt;!-- メールアドレス（ブラウザが自動バリデーション） --&gt;
+  &lt;label for="email"&gt;メール&lt;/label&gt;
+  &lt;input type="email" id="email" name="email" required&gt;
+
+  &lt;!-- パスワード（正規表現でバリデーション） --&gt;
+  &lt;label for="password"&gt;パスワード&lt;/label&gt;
+  &lt;input type="password" id="password" name="password"
+         required minlength="8"
+         pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+         title="英大小文字と数字を含む8文字以上"&gt;
+
+  &lt;!-- セレクトボックス --&gt;
+  &lt;label for="role"&gt;役割&lt;/label&gt;
+  &lt;select id="role" name="role" required&gt;
+    &lt;option value=""&gt;選択してください&lt;/option&gt;
+    &lt;option value="user"&gt;一般ユーザー&lt;/option&gt;
+    &lt;option value="admin"&gt;管理者&lt;/option&gt;
+  &lt;/select&gt;
+
+  &lt;!-- チェックボックス --&gt;
+  &lt;label&gt;
+    &lt;input type="checkbox" name="agree" required&gt;
+    利用規約に同意する
+  &lt;/label&gt;
+
+  &lt;button type="submit"&gt;登録する&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 なぜ <code>&lt;label&gt;</code> が必須なのか</h4>
+            <p><code>&lt;label&gt;</code> がないと、スクリーンリーダー（視覚障害者向けの読み上げソフト）がフォームの項目名を読み上げられません。また、ラベルをクリックすると対応する入力欄にフォーカスが移動するため、<strong>モバイルでの操作性</strong>も向上します。<code>for</code> 属性と <code>id</code> 属性を一致させることで紐付けます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5: CSS の基本 -->
+      <article class="lesson-card" data-section="htmlcss-5" id="htmlcss-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>CSS の基本 — セレクタとプロパティ</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 CSS = 「何を」（セレクタ）+「どう見せるか」（プロパティ）</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== セレクタの種類 ===== */
+
+/* ① 要素セレクタ — 全ての &lt;p&gt; に適用 */
+p { color: #333; line-height: 1.8; }
+
+/* ② クラスセレクタ — .highlight クラスに適用 */
+.highlight { background: yellow; padding: 0.2em; }
+
+/* ③ IDセレクタ — #main-title に適用（1ページ1つだけ） */
+#main-title { font-size: 2rem; }
+
+/* ④ 子孫セレクタ — nav の中の a に適用 */
+nav a { text-decoration: none; color: inherit; }
+
+/* ⑤ 擬似クラス — ホバー時・フォーカス時 */
+a:hover { color: #0066cc; }
+input:focus { outline: 2px solid #0066cc; }
+li:first-child { font-weight: bold; }
+tr:nth-child(even) { background: #f5f5f5; }  /* 偶数行 */
+
+/* ⑥ 擬似要素 — 要素の前後にコンテンツを追加 */
+.required::after {
+  content: " *";                     /* ← 必須項目に * を自動表示 */
+  color: red;
+}
+
+/* ===== カスタムプロパティ（CSS変数） ===== */
+:root {
+  --color-primary: #3b82f6;          /* ← 1箇所変えれば全体に反映 */
+  --color-bg: #0a0e1a;
+  --radius: 8px;
+  --font-main: 'Inter', sans-serif;
+}
+
+.button {
+  background: var(--color-primary);  /* ← 変数を参照 */
+  border-radius: var(--radius);
+  font-family: var(--font-main);
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 CSS の詳細度（Specificity）</h4>
+            <p>複数のルールが同じ要素に適用される場合、<strong>詳細度</strong>の高いルールが勝ちます。<br>
+            <code>!important</code> &gt; インラインstyle &gt; <code>#id</code>(100点) &gt; <code>.class</code>(10点) &gt; <code>要素</code>(1点)<br>
+            <strong>原則:</strong> <code>!important</code> と <code>#id</code> セレクタはなるべく避け、クラスセレクタを中心に設計しましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6: ボックスモデル -->
+      <article class="lesson-card" data-section="htmlcss-6" id="htmlcss-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>ボックスモデル — 全てのレイアウトの基礎</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 全HTML要素は「箱（ボックス）」として描画される</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== ボックスモデルの構成 ===== */
+/*
+  ┌─────────────── margin（外側の余白）──────────────┐
+  │ ┌──────────── border（境界線）──────────────┐    │
+  │ │ ┌──────── padding（内側の余白）────────┐  │    │
+  │ │ │                                      │  │    │
+  │ │ │          content（コンテンツ）         │  │    │
+  │ │ │                                      │  │    │
+  │ │ └──────────────────────────────────────┘  │    │
+  │ └──────────────────────────────────────────┘    │
+  └────────────────────────────────────────────────┘
+*/
+
+/* ★ 最重要: box-sizing を全要素で統一する */
+*, *::before, *::after {
+  box-sizing: border-box;        /* ← width に padding と border を含める */
+}
+/* border-box なし: width:200px + padding:20px = 実際は240px（罠！）*/
+/* border-box あり: width:200px に padding:20px を含む = 常に200px（直感的）*/
+
+.card {
+  width: 300px;                  /* コンテンツ幅（border-box なので実際も300px） */
+  padding: 20px;                 /* 内側の余白 */
+  border: 1px solid #ddd;        /* 境界線 */
+  margin: 16px;                  /* 外側の余白 */
+  border-radius: 12px;           /* 角丸 */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);  /* 影 */
+}
+
+/* margin の相殺（Margin Collapsing） */
+/* 隣接する2つの要素の margin は「大きい方」だけが適用される */
+.item-a { margin-bottom: 20px; }
+.item-b { margin-top: 30px; }
+/* → 実際の間隔は 50px ではなく 30px（大きい方が勝つ） */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 <code>box-sizing: border-box</code> は必ず最初に書く</h4>
+            <p>CSS リセットの最初の1行として <code>*, *::before, *::after { box-sizing: border-box; }</code> を必ず書きましょう。これがないと <code>width: 100%</code> を指定した要素に <code>padding</code> を足しただけで<strong>親要素からはみ出す</strong>という直感に反する挙動が起きます。全てのモダンな CSS フレームワーク（Tailwind, Bootstrap）はこれをデフォルトで適用しています。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7: Flexbox -->
+      <article class="lesson-card" data-section="htmlcss-7" id="htmlcss-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>Flexbox — 柔軟な1次元レイアウト</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 Flexbox = 「横に並べる」「縦に並べる」「中央に置く」を簡単に</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== Flexbox の基本 ===== */
+
+/* ① 横並び（デフォルト） */
+.navbar {
+  display: flex;                   /* ← Flex コンテナにする */
+  justify-content: space-between;  /* ← 主軸方向の配置（左右に散らす） */
+  align-items: center;             /* ← 交差軸方向の配置（上下中央） */
+  gap: 16px;                       /* ← 子要素間の隙間 */
+}
+
+/* ② 完全中央配置（最もよく使うパターン） */
+.center-box {
+  display: flex;
+  justify-content: center;        /* 水平中央 */
+  align-items: center;            /* 垂直中央 */
+  min-height: 100vh;              /* ← 画面全体の高さ */
+}
+
+/* ③ 縦並び */
+.sidebar {
+  display: flex;
+  flex-direction: column;          /* ← 縦方向に変更 */
+  gap: 8px;
+}
+
+/* ④ 折り返し（レスポンシブカードグリッド） */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;                 /* ← はみ出したら次の行へ */
+  gap: 20px;
+}
+.card-grid .card {
+  flex: 1 1 300px;                 /* ← 最小300px、余ったスペースを均等分配 */
+  /* flex: grow shrink basis */
+  /* grow=1: 余白を均等に分配 */
+  /* shrink=1: 縮小も許可 */
+  /* basis=300px: 基本幅 300px */
+}
+
+/* ⑤ フッターを最下部に固定（Sticky Footer） */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+main { flex: 1; }                  /* ← main が残りスペースを全て占有 */
+footer { /* フッターは自然に最下部に */ }</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 <code>gap</code> vs <code>margin</code></h4>
+            <p><code>gap</code> は子要素<strong>間</strong>にだけ隙間を作ります。<code>margin</code> は外側にも余白ができるため、最初と最後の要素に不要な余白が生じます。Flexbox では <code>gap</code> を使うのがモダンな書き方です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8: CSS Grid -->
+      <article class="lesson-card" data-section="htmlcss-8" id="htmlcss-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>CSS Grid — 強力な2次元レイアウト</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 Grid = 行と列の両方を同時に制御できるレイアウトシステム</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== CSS Grid の基本 ===== */
+
+/* ① 基本的なグリッド（3列） */
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;  /* ← 3列均等分割 */
+  /* 同じ意味: repeat(3, 1fr) */
+  gap: 20px;
+}
+
+/* ② 名前付きエリアでレイアウト（最強のパターン） */
+.page-layout {
+  display: grid;
+  grid-template-areas:             /* ← 視覚的にレイアウトを定義 */
+    "header  header  header"
+    "sidebar content content"
+    "footer  footer  footer";
+  grid-template-columns: 250px 1fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
+.header  { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.content { grid-area: content; }
+.footer  { grid-area: footer; }
+
+/* ③ レスポンシブグリッド（メディアクエリ不要！） */
+.auto-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,                       /* ← 入るだけ列を作る */
+    minmax(280px, 1fr)              /* ← 最小280px, 最大1fr */
+  );
+  gap: 20px;
+}
+/* ↑ たった3行でレスポンシブなカードグリッドが完成 */
+
+/* ④ 特定の要素を複数セルにまたがらせる */
+.featured {
+  grid-column: span 2;             /* ← 2列分の幅を占有 */
+  grid-row: span 2;                /* ← 2行分の高さを占有 */
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 Flexbox vs Grid の使い分け</h4>
+            <p><strong>Flexbox:</strong> 1方向（横 or 縦）のレイアウト → ナビバー、ボタングループ、カードの中身<br>
+            <strong>Grid:</strong> 2方向（行と列）のレイアウト → ページ全体の構成、ダッシュボード、ギャラリー<br>
+            実務では<strong>両方を組み合わせ</strong>ます。Grid でページ全体を区画分けし、各区画の中身は Flexbox で並べるのが定番パターンです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9: レスポンシブデザイン -->
+      <article class="lesson-card" data-section="htmlcss-9" id="htmlcss-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>レスポンシブデザイン — あらゆるデバイスに対応する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 モバイルファースト = 小さい画面から先にデザインする</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== メディアクエリ（モバイルファースト） ===== */
+
+/* ① デフォルト: モバイル用のスタイル */
+.container {
+  padding: 16px;
+  font-size: 16px;
+}
+.nav-links { display: none; }       /* モバイルではナビを非表示 */
+.hamburger { display: block; }      /* ハンバーガーメニュー表示 */
+
+/* ② タブレット以上（768px〜） */
+@media (min-width: 768px) {
+  .container { padding: 24px; }
+  .nav-links { display: flex; }     /* ナビを表示 */
+  .hamburger { display: none; }     /* ハンバーガーを非表示 */
+}
+
+/* ③ デスクトップ以上（1024px〜） */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1200px;              /* ← 最大幅を制限 */
+    margin: 0 auto;                 /* ← 中央配置 */
+    padding: 32px;
+  }
+}
+
+/* ===== レスポンシブなフォントサイズ ===== */
+/* clamp() で最小・推奨・最大を一発指定 */
+h1 {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  /* 最小: 1.5rem（24px） */
+  /* 推奨: ビューポート幅の4% */
+  /* 最大: 3rem（48px） */
+}
+
+/* ===== レスポンシブな画像 ===== */
+img {
+  max-width: 100%;                  /* ← 親要素からはみ出さない */
+  height: auto;                     /* ← 縦横比を保持 */
+}
+
+/* ===== コンテナクエリ（新機能！） ===== */
+.card-container { container-type: inline-size; }
+
+@container (min-width: 400px) {
+  .card { display: flex; }          /* ← 親コンテナの幅で切替 */
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 なぜモバイルファーストか？</h4>
+            <p><strong>1. トラフィック:</strong> 現在のWebトラフィックの60%以上がモバイルから。<br>
+            <strong>2. 設計の容易さ:</strong> 小さい画面→大きい画面の方が「追加」するだけで済む。逆は「削る」必要があり難しい。<br>
+            <strong>3. パフォーマンス:</strong> モバイルで不要なCSSをデスクトップ用のメディアクエリ内に閉じ込められる。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10: アニメーション & モダンCSS -->
+      <article class="lesson-card" data-section="htmlcss-10" id="htmlcss-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>アニメーション &amp; モダンCSS — 動きのあるUIを作る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 微細なアニメーションがUIの「手触り」を決める</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== transition（状態変化のアニメーション） ===== */
+
+.button {
+  background: #3b82f6;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;        /* ← 全プロパティを0.2秒で変化 */
+}
+.button:hover {
+  background: #2563eb;
+  transform: translateY(-2px);      /* ← 上に2px浮く */
+  box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+}
+.button:active {
+  transform: translateY(0);         /* ← 押し込む感触 */
+}
+
+/* ===== @keyframes（複雑なアニメーション） ===== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.card {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* ===== glassmorphism（ガラス風デザイン） ===== */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);       /* ← 背景をぼかす */
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+}
+
+/* ===== グラデーション ===== */
+.hero {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+.text-gradient {
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 パフォーマンスに優しいアニメーション</h4>
+            <p>アニメーションさせるプロパティは <code>transform</code> と <code>opacity</code> だけに限定するのがベストプラクティスです。<code>width</code>, <code>height</code>, <code>margin</code>, <code>top</code> などをアニメーションさせると<strong>レイアウトの再計算</strong>が発生し、60fps が出なくなります（カクカクする）。<br>
+            <strong>✅ 良い:</strong> <code>transform: translateX(100px)</code><br>
+            <strong>❌ 悪い:</strong> <code>left: 100px</code></p>
+          </div>
+        </div>
+      </article>
+
+      <!-- htmlcss Quiz -->
+      <div class="quiz-section" id="htmlcss-quiz">
+        <div class="quiz-header">
+          <h3>📝 HTML/CSS 理解度チェック</h3>
+        </div>
+        <div class="quiz-question" id="htmlcss-quiz-question"></div>
+        <div class="quiz-options" id="htmlcss-quiz-options"></div>
+        <div class="quiz-result" id="htmlcss-quiz-result"></div>
+        <div class="quiz-navigation">
+          <button class="quiz-nav-btn" id="htmlcss-quiz-prev" onclick="prevQuestion('htmlcss')">← 前の問題</button>
+          <span class="quiz-counter" id="htmlcss-quiz-counter"></span>
+          <button class="quiz-nav-btn" id="htmlcss-quiz-next" onclick="nextQuestion('htmlcss')">次の問題 →</button>
+        </div>
+        <div class="quiz-progress-container">
+          <div class="quiz-progress-bar" id="htmlcss-quiz-progress"></div>
+        </div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="htmlcss-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="htmlcss-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="htmlcss-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="htmlcss-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('htmlcss')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('htmlcss')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="htmlcss-puzzle-result" style="margin-top: 1rem;"></div>
       </div>
     </div>
 
