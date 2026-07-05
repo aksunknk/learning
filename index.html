@@ -7584,21 +7584,14 @@ img {
       </article>
 
       <!-- htmlcss Quiz -->
+      <!-- 設問は app.js の initQuizzes() が quizData.htmlcss から動的生成する（他タブと共通の方式） -->
       <div class="quiz-section" id="htmlcss-quiz">
         <div class="quiz-header">
           <h3>📝 HTML/CSS 理解度チェック</h3>
         </div>
-        <div class="quiz-question" id="htmlcss-quiz-question"></div>
-        <div class="quiz-options" id="htmlcss-quiz-options"></div>
+        <p class="quiz-intro">HTML/CSSの基礎から実践までの知識を確認しましょう。</p>
+        <div id="htmlcss-quiz-container"></div>
         <div class="quiz-result" id="htmlcss-quiz-result"></div>
-        <div class="quiz-navigation">
-          <button class="quiz-nav-btn" id="htmlcss-quiz-prev" onclick="prevQuestion('htmlcss')">← 前の問題</button>
-          <span class="quiz-counter" id="htmlcss-quiz-counter"></span>
-          <button class="quiz-nav-btn" id="htmlcss-quiz-next" onclick="nextQuestion('htmlcss')">次の問題 →</button>
-        </div>
-        <div class="quiz-progress-container">
-          <div class="quiz-progress-bar" id="htmlcss-quiz-progress"></div>
-        </div>
       </div>
 
       <!-- Puzzle Section -->
