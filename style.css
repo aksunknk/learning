@@ -1,11 +1,31 @@
 /* ============================================================
    Code Foundations — 学習サイト マスタースタイルシート
+
+   【構成】
+   1. Design Tokens : 色・フォント・角丸・影を CSS変数で一元管理
+   2. Reset / Base  : ブラウザ標準スタイルの初期化と基本文字設定
+   3. コンポーネント : Hero / 進捗 / タブ / レッスンカード /
+                       コードブロック / クイズ / パズル / フッター
+   4. アニメーション定義（@keyframes）
+   5. レスポンシブ（768px / 480px の2段階）とアクセシビリティ対応
+
+   【テーマの仕組み】
+   サイト全体の差し色は --accent 変数に集約されており、
+   タブ切替時に app.js が --accent を書き換えることで
+   タブごとのテーマカラー変更を実現している。
    ============================================================ */
 
-/* ── Google Fonts ── */
+/* ── Google Fonts ──
+   Inter: 欧文UI用 / JetBrains Mono: コード表示用 /
+   Noto Sans JP: 日本語本文用。@import はHTML側の<link>と併用され、
+   どちらか先に読み込まれた方が使われる。 */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap');
 
-/* ── Design Tokens ── */
+/* ── Design Tokens ──
+   色やサイズの「生の値」はここにだけ書き、以降のルールは
+   var(--xxx) で参照する。ダークテーマ前提の配色で、
+   base → surface → raised → overlay の順に明るくなる
+   4段階のレイヤー構造を持つ。 */
 :root {
   --color-base: #0a0e1a;
   --color-surface: #111628;
@@ -48,7 +68,9 @@
   --shadow-glow: 0 0 30px var(--accent-glow);
 }
 
-/* ── Reset ── */
+/* ── Reset ──
+   box-sizing: border-box により width/height の計算に padding と
+   border が含まれ、レイアウト計算が直感的になる。 */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
@@ -91,6 +113,10 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 
 /* ========================================
    HERO SECTION
+   ページ最上部のフルスクリーン導入部。背景は
+   「グラデーション + ::before の回転する放射光 + particle canvas」
+   の3層重ね。文字要素は slideUp アニメーションの delay を
+   0.2s 刻みでずらし、上から順に現れる演出になっている。
    ======================================== */
 .hero {
   position: relative;
@@ -159,6 +185,11 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   animation: slideUp 0.8s ease-out 0.4s both;
 }
 
+/* 文字自体をグラデーションで塗るテクニック:
+   背景グラデーションをテキスト形状で切り抜き（background-clip: text）、
+   文字色を透明にして背景を透けさせる。background-size を200%にして
+   background-position をアニメーションさせることで、色が流れる
+   シマー効果を出している。 */
 .gradient-text {
   background: linear-gradient(135deg, #61DAFB 0%, #3776AB 40%, #FFD43B 70%, #3178C6 100%);
   -webkit-background-clip: text;
@@ -263,6 +294,9 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 
 /* ========================================
    PROGRESS OVERVIEW
+   学習進捗の可視化エリア。バーの幅（width%）は app.js の
+   updateAllProgress() が書き換え、CSS の transition が
+   その変化を滑らかにアニメーションさせる（JS=状態、CSS=演出の分担）。
    ======================================== */
 .progress-overview {
   background: var(--color-surface);
@@ -378,6 +412,10 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 
 /* ========================================
    TAB NAVIGATION
+   position: sticky でスクロール時に画面上部へ張り付くタブバー。
+   半透明背景 + backdrop-filter: blur で「すりガラス」風の質感。
+   下線インジケーター（.tab-indicator）は app.js が選択中ボタンの
+   位置・幅に合わせて動かす。
    ======================================== */
 .tab-navigation {
   position: sticky;
@@ -475,6 +513,10 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 
 /* ========================================
    LESSON CARDS
+   開閉式（アコーディオン）のレッスンカード。
+   開閉は .open クラスの有無だけで制御され、本文は
+   max-height: 0 → 5000px の transition で滑らかに展開する
+   （height: auto は transition できないための定番回避策）。
    ======================================== */
 .lesson-card {
   background: var(--color-surface);
@@ -591,6 +633,9 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 
 /* ========================================
    CONTENT BOXES
+   レッスン本文中の色分けされた囲み。左ボーダーの色で種類を示す:
+   concept（シアン）= 概念説明 / explanation（青）= 補足解説 /
+   tip（緑）= 実践のコツ / warning（赤）= 注意点・落とし穴
    ======================================== */
 .concept-box, .explanation-box, .tip-box, .warning-box {
   border-radius: var(--radius-md);
@@ -642,6 +687,10 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 
 /* ========================================
    CODE BLOCKS
+   GitHubダークテーマ風のコード表示。ヘッダーに言語名と
+   コピーボタンを持つ。シンタックスハイライトはライブラリを使わず、
+   HTML側で <span class="code-keyword"> のように手動マークアップした
+   ものを下の Syntax Colors で着色する方式。
    ======================================== */
 .code-block {
   background: #0d1117;
@@ -723,6 +772,11 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 
 /* ========================================
    QUIZ SECTION
+   4択クイズのUI。設問DOMは app.js が動的生成する。
+   回答後の状態はクラスで表現される:
+   .correct = 緑 + bounceCorrect / .incorrect = 赤 + shakeWrong /
+   .disabled = 回答済みで操作不可（正解の選択肢だけは opacity を
+   戻して目立たせる）
    ======================================== */
 .quiz-section {
   background: var(--color-surface);
@@ -964,6 +1018,9 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 
 /* ========================================
    ANIMATIONS
+   サイト全体で再利用する @keyframes 定義。
+   opacity と transform のみを動かすことで、レイアウト再計算を
+   発生させない GPU 合成のアニメーションに揃えている。
    ======================================== */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -1000,7 +1057,10 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   50% { box-shadow: 0 0 20px var(--accent-glow); }
 }
 
-/* Scroll-triggered animations */
+/* Scroll-triggered animations
+   初期状態では透明 + 30px下に配置しておき、要素が画面内に入った
+   タイミングで app.js（IntersectionObserver）が .visible を付与して
+   フェードイン + スライドアップさせる。 */
 .scroll-animate {
   opacity: 0;
   transform: translateY(30px);
@@ -1014,6 +1074,8 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 
 /* ========================================
    RESPONSIVE
+   768px以下（タブレット・スマホ）: タブはアイコンのみ表示に切替、
+   進捗カードは4列→2列へ。480px以下（小型スマホ）: 余白をさらに圧縮。
    ======================================== */
 @media (max-width: 768px) {
   .hero-stats {
@@ -1088,7 +1150,10 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   }
 }
 
-/* ── Reduced Motion ── */
+/* ── Reduced Motion ──
+   OS設定で「視差効果を減らす」を有効にしているユーザーへの配慮。
+   前庭障害などでアニメーションが不快・有害になる場合があるため、
+   すべての動きを実質無効化する（アクセシビリティ対応）。 */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1097,7 +1162,11 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   }
 }
 
-/* --- Puzzle Section --- */
+/* --- Puzzle Section ---
+   コード組み立てパズルのUI。上段（.puzzle-source）にシャッフルされた
+   コード断片、下段（.puzzle-dropzone）が回答エリア。
+   ドラッグ中は .dragging（半透明）、判定時は .correct-anim /
+   .error-anim が app.js から付与される。 */
 .puzzle-board {
   display: flex;
   flex-direction: column;

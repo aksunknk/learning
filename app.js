@@ -1,6 +1,25 @@
 // ============================================================
 // app.js — Code Foundations 学習サイト
 // 対象: AIでアプリを作った経験はあるが、コードをあまり書いたことがない初級者
+//
+// 【ファイル全体の構成】
+//   このファイルは大きく分けて「データ定義」と「UIロジック」の2層で
+//   構成されています。フレームワークを使わない素のJavaScript
+//   （Vanilla JS）で書かれており、index.html から読み込まれます。
+//
+//   1. クイズデータ (quizData) ・パズルデータ (puzzleData)
+//        — 出題内容のみを持つ純粋なデータ。ロジックとは分離。
+//   2. 進捗管理 (state / localStorage)
+//        — 「どのレッスンを完了したか」「どのクイズに回答したか」を
+//          ブラウザ内に永続化する。サーバーは不要。
+//   3. UI初期化・操作 (タブ切替 / セクション開閉 / コードコピー /
+//      クイズ / パズル / パーティクル背景 / スクロール演出)
+//
+// 【HTMLとの連携方法】
+//   index.html 側の onclick 属性から呼び出される関数
+//   (toggleSection, toggleComplete, copyCode, handleQuizAnswer,
+//    checkPuzzle, loadPuzzle など) は、ファイル末尾で window に
+//   明示的に公開しています。
 // ============================================================
 
 "use strict";
@@ -8,6 +27,17 @@
 // --------------------------------------------------
 // 1. クイズデータ
 // --------------------------------------------------
+// タブID（python / react / typescript / python-cert / algorithm /
+// webapi / htmlcss）をキーとし、値は設問オブジェクトの配列。
+//
+// 設問オブジェクトの構造:
+//   question:    問題文（表示時にHTMLエスケープされる）
+//   options:     選択肢の配列（最大4件。A〜Dのラベルが自動で付く）
+//   correct:     正解の選択肢インデックス（0始まり）
+//   explanation: 回答後に表示される解説文
+//
+// ここは「データのみ」を持ち、描画・判定ロジックは
+// initQuizzes / handleQuizAnswer 側が担当する。
 const quizData = {
   "htmlcss": [
 {"question": "HTML5でページの主要なコンテンツを囲むセマンティックタグはどれですか？", "options": ["<div>", "<section>", "<main>", "<content>"], "correct": 2, "explanation": "<main>タグはページの主要なコンテンツ領域を示すセマンティックタグです。検索エンジンやスクリーンリーダーがページ構造を理解するのに役立ちます。"},
@@ -369,6 +399,18 @@ const quizData = {
 // --------------------------------------------------
 // 2. 進捗管理の状態
 // --------------------------------------------------
+// 学習進捗はすべてブラウザの localStorage に保存する。
+// サーバーやログインを必要とせず、同じブラウザで再訪問すれば
+// 前回の続きから学習できる仕組み。
+//
+//   completedSections: 完了済みレッスンIDの配列
+//                      （例: ['python-1', 'react-3']）
+//   quizAnswered:      クイズの回答記録。キーは「タブID-設問番号」
+//                      （例: 'python-0'）、値は選択した選択肢の
+//                      インデックス。回答済み判定と復元に使う。
+//
+// localStorage は文字列しか保存できないため、
+// JSON.parse / JSON.stringify で配列・オブジェクトと相互変換する。
 const state = {
   completedSections: JSON.parse(localStorage.getItem('cf_completed') || '[]'),
   quizAnswered: JSON.parse(localStorage.getItem('cf_quizAnswered') || '{}')
@@ -377,6 +419,9 @@ const state = {
 // --------------------------------------------------
 // 3. 初期化
 // --------------------------------------------------
+// DOMContentLoaded は「HTMLの解析が完了した瞬間」に発火するイベント。
+// これを待たずに DOM を触ると要素がまだ存在せずエラーになるため、
+// すべての初期化処理をこの中で行う。
 document.addEventListener("DOMContentLoaded", () => {
   initTabs();
   initQuizzes();
@@ -394,6 +439,13 @@ document.addEventListener("DOMContentLoaded", () => {
 // --------------------------------------------------
 // 4. タブナビゲーション
 // --------------------------------------------------
+// 各タブボタンは data-tab 属性（例: data-tab="python"）を持ち、
+// 対応するコンテンツは id="content-python" のように命名されている。
+// この「命名規約による対応付け」がタブ切替の仕組みの核心。
+//
+// タブ下のインジケーター（下線）は絶対配置の1要素を
+// 選択中ボタンの位置・幅に合わせて動かすことで、
+// タブ間を滑らかにスライドするアニメーションを実現している。
 function initTabs() {
   const tabButtons = document.querySelectorAll('.tab-button');
   const indicator = document.getElementById('tab-indicator');
@@ -406,6 +458,8 @@ function initTabs() {
   });
 
   // 初期インジケーター位置
+  // requestAnimationFrame で1フレーム待つのは、レイアウト確定前に
+  // getBoundingClientRect() を呼ぶと幅0が返ることがあるため。
   requestAnimationFrame(() => {
     const activeBtn = document.querySelector('.tab-button.active');
     if (activeBtn && indicator) updateTabIndicator(activeBtn, indicator);
@@ -418,6 +472,13 @@ function initTabs() {
   });
 }
 
+// 指定タブへの切り替え処理。
+// (1) ボタンの active 状態と aria-selected（スクリーンリーダー向けの
+//     「選択中」情報）を更新
+// (2) 対応するコンテンツパネルだけを表示
+// (3) サイト全体のアクセントカラー（CSS変数 --accent）をタブの
+//     テーマ色に差し替え
+// (4) 新しく表示されたパネル内のスクロール演出を再トリガー
 function switchTab(tabName) {
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
@@ -444,6 +505,8 @@ function switchTab(tabName) {
   }
 
   // アクセントカラーの更新
+  // CSS変数（カスタムプロパティ）を :root で書き換えると、
+  // その変数を参照しているすべてのスタイルが一括で変わる。
   const root = document.documentElement;
   if (tabName === 'python') {
     root.style.setProperty('--accent', 'var(--python-blue)');
@@ -467,6 +530,9 @@ function switchTab(tabName) {
   });
 }
 
+// インジケーター（タブ下線）を指定ボタンの真下に移動させる。
+// ボタンの画面上の絶対位置から親要素の位置を引くことで、
+// 親要素基準の相対座標（style.left に渡す値）を求めている。
 function updateTabIndicator(btn, indicator) {
   if (!indicator || !btn) return;
   const parentRect = btn.parentElement.getBoundingClientRect();
@@ -478,6 +544,12 @@ function updateTabIndicator(btn, indicator) {
 // --------------------------------------------------
 // 5. セクション開閉
 // --------------------------------------------------
+// レッスンカードのヘッダーがクリックされたときの開閉トグル。
+// closest() はクリックされた要素から親方向に辿って最初に一致する
+// 要素を探すメソッド。ヘッダー内のどこ（タイトル・番号など）を
+// クリックしてもカード本体を特定できる。
+// 実際の開閉アニメーションは CSS 側（.lesson-card.open）が担当し、
+// JS はクラスの付け外しだけを行う。
 function toggleSection(headerElement) {
   const card = headerElement.closest('.lesson-card');
   if (!card) return;
@@ -487,6 +559,12 @@ function toggleSection(headerElement) {
 // --------------------------------------------------
 // 6. コードコピー
 // --------------------------------------------------
+// コードブロックの「コピー」ボタン。近くの <code> 要素の中身を
+// クリップボードへ書き込む。
+//
+// navigator.clipboard（モダンAPI）は HTTPS などの安全な文脈でしか
+// 使えないため、使えない環境（file:// で開いた場合など）では
+// 旧来の document.execCommand('copy') を使う fallbackCopy に切り替える。
 function copyCode(btn) {
   const codeBlock = btn.closest('.code-block');
   const codeEl = codeBlock?.querySelector('code');
@@ -507,6 +585,8 @@ function copyCode(btn) {
   }
 }
 
+// コピー成功をユーザーに伝えるため、ボタンの表記を2秒間だけ
+// 「✓ コピーしました！」に差し替える視覚フィードバック。
 function showCopyFeedback(btn) {
   const originalText = btn.textContent;
   btn.textContent = '✓ コピーしました！';
@@ -517,6 +597,9 @@ function showCopyFeedback(btn) {
   }, 2000);
 }
 
+// Clipboard API が使えない環境向けの代替コピー処理。
+// 「見えない textarea を一瞬だけ作る → 全選択 → execCommand('copy')
+//  → 削除」という古典的なテクニック。
 function fallbackCopy(text) {
   const textarea = document.createElement('textarea');
   textarea.value = text;
@@ -531,6 +614,10 @@ function fallbackCopy(text) {
 // --------------------------------------------------
 // 7. 完了トグル & 進捗管理
 // --------------------------------------------------
+// レッスンカード右上のチェックボタンで「完了 / 未完了」を切り替える。
+// sectionId は HTML 側の data-section 属性値（例: 'python-1'）。
+// 状態は state.completedSections（配列）に持ち、変更のたびに
+// localStorage へ保存 → 進捗バーを再計算する。
 function toggleComplete(sectionId) {
   const card = document.querySelector(`[data-section="${sectionId}"]`);
   const btn = card?.querySelector('.complete-btn');
@@ -551,6 +638,9 @@ function toggleComplete(sectionId) {
   updateAllProgress();
 }
 
+// ページ読み込み時に、保存済みの完了状態をDOMへ反映する。
+// （localStorage にはIDしか入っていないため、見た目のクラスは
+//   毎回ここで付け直す必要がある）
 function restoreProgress() {
   state.completedSections.forEach(sectionId => {
     const card = document.querySelector(`[data-section="${sectionId}"]`);
@@ -562,11 +652,16 @@ function restoreProgress() {
   });
 }
 
+// 現在の state を localStorage へ書き出す。
+// レッスン完了・クイズ回答のたびに呼ばれる唯一の保存窓口。
 function saveProgress() {
   localStorage.setItem('cf_completed', JSON.stringify(state.completedSections));
   localStorage.setItem('cf_quizAnswered', JSON.stringify(state.quizAnswered));
 }
 
+// タブごとの進捗バーと、ページ上部の全体進捗バーを再計算して更新する。
+// 分母（レッスン総数）はデータではなく DOM（.lesson-card の数）から
+// 数えるため、HTMLにレッスンを追加するだけで自動的に集計へ反映される。
 function updateAllProgress() {
   const languages = ['python', 'react', 'typescript', 'python-cert', 'algorithm', 'webapi', 'htmlcss'];
   let totalSections = 0;
@@ -597,6 +692,14 @@ function updateAllProgress() {
 // --------------------------------------------------
 // 8. クイズシステム
 // --------------------------------------------------
+// quizData の内容から4択クイズのDOMを動的に生成する。
+// HTML側には <div id="python-quiz-container"></div> のような
+// 空のコンテナだけを置いておき、設問はすべてJSで組み立てる方式。
+// これにより、設問の追加・修正は quizData の編集だけで済む。
+//
+// 選択肢テキストは escapeHtml() を通してから innerHTML に渡す。
+// 設問に <div> のようなHTML片が含まれてもタグとして解釈されず、
+// 文字としてそのまま表示させるため（XSS対策と表示崩れ防止を兼ねる）。
 function initQuizzes() {
   ['python', 'react', 'typescript', 'python-cert', 'algorithm', 'webapi'].forEach(lang => {
     const container = document.getElementById(`${lang}-quiz-container`);
@@ -636,6 +739,11 @@ function initQuizzes() {
   });
 }
 
+// 選択肢クリック時の回答処理。
+// 流れ: 二重回答ガード → 全選択肢を無効化 → 正誤の色付け →
+//        解説を表示 → 回答を保存 → 全問回答済みなら結果表示。
+// 不正解の場合は、選んだ選択肢を赤にしつつ正解も緑で示すことで
+// 「どれが正しかったのか」をその場で学べるようにしている。
 function handleQuizAnswer(optionEl, lang, questionIdx, selectedIdx) {
   const quizId = `${lang}-${questionIdx}`;
 
@@ -673,6 +781,9 @@ function handleQuizAnswer(optionEl, lang, questionIdx, selectedIdx) {
   checkQuizCompletion(lang);
 }
 
+// 指定タブのクイズが全問回答済みかを調べ、済みであれば
+// 正答率に応じた3段階（80%以上 / 60%以上 / それ未満）の
+// 総評メッセージをクイズ末尾に表示する。
 function checkQuizCompletion(lang) {
   const questions = quizData[lang];
   let answered = 0;
@@ -714,6 +825,9 @@ function checkQuizCompletion(lang) {
   }
 }
 
+// ページ再訪問時に、保存済みの回答をクイズUIへ復元する。
+// handleQuizAnswer と同じ見た目（正誤の色・解説文）を再現するが、
+// 保存処理は行わない読み取り専用の処理。
 function restoreQuizAnswers(lang) {
   const questions = quizData[lang];
   questions.forEach((q, qIdx) => {
@@ -747,6 +861,17 @@ function restoreQuizAnswers(lang) {
 // --------------------------------------------------
 // 9. パーティクルアニメーション
 // --------------------------------------------------
+// ヒーローセクション背景の「浮遊する粒子と接続線」の演出。
+// <canvas> に対して requestAnimationFrame ループで毎フレーム描画する。
+//
+// 実装上のポイント:
+//   - devicePixelRatio を掛けてキャンバスの内部解像度を上げることで
+//     Retina等の高DPIディスプレイでも粒子がぼやけない
+//   - 粒子は等速直進 + sin/cos による揺らぎで「漂う」動きを表現
+//   - 画面端から出た粒子は反対側から再登場（トーラス状のラップ処理）
+//   - 距離120px未満の粒子ペアには、近いほど濃い線を引く
+//   - タブが非表示（document.hidden）の間は描画をスキップして
+//     CPU/バッテリーを節約する
 function initParticles() {
   const canvas = document.getElementById('particle-canvas');
   if (!canvas) return;
@@ -766,6 +891,8 @@ function initParticles() {
   window.addEventListener('resize', resize);
 
   // パーティクルの作成
+  // 個数は画面幅に比例させ、上限60個で頭打ちにする
+  // （粒子間の線は総当たりで計算するため、増やしすぎると重くなる）
   const count = Math.min(60, Math.floor(canvas.offsetWidth / 20));
   for (let i = 0; i < count; i++) {
     particles.push(createParticle());
@@ -855,6 +982,11 @@ function initParticles() {
 // --------------------------------------------------
 // 10. スクロールアニメーション
 // --------------------------------------------------
+// IntersectionObserver は「要素が画面内に入ったか」を、スクロール
+// イベントを監視するよりも遥かに低コストで検知できるAPI。
+// 要素が10%以上見えたら .visible を付与し（CSS側でフェードイン）、
+// 一度表示した要素は unobserve して監視を打ち切る（1回きりの演出）。
+// rootMargin の -50px は「画面下端より50px手前に入ってから発火」の意。
 function initScrollAnimations() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -874,6 +1006,9 @@ function initScrollAnimations() {
 // --------------------------------------------------
 // 11. スムーズスクロール（ヒーローCTA）
 // --------------------------------------------------
+// ページ内リンク（href="#..."）のクリックを document で一括捕捉する
+// 「イベント委譲」パターン。個々のリンクにリスナーを付けなくても、
+// 後から追加されたリンクにも自動的に効くのが利点。
 document.addEventListener('click', (e) => {
   const anchor = e.target.closest('a[href^="#"]');
   if (!anchor) return;
@@ -889,6 +1024,8 @@ document.addEventListener('click', (e) => {
 // --------------------------------------------------
 // 12. プログレスカードのクリック
 // --------------------------------------------------
+// 進捗一覧のカードをクリックすると該当タブへジャンプする導線。
+// タブ切替の描画が落ち着くのを待つため、スクロールは100ms遅延させる。
 document.addEventListener('click', (e) => {
   const card = e.target.closest('.progress-card');
   if (!card) return;
@@ -907,6 +1044,10 @@ document.addEventListener('click', (e) => {
 // --------------------------------------------------
 // ユーティリティ
 // --------------------------------------------------
+// 文字列中の < > & などをHTMLエンティティ（&lt; 等）へ変換する。
+// textContent への代入はブラウザが必ず「ただの文字」として扱うため、
+// その結果を innerHTML で読み出すとエスケープ済み文字列が得られる、
+// という標準APIだけで完結する定番イディオム。
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
@@ -914,6 +1055,9 @@ function escapeHtml(str) {
 }
 
 // グローバルに公開（HTMLのonclick用）
+// このファイルは "use strict" 下でも通常スクリプトとして読み込まれる
+// ためトップレベル関数は元々グローバルだが、HTMLから呼ばれる関数を
+// ここに列挙することで「外部公開API」を明示する意図がある。
 window.toggleSection = toggleSection;
 window.toggleComplete = toggleComplete;
 window.copyCode = copyCode;
@@ -923,9 +1067,17 @@ window.handleQuizAnswer = handleQuizAnswer;
 
 
 // ==========================================
-// Puzzle Logic
+// Puzzle Logic — コード組み立てパズル
 // ==========================================
-
+// HTML5 の Drag & Drop API を使い、シャッフルされたコード断片を
+// 正しい順序に並べ替えるミニゲーム。
+//
+// パズルデータの構造:
+//   question:     お題の説明文
+//   pieces:       コード断片の配列。id は正解判定用の識別子で、
+//                 text が画面に表示されるコード1行分
+//   correctOrder: 正解となる piece id の並び順
+//   explanation:  正解時に表示される解説
 const puzzleData = {
   htmlcss: {
     question: "HTMLの基本構造を正しい順番に組み立ててください",
@@ -1015,6 +1167,14 @@ const puzzleData = {
 
 let draggedPiece = null;
 
+// 出題エリア（.puzzle-source）と回答エリア（.puzzle-dropzone）の
+// 両方をドロップ可能にする初期化処理。
+//
+// dragover で e.preventDefault() を呼ぶのは Drag & Drop API の必須作法
+// （デフォルトでは要素はドロップを受け付けないため）。
+// さらに dragover のたびにマウスY座標から挿入位置を計算して要素を
+// 移動させることで、「ドラッグ中にリアルタイムで並び替わる」挙動を
+// 実現している（ドロップの瞬間に移動するのではない点に注意）。
 function initPuzzleDropzones() {
   const dropzones = document.querySelectorAll('.puzzle-source, .puzzle-dropzone');
   
@@ -1052,6 +1212,10 @@ function initPuzzleDropzones() {
   });
 }
 
+// マウスのY座標から「ドラッグ中の要素をどの要素の前に挿入すべきか」を
+// 求める。各要素の中心線とマウス位置の差（offset）を計算し、
+// 「マウスより下にあり（offset < 0）、かつ最もマウスに近い要素」を
+// reduce で探す。該当がなければ undefined（＝末尾に追加）を返す。
 function getDragAfterElement(container, y) {
   const draggableElements = [...container.querySelectorAll('.puzzle-piece:not(.dragging)')];
   
@@ -1066,6 +1230,9 @@ function getDragAfterElement(container, y) {
   }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
+// 指定タブのパズルを初期状態にする（初回表示と「リセット」ボタンの両方で使用）。
+// 断片の並びは sort(() => Math.random() - 0.5) による簡易シャッフル。
+// 厳密に一様なシャッフルではないが、5個程度の断片には十分。
 function loadPuzzle(lang) {
   const data = puzzleData[lang];
   if (!data) return;
@@ -1120,6 +1287,10 @@ function loadPuzzle(lang) {
   });
 }
 
+// 「判定する」ボタンの処理。回答エリア内の断片の並び順を
+// correctOrder と突き合わせ、断片ごとに正解（緑のパルス）／不正解
+// （赤のシェイク）のアニメーションを付けたうえで総合結果を表示する。
+// 全断片が配置されていない場合は判定せずに配置を促す。
 function checkPuzzle(lang) {
   const data = puzzleData[lang];
   if (!data) return;
@@ -1155,7 +1326,9 @@ function checkPuzzle(lang) {
   }
 }
 
-// Attach to global window load to initialize puzzles
+// パズル機能の初期化（DOMContentLoaded 後に実行）。
+// ドロップゾーンのイベント登録は1回だけ行い、各タブのパズルを
+// シャッフル済みの初期状態で読み込む。
 window.addEventListener('DOMContentLoaded', () => {
   initPuzzleDropzones();
   // Load initially for all languages
