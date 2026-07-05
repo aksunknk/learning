@@ -397,7 +397,33 @@ const quizData = {
 };
 
 // --------------------------------------------------
-// 2. 進捗管理の状態
+// 2. サイト全体の定数
+// --------------------------------------------------
+// タブIDの一覧。進捗集計・クイズ生成・パズル生成のすべてが
+// このリストを参照する（各所に同じ配列を重複定義しない）。
+// 新しいタブを追加する場合は、ここに1行足すだけで各機能が追従する。
+const TAB_IDS = ['python', 'react', 'typescript', 'python-cert', 'algorithm', 'webapi', 'htmlcss'];
+
+// タブごとのアクセントカラー定義。switchTab() が CSS変数 --accent /
+// --accent-glow をこの値で書き換え、サイト全体の差し色を変える。
+const TAB_ACCENTS = {
+  python:        { accent: 'var(--python-blue)',     glow: 'rgba(55,118,171,0.35)' },
+  react:         { accent: 'var(--react-cyan)',      glow: 'rgba(97,218,251,0.35)' },
+  typescript:    { accent: 'var(--typescript-blue)', glow: 'rgba(49,120,198,0.35)' },
+  'python-cert': { accent: 'var(--python-yellow)',   glow: 'rgba(255,212,59,0.35)' },
+  algorithm:     { accent: 'var(--color-warning)',   glow: 'rgba(251,191,36,0.35)' },
+  webapi:        { accent: 'var(--webapi-green)',    glow: 'rgba(0,191,165,0.35)' },
+  htmlcss:       { accent: 'var(--htmlcss-orange)',  glow: 'rgba(227,79,38,0.35)' },
+};
+
+// localStorage のキー名。文字列リテラルの散在を防ぐため一元管理する。
+const STORAGE_KEYS = {
+  completed: 'cf_completed',
+  quizAnswered: 'cf_quizAnswered',
+};
+
+// --------------------------------------------------
+// 3. 進捗管理の状態
 // --------------------------------------------------
 // 学習進捗はすべてブラウザの localStorage に保存する。
 // サーバーやログインを必要とせず、同じブラウザで再訪問すれば
@@ -411,33 +437,40 @@ const quizData = {
 //
 // localStorage は文字列しか保存できないため、
 // JSON.parse / JSON.stringify で配列・オブジェクトと相互変換する。
+// 手動編集などで壊れたJSONが保存されていても起動不能にならないよう、
+// 読み出しは safeParse でガードする。
+function safeParse(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 const state = {
-  completedSections: JSON.parse(localStorage.getItem('cf_completed') || '[]'),
-  quizAnswered: JSON.parse(localStorage.getItem('cf_quizAnswered') || '{}')
+  completedSections: safeParse(STORAGE_KEYS.completed, []),
+  quizAnswered: safeParse(STORAGE_KEYS.quizAnswered, {})
 };
 
 // --------------------------------------------------
-// 3. 初期化
+// 4. 初期化
 // --------------------------------------------------
 // DOMContentLoaded は「HTMLの解析が完了した瞬間」に発火するイベント。
 // これを待たずに DOM を触ると要素がまだ存在せずエラーになるため、
-// すべての初期化処理をこの中で行う。
+// すべての初期化処理をこの中で一括して行う（エントリーポイント）。
+// ※ scroll-animate クラスの付与は initScrollAnimations() 内で行う。
 document.addEventListener("DOMContentLoaded", () => {
   initTabs();
   initQuizzes();
+  initPuzzles();
   initParticles();
   initScrollAnimations();
   restoreProgress();
   updateAllProgress();
-
-  // すべてのlesson-cardにscroll-animateクラスを追加
-  document.querySelectorAll('.lesson-card, .quiz-section').forEach(el => {
-    el.classList.add('scroll-animate');
-  });
 });
 
 // --------------------------------------------------
-// 4. タブナビゲーション
+// 5. タブナビゲーション
 // --------------------------------------------------
 // 各タブボタンは data-tab 属性（例: data-tab="python"）を持ち、
 // 対応するコンテンツは id="content-python" のように命名されている。
@@ -507,17 +540,11 @@ function switchTab(tabName) {
   // アクセントカラーの更新
   // CSS変数（カスタムプロパティ）を :root で書き換えると、
   // その変数を参照しているすべてのスタイルが一括で変わる。
+  // 色の定義自体は TAB_ACCENTS（ファイル冒頭）に集約されている。
   const root = document.documentElement;
-  if (tabName === 'python') {
-    root.style.setProperty('--accent', 'var(--python-blue)');
-    root.style.setProperty('--accent-glow', 'rgba(55,118,171,0.35)');
-  } else if (tabName === 'react') {
-    root.style.setProperty('--accent', 'var(--react-cyan)');
-    root.style.setProperty('--accent-glow', 'rgba(97,218,251,0.35)');
-  } else {
-    root.style.setProperty('--accent', 'var(--typescript-blue)');
-    root.style.setProperty('--accent-glow', 'rgba(49,120,198,0.35)');
-  }
+  const theme = TAB_ACCENTS[tabName] || TAB_ACCENTS.typescript;
+  root.style.setProperty('--accent', theme.accent);
+  root.style.setProperty('--accent-glow', theme.glow);
 
   // スクロールアニメーションを再トリガー
   requestAnimationFrame(() => {
@@ -542,7 +569,7 @@ function updateTabIndicator(btn, indicator) {
 }
 
 // --------------------------------------------------
-// 5. セクション開閉
+// 6. セクション開閉
 // --------------------------------------------------
 // レッスンカードのヘッダーがクリックされたときの開閉トグル。
 // closest() はクリックされた要素から親方向に辿って最初に一致する
@@ -557,7 +584,7 @@ function toggleSection(headerElement) {
 }
 
 // --------------------------------------------------
-// 6. コードコピー
+// 7. コードコピー
 // --------------------------------------------------
 // コードブロックの「コピー」ボタン。近くの <code> 要素の中身を
 // クリップボードへ書き込む。
@@ -612,7 +639,7 @@ function fallbackCopy(text) {
 }
 
 // --------------------------------------------------
-// 7. 完了トグル & 進捗管理
+// 8. 完了トグル & 進捗管理
 // --------------------------------------------------
 // レッスンカード右上のチェックボタンで「完了 / 未完了」を切り替える。
 // sectionId は HTML 側の data-section 属性値（例: 'python-1'）。
@@ -655,21 +682,26 @@ function restoreProgress() {
 // 現在の state を localStorage へ書き出す。
 // レッスン完了・クイズ回答のたびに呼ばれる唯一の保存窓口。
 function saveProgress() {
-  localStorage.setItem('cf_completed', JSON.stringify(state.completedSections));
-  localStorage.setItem('cf_quizAnswered', JSON.stringify(state.quizAnswered));
+  localStorage.setItem(STORAGE_KEYS.completed, JSON.stringify(state.completedSections));
+  localStorage.setItem(STORAGE_KEYS.quizAnswered, JSON.stringify(state.quizAnswered));
 }
 
 // タブごとの進捗バーと、ページ上部の全体進捗バーを再計算して更新する。
 // 分母（レッスン総数）はデータではなく DOM（.lesson-card の数）から
 // 数えるため、HTMLにレッスンを追加するだけで自動的に集計へ反映される。
+//
+// 完了数は「タブ内に実在するカードの data-section が完了リストに
+// 含まれるか」で数える。以前の「IDの前方一致（startsWith）」方式は
+// 'python-cert-1' が 'python' の完了数にも二重計上されるバグがあった。
 function updateAllProgress() {
-  const languages = ['python', 'react', 'typescript', 'python-cert', 'algorithm', 'webapi', 'htmlcss'];
   let totalSections = 0;
   let totalCompleted = 0;
 
-  languages.forEach(lang => {
+  TAB_IDS.forEach(lang => {
     const sections = document.querySelectorAll(`#content-${lang} .lesson-card`);
-    const completed = state.completedSections.filter(s => s.startsWith(lang)).length;
+    const completed = [...sections].filter(
+      card => state.completedSections.includes(card.dataset.section)
+    ).length;
     const total = sections.length;
 
     totalSections += total;
@@ -690,7 +722,7 @@ function updateAllProgress() {
 }
 
 // --------------------------------------------------
-// 8. クイズシステム
+// 9. クイズシステム
 // --------------------------------------------------
 // quizData の内容から4択クイズのDOMを動的に生成する。
 // HTML側には <div id="python-quiz-container"></div> のような
@@ -701,7 +733,7 @@ function updateAllProgress() {
 // 設問に <div> のようなHTML片が含まれてもタグとして解釈されず、
 // 文字としてそのまま表示させるため（XSS対策と表示崩れ防止を兼ねる）。
 function initQuizzes() {
-  ['python', 'react', 'typescript', 'python-cert', 'algorithm', 'webapi'].forEach(lang => {
+  TAB_IDS.forEach(lang => {
     const container = document.getElementById(`${lang}-quiz-container`);
     if (!container) return;
 
@@ -739,39 +771,40 @@ function initQuizzes() {
   });
 }
 
-// 選択肢クリック時の回答処理。
-// 流れ: 二重回答ガード → 全選択肢を無効化 → 正誤の色付け →
-//        解説を表示 → 回答を保存 → 全問回答済みなら結果表示。
+// 設問DOMに「回答済み」の見た目を反映する共通処理。
+// 全選択肢の無効化 → 正誤の色付け → 解説文の追加までを行う。
+// クリック時（handleQuizAnswer）と復元時（restoreQuizAnswers）の
+// 両方から呼ばれ、見た目のロジックを一箇所に集約している。
 // 不正解の場合は、選んだ選択肢を赤にしつつ正解も緑で示すことで
 // 「どれが正しかったのか」をその場で学べるようにしている。
+function revealQuizAnswer(questionDiv, question, selectedIdx) {
+  const allOptions = questionDiv.querySelectorAll('.quiz-option');
+  allOptions.forEach(opt => opt.classList.add('disabled'));
+
+  if (selectedIdx === question.correct) {
+    allOptions[selectedIdx].classList.add('correct');
+  } else {
+    allOptions[selectedIdx].classList.add('incorrect');
+    allOptions[question.correct].classList.add('correct');
+  }
+
+  const explanationDiv = document.createElement('div');
+  explanationDiv.className = 'quiz-explanation';
+  explanationDiv.innerHTML = `💡 <strong>解説:</strong> ${escapeHtml(question.explanation)}`;
+  questionDiv.appendChild(explanationDiv);
+}
+
+// 選択肢クリック時の回答処理。
+// 流れ: 二重回答ガード → 正誤の表示（revealQuizAnswer） →
+//        回答を保存 → 全問回答済みなら結果表示。
 function handleQuizAnswer(optionEl, lang, questionIdx, selectedIdx) {
   const quizId = `${lang}-${questionIdx}`;
 
   // 既に回答済みなら無視
   if (state.quizAnswered[quizId] !== undefined) return;
 
-  const correctIdx = quizData[lang][questionIdx].correct;
-  const explanation = quizData[lang][questionIdx].explanation;
   const questionDiv = optionEl.closest('.quiz-question');
-  const allOptions = questionDiv.querySelectorAll('.quiz-option');
-
-  // 全オプションを無効化
-  allOptions.forEach(opt => opt.classList.add('disabled'));
-
-  // 正解/不正解の表示
-  if (selectedIdx === correctIdx) {
-    optionEl.classList.add('correct');
-  } else {
-    optionEl.classList.add('incorrect');
-    // 正解を表示
-    allOptions[correctIdx].classList.add('correct');
-  }
-
-  // 解説を表示
-  const explanationDiv = document.createElement('div');
-  explanationDiv.className = 'quiz-explanation';
-  explanationDiv.innerHTML = `💡 <strong>解説:</strong> ${escapeHtml(explanation)}`;
-  questionDiv.appendChild(explanationDiv);
+  revealQuizAnswer(questionDiv, quizData[lang][questionIdx], selectedIdx);
 
   // 状態を保存
   state.quizAnswered[quizId] = selectedIdx;
@@ -829,8 +862,7 @@ function checkQuizCompletion(lang) {
 // handleQuizAnswer と同じ見た目（正誤の色・解説文）を再現するが、
 // 保存処理は行わない読み取り専用の処理。
 function restoreQuizAnswers(lang) {
-  const questions = quizData[lang];
-  questions.forEach((q, qIdx) => {
+  quizData[lang].forEach((q, qIdx) => {
     const quizId = `${lang}-${qIdx}`;
     const savedAnswer = state.quizAnswered[quizId];
     if (savedAnswer === undefined) return;
@@ -838,28 +870,14 @@ function restoreQuizAnswers(lang) {
     const questionDiv = document.querySelector(`[data-quiz-id="${quizId}"]`);
     if (!questionDiv) return;
 
-    const allOptions = questionDiv.querySelectorAll('.quiz-option');
-    allOptions.forEach(opt => opt.classList.add('disabled'));
-
-    if (savedAnswer === q.correct) {
-      allOptions[savedAnswer].classList.add('correct');
-    } else {
-      allOptions[savedAnswer].classList.add('incorrect');
-      allOptions[q.correct].classList.add('correct');
-    }
-
-    // 解説を再追加
-    const explanationDiv = document.createElement('div');
-    explanationDiv.className = 'quiz-explanation';
-    explanationDiv.innerHTML = `💡 <strong>解説:</strong> ${escapeHtml(q.explanation)}`;
-    questionDiv.appendChild(explanationDiv);
+    revealQuizAnswer(questionDiv, q, savedAnswer);
   });
 
   checkQuizCompletion(lang);
 }
 
 // --------------------------------------------------
-// 9. パーティクルアニメーション
+// 10. パーティクルアニメーション
 // --------------------------------------------------
 // ヒーローセクション背景の「浮遊する粒子と接続線」の演出。
 // <canvas> に対して requestAnimationFrame ループで毎フレーム描画する。
@@ -980,7 +998,7 @@ function initParticles() {
 }
 
 // --------------------------------------------------
-// 10. スクロールアニメーション
+// 11. スクロールアニメーション
 // --------------------------------------------------
 // IntersectionObserver は「要素が画面内に入ったか」を、スクロール
 // イベントを監視するよりも遥かに低コストで検知できるAPI。
@@ -1004,7 +1022,7 @@ function initScrollAnimations() {
 }
 
 // --------------------------------------------------
-// 11. スムーズスクロール（ヒーローCTA）
+// 12. スムーズスクロール（ヒーローCTA）
 // --------------------------------------------------
 // ページ内リンク（href="#..."）のクリックを document で一括捕捉する
 // 「イベント委譲」パターン。個々のリンクにリスナーを付けなくても、
@@ -1022,7 +1040,7 @@ document.addEventListener('click', (e) => {
 });
 
 // --------------------------------------------------
-// 12. プログレスカードのクリック
+// 13. プログレスカードのクリック
 // --------------------------------------------------
 // 進捗一覧のカードをクリックすると該当タブへジャンプする導線。
 // タブ切替の描画が落ち着くのを待つため、スクロールは100ms遅延させる。
@@ -1165,8 +1183,6 @@ const puzzleData = {
   }
 };
 
-let draggedPiece = null;
-
 // 出題エリア（.puzzle-source）と回答エリア（.puzzle-dropzone）の
 // 両方をドロップ可能にする初期化処理。
 //
@@ -1264,7 +1280,6 @@ function loadPuzzle(lang) {
     
     el.addEventListener('dragstart', () => {
       el.classList.add('dragging');
-      draggedPiece = el;
       
       // Hide placeholder if any
       const placeholder = dropZone.querySelector('.dropzone-placeholder');
@@ -1273,7 +1288,6 @@ function loadPuzzle(lang) {
     
     el.addEventListener('dragend', () => {
       el.classList.remove('dragging');
-      draggedPiece = null;
       
       // Show placeholder if empty
       const placeholder = dropZone.querySelector('.dropzone-placeholder');
@@ -1326,13 +1340,15 @@ function checkPuzzle(lang) {
   }
 }
 
-// パズル機能の初期化（DOMContentLoaded 後に実行）。
+// パズル機能の初期化。ファイル冒頭の DOMContentLoaded ハンドラから
+// 他の初期化処理と一緒に呼ばれる。
 // ドロップゾーンのイベント登録は1回だけ行い、各タブのパズルを
 // シャッフル済みの初期状態で読み込む。
-window.addEventListener('DOMContentLoaded', () => {
+function initPuzzles() {
   initPuzzleDropzones();
-  // Load initially for all languages
-  ['python', 'python-cert', 'react', 'typescript', 'algorithm', 'webapi'].forEach(lang => {
-    loadPuzzle(lang);
-  });
-});
+  TAB_IDS.forEach(loadPuzzle);
+}
+
+// パズル関連もHTMLの onclick から呼ばれるため window に公開する。
+window.checkPuzzle = checkPuzzle;
+window.loadPuzzle = loadPuzzle;

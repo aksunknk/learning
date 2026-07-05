@@ -43,9 +43,17 @@
   --react-cyan: #61DAFB;
   --typescript-blue: #3178C6;
   --webapi-green: #00bfa5;
+  --htmlcss-orange: #e34f26;
 
   --accent: var(--python-blue);
   --accent-glow: rgba(55,118,171,0.35);
+
+  /* 後方互換エイリアス:
+     index.html のインラインスタイルやパズルUIが参照している別名。
+     実体は上記トークンに委譲し、値の二重管理を避ける。 */
+  --color-primary: var(--accent);
+  --font-main: var(--font-body);
+  --radius: var(--radius-md);
 
   --color-success: #34d399;
   --color-success-bg: rgba(52,211,153,0.12);
@@ -675,12 +683,7 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   line-height: 1.8;
 }
 
-.warning-box ul {
-  color: var(--color-text-secondary);
-  font-size: 0.95rem;
-}
-
-.tip-box ul {
+.tip-box ul, .warning-box ul {
   color: var(--color-text-secondary);
   font-size: 0.95rem;
 }
