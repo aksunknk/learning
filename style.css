@@ -410,7 +410,10 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 .python-card .mini-progress-fill { background: var(--python-blue); }
 .react-card .mini-progress-fill { background: var(--react-cyan); }
 .typescript-card .mini-progress-fill { background: var(--typescript-blue); }
+.cert-card .mini-progress-fill { background: var(--python-yellow); }
+.algorithm-card .mini-progress-fill { background: var(--color-warning); }
 .webapi-card .mini-progress-fill { background: var(--webapi-green); }
+.htmlcss-card .mini-progress-fill { background: var(--htmlcss-orange); }
 
 .progress-percent {
   font-size: 0.75rem;
