@@ -1,24 +1,25 @@
 import { useState, type FormEvent, type KeyboardEvent } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { safeInvoke } from "../lib/ipc";
 import type { ReadingLog } from "../types/reading-log";
 
 interface ZeroRoutingInputProps {
   onLogAdded: (log: ReadingLog) => void;
+  enabled: boolean;
 }
 
-export function ZeroRoutingInput({ onLogAdded }: ZeroRoutingInputProps) {
+export function ZeroRoutingInput({ onLogAdded, enabled }: ZeroRoutingInputProps) {
   const [title, setTitle] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function submit() {
     const trimmed = title.trim();
-    if (!trimmed || busy) return;
+    if (!trimmed || busy || !enabled) return;
 
     setBusy(true);
     setError(null);
     try {
-      const log = await invoke<ReadingLog>("add_log", { title: trimmed });
+      const log = await safeInvoke<ReadingLog>("add_log", { title: trimmed });
       onLogAdded(log);
       setTitle("");
     } catch (err) {
@@ -49,10 +50,10 @@ export function ZeroRoutingInput({ onLogAdded }: ZeroRoutingInputProps) {
           value={title}
           onChange={(event) => setTitle(event.currentTarget.value)}
           onKeyDown={handleKeyDown}
-          placeholder="> title"
-          disabled={busy}
+          placeholder={enabled ? "> title" : "> tauri dev で起動してください"}
+          disabled={busy || !enabled}
           className="w-full bg-transparent text-[#00e5ff] placeholder:text-[#00e5ff66] caret-[#00e5ff] disabled:opacity-50"
-          autoFocus
+          autoFocus={enabled}
         />
       </form>
       {error ? <p className="mt-2 text-[#ff4d4d]">{error}</p> : null}
