@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-add-log"
+description = "Enables the add_log command."
+commands.allow = ["add_log"]

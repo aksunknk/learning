@@ -12,6 +12,7 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Lemma Desktop",
         "width": 960,
         "height": 640,

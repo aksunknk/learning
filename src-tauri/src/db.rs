@@ -41,7 +41,7 @@ pub async fn ensure_table(pool: &Pool<Sqlite>) -> Result<(), String> {
     Ok(())
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ReadingLog {
     pub id: String,
     pub isbn: Option<String>,
@@ -52,8 +52,33 @@ pub struct ReadingLog {
     pub updated_at: String,
 }
 
+#[derive(Debug, sqlx::FromRow)]
+struct ReadingLogRow {
+    id: String,
+    isbn: Option<String>,
+    title: String,
+    author: Option<String>,
+    status: String,
+    resonance: i64,
+    updated_at: String,
+}
+
+impl From<ReadingLogRow> for ReadingLog {
+    fn from(row: ReadingLogRow) -> Self {
+        Self {
+            id: row.id,
+            isbn: row.isbn,
+            title: row.title,
+            author: row.author,
+            status: row.status,
+            resonance: row.resonance != 0,
+            updated_at: row.updated_at,
+        }
+    }
+}
+
 pub async fn get_logs(pool: &Pool<Sqlite>) -> Result<Vec<ReadingLog>, String> {
-    let rows = sqlx::query_as::<_, ReadingLog>(
+    let rows = sqlx::query_as::<_, ReadingLogRow>(
         "SELECT id, isbn, title, author, status, resonance, updated_at
          FROM reading_logs
          ORDER BY updated_at DESC",
@@ -62,7 +87,7 @@ pub async fn get_logs(pool: &Pool<Sqlite>) -> Result<Vec<ReadingLog>, String> {
     .await
     .map_err(|e| e.to_string())?;
 
-    Ok(rows)
+    Ok(rows.into_iter().map(ReadingLog::from).collect())
 }
 
 pub async fn add_log(pool: &Pool<Sqlite>, title: String) -> Result<ReadingLog, String> {
