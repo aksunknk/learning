@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-get-logs"
+description = "Enables the get_logs command."
+commands.allow = ["get_logs"]
