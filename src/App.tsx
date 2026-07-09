@@ -10,7 +10,6 @@ function App() {
   const tauriReady = inTauri();
 
   const loadLogs = useCallback(async () => {
-    if (!tauriReady) return;
     try {
       const data = await safeInvoke<ReadingLog[]>("get_logs");
       setLogs(data);
@@ -20,7 +19,7 @@ function App() {
       setRuntimeError(message);
       console.error("get_logs failed:", err);
     }
-  }, [tauriReady]);
+  }, []);
 
   useEffect(() => {
     void loadLogs();
@@ -33,10 +32,10 @@ function App() {
   return (
     <div className="flex h-full flex-col bg-[#020408] text-[#00e5ff]">
       {!tauriReady ? (
-        <div className="border-b border-[#ff4d4d66] px-4 py-2 text-[#ff4d4d]">
-          ブラウザ単体では動作しません。ターミナルで{" "}
+        <div className="border-b border-[#00e5ff33] px-4 py-2 text-[#00e5ff99]">
+          ブラウザ開発モード（localStorage）。本番は{" "}
           <code className="text-[#00e5ff]">npm run tauri dev</code>{" "}
-          を実行し、開いた Lemma Desktop ウィンドウを使用してください。
+          のデスクトップウィンドウを使用してください。
         </div>
       ) : null}
       {runtimeError ? (
@@ -44,7 +43,7 @@ function App() {
           {runtimeError}
         </div>
       ) : null}
-      <ZeroRoutingInput onLogAdded={handleLogAdded} enabled={tauriReady} />
+      <ZeroRoutingInput onLogAdded={handleLogAdded} enabled />
       <TheGrid logs={logs} />
     </div>
   );

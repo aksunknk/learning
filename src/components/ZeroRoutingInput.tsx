@@ -4,10 +4,10 @@ import type { ReadingLog } from "../types/reading-log";
 
 interface ZeroRoutingInputProps {
   onLogAdded: (log: ReadingLog) => void;
-  enabled: boolean;
+  enabled?: boolean;
 }
 
-export function ZeroRoutingInput({ onLogAdded, enabled }: ZeroRoutingInputProps) {
+export function ZeroRoutingInput({ onLogAdded, enabled = true }: ZeroRoutingInputProps) {
   const [title, setTitle] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
