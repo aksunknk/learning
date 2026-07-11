@@ -30,11 +30,11 @@
       </p>
       <div class="hero-stats">
         <div class="stat-item">
-          <span class="stat-number">4</span>
+          <span class="stat-number">7</span>
           <span class="stat-label">言語 / フレームワーク</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">72</span>
+          <span class="stat-number">84</span>
           <span class="stat-label">レッスン</span>
         </div>
         <div class="stat-item">
@@ -42,7 +42,7 @@
           <span class="stat-label">クイズ</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">5</span>
+          <span class="stat-number">7</span>
           <span class="stat-label">パズル</span>
         </div>
       </div>
@@ -7579,6 +7579,1148 @@ img {
             <p>アニメーションさせるプロパティは <code>transform</code> と <code>opacity</code> だけに限定するのがベストプラクティスです。<code>width</code>, <code>height</code>, <code>margin</code>, <code>top</code> などをアニメーションさせると<strong>レイアウトの再計算</strong>が発生し、60fps が出なくなります（カクカクする）。<br>
             <strong>✅ 良い:</strong> <code>transform: translateX(100px)</code><br>
             <strong>❌ 悪い:</strong> <code>left: 100px</code></p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — 実務で差がつくテクニック</h4>
+        <p>基本を理解した次のステップとして、CSS設計手法、アクセシビリティ、パフォーマンス最適化、実務レベルのフォームデザインなどを学びます。</p>
+      </div>
+
+      <!-- Lesson 11: CSS設計手法（BEM, OOCSS） -->
+      <article class="lesson-card" data-section="htmlcss-11" id="htmlcss-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>CSS 設計手法 — BEM / OOCSS で保守性を高める</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 CSSは「書く」より「壊さない」ほうが難しい</h4></div>
+          <div class="explanation-box">
+            <h4>なぜCSS設計が必要なのか？</h4>
+            <p>CSSはグローバルスコープ（全てのスタイルが全ページに影響する）のため、プロジェクトが大きくなると「どこかを直すと別の場所が崩れる」問題が頻発します。<strong>命名規則と設計方針</strong>を決めることで、この問題を構造的に防ぎます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — BEM（Block Element Modifier）</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== BEM 命名規則 ===== */
+/* Block: 独立したコンポーネント */
+/* Element: Block の構成要素（__で繋ぐ） */
+/* Modifier: バリエーション（--で繋ぐ） */
+
+/* ① Block（カードコンポーネント） */
+.card { }
+
+/* ② Element（カードの構成要素） */
+.card__title { font-size: 1.2rem; font-weight: bold; }
+.card__image { width: 100%; border-radius: 8px 8px 0 0; }
+.card__body  { padding: 16px; }
+.card__footer { border-top: 1px solid #eee; padding: 12px 16px; }
+
+/* ③ Modifier（バリエーション） */
+.card--featured { border: 2px solid gold; }       /* 特集カード */
+.card--compact  { padding: 8px; }                  /* コンパクト版 */
+.card__title--large { font-size: 1.5rem; }         /* 大きいタイトル */
+
+/* ===== OOCSS（Object-Oriented CSS） ===== */
+/* 構造（レイアウト）と装飾（見た目）を分離する */
+
+/* 構造（どこでも使える） */
+.media { display: flex; gap: 16px; align-items: flex-start; }
+.media__body { flex: 1; }
+
+/* 装飾（見た目だけを定義） */
+.skin-bordered { border: 1px solid #ddd; border-radius: 8px; padding: 16px; }
+.skin-shadow   { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+/* 組み合わせて使う */
+/* &lt;div class="media skin-bordered"&gt; ... &lt;/div&gt; */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 BEM のメリット</h4>
+            <p><strong>1. 名前だけで構造が分かる:</strong> <code>.card__title--large</code> を見れば「card の中の title の大きいバリエーション」と即座に理解できます。</p>
+            <p><strong>2. 詳細度が均一:</strong> 全てクラスセレクタ（10点）なので、詳細度の戦争が起きません。</p>
+            <p><strong>3. スコープの明確化:</strong> <code>.card__title</code> は card の外では使わないという暗黙の契約があるため、影響範囲が限定されます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 12: アクセシビリティ -->
+      <article class="lesson-card" data-section="htmlcss-12" id="htmlcss-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>アクセシビリティ（a11y） — 全ての人が使えるWebを作る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 アクセシビリティは「配慮」ではなく「基本品質」</h4></div>
+          <div class="explanation-box">
+            <h4>なぜアクセシビリティが重要なのか？</h4>
+            <p>世界人口の約15%（10億人以上）が何らかの障害を持っています。また、一時的な障害（骨折で片手が使えない）や状況的な制約（日光でスマホが見づらい）も含めると、<strong>全てのユーザーがアクセシビリティの恩恵を受けます</strong>。さらに、多くの国で法的義務化が進んでいます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML — ARIA 属性とアクセシブルなマークアップ</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ① ランドマーク（スクリーンリーダーのナビゲーション） --&gt;
+&lt;header role="banner"&gt;...&lt;/header&gt;
+&lt;nav aria-label="メインナビゲーション"&gt;...&lt;/nav&gt;
+&lt;main role="main"&gt;...&lt;/main&gt;
+&lt;aside aria-label="関連記事"&gt;...&lt;/aside&gt;
+
+&lt;!-- ② ボタン（アイコンだけのボタンにラベルを付ける） --&gt;
+&lt;button aria-label="メニューを開く"&gt;
+  &lt;svg&gt;...ハンバーガーアイコン...&lt;/svg&gt;
+&lt;/button&gt;
+
+&lt;!-- ③ フォームのエラー表示 --&gt;
+&lt;label for="email"&gt;メールアドレス&lt;/label&gt;
+&lt;input type="email" id="email"
+       aria-describedby="email-error"    &lt;!-- エラーメッセージと紐付け --&gt;
+       aria-invalid="true"&gt;              &lt;!-- 無効な入力であることを通知 --&gt;
+&lt;p id="email-error" role="alert"&gt;       &lt;!-- 動的に表示されたらすぐ読み上げ --&gt;
+  有効なメールアドレスを入力してください
+&lt;/p&gt;
+
+&lt;!-- ④ 画像の alt テキストのベストプラクティス --&gt;
+&lt;img src="chart.png" alt="2024年の売上推移グラフ。1月100万円から12月500万円に成長"&gt;
+&lt;img src="decorative-line.png" alt="" role="presentation"&gt;  &lt;!-- 装飾画像 --&gt;
+
+&lt;!-- ⑤ キーボードナビゲーション --&gt;
+&lt;div class="dropdown" tabindex="0"       &lt;!-- Tab キーでフォーカス可能にする --&gt;
+     role="listbox"
+     aria-expanded="false"
+     aria-haspopup="listbox"&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — アクセシビリティ対応スタイル</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ① フォーカスリング（キーボード操作の視認性） */
+:focus-visible {
+  outline: 3px solid #3b82f6;      /* キーボード操作時のみ表示 */
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;                   /* マウスクリック時は非表示 */
+}
+
+/* ② スクリーンリーダー専用テキスト（視覚的に非表示） */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* ③ 動きを減らす設定のユーザーへの配慮 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ④ 十分なコントラスト比を確保（WCAG AA: 4.5:1 以上） */
+.text-primary { color: #1a1a1a; }   /* 背景 #fff との比: 17.4:1 ✅ */
+.text-muted   { color: #767676; }   /* 背景 #fff との比: 4.54:1 ✅ */
+/* .text-light { color: #aaa; }     背景 #fff との比: 2.3:1 ❌ */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 アクセシビリティチェックリスト</h4>
+            <p><strong>1.</strong> 全ての画像に意味のある <code>alt</code> テキストがあるか（装飾画像は <code>alt=""</code>）<br>
+            <strong>2.</strong> キーボードだけで全ての操作ができるか（Tab + Enter + Escape）<br>
+            <strong>3.</strong> テキストのコントラスト比が WCAG AA（4.5:1）以上か<br>
+            <strong>4.</strong> フォームの全入力欄に <code>&lt;label&gt;</code> が紐づいているか<br>
+            <strong>5.</strong> 動的コンテンツが <code>aria-live</code> で通知されるか</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 13: 高度なセレクタとカスタムプロパティ -->
+      <article class="lesson-card" data-section="htmlcss-13" id="htmlcss-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">13</span>
+            <h3>高度なセレクタ &amp; カスタムプロパティ活用</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-13')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 セレクタの引き出しが多いほど、HTMLに余計なクラスを付けずに済む</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — 高度なセレクタ</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 属性セレクタ ===== */
+a[href^="https://"]  { }            /* https:// で始まるリンク */
+a[href$=".pdf"]      { }            /* .pdf で終わるリンク */
+a[href*="example"]   { }            /* example を含むリンク */
+input[type="email"]  { }            /* type が email の input */
+
+/* ===== :is() と :where() — セレクタの簡略化 ===== */
+/* 従来: */
+.card h1, .card h2, .card h3 { color: navy; }
+/* :is() で簡潔に: */
+.card :is(h1, h2, h3) { color: navy; }
+
+/* :where() は詳細度が 0（上書きしやすい） */
+:where(.card, .panel, .dialog) { padding: 16px; }
+
+/* ===== :has() — 親セレクタ（革命的な新機能！） ===== */
+/* 画像を持つカードだけにスタイル適用 */
+.card:has(img) { padding: 0; }
+
+/* 入力エラーがあるフォームグループのラベルを赤にする */
+.form-group:has(input:invalid) label { color: red; }
+
+/* チェックされたチェックボックスの隣の要素 */
+input:checked + label { font-weight: bold; color: green; }
+
+/* ===== :not() — 除外セレクタ ===== */
+/* 最後の要素以外に下線を引く */
+.list-item:not(:last-child) { border-bottom: 1px solid #eee; }
+
+/* ===== カスタムプロパティの高度な使い方 ===== */
+:root {
+  --hue: 220;                       /* 色相値だけを変数に */
+}
+.button {
+  --btn-hue: var(--hue);
+  background: hsl(var(--btn-hue), 90%, 55%);
+}
+.button--danger { --btn-hue: 0; }   /* 赤に変更（色相だけ変える） */
+.button--success { --btn-hue: 140; } /* 緑に変更 */
+
+/* テーマ切替（ダークモード） */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0a0e1a;
+    --color-text: #e2e8f0;
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 <code>:has()</code> が革命的な理由</h4>
+            <p>CSS には長年「親要素を選択する方法」がありませんでした。「子要素の状態に応じて親のスタイルを変える」にはJavaScriptが必要でした。<code>:has()</code> の登場で、<strong>純粋なCSSだけで親要素のスタイルを制御</strong>できるようになり、「CSSの歴史上最も重要な新機能」と呼ばれています。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 14: 実務レベルのコンポーネント設計 -->
+      <article class="lesson-card" data-section="htmlcss-14" id="htmlcss-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>実務レベルのコンポーネント設計 — カード・モーダル・ナビ</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 よく使うUIパターンを完璧に作れることがプロの条件</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML + CSS — モーダルダイアログ</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ===== HTML5 &lt;dialog&gt; 要素（JS最小限でモーダル実現） ===== --&gt;
+&lt;button onclick="document.getElementById('modal').showModal()"&gt;
+  開く
+&lt;/button&gt;
+
+&lt;dialog id="modal"&gt;
+  &lt;form method="dialog"&gt;          &lt;!-- method="dialog" で自動的に閉じる --&gt;
+    &lt;h2&gt;確認&lt;/h2&gt;
+    &lt;p&gt;この操作を実行しますか？&lt;/p&gt;
+    &lt;div class="modal-actions"&gt;
+      &lt;button value="cancel"&gt;キャンセル&lt;/button&gt;
+      &lt;button value="confirm"&gt;実行する&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/form&gt;
+&lt;/dialog&gt;</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — モーダルのスタイリング</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== &lt;dialog&gt; のスタイル ===== */
+dialog {
+  border: none;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.2);
+}
+
+/* ::backdrop = モーダルの背景オーバーレイ */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+/* 開く時のアニメーション */
+dialog[open] {
+  animation: fadeInScale 0.3s ease;
+}
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ===== レスポンシブナビバー ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  position: sticky;                 /* スクロールしても上部に固定 */
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+}
+
+/* ===== 洗練されたカードホバーエフェクト ===== */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 なぜ <code>&lt;dialog&gt;</code> を使うべきか</h4>
+            <p>従来のモーダルは <code>div</code> + CSS + 大量のJavaScript で実装していましたが、HTML5 の <code>&lt;dialog&gt;</code> 要素は<strong>アクセシビリティ（フォーカストラップ、Escキーで閉じる）を自動的に処理</strong>します。<code>::backdrop</code> 擬似要素で背景も自動生成されるため、コード量が大幅に削減されます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 15: タイポグラフィ -->
+      <article class="lesson-card" data-section="htmlcss-15" id="htmlcss-lesson-15">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">15</span>
+            <h3>タイポグラフィ — フォントと文字組みの技術</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-15')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 Webデザインの印象の90%はタイポグラフィで決まる</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — タイポグラフィ設計</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== Web フォントの読み込み ===== */
+/* Google Fonts の最適な読み込み方法 */
+/* &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt; */
+/* &lt;link href="https://fonts.googleapis.com/css2?
+         family=Inter:wght@400;500;700
+         &amp;family=Noto+Sans+JP:wght@400;700
+         &amp;display=swap" rel="stylesheet"&gt; */
+
+/* ===== フォントスタック（フォールバック設計） ===== */
+:root {
+  --font-sans: 'Inter', 'Noto Sans JP', -apple-system,
+               BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas,
+               'Courier New', monospace;
+}
+
+/* ===== タイプスケール（数学的に統一された文字サイズ） ===== */
+/* 比率 1.25（Major Third）を基準にしたスケール */
+:root {
+  --text-xs:   clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm:   clamp(0.875rem, 0.83rem + 0.22vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg:   clamp(1.125rem, 1.05rem + 0.4vw, 1.375rem);
+  --text-xl:   clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
+  --text-2xl:  clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
+  --text-3xl:  clamp(2rem, 1.5rem + 2.5vw, 3.5rem);
+}
+
+/* ===== 行間と文字間隔の最適値 ===== */
+body {
+  font-size: var(--text-base);
+  line-height: 1.7;                 /* 日本語は 1.7〜1.8 が読みやすい */
+  letter-spacing: 0.02em;           /* 日本語には少しだけ字間を追加 */
+  font-feature-settings: "palt";    /* プロポーショナル詰め */
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  line-height: 1.3;                 /* 見出しは行間を狭く */
+  letter-spacing: -0.02em;          /* 見出しは字間を少し詰める */
+}
+
+/* ===== テキストの折り返し制御 ===== */
+.title {
+  overflow-wrap: break-word;        /* 長い単語を折り返す */
+  text-wrap: balance;               /* 行の長さを均等にする（新機能） */
+}
+.paragraph {
+  text-wrap: pretty;                /* 段落末の短い行を避ける（新機能） */
+  max-width: 70ch;                  /* 読みやすい最大幅（約70文字） */
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 <code>max-width: 70ch</code> の理由</h4>
+            <p>可読性の研究によると、1行あたり<strong>45〜75文字</strong>が最も読みやすいとされています。<code>ch</code> 単位は「0」の文字幅を基準にした単位で、<code>70ch</code> は約70文字分の幅です。これにより、全画面幅の段落が「目が追えないほど長い行」になることを防ぎます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 16: CSSトランジションとTransformの応用 -->
+      <article class="lesson-card" data-section="htmlcss-16" id="htmlcss-lesson-16">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">16</span>
+            <h3>トランジション &amp; Transform 応用 — インタラクティブUI</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-16')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 微細なインタラクションがUIの「プロ感」を生む</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — 実践的なトランジション</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 洗練されたボタンのインタラクション ===== */
+.btn {
+  position: relative;
+  overflow: hidden;                  /* はみ出しを隠す */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ripple エフェクト（マテリアルデザイン風） */
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+.btn:active::after {
+  width: 300px; height: 300px;       /* クリック時に波紋が広がる */
+}
+
+/* ===== ツールチップ（CSS のみ） ===== */
+.tooltip {
+  position: relative;
+}
+.tooltip::after {
+  content: attr(data-tooltip);       /* data-tooltip 属性の値を表示 */
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: #1a1a1a;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* ===== スケルトンスクリーン（ローディング） ===== */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #e0e0e0 25%,
+    #f0f0f0 50%,
+    #e0e0e0 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== スムーズスクロール ===== */
+html { scroll-behavior: smooth; }
+/* ↑ ページ内リンク（#section）のスクロールがスムーズに */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 <code>cubic-bezier</code> — アニメーションの「手触り」</h4>
+            <p><code>ease</code>, <code>linear</code> などのプリセットの代わりに <code>cubic-bezier(0.4, 0, 0.2, 1)</code> のようなカスタムイージングを使うと、<strong>マテリアルデザインの「自然な動き」</strong>を再現できます。Chrome DevTools のアニメーションパネルで視覚的に調整できます。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 最新CSS仕様とパフォーマンス最適化</h4>
+        <p>CSS Nesting、@layer、Scroll-driven Animations、Container Queries など、2024〜2025年にブラウザに実装された最新仕様と、Core Web Vitals を最適化するテクニックを学びます。</p>
+      </div>
+
+      <!-- Lesson 17: CSS Nesting & @layer -->
+      <article class="lesson-card" data-section="htmlcss-17" id="htmlcss-lesson-17">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">17</span>
+            <h3>CSS Nesting &amp; @layer — ネイティブCSSの新時代</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-17')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 Sass なしでもネスト記法が使える時代が来た</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — ネイティブ Nesting</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== CSS Nesting（2024〜 全主要ブラウザ対応） ===== */
+
+/* 従来の CSS */
+.card { padding: 16px; }
+.card .title { font-size: 1.2rem; }
+.card .title:hover { color: blue; }
+.card .body { line-height: 1.6; }
+
+/* ↓ ネイティブ Nesting で書き直すと */
+.card {
+  padding: 16px;
+
+  .title {                          /* ← ネスト！ .card .title と同じ */
+    font-size: 1.2rem;
+
+    &amp;:hover {                      /* ← &amp; は親セレクタ（.title:hover） */
+      color: blue;
+    }
+  }
+
+  .body {
+    line-height: 1.6;
+  }
+
+  /* メディアクエリもネストできる */
+  @media (min-width: 768px) {
+    padding: 24px;
+  }
+}
+
+/* ===== @layer — カスケード層の制御 ===== */
+/* 詳細度に関係なく、層の順序でスタイルの優先度が決まる */
+
+@layer reset, base, components, utilities;
+
+@layer reset {
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+}
+
+@layer base {
+  body { font-family: sans-serif; line-height: 1.6; }
+  h1 { font-size: 2rem; }
+}
+
+@layer components {
+  .card { border: 1px solid #ddd; border-radius: 8px; }
+  .button { padding: 8px 16px; border-radius: 4px; }
+}
+
+@layer utilities {
+  /* utilities 層は最後に宣言されたので、最も高い優先度を持つ */
+  .hidden { display: none !important; }
+  .text-center { text-align: center; }
+}
+/* → utilities のスタイルが components を常に上書きする */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 <code>@layer</code> が解決する問題</h4>
+            <p>従来はCSS ライブラリ（Bootstrap など）のスタイルを上書きするために <code>!important</code> を多用する必要がありました。<code>@layer</code> を使えば、「ライブラリのスタイルは <code>vendor</code> 層、自分のスタイルは <code>app</code> 層」と宣言するだけで、<strong>詳細度に関係なく後から宣言した層が勝つ</strong>ため、クリーンな上書きが可能になります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 18: Container Queries & Subgrid -->
+      <article class="lesson-card" data-section="htmlcss-18" id="htmlcss-lesson-18">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">18</span>
+            <h3>Container Queries &amp; Subgrid — コンポーネント駆動レイアウト</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-18')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「ビューポートの幅」ではなく「親コンテナの幅」でレスポンシブ</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — Container Queries</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== Container Queries ===== */
+/* メディアクエリ: ビューポート（画面全体）の幅で切替 */
+/* コンテナクエリ: 親コンテナの幅で切替 → コンポーネントが自律的 */
+
+/* ① 親要素をコンテナとして宣言 */
+.card-wrapper {
+  container-type: inline-size;       /* 幅方向のコンテナクエリを有効化 */
+  container-name: card;              /* 名前を付ける（任意） */
+}
+
+/* ② コンテナの幅に応じてレイアウト変更 */
+.card { display: block; }
+
+@container card (min-width: 400px) {
+  .card {
+    display: flex;                   /* 400px 以上で横並び */
+    gap: 16px;
+  }
+}
+
+@container card (min-width: 700px) {
+  .card {
+    grid-template-columns: 250px 1fr; /* 700px 以上で Grid 化 */
+  }
+}
+
+/* ===== Subgrid ===== */
+/* 子要素のグリッドを親グリッドの線に揃える */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.grid &gt; .card {
+  display: grid;
+  /* ↓ 親の列グリッド線を継承（カード内の要素が揃う） */
+  grid-template-rows: subgrid;
+  grid-row: span 3;                  /* 3行分を親から借りる */
+}
+/* → 全カードのタイトル、本文、フッターの高さが自動で揃う */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 Container Queries がメディアクエリより優れている場面</h4>
+            <p>同じカードコンポーネントが「サイドバー（狭い）」と「メインエリア（広い）」の両方で使われる場合、メディアクエリでは対応できません。Container Queries なら、<strong>カードが配置された場所の幅に応じて自動的にレイアウトが切り替わる</strong>ため、真に再利用可能なコンポーネントが作れます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 19: Scroll-driven Animations -->
+      <article class="lesson-card" data-section="htmlcss-19" id="htmlcss-lesson-19">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">19</span>
+            <h3>Scroll-driven Animations — スクロール連動アニメーション</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-19')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 JavaScript の Intersection Observer が不要になる時代</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — Scroll-driven Animations</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== ページ全体のスクロール進捗バー ===== */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  transform-origin: left;
+  transform: scaleX(0);
+
+  /* ↓ スクロール量に応じてアニメーション */
+  animation: grow-progress linear;
+  animation-timeline: scroll();      /* ← スクロールをタイムラインに */
+}
+@keyframes grow-progress {
+  to { transform: scaleX(1); }
+}
+
+/* ===== 要素が画面に入った時にフェードイン ===== */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+
+  animation: appear linear both;
+  animation-timeline: view();        /* ← 要素のビューポート内の位置を基準 */
+  animation-range: entry 0% entry 100%;
+  /* entry 0% = 要素の下端がビューポートに入った瞬間 */
+  /* entry 100% = 要素が完全にビューポートに入った瞬間 */
+}
+@keyframes appear {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== パララックス効果 ===== */
+.hero-image {
+  animation: parallax linear;
+  animation-timeline: scroll();
+}
+@keyframes parallax {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-100px); } /* 背景がゆっくり動く */
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 なぜ JS の代わりに CSS で？</h4>
+            <p>従来のスクロールアニメーションは Intersection Observer API（JavaScript）で実装していましたが、<strong>CSS Scroll-driven Animations はメインスレッドではなく合成スレッド</strong>で実行されるため、スクロールがカクカクしません。パフォーマンスが圧倒的に優れています。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 20: Core Web Vitals 最適化 -->
+      <article class="lesson-card" data-section="htmlcss-20" id="htmlcss-lesson-20">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">20</span>
+            <h3>Core Web Vitals 最適化 — パフォーマンスで SEO を制する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-20')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 表示速度は SEO ランキングの直接的な要因</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML + CSS — パフォーマンス最適化</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ===== LCP（Largest Contentful Paint）最適化 ===== --&gt;
+&lt;!-- ヒーロー画像の読み込みを最優先にする --&gt;
+&lt;link rel="preload" as="image" href="hero.webp"
+      fetchpriority="high"&gt;
+
+&lt;img src="hero.webp" alt="ヒーロー画像"
+     fetchpriority="high"            &lt;!-- ← ブラウザに「最優先で取得」と指示 --&gt;
+     width="1200" height="600"
+     decoding="async"&gt;
+
+&lt;!-- 画面外の画像は遅延読み込み --&gt;
+&lt;img src="photo.webp" alt="写真"
+     loading="lazy"                  &lt;!-- ← 画面に近づいたら読み込む --&gt;
+     decoding="async"&gt;</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — CLS &amp; INP 最適化</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== CLS（Cumulative Layout Shift）防止 ===== */
+
+/* 画像・動画のアスペクト比を事前に確保 */
+.media-container {
+  aspect-ratio: 16 / 9;            /* ← 読み込み前にスペースを確保 */
+  width: 100%;
+  background: #f0f0f0;             /* プレースホルダー色 */
+}
+
+/* Web フォントによるレイアウトシフト防止 */
+@font-face {
+  font-family: 'MyFont';
+  src: url('font.woff2') format('woff2');
+  font-display: swap;              /* ← システムフォントで即座に表示 → 読み込み後切替 */
+  size-adjust: 105%;               /* ← システムフォントとサイズを揃える */
+}
+
+/* ===== INP（Interaction to Next Paint）最適化 ===== */
+/* content-visibility で画面外の要素のレンダリングをスキップ */
+.article-section {
+  content-visibility: auto;         /* ← 画面外は描画をスキップ */
+  contain-intrinsic-size: auto 500px; /* ← 推定サイズを指定 */
+}
+
+/* ===== Critical CSS パターン ===== */
+/* ファーストビュー（画面に最初に表示される部分）の CSS を
+   &lt;style&gt; タグでインライン化し、残りは非同期読み込み */
+/* &lt;link rel="stylesheet" href="styles.css"
+       media="print" onload="this.media='all'"&gt; */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 Core Web Vitals の3指標</h4>
+            <p><strong>LCP（Largest Contentful Paint）:</strong> 最大コンテンツの描画完了 → <strong>2.5秒以内</strong>が合格<br>
+            <strong>INP（Interaction to Next Paint）:</strong> 操作から次の描画まで → <strong>200ms以内</strong>が合格<br>
+            <strong>CLS（Cumulative Layout Shift）:</strong> レイアウトのガタつき → <strong>0.1以下</strong>が合格<br>
+            これらは Google のSEOランキング要因であり、ビジネスKPIにも直結します（Amazon は100msの遅延で売上1%減少と報告）。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 21: CSSアーキテクチャ実践 -->
+      <article class="lesson-card" data-section="htmlcss-21" id="htmlcss-lesson-21">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">21</span>
+            <h3>CSS アーキテクチャ実践 — 大規模プロジェクトの設計</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-21')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 CSS の「設計図」がないプロジェクトは必ず破綻する</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS ファイル構成例</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== ITCSS（Inverted Triangle CSS）構成 ===== */
+/* 詳細度が低い → 高い の順にファイルを整理 */
+
+styles/
+├── 01-settings/          /* 変数（カスタムプロパティ） */
+│   ├── _colors.css       /*   --color-primary: #3b82f6; */
+│   ├── _typography.css   /*   --font-sans: 'Inter', ...; */
+│   └── _spacing.css      /*   --space-1: 4px; */
+│
+├── 02-tools/             /* ミックスイン的なユーティリティ */
+│   └── _media.css        /*   @custom-media --tablet (min-width: 768px); */
+│
+├── 03-generic/           /* リセット・Normalize */
+│   ├── _reset.css        /*   *, *::before, *::after { box-sizing: ... } */
+│   └── _fonts.css        /*   @font-face { ... } */
+│
+├── 04-elements/          /* 素のHTML要素のスタイル */
+│   ├── _headings.css     /*   h1, h2, h3 { ... } */
+│   └── _links.css        /*   a { ... } */
+│
+├── 05-objects/            /* 構造パターン（レイアウト） */
+│   ├── _container.css    /*   .o-container { max-width: 1200px; ... } */
+│   └── _grid.css         /*   .o-grid { display: grid; ... } */
+│
+├── 06-components/        /* UIコンポーネント */
+│   ├── _button.css       /*   .c-button { ... } */
+│   ├── _card.css         /*   .c-card { ... } */
+│   └── _navbar.css       /*   .c-navbar { ... } */
+│
+├── 07-utilities/         /* ユーティリティ（最高詳細度） */
+│   └── _utilities.css    /*   .u-hidden { display: none !important; } */
+│
+└── main.css              /* @import で全ファイルを統合 */</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — デザイントークン</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== デザイントークン（設計の一元管理） ===== */
+:root {
+  /* スペーシングスケール（4px 基準） */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+
+  /* カラーシステム */
+  --color-primary-50:  #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6;
+  --color-primary-700: #1d4ed8;
+  --color-primary-900: #1e3a5f;
+
+  /* シャドウシステム */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+
+  /* ボーダー半径 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 デザイントークンの効果</h4>
+            <p>色や余白を直接の値（<code>#3b82f6</code>, <code>16px</code>）で書く代わりに、トークン（<code>var(--color-primary-500)</code>, <code>var(--space-4)</code>）を使うことで、<strong>デザインの一貫性を保証</strong>し、テーマ変更（ダークモード対応など）を変数の書き換えだけで実現できます。Figma のデザインシステムとも連携しやすくなります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 22: モダンCSS総合演習 -->
+      <article class="lesson-card" data-section="htmlcss-22" id="htmlcss-lesson-22">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">22</span>
+            <h3>総合演習 — モダンCSS でランディングページを構築</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-22')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 これまで学んだ全技術を組み合わせて実践する</h4></div>
+          <div class="explanation-box">
+            <h4>総合演習: SaaS ランディングページの設計</h4>
+            <p>ここまで学んだ技術を全て使って、<strong>実務レベルのランディングページ</strong>を設計します。以下のコードは、モダン CSS の総合的な活用例です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML — ランディングページの構造</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;meta name="description" content="プロダクトの説明文（120文字以内）"&gt;
+  &lt;title&gt;ProductName — キャッチコピー&lt;/title&gt;
+
+  &lt;!-- LCP 最適化: ヒーロー画像をプリロード --&gt;
+  &lt;link rel="preload" as="image" href="hero.webp" fetchpriority="high"&gt;
+  &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;!-- ① スクロール進捗バー --&gt;
+  &lt;div class="progress-bar" aria-hidden="true"&gt;&lt;/div&gt;
+
+  &lt;!-- ② ナビバー（グラスモーフィズム + sticky） --&gt;
+  &lt;header class="navbar"&gt;
+    &lt;a href="/" class="navbar__logo"&gt;ProductName&lt;/a&gt;
+    &lt;nav aria-label="メインナビゲーション"&gt;
+      &lt;a href="#features"&gt;機能&lt;/a&gt;
+      &lt;a href="#pricing"&gt;料金&lt;/a&gt;
+      &lt;a href="#faq"&gt;FAQ&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;a href="/signup" class="btn btn--primary"&gt;無料で始める&lt;/a&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;!-- ③ ヒーローセクション --&gt;
+    &lt;section class="hero"&gt;
+      &lt;h1 class="hero__title"&gt;
+        あなたの&lt;span class="text-gradient"&gt;ワークフロー&lt;/span&gt;を変える
+      &lt;/h1&gt;
+      &lt;p class="hero__subtitle"&gt;シンプルで強力なツールで生産性を10倍に&lt;/p&gt;
+      &lt;div class="hero__cta"&gt;
+        &lt;a href="/signup" class="btn btn--primary btn--large"&gt;無料トライアル&lt;/a&gt;
+        &lt;a href="#demo" class="btn btn--outline btn--large"&gt;デモを見る&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+
+    &lt;!-- ④ 機能セクション（Container Query 対応カード） --&gt;
+    &lt;section id="features" class="features"&gt;
+      &lt;h2&gt;主な機能&lt;/h2&gt;
+      &lt;div class="features__grid"&gt;
+        &lt;article class="feature-card fade-in"&gt;
+          &lt;h3&gt;⚡ 高速処理&lt;/h3&gt;
+          &lt;p&gt;従来の10倍の速度で処理を完了します&lt;/p&gt;
+        &lt;/article&gt;
+        &lt;!-- 他のカード... --&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — 全技術を統合したスタイル</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* @layer で詳細度を管理 */
+@layer reset, base, layout, components, utilities;
+
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+}
+
+@layer base {
+  :root {
+    --color-primary: #3b82f6;
+    --color-bg: #0a0e1a;
+    --color-text: #e2e8f0;
+    --font-sans: 'Inter', sans-serif;
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.7;
+  }
+}
+
+@layer components {
+  /* ナビバー: グラスモーフィズム + sticky */
+  .navbar {
+    position: sticky;
+    top: 0; z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(10, 14, 26, 0.8);
+    backdrop-filter: blur(12px);
+
+    /* CSS Nesting */
+    nav {
+      display: flex;
+      gap: 2rem;
+
+      a {
+        color: var(--color-text);
+        text-decoration: none;
+        &amp;:hover { color: var(--color-primary); }
+      }
+    }
+  }
+
+  /* ヒーロー: グラデーション + clamp */
+  .hero {
+    text-align: center;
+    padding: clamp(4rem, 10vw, 8rem) 2rem;
+
+    &amp;__title {
+      font-size: clamp(2rem, 5vw, 4rem);
+      text-wrap: balance;
+    }
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* カードグリッド: auto-fit + Container Query */
+  .features__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    container-type: inline-size;
+  }
+
+  /* スクロール連動フェードイン */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: appear linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+  }
+  @keyframes appear {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* スクロール進捗バー */
+  .progress-bar {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: var(--color-primary);
+    transform-origin: left;
+    transform: scaleX(0);
+    animation: grow linear;
+    animation-timeline: scroll();
+    z-index: 200;
+  }
+  @keyframes grow { to { transform: scaleX(1); } }
+}
+
+/* アニメーション軽減設定のユーザーに配慮 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 この総合演習で使われている技術一覧</h4>
+            <p><strong>初級:</strong> セマンティックHTML、ボックスモデル、Flexbox、Grid、レスポンシブ（<code>clamp</code>）<br>
+            <strong>中級:</strong> BEM命名、アクセシビリティ（<code>aria-label</code>）、タイポグラフィ（<code>text-wrap: balance</code>）<br>
+            <strong>上級:</strong> CSS Nesting、<code>@layer</code>、Container Queries、Scroll-driven Animations、Core Web Vitals 最適化（<code>fetchpriority</code>, <code>loading="lazy"</code>）<br>
+            <strong>デザイン:</strong> グラスモーフィズム、グラデーションテキスト、<code>prefers-reduced-motion</code></p>
           </div>
         </div>
       </article>
