@@ -128,6 +128,46 @@
             <span class="progress-percent" id="webapi-progress-text">0%</span>
           </div>
         </div>
+        <div class="progress-card htmlcss-card" data-lang="htmlcss">
+          <div class="progress-card-icon">🎨</div>
+          <div class="progress-card-info">
+            <h3>HTML/CSS</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="htmlcss-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="htmlcss-progress-text">0%</span>
+          </div>
+        </div>
+        <div class="progress-card docker-card" data-lang="docker">
+          <div class="progress-card-icon">🐳</div>
+          <div class="progress-card-info">
+            <h3>Docker</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="docker-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="docker-progress-text">0%</span>
+          </div>
+        </div>
+        <div class="progress-card database-card" data-lang="database">
+          <div class="progress-card-icon">🗄️</div>
+          <div class="progress-card-info">
+            <h3>データベース</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="database-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="database-progress-text">0%</span>
+          </div>
+        </div>
+        <div class="progress-card genai-card" data-lang="genai">
+          <div class="progress-card-icon">🤖</div>
+          <div class="progress-card-info">
+            <h3>生成AIパスポート</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="genai-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="genai-progress-text">0%</span>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -161,6 +201,18 @@
         <button class="tab-button" data-tab="htmlcss" role="tab" aria-selected="false" id="tab-htmlcss">
           <span class="tab-icon">🎨</span>
           <span class="tab-label">HTML/CSS</span>
+        </button>
+        <button class="tab-button" data-tab="docker" role="tab" aria-selected="false" id="tab-docker">
+          <span class="tab-icon">🐳</span>
+          <span class="tab-label">Docker</span>
+        </button>
+        <button class="tab-button" data-tab="database" role="tab" aria-selected="false" id="tab-database">
+          <span class="tab-icon">🗄️</span>
+          <span class="tab-label">データベース</span>
+        </button>
+        <button class="tab-button" data-tab="genai" role="tab" aria-selected="false" id="tab-genai">
+          <span class="tab-icon">🤖</span>
+          <span class="tab-label">生成AIパスポート</span>
         </button>
       </div>
       <div class="tab-indicator" id="tab-indicator"></div>
@@ -9456,6 +9508,767 @@ function PricingCard() {
           <button class="reset-btn" onclick="loadPuzzle('htmlcss')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
         </div>
         <div class="quiz-result" id="htmlcss-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
+    </div>
+
+
+
+    <!-- DOCKER TAB CONTENT -->
+    <div class="tab-content" id="content-docker" role="tabpanel">
+
+      <article class="lesson-card" data-section="docker-1" id="docker-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">01</span><h3>コンテナとは何か — 仮想マシンとの違いを根本から理解する</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-1')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 コンテナは「軽量な隔離環境」— OSカーネルを共有するからこそ速い</h4></div>
+          <div class="explanation-box">
+            <h4>なぜコンテナが必要なのか？</h4>
+            <p>開発者なら誰もが経験する <strong>「自分の環境では動くのに、本番サーバーで動かない」</strong> 問題。原因はPythonのバージョン差異、ライブラリの依存関係、OS固有の設定など多岐にわたります。コンテナはこの問題を <strong>「アプリケーション + その実行に必要な全て」をパッケージ化</strong> することで解決します。</p>
+            <p>従来の仮想マシン（VM）も同じ問題を解決できますが、VMはゲストOS全体を起動するため <strong>数分かかり、数GBのリソースを消費</strong> します。コンテナはホストOSのカーネルを共有するため、<strong>数秒で起動し、数十MBで済む</strong> のです。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">アーキテクチャ比較</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>┌──── 仮想マシン（VM） ────┐    ┌──── コンテナ ────────────┐
+│ ┌─App─┐ ┌─App─┐ ┌─App─┐│    │ ┌─App─┐ ┌─App─┐ ┌─App─┐│
+│ ├─Lib─┤ ├─Lib─┤ ├─Lib─┤│    │ ├─Lib─┤ ├─Lib─┤ ├─Lib─┤│
+│ ├Guest┤ ├Guest┤ ├Guest┤│    │ └─────┘ └─────┘ └─────┘│
+│ │ OS  │ │ OS  │ │ OS  ││    │   Container Runtime     │
+│ └─────┘ └─────┘ └─────┘│    │     (Docker Engine)      │
+│    Hypervisor           │    ├─────────────────────────┤
+├─────────────────────────┤    │     ホスト OS カーネル    │  ← 共有！
+│     ホスト OS            │    ├─────────────────────────┤
+├─────────────────────────┤    │      ハードウェア         │
+│      ハードウェア         │    └─────────────────────────┘
+└─────────────────────────┘
+起動: 数分 / サイズ: 数GB        起動: 数秒 / サイズ: 数十MB</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 カーネル共有の仕組み — namespaces と cgroups</h4>
+            <p>コンテナの「隔離」は Linux カーネルの2つの機能で実現されます：</p>
+            <p><strong>namespaces（名前空間）:</strong> プロセス、ネットワーク、ファイルシステム等を隔離。コンテナAからコンテナBのプロセスは見えない。</p>
+            <p><strong>cgroups（コントロールグループ）:</strong> CPU、メモリ等のリソース使用量を制限。1つのコンテナが全リソースを占有しないように制御。</p>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Docker を使わない方が良い場面:</strong> GUI アプリケーション、低レイテンシが求められるリアルタイムシステム、Windows ネイティブの .NET Framework アプリ。また、チームに Docker の知見がない場合、学習コストが開発速度を上回ることもあります。<strong>「全てを Docker 化すべき」は誤り</strong>です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-2" id="docker-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">02</span><h3>Docker の基本概念 — イメージ・コンテナ・レジストリ</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-2')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 イメージ = レシピ（設計図）、コンテナ = 料理（実体）</h4></div>
+          <div class="explanation-box"><h4>Docker の3大要素</h4>
+            <p><strong>イメージ（Image）:</strong> コンテナの「設計図」。OS + ライブラリ + アプリが層（レイヤー）構造で積み重なったもの。読み取り専用。</p>
+            <p><strong>コンテナ（Container）:</strong> イメージから作られた「実行中のインスタンス」。書き込み可能なレイヤーが1層追加される。停止すると変更は消える（揮発性）。</p>
+            <p><strong>レジストリ（Registry）:</strong> イメージの保管・配布場所。Docker Hub（公開）、Amazon ECR / Google GCR（プライベート）。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SHELL — Docker 基本コマンド</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ── イメージの取得と管理 ──
+# Docker Hub から Python 3.12 の公式イメージを取得
+# "python" がイメージ名、"3.12-slim" がタグ（バージョン）
+# slim は不要なパッケージを省いた軽量版（推奨）
+docker pull python:3.12-slim
+
+# ローカルに保存されているイメージ一覧を表示
+docker images
+
+# ── コンテナの起動と操作 ──
+# イメージからコンテナを起動して中に入る（対話モード）
+# -it = 標準入力を開いてターミナルに接続
+# --rm = 終了時にコンテナを自動削除（ゴミが残らない）
+docker run -it --rm python:3.12-slim bash
+
+# バックグラウンドで Web サーバーを起動
+# -d = デタッチモード（バックグラウンド実行）
+# -p 8080:80 = ホストの8080番ポートをコンテナの80番に転送
+# --name = コンテナに名前を付ける（管理しやすい）
+docker run -d -p 8080:80 --name my-nginx nginx:alpine
+
+# ── コンテナの状態確認と停止 ──
+docker ps              # 実行中のコンテナ一覧
+docker ps -a           # 停止中も含めた全コンテナ一覧
+docker logs my-nginx   # コンテナのログを表示
+docker stop my-nginx   # コンテナを停止
+docker rm my-nginx     # コンテナを削除</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Docker Hub の「公式イメージ」の見分け方:</strong> 公式イメージは <code>python</code>, <code>nginx</code>, <code>postgres</code> のように<strong>ユーザー名なし</strong>で表示されます。<code>someone/python</code> のように / が入っているものは非公式です。セキュリティリスクを避けるため、<strong>本番では必ず公式イメージ（Official Image）のバッジを確認</strong>してください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-3" id="docker-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">03</span><h3>Dockerfile — イメージ設計の技術</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-3')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 Dockerfile は「再現可能な環境構築の手順書」</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Dockerfile — Python FastAPI アプリの例</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ── ステージ1: ビルド環境 ──
+# マルチステージビルド: 最終イメージにビルドツールを含めない
+FROM python:3.12-slim AS builder
+
+# 作業ディレクトリを設定（以降のコマンドはここで実行される）
+WORKDIR /app
+
+# まず依存関係ファイルだけをコピー → pip install
+# なぜ先にこれだけ？ → ソースコード変更時にpip installの
+# キャッシュが効くため。ビルド時間が大幅に短縮される。
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# ── ステージ2: 本番用の軽量イメージ ──
+FROM python:3.12-slim
+
+# セキュリティ: root ではなく一般ユーザーで実行
+RUN useradd --create-home appuser
+WORKDIR /app
+
+# ビルドステージからpipパッケージだけをコピー
+# ビルドツール(gcc等)は持ち込まない → イメージサイズ削減
+COPY --from=builder /root/.local /home/appuser/.local
+COPY . .
+
+# 一般ユーザーに切り替え（rootで実行しない = セキュリティの基本）
+USER appuser
+ENV PATH=/home/appuser/.local/bin:$PATH
+
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 レイヤーキャッシュの仕組み</h4><p>Dockerfile の各命令（FROM, COPY, RUN 等）は1つのレイヤーを生成します。Docker は<strong>変更がないレイヤーをキャッシュ</strong>して再利用します。そのため、<strong>変更頻度の低い命令（pip install 等）を上に、変更頻度の高い命令（COPY . .）を下に</strong>書くのが最適化の鉄則です。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>.dockerignore の作成を忘れない:</strong> <code>.git</code>, <code>node_modules</code>, <code>__pycache__</code>, <code>.env</code> 等をビルドコンテキストから除外しないと、<strong>機密情報がイメージに含まれたり、ビルドが遅くなったり</strong>します。<code>.gitignore</code> と同じ感覚で必ず作成してください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-4" id="docker-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">04</span><h3>docker compose — 複数コンテナの連携</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-4')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 現実のサービスは「Web + DB + キャッシュ」の組み合わせで動く</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">YAML — docker-compose.yml 実践構成</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># docker compose up -d で全サービスが一括起動する
+# docker compose down で全サービスを停止・削除
+
+services:
+  # ── Web アプリケーション ──
+  web:
+    build: .                        # カレントディレクトリの Dockerfile を使用
+    ports:
+      - "8000:8000"                 # ホスト:コンテナ のポートマッピング
+    volumes:
+      - .:/app                      # ソースコードをバインドマウント（ホットリロード用）
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/myapp
+      - REDIS_URL=redis://cache:6379
+    depends_on:                     # 起動順序の制御（注意点あり↓）
+      db:
+        condition: service_healthy  # ヘルスチェックが通るまで待つ
+    restart: unless-stopped         # クラッシュ時に自動再起動
+
+  # ── データベース ──
+  db:
+    image: postgres:16-alpine       # 公式の軽量版イメージ
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: myapp
+    volumes:
+      - db_data:/var/lib/postgresql/data  # データを永続化
+    healthcheck:                    # DB が「本当に準備完了」かチェック
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ── キャッシュサーバー ──
+  cache:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  db_data:                          # Named Volume（Docker が管理）</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong><code>depends_on</code> の罠:</strong> デフォルトの <code>depends_on</code> は「コンテナが起動した」だけを保証し、「アプリが準備完了した」ことは保証しません。PostgreSQL のコンテナは起動しても、接続を受け付けるまでに数秒かかります。<code>condition: service_healthy</code> + <code>healthcheck</code> の組み合わせで解決してください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-5" id="docker-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">05</span><h3>ボリュームとネットワーク — データ永続化と通信</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-5')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 コンテナは「使い捨て」— だからこそデータの置き場所が重要</h4></div>
+          <div class="explanation-box"><h4>なぜコンテナのデータは消えるのか？</h4><p>コンテナは<strong>イミュータブル（不変）なイメージ</strong>から起動し、変更は<strong>書き込み可能な一時レイヤー</strong>に記録されます。コンテナを削除するとこのレイヤーも消えます。DBのデータや、アップロードされたファイルを永続化するには <strong>ボリューム</strong> が必要です。</p></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SHELL — ボリュームの種類と使い分け</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ── Named Volume（Docker が管理。本番DB向き） ──
+docker volume create my_data
+docker run -v my_data:/var/lib/postgresql/data postgres:16
+
+# ── Bind Mount（ホストのディレクトリを直接マウント。開発向き） ──
+# ソースコードの変更がリアルタイムにコンテナに反映される
+docker run -v $(pwd):/app python:3.12
+
+# ── ネットワーク ──
+# 同じ docker compose 内のサービスは、サービス名でアクセスできる
+# 例: web コンテナから db コンテナへは "db:5432" でアクセス
+# これは Docker が自動的に DNS を設定しているため</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>最もよくある事故:</strong> <code>docker compose down -v</code> の <code>-v</code> フラグは <strong>Named Volume も削除</strong> します。開発中にデータベースを含むボリュームを消してしまい、データが全て消失する事故が頻発します。<strong><code>-v</code> は「何が削除されるか」を理解してから使ってください。</strong></p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-6" id="docker-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">06</span><h3>実務の Docker ワークフロー — 開発→テスト→本番</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-6')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「開発で docker compose、本番は別」が現実解</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SHELL — CI/CD パイプラインでの Docker 活用</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ── GitHub Actions での典型的なワークフロー ──
+# 1. コードがプッシュされる
+# 2. CI でテスト実行（Docker コンテナ内で）
+# 3. Docker イメージをビルド
+# 4. プライベートレジストリ（ECR/GCR）にプッシュ
+# 5. 本番環境（ECS/Cloud Run）がイメージを取得して起動
+
+# イメージのビルドとタグ付け
+docker build -t myapp:latest -t myapp:v1.2.3 .
+
+# プライベートレジストリにプッシュ
+docker tag myapp:latest 123456789.dkr.ecr.ap-northeast-1.amazonaws.com/myapp:latest
+docker push 123456789.dkr.ecr.ap-northeast-1.amazonaws.com/myapp:latest</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>docker-compose.yml を本番と開発で分ける:</strong> <code>docker-compose.yml</code>（共通）+ <code>docker-compose.override.yml</code>（開発用: バインドマウント、デバッグポート）+ <code>docker-compose.prod.yml</code>（本番用: ヘルスチェック、リソース制限）のように分離するのが定番パターンです。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-7" id="docker-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">07</span><h3>Docker セキュリティ — 本番運用の鉄則</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 コンテナは「デフォルトで安全」ではない</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Dockerfile — セキュリティのベストプラクティス</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ❌ 悪い例: root で実行、フルOSイメージ
+FROM python:3.12
+COPY . /app
+CMD ["python", "app.py"]
+
+# ✅ 良い例: 非root、最小イメージ、脆弱性スキャン対応
+FROM python:3.12-slim AS builder
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+FROM gcr.io/distroless/python3-debian12
+COPY --from=builder /root/.local /root/.local
+COPY . /app
+WORKDIR /app
+# distroless: シェルすら含まない最小イメージ
+# → 攻撃者がコンテナに侵入しても操作手段がない
+CMD ["app.py"]</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 Secrets 管理の鉄則</h4><p><strong>環境変数にパスワードを直接書かない。</strong> <code>docker-compose.yml</code> に <code>POSTGRES_PASSWORD=mysecret</code> と書くと、<code>docker inspect</code> で誰でも見られます。本番では <strong>Docker Secrets</strong>、<strong>HashiCorp Vault</strong>、クラウドの <strong>Secrets Manager</strong>（AWS/GCP）を使ってください。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Alpine vs Distroless:</strong> Alpine は軽量（5MB）でシェルが使えるためデバッグしやすい一方、musl libc を使うため<strong>一部のPythonパッケージが動かない</strong>ことがあります。Distroless はシェルもパッケージマネージャもない究極の最小イメージで、<strong>攻撃面が最小</strong>ですがデバッグが困難です。開発は Alpine、本番は Distroless が現実的な使い分けです。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-8" id="docker-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">08</span><h3>コンテナオーケストレーション概論 — Kubernetes への橋渡し</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「コンテナ1個」から「コンテナ1000個」への道</h4></div>
+          <div class="explanation-box"><h4>なぜオーケストレーションが必要か</h4><p><code>docker compose</code> は1台のサーバーで複数コンテナを管理できますが、<strong>トラフィック増加で複数サーバーが必要</strong>になると対応できません。Kubernetes（K8s）は<strong>数百〜数千のコンテナを複数サーバーに分散配置し、自動スケーリング、自動復旧、ローリングアップデート</strong>を実現するプラットフォームです。</p></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">YAML — Kubernetes の基本リソース（概念理解用）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># Pod: コンテナの最小単位（通常1Pod = 1コンテナ）
+# Deployment: Pod のレプリカ数やアップデート戦略を管理
+# Service: Pod へのネットワークアクセスを提供
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-api
+spec:
+  replicas: 3            # 同じコンテナを3つ起動
+  selector:
+    matchLabels:
+      app: my-api
+  template:
+    spec:
+      containers:
+      - name: api
+        image: myapp:v1.2.3
+        resources:
+          limits:          # リソース制限（重要！）
+            memory: "256Mi"
+            cpu: "500m"</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「Kubernetes は本当に必要か？」:</strong> K8s の学習・運用コストは非常に高いです。<strong>月間100万リクエスト以下、チーム5人以下</strong>なら、<strong>AWS ECS / Google Cloud Run / Fly.io</strong> のようなマネージドサービスの方が費用対効果が高いことが多いです。「K8s を使いこなすこと」を目的にしないでください。</p></div>
+        </div>
+      </article>
+
+      <!-- Docker Quiz -->
+      <div class="quiz-section" id="docker-quiz">
+        <div class="quiz-header"><h3>📝 Docker 理解度チェック</h3></div>
+        <div class="quiz-question" id="docker-quiz-question"></div>
+        <div class="quiz-options" id="docker-quiz-options"></div>
+        <div class="quiz-result" id="docker-quiz-result"></div>
+        <div class="quiz-navigation">
+          <button class="quiz-nav-btn" id="docker-quiz-prev" onclick="prevQuestion('docker')">← 前の問題</button>
+          <span class="quiz-counter" id="docker-quiz-counter"></span>
+          <button class="quiz-nav-btn" id="docker-quiz-next" onclick="nextQuestion('docker')">次の問題 →</button>
+        </div>
+        <div class="quiz-progress-container"><div class="quiz-progress-bar" id="docker-quiz-progress"></div></div>
+      </div>
+      <!-- Docker Puzzle -->
+      <div class="puzzle-section" id="docker-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 コード組み立てパズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="docker-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board"><div class="puzzle-source" id="docker-puzzle-source"></div><div class="puzzle-dropzone" id="docker-puzzle-dropzone"><div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div></div></div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('docker')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('docker')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="docker-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
+    </div>
+
+
+    <!-- DATABASE TAB CONTENT -->
+    <div class="tab-content" id="content-database" role="tabpanel">
+
+      <article class="lesson-card" data-section="database-1" id="database-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">01</span><h3>データベースとは何か — ファイル保存では不十分な理由</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-1')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 CSVやJSONでは「同時に2人がデータを変更する」と壊れる</h4></div>
+          <div class="explanation-box"><h4>なぜデータベースが必要なのか？</h4>
+            <p>プログラムのデータをファイル（CSV, JSON）に保存するのは手軽ですが、以下の問題が発生します：</p>
+            <p><strong>1. 同時アクセス:</strong> 2人のユーザーが同時にファイルを更新すると、片方の変更が消える<br>
+            <strong>2. 一貫性:</strong> 書き込み中にクラッシュすると、ファイルが壊れる（途中状態のまま）<br>
+            <strong>3. 検索速度:</strong> 100万行のCSVから1件を探すには全行をスキャンする必要がある（O(n)）<br>
+            <strong>4. 構造の強制:</strong> CSVでは「年齢に文字列が入る」ことを防げない</p>
+            <p>データベースはこれら全てを<strong>原理的に解決</strong>します。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">比較表</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>┌─────────────┬──────────────┬──────────────┬──────────────┐
+│             │  RDBMS       │  NoSQL       │ ファイル     │
+│             │ (PostgreSQL) │ (MongoDB)    │ (CSV/JSON)   │
+├─────────────┼──────────────┼──────────────┼──────────────┤
+│ 同時アクセス│ ✅ トランザ  │ ✅ 部分的    │ ❌ 壊れる    │
+│ 一貫性      │ ✅ ACID保証  │ △ 結果整合   │ ❌ 保証なし  │
+│ 検索速度    │ ✅ インデックス│ ✅ 高速     │ ❌ 全スキャン│
+│ スキーマ    │ ✅ 厳密      │ △ 柔軟      │ ❌ なし      │
+│ 学習コスト  │ ★★★☆☆     │ ★★☆☆☆    │ ★☆☆☆☆    │
+│ 適用場面    │ 業務系全般   │ ログ/SNS    │ 設定/一時    │
+└─────────────┴──────────────┴──────────────┴──────────────┘</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>個人開発では SQLite で十分な場面が多い:</strong> PostgreSQL や MySQL はサーバーの起動が必要ですが、SQLite はファイル1つで完結します。月間10万リクエスト以下のサービスなら SQLite で十分な性能が出ます。Django も FastAPI も SQLite をサポートしています。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-2" id="database-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">02</span><h3>テーブル設計の基礎 — リレーショナルモデルの考え方</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-2')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 テーブル設計は「現実世界のモデル化」</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — テーブル作成</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ユーザーテーブル
+-- 主キー(PRIMARY KEY): 各行を一意に識別する列
+-- NOT NULL: 空値を許さない（必須項目）
+CREATE TABLE users (
+    id         SERIAL PRIMARY KEY,        -- 自動採番の主キー
+    name       VARCHAR(100) NOT NULL,     -- 最大100文字の必須文字列
+    email      VARCHAR(255) NOT NULL UNIQUE, -- 重複不可
+    created_at TIMESTAMP DEFAULT NOW()    -- 作成日時（自動設定）
+);
+
+-- 注文テーブル
+-- 外部キー(FOREIGN KEY): 別テーブルの主キーを参照する列
+-- → 存在しないユーザーIDを指定するとエラーになる（参照整合性）
+CREATE TABLE orders (
+    id      SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),  -- 外部キー
+    amount  DECIMAL(10,2) NOT NULL,      -- 小数点以下2桁の金額
+    status  VARCHAR(20) DEFAULT 'pending'
+);
+
+-- ER図（テキスト表現）:
+-- [users] 1 ──── * [orders]
+-- 1人のユーザーが0個以上の注文を持つ（1対多の関係）</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 正規化の考え方</h4><p><strong>第1正規形:</strong> 1つのセルに1つの値だけ（配列を入れない）<br><strong>第2正規形:</strong> 主キーの一部だけに依存する列を別テーブルに分離<br><strong>第3正規形:</strong> 主キー以外の列に依存する列を別テーブルに分離</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「正規化しすぎ」の弊害:</strong> 理論上は全て正規化すべきですが、JOINが増えすぎるとクエリが複雑になりパフォーマンスも悪化します。実務では<strong>「読み取り頻度の高いデータは意図的に非正規化する」</strong>ことがあります（例: 注文テーブルにユーザー名を直接入れる）。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-3" id="database-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">03</span><h3>SQL基本① — データの取得（SELECT）</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-3')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 SQL の 80% は SELECT 文の習得で決まる</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — SELECT の基本パターン</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ① 基本の SELECT（全列取得）
+SELECT * FROM users;                    -- 全列・全行（開発専用！）
+
+-- ② 必要な列だけ取得（本番ではこちらを使う）
+SELECT id, name, email FROM users;
+
+-- ③ 条件付き取得（WHERE）
+SELECT name, email FROM users
+WHERE created_at &gt;= '2024-01-01'        -- 2024年以降に作成
+  AND name LIKE '田%';                   -- 名前が「田」で始まる
+
+-- ④ パターンマッチングの比較
+WHERE name = '田中'                      -- 完全一致
+WHERE name LIKE '田%'                    -- 前方一致（「田」で始まる）
+WHERE name LIKE '%中'                    -- 後方一致（「中」で終わる）
+WHERE name LIKE '%田中%'                 -- 部分一致（「田中」を含む）
+WHERE age IN (20, 25, 30)                -- リスト内の値と一致
+WHERE age BETWEEN 20 AND 30              -- 範囲指定
+WHERE phone IS NULL                      -- NULL（値が未設定）
+
+-- ⑤ ソートと件数制限
+SELECT name, created_at FROM users
+ORDER BY created_at DESC                 -- 新しい順にソート
+LIMIT 10                                 -- 上位10件だけ取得
+OFFSET 20;                               -- 21件目から（ページネーション）
+
+-- ⑥ 重複除去とエイリアス
+SELECT DISTINCT city AS "都市名" FROM users;  -- 重複除去 + 列の別名</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong><code>SELECT *</code> を本番で使ってはいけない理由:</strong> ① 不要な列も取得するため<strong>ネットワーク帯域を浪費</strong>する ② 将来テーブルに BLOB（画像データ等）列が追加されると<strong>クエリが劇的に遅くなる</strong> ③ カバリングインデックスが効かなくなり<strong>パフォーマンスが低下</strong>する。必要な列だけを明示的に指定してください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-4" id="database-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">04</span><h3>SQL基本② — データの追加・更新・削除</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-4')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 WHERE を忘れた UPDATE/DELETE は全行に影響する — 最も危険な操作</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — INSERT / UPDATE / DELETE</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ① INSERT（データの追加）
+INSERT INTO users (name, email) VALUES ('田中太郎', 'tanaka@example.com');
+
+-- 複数行を一度に追加（バルクインサート）
+INSERT INTO users (name, email) VALUES
+  ('佐藤花子', 'sato@example.com'),
+  ('鈴木一郎', 'suzuki@example.com');
+
+-- ② UPDATE（データの更新）— WHERE を必ず付ける！
+UPDATE users SET name = '田中次郎' WHERE id = 1;
+
+-- ⚠️ WHERE なし → 全ユーザーの名前が変わる！
+-- UPDATE users SET name = '田中次郎';  ← 絶対にやってはいけない
+
+-- ③ DELETE（データの削除）— WHERE を必ず付ける！
+DELETE FROM users WHERE id = 1;
+
+-- ⚠️ WHERE なし → 全データ削除！
+-- DELETE FROM users;  ← テーブルが空になる
+
+-- ④ UPSERT（あれば更新、なければ挿入）
+INSERT INTO users (email, name) VALUES ('tanaka@example.com', '田中太郎')
+ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name;
+-- email が重複したら name を更新、なければ新規挿入</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>本番での DELETE/UPDATE の鉄則:</strong> ① まず <code>SELECT * FROM users WHERE id = 1;</code> で対象を確認 ② 件数が想定通りか確認 ③ <code>BEGIN;</code> でトランザクションを開始 ④ DELETE/UPDATE を実行 ⑤ 結果を確認してから <code>COMMIT;</code>（間違えたら <code>ROLLBACK;</code>）。この手順を<strong>必ず</strong>守ってください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-5" id="database-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">05</span><h3>JOIN — テーブルの結合</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-5')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 正規化したテーブルを「元に戻す」のが JOIN</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — JOIN の種類</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ① INNER JOIN: 両方のテーブルに存在するデータだけ取得
+-- 「注文があるユーザー」の名前と注文金額
+SELECT u.name, o.amount
+FROM users u
+INNER JOIN orders o ON u.id = o.user_id;
+
+-- ② LEFT JOIN: 左テーブルの全行 + 右テーブルの一致する行
+-- 「注文がないユーザーも含めて」表示（注文がなければ NULL）
+SELECT u.name, o.amount
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id;
+
+-- ③ 複数テーブルの結合
+SELECT u.name, o.amount, p.product_name
+FROM users u
+JOIN orders o ON u.id = o.user_id
+JOIN order_items oi ON o.id = oi.order_id
+JOIN products p ON oi.product_id = p.id
+WHERE o.status = 'completed';
+
+-- ④ 注文がないユーザーを見つける（LEFT JOIN + IS NULL パターン）
+SELECT u.name FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+WHERE o.id IS NULL;  -- 注文テーブルに一致がない = 注文なし</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>N+1 問題:</strong> ORM（SQLAlchemy 等）で <code>for user in users: print(user.orders)</code> と書くと、ユーザー1件ごとに注文を別クエリで取得します（100ユーザーなら 1 + 100 = 101回のクエリ）。JOIN を使えば<strong>1回のクエリで全データを取得</strong>できます。ORM の <code>joinedload()</code> や <code>include</code> を使って解決してください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-6" id="database-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">06</span><h3>集約とグループ化 — データ分析の基礎</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-6')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 GROUP BY は「カテゴリごとの集計」を1行のSQLで実現する</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — 集約関数と GROUP BY</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ① 集約関数の基本
+SELECT COUNT(*) AS total_users FROM users;            -- 総ユーザー数
+SELECT AVG(amount) AS avg_order FROM orders;          -- 平均注文額
+SELECT SUM(amount) AS total_sales FROM orders;        -- 売上合計
+SELECT MAX(amount) AS max_order FROM orders;          -- 最高額の注文
+SELECT MIN(created_at) AS first_user FROM users;      -- 最初のユーザー
+
+-- ② GROUP BY（カテゴリごとの集計）
+-- ステータスごとの注文数と合計金額
+SELECT status, COUNT(*) AS cnt, SUM(amount) AS total
+FROM orders
+GROUP BY status;
+-- 結果: pending: 15件 ¥450,000 / completed: 82件 ¥2,460,000
+
+-- ③ HAVING（グループに対する条件）
+-- 注文が5件以上のユーザーだけ表示
+SELECT user_id, COUNT(*) AS order_count
+FROM orders
+GROUP BY user_id
+HAVING COUNT(*) &gt;= 5;       -- WHERE ではなく HAVING（集約後のフィルタ）
+
+-- ④ サブクエリ（クエリの中にクエリ）
+-- 平均注文額より高い注文を取得
+SELECT * FROM orders
+WHERE amount &gt; (SELECT AVG(amount) FROM orders);</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>SQL の実行順序を理解する:</strong> SQL は書いた順番ではなく <code>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT</code> の順で実行されます。だから WHERE は集約<strong>前</strong>、HAVING は集約<strong>後</strong>のフィルタなのです。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-7" id="database-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">07</span><h3>インデックスとパフォーマンス — 遅いクエリを速くする</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 インデックス = 「本の索引」— 全ページをめくらずに目的のページを開ける</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — インデックスの作成と EXPLAIN</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ① インデックスなし: 100万行を全スキャン（数秒かかる）
+SELECT * FROM users WHERE email = 'tanaka@example.com';
+
+-- ② インデックスを作成（B-Tree構造で高速検索）
+CREATE INDEX idx_users_email ON users(email);
+-- → 同じクエリが数ミリ秒で完了するようになる
+
+-- ③ EXPLAIN で実行計画を確認
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'tanaka@example.com';
+-- Seq Scan = 全件スキャン（遅い）
+-- Index Scan = インデックス使用（速い）
+
+-- ④ 複合インデックス（複数列の組み合わせ）
+CREATE INDEX idx_orders_user_status ON orders(user_id, status);
+-- user_id AND status の両方で検索する場合に有効
+
+-- ⑤ WHERE句だけでなく ORDER BY にも効く
+CREATE INDEX idx_orders_created ON orders(created_at DESC);
+-- ORDER BY created_at DESC がインデックスだけで完了する</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>インデックスの副作用:</strong> INSERT/UPDATE/DELETE のたびにインデックスも更新されるため、<strong>書き込み性能が低下</strong>します。「とりあえず全列にインデックス」は逆効果です。<strong>実際に遅いクエリを EXPLAIN で分析してから、必要なインデックスだけを追加</strong>するのが正しいアプローチです。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-8" id="database-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">08</span><h3>トランザクションと実務パターン</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 トランザクション = 「全部成功するか、全部なかったことにするか」</h4></div>
+          <div class="explanation-box"><h4>ACID 特性 — データの信頼性を保証する4つの約束</h4>
+            <p><strong>A（Atomicity / 原子性）:</strong> トランザクション内の操作は全て成功するか、全て取り消される。「振込で引き落としだけ成功して入金が失敗」は起きない。<br>
+            <strong>C（Consistency / 一貫性）:</strong> トランザクション前後でデータの整合性が保たれる。残高がマイナスになるような操作は拒否される。<br>
+            <strong>I（Isolation / 分離性）:</strong> 同時実行されるトランザクションは互いに干渉しない。<br>
+            <strong>D（Durability / 永続性）:</strong> COMMIT されたデータはサーバーがクラッシュしても消えない。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — トランザクション</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- 銀行振込の例: AからBに1万円を送金
+BEGIN;  -- トランザクション開始
+
+-- Aの残高から1万円を引く
+UPDATE accounts SET balance = balance - 10000 WHERE user_id = 'A';
+
+-- Bの残高に1万円を足す
+UPDATE accounts SET balance = balance + 10000 WHERE user_id = 'B';
+
+-- 両方成功したら確定
+COMMIT;
+
+-- もし途中でエラーが起きたら:
+-- ROLLBACK;  ← Aの引き落としも取り消される（お金が消えない）</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>デッドロックの原因と対策:</strong> トランザクションAが「テーブル1 → テーブル2」の順でロックし、トランザクションBが「テーブル2 → テーブル1」の順でロックすると、互いに相手のロック解除を待ち続けます（デッドロック）。対策: <strong>常に同じ順序でテーブルにアクセスする</strong>、トランザクションを短く保つ。</p></div>
+        </div>
+      </article>
+
+      <!-- Database Quiz -->
+      <div class="quiz-section" id="database-quiz">
+        <div class="quiz-header"><h3>📝 データベース 理解度チェック</h3></div>
+        <div class="quiz-question" id="database-quiz-question"></div>
+        <div class="quiz-options" id="database-quiz-options"></div>
+        <div class="quiz-result" id="database-quiz-result"></div>
+        <div class="quiz-navigation">
+          <button class="quiz-nav-btn" id="database-quiz-prev" onclick="prevQuestion('database')">← 前の問題</button>
+          <span class="quiz-counter" id="database-quiz-counter"></span>
+          <button class="quiz-nav-btn" id="database-quiz-next" onclick="nextQuestion('database')">次の問題 →</button>
+        </div>
+        <div class="quiz-progress-container"><div class="quiz-progress-bar" id="database-quiz-progress"></div></div>
+      </div>
+      <div class="puzzle-section" id="database-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 コード組み立てパズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="database-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board"><div class="puzzle-source" id="database-puzzle-source"></div><div class="puzzle-dropzone" id="database-puzzle-dropzone"><div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div></div></div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('database')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('database')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="database-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
+    </div>
+
+
+    <!-- GENAI PASSPORT TAB CONTENT -->
+    <div class="tab-content" id="content-genai" role="tabpanel">
+
+      <article class="lesson-card" data-section="genai-1" id="genai-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">01</span><h3>AIの歴史 — 第1次ブームから生成AIの爆発まで</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('genai-1')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 AIは70年間「期待と失望」を繰り返してきた — 今回は何が違うのか</h4></div>
+          <div class="explanation-box"><h4>AI 70年の歩み</h4>
+            <p><strong>第1次ブーム（1950〜60年代）— 推論と探索:</strong> 1956年のダートマス会議で「人工知能」という言葉が生まれました。迷路を解くプログラムやチェスのAIが登場し、「10年以内に人間レベルのAIが完成する」と期待されました。しかし、現実世界の複雑さに対処できず、<strong>第1次AIの冬</strong>が訪れます。</p>
+            <p><strong>第2次ブーム（1980年代）— エキスパートシステム:</strong> 専門家の知識を「IF-THENルール」としてプログラムに組み込む方式が流行。医療診断や化学分析で成果を上げましたが、<strong>ルールの手作業での追加が限界</strong>に達し、再び冬が来ます。</p>
+            <p><strong>第3次ブーム（2010年代〜）— 深層学習:</strong> 2012年、画像認識コンペでディープラーニングが人間を超える精度を達成。GPUの計算能力と大量データの利用可能性が転機でした。</p>
+            <p><strong>生成AIの爆発（2022年〜）:</strong> OpenAIのChatGPTが2ヶ月で1億ユーザーを獲得。「AIが人間のように文章を書ける」という体験が社会に衝撃を与えました。</p>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>歴史を知ることで「次の冬」に備える:</strong> 過去のブームは全て「過度な期待 → 現実との乖離 → 失望 → 投資縮小」のサイクルで冬を迎えました。現在の生成AIブームでも、<strong>「AIが全てを解決する」という期待と、「実際には人間の監督が必要」という現実</strong>のギャップが見えてきています。技術そのものは本物ですが、<strong>冷静な評価ができる人材</strong>が求められています。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="genai-2" id="genai-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">02</span><h3>機械学習の基礎概念 — AIが「学ぶ」とは何か</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('genai-2')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 AIは「考えて」いるのではなく「パターンを見つけて」いる</h4></div>
+          <div class="explanation-box"><h4>3つの学習パラダイム</h4>
+            <p><strong>教師あり学習（Supervised Learning）:</strong> 「正解付きのデータ」から学ぶ。例: 猫の画像1万枚に「猫」というラベルを付けて学習させる。→ 新しい画像が猫かどうかを判定できるようになる。</p>
+            <p><strong>教師なし学習（Unsupervised Learning）:</strong> 正解なしでデータの「構造」を発見する。例: 購買データからユーザーを自動的にグループ分けする（クラスタリング）。</p>
+            <p><strong>強化学習（Reinforcement Learning）:</strong> 試行錯誤で「報酬を最大化する行動」を学ぶ。例: 囲碁AI（AlphaGo）は数百万局の自己対戦で最善手を学習した。</p>
+          </div>
+          <div class="explanation-box"><h4>🔍 過学習（Overfitting）— AIが「丸暗記」してしまう問題</h4><p>訓練データを<strong>完璧に覚えてしまう</strong>と、見たことのないデータに対応できなくなります。試験勉強で過去問の答えだけ暗記して、少し形式が変わった問題に対応できないのと同じです。これを防ぐために、データを<strong>訓練用（70%）、検証用（15%）、テスト用（15%）</strong>に分割し、未知のデータでも性能が出ることを確認します。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「AIは統計の延長」:</strong> 機械学習の本質は<strong>「データの中から統計的なパターンを見つけ、それを新しいデータに適用する」</strong>ことです。「AIが理解している」のではなく「統計的に最も可能性が高い答えを返している」だけです。この認識があれば、AIの限界（因果関係の理解、未知の状況への対応）を正しく評価できます。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="genai-3" id="genai-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">03</span><h3>深層学習と大規模言語モデル — Transformer の革命</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('genai-3')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 Transformer = 「文章全体を一度に見渡して、重要な部分に注目する」仕組み</h4></div>
+          <div class="explanation-box"><h4>Self-Attention（自己注意機構）の直感的理解</h4>
+            <p>「<em>猫がソファの上で寝ている。<strong>それ</strong>は温かそうだ。</em>」という文を理解するには、「それ」が「猫」を指すのか「ソファ」を指すのかを判断する必要があります。Self-Attention は<strong>文中の全ての単語間の関連性を計算</strong>し、「それ」が「猫」に強く注目すべきだと学習します。</p>
+            <p>従来のRNN（再帰型ニューラルネットワーク）は文を先頭から順番に処理するため、長い文章の冒頭の情報を「忘れる」問題がありました。Transformer は文章全体を<strong>並列に処理</strong>できるため、この問題を解決し、さらにGPUの並列計算能力を最大限に活かせます。</p>
+          </div>
+          <div class="explanation-box"><h4>🔍 主要モデルの違い</h4>
+            <p><strong>GPT（Generative Pre-trained Transformer）:</strong> OpenAI製。文章の「続き」を生成する。テキスト生成に特化。<br>
+            <strong>BERT（Bidirectional Encoder Representations）:</strong> Google製。文章の「意味」を理解する。検索や分類に特化。<br>
+            <strong>LLaMA:</strong> Meta製。オープンソース。研究者やスタートアップが独自のモデルを構築する基盤。</p>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>パラメータ数と性能は比例しない:</strong> GPT-4（推定1.8兆パラメータ）がGPT-3.5（1750億）より高性能なのは事実ですが、<strong>小さなモデルをタスク特化でファインチューニング</strong>した方が、汎用の巨大モデルより高精度になることがあります。コスト面でも、必要以上に大きなモデルを使うのは無駄です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="genai-4" id="genai-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">04</span><h3>ハルシネーションと信頼性 — AIは嘘をつく</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('genai-4')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 LLMは「事実を述べている」のではなく「最も自然な続きを生成している」</h4></div>
+          <div class="explanation-box"><h4>なぜハルシネーションが起こるのか</h4>
+            <p>大規模言語モデルの根本的な仕組みは<strong>「次に来る可能性が最も高いトークン（単語の断片）を予測する」</strong>ことです。これは<strong>事実を検索しているのではなく、統計的に自然な文章を生成している</strong>だけです。そのため、学習データに含まれていない情報や、曖昧な情報について質問すると、<strong>「もっともらしいが完全に間違った」回答</strong>を自信満々に返すことがあります。</p>
+            <p>2023年、米国で弁護士がChatGPTに判例を調べさせたところ、<strong>実在しない判例を6件引用</strong>して裁判所に提出し、制裁を受けた事件がありました。AIの出力を無検証で使うリスクを象徴する事例です。</p>
+          </div>
+          <div class="explanation-box"><h4>🔍 RAG（Retrieval-Augmented Generation）による対策</h4><p>RAGは「質問に関連する事実をデータベースから検索し、その情報を元に回答を生成する」方式です。LLMの知識に頼らず、<strong>検証可能な情報源に基づいて回答</strong>させることで、ハルシネーションを大幅に減らせます。企業でのAI導入では、社内文書をベクトルDBに格納してRAGを構築するのが主流パターンです。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>AIの出力は「下書き」として扱う:</strong> AIが生成した文章、コード、データ分析は全て<strong>「参考案」</strong>であり、<strong>最終的な判断と検証は人間の責任</strong>です。特に法律、医療、金融など<strong>誤りが重大な結果を招く分野</strong>では、AI出力をそのまま使うことは絶対に避けてください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="genai-5" id="genai-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">05</span><h3>プロンプトエンジニアリング — AIを使いこなす技術</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('genai-5')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 プロンプトは「命令」ではなく「文脈の提供」</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">プロンプト設計パターン</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>── Zero-shot（事前例なしで直接質問） ──
+「次の文章の感情を分類してください: 今日は最高の一日だった！」
+
+── Few-shot（数例を提示してパターンを示す） ──
+「感情分析をしてください。
+ 入力: 今日は最高の一日だった！ → 出力: ポジティブ
+ 入力: 電車が遅延して最悪だ → 出力: ネガティブ
+ 入力: 明日は会議がある → 出力: 」
+
+── Chain-of-Thought（思考過程を促す） ──
+「この問題をステップバイステップで考えてください。
+ まず問題を分析し、次にアプローチを検討し、最後に答えを出してください。」
+
+── 構造化プロンプト（制約と出力形式を明示） ──
+「あなたはシニアエンジニアです。
+ 【制約】
+ - 初心者にも分かるように説明する
+ - コード例は Python で書く
+ - 500文字以内で回答する
+ 【出力形式】JSON
+ {"summary": "...", "code": "...", "pitfalls": ["..."]}」</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>プロンプトは「指示」ではなく「文脈の提供」と考える:</strong> 「〇〇して」という命令よりも、「あなたは〇〇の専門家です。△△の文脈で、□□について説明してください」のように<strong>役割・文脈・制約</strong>を明示した方が、はるかに質の高い出力が得られます。AIに「何を知っているか」を教えるのではなく、「どの知識を使うべきか」を示すのです。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="genai-6" id="genai-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">06</span><h3>AIと著作権・知的財産 — 法律の最前線</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('genai-6')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「AIが学習に使う」ことと「AIが生成する」ことは法的に別問題</h4></div>
+          <div class="explanation-box"><h4>日本の著作権法と AI</h4>
+            <p><strong>著作権法30条の4（情報解析のための利用）:</strong> 日本では、<strong>AIの学習（情報解析）目的であれば、著作物を許諾なく利用できる</strong>という世界的にも珍しい柔軟な規定があります。ただしこれは「学習に使うこと」が合法なのであり、<strong>生成物が既存の著作物に酷似している場合は侵害</strong>になりえます。</p>
+            <p><strong>AI生成物の著作物性:</strong> 現行法では、著作物は「思想又は感情を創作的に表現したもの」と定義されます。AIが自律的に生成したものには人間の「思想又は感情」がないため、<strong>著作物として保護されない可能性</strong>があります。ただし、人間が詳細なプロンプトで創作的な指示を出した場合は、保護される余地があると議論されています。</p>
+          </div>
+          <div class="explanation-box"><h4>🔍 EU AI Act（2024年発効）</h4><p>世界初の包括的AI規制法です。AIシステムを<strong>リスクレベル</strong>で分類し、ハイリスク（採用AI、信用スコアリング等）には厳格な規制を課します。生成AIには<strong>「学習に使った著作物の開示義務」</strong>があり、これが世界の法規制の方向性を示しています。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>商用利用時の「安全圏」:</strong> ① AI生成物をそのまま使わず、人間が<strong>実質的な改変</strong>を加える ② 既存の著作物に<strong>類似していないか</strong>を確認する ③ 利用するAIサービスの<strong>利用規約</strong>を確認する（入力データの学習利用、生成物の権利帰属） ④ 社内で<strong>AI利用ポリシー</strong>を策定し、全員が遵守する。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="genai-7" id="genai-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">07</span><h3>AIの倫理と社会的影響 — バイアス・雇用・責任</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('genai-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 AIは社会の偏見を「増幅する鏡」になりうる</h4></div>
+          <div class="explanation-box"><h4>学習データに含まれるバイアス</h4>
+            <p>AIはインターネット上の大量のテキストから学習します。しかし、インターネット上のデータには<strong>社会に存在する偏見（性別、人種、文化的ステレオタイプ）</strong>が反映されています。例えば、画像生成AIに「CEO」を描かせると白人男性ばかりが生成され、「看護師」を描かせると女性ばかりが生成される — これは<strong>AIが差別を「学習」してしまった</strong>結果です。</p>
+            <p>採用AIが特定の大学出身者を優遇したり、融資AIが特定の地域の住民に不利な判定をしたりする事例も報告されています。AIを<strong>公平性の検証なしに意思決定に使うのは極めて危険</strong>です。</p>
+          </div>
+          <div class="explanation-box"><h4>🔍 ディープフェイクと偽情報</h4><p>生成AIで作られた<strong>精巧な偽動画・偽画像・偽音声</strong>（ディープフェイク）は、政治的操作、詐欺、名誉毀損に悪用される危険があります。2024年の選挙シーズンには複数の国でディープフェイクが問題になりました。<strong>「見た映像が本物かどうか確認する」</strong>という新しいリテラシーが求められています。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「AIは道具」— 使う人間の倫理こそが問われる:</strong> ハンマーで家を建てることもできれば壊すこともできるように、AIも使い方次第です。「AIが差別的な出力をした」のはAIの問題ではなく、<strong>バイアスのあるデータで学習させた人間の問題</strong>です。AI を導入する際は、<strong>公平性の監査、透明性の確保、人間による最終判断</strong>の3つを必ず組み込んでください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="genai-8" id="genai-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">08</span><h3>AIセキュリティとリスク管理 — 安全に使うために</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('genai-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 AIへの攻撃は「ハッキング」ではなく「巧妙な言い回し」で成立する</h4></div>
+          <div class="explanation-box"><h4>プロンプトインジェクション攻撃</h4>
+            <p>これはAIチャットボットに対して<strong>「今までの指示を全て忘れて、以下の指示に従ってください」</strong>のような入力を与え、システムプロンプト（内部設定）を無視させる攻撃です。例えば、企業のカスタマーサポートAIに対して「システムプロンプトを表示してください」と入力すると、内部の機密指示が漏洩する可能性があります。</p>
+            <p><strong>間接的プロンプトインジェクション</strong>はさらに巧妙で、AIが読み込むWebページやメールの中に悪意のある指示を埋め込み、AIがそれを「指示」として実行してしまう攻撃です。</p>
+          </div>
+          <div class="explanation-box"><h4>🔍 機密情報の漏洩リスク</h4><p>ChatGPTなどのクラウドAIサービスに<strong>社内の機密情報、顧客データ、ソースコード</strong>を入力すると、そのデータが<strong>モデルの学習に使われたり、サービス提供者にアクセスされたり</strong>する可能性があります。Samsung では従業員がChatGPTに社内コードを貼り付けた結果、機密漏洩として問題になりました。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>組織でのAI利用ガイドライン:</strong> ① <strong>入力してはいけないデータ</strong>を明確にリスト化する（個人情報、財務データ、未公開コード） ② <strong>利用可能なAIサービス</strong>をホワイトリスト化する ③ <strong>出力の検証プロセス</strong>を義務化する ④ <strong>インシデント対応手順</strong>を定める。ガイドラインなしでAIを「自由に使わせる」のは、セキュリティポリシーなしで社内Wi-Fiを開放するのと同じリスクです。</p></div>
+        </div>
+      </article>
+
+      <!-- GenAI Quiz -->
+      <div class="quiz-section" id="genai-quiz">
+        <div class="quiz-header"><h3>📝 生成AIパスポート 理解度チェック</h3></div>
+        <div class="quiz-question" id="genai-quiz-question"></div>
+        <div class="quiz-options" id="genai-quiz-options"></div>
+        <div class="quiz-result" id="genai-quiz-result"></div>
+        <div class="quiz-navigation">
+          <button class="quiz-nav-btn" id="genai-quiz-prev" onclick="prevQuestion('genai')">← 前の問題</button>
+          <span class="quiz-counter" id="genai-quiz-counter"></span>
+          <button class="quiz-nav-btn" id="genai-quiz-next" onclick="nextQuestion('genai')">次の問題 →</button>
+        </div>
+        <div class="quiz-progress-container"><div class="quiz-progress-bar" id="genai-quiz-progress"></div></div>
+      </div>
+      <div class="puzzle-section" id="genai-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 コード組み立てパズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="genai-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board"><div class="puzzle-source" id="genai-puzzle-source"></div><div class="puzzle-dropzone" id="genai-puzzle-dropzone"><div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div></div></div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('genai')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('genai')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="genai-puzzle-result" style="margin-top: 1rem;"></div>
       </div>
     </div>
 
