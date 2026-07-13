@@ -34,7 +34,7 @@
           <span class="stat-label">言語 / フレームワーク</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">84</span>
+          <span class="stat-number">90</span>
           <span class="stat-label">レッスン</span>
         </div>
         <div class="stat-item">
@@ -8726,6 +8726,701 @@ styles/
       </article>
 
       <!-- htmlcss Quiz -->
+
+      <!-- ===== CSSフレームワーク編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #8b5cf6; background: rgba(139,92,246,0.08);">
+        <h4>🟣 CSSフレームワーク編 — 実務で使われる主要フレームワークを比較・習得する</h4>
+        <p>Tailwind CSS、Bootstrap、Material UI（MUI）など、実際のプロダクト開発で使用率の高いフレームワークの設計思想、基本構文、使い分けを学びます。</p>
+      </div>
+
+      <!-- Lesson 23: CSSフレームワーク概論 -->
+      <article class="lesson-card" data-section="htmlcss-23" id="htmlcss-lesson-23">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">23</span>
+            <h3>CSSフレームワーク概論 — なぜ素のCSSだけでは辛いのか</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-23')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 フレームワーク = 「車輪の再発明」をやめるための道具</h4></div>
+          <div class="explanation-box">
+            <h4>なぜCSSフレームワークが必要なのか？</h4>
+            <p>素のCSSだけでゼロからUIを構築すると、<strong>ボタン、フォーム、モーダル、グリッド</strong>といった基本コンポーネントを毎回作り直すことになります。CSSフレームワークは、こうした「どのプロジェクトでも必要になる部品」を事前に提供することで、<strong>開発速度を数倍に高め、チーム内のデザイン品質を統一</strong>します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">主要CSSフレームワーク比較</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>┌────────────────────┬──────────────┬──────────────┬──────────────┐
+│                    │ Tailwind CSS │  Bootstrap   │  Material UI │
+├────────────────────┼──────────────┼──────────────┼──────────────┤
+│ アプローチ         │ ユーティリティ│ コンポーネント│ コンポーネント│
+│ 設計思想           │ Utility-First│ 既製パーツ   │ Google MD    │
+│ 技術スタック       │ HTML + CSS   │ HTML+CSS+JS  │ React + TS   │
+│ カスタマイズ性     │ ★★★★★      │ ★★★☆☆      │ ★★★★☆      │
+│ 学習コスト         │ ★★★★☆      │ ★★☆☆☆      │ ★★★★☆      │
+│ バンドルサイズ     │ 極小(PurgeCSS)│ 中〜大       │ 大（Tree-shake）│
+│ GitHub ★          │ 87k+         │ 172k+        │ 95k+          │
+│ npm 週間DL         │ 1,200万+     │ 600万+       │ 400万+        │
+│ 最適な用途         │ カスタムUI   │ 管理画面/MVP │ React アプリ  │
+├────────────────────┼──────────────┼──────────────┼──────────────┤
+│ 他の有力候補       │              │              │              │
+│ Bulma             │ CSS Only / Flexbox ベース / 軽量（★49k）   │
+│ Chakra UI         │ React 用 / アクセシビリティ重視（★38k）    │
+│ shadcn/ui         │ React 用 / コピペ方式 / 2023年〜急成長      │
+│ Pico CSS          │ クラスレス / セマンティックHTML に自動適用   │
+└────────────────────┴──────────────────────────────────────────────┘</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 3つのアプローチの違い</h4>
+            <p><strong>① ユーティリティファースト（Tailwind CSS）:</strong> <code>bg-blue-500 text-white px-4 py-2</code> のように、1つのクラス = 1つのCSSプロパティ。HTMLにスタイルを直接書く感覚。<strong>自由度が最も高い</strong>が、HTMLが長くなる。</p>
+            <p><strong>② コンポーネントベース（Bootstrap）:</strong> <code>btn btn-primary</code> のように、「ボタン」という完成品のクラスを当てる。<strong>最も速くプロトタイプが作れる</strong>が、カスタマイズに限界がある。</p>
+            <p><strong>③ Reactコンポーネント（MUI / Chakra）:</strong> <code>&lt;Button variant="contained" color="primary"&gt;</code> のように、React コンポーネントとして提供。<strong>型安全で props による制御が可能</strong>だが、React 専用。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 24: Tailwind CSS -->
+      <article class="lesson-card" data-section="htmlcss-24" id="htmlcss-lesson-24">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">24</span>
+            <h3>Tailwind CSS — ユーティリティファーストの革命</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-24')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「CSSファイルを書かずに」UIを構築する新しいパラダイム</h4></div>
+          <div class="explanation-box">
+            <h4>Tailwind CSS とは？</h4>
+            <p><strong>Tailwind CSS</strong> は、<code>flex</code>, <code>pt-4</code>, <code>text-center</code>, <code>rotate-90</code> のような低レベルのユーティリティクラスを組み合わせてUIを構築する CSS フレームワークです。2024〜2025年に<strong>最も勢いのあるCSSフレームワーク</strong>で、Next.js / Nuxt / SvelteKit のデフォルト CSS に採用されています。</p>
+            <p><strong>GitHub ★87k+ / npm 週間1,200万DL+</strong></p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML — Tailwind CSS 基本構文</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ===== Tailwind CSS の基本 ===== --&gt;
+
+&lt;!-- ① ボタン（素のCSS → Tailwind） --&gt;
+&lt;!-- 素のCSS で書く場合: .btn { background: #3b82f6; color: white;
+     padding: 8px 16px; border-radius: 8px; font-weight: bold; } --&gt;
+
+&lt;button class="bg-blue-500 text-white px-4 py-2 rounded-lg font-bold
+               hover:bg-blue-600 transition-colors"&gt;
+  送信する
+&lt;/button&gt;
+&lt;!-- bg-blue-500  → background-color: #3b82f6 --&gt;
+&lt;!-- text-white   → color: #ffffff --&gt;
+&lt;!-- px-4         → padding-left: 1rem; padding-right: 1rem --&gt;
+&lt;!-- py-2         → padding-top: 0.5rem; padding-bottom: 0.5rem --&gt;
+&lt;!-- rounded-lg   → border-radius: 0.5rem --&gt;
+&lt;!-- hover:       → ホバー時のスタイル --&gt;
+
+&lt;!-- ② レスポンシブデザイン（ブレークポイント修飾子） --&gt;
+&lt;div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
+  &lt;!-- grid-cols-1     → モバイル: 1列 --&gt;
+  &lt;!-- md:grid-cols-2  → 768px以上: 2列 --&gt;
+  &lt;!-- lg:grid-cols-3  → 1024px以上: 3列 --&gt;
+&lt;/div&gt;
+
+&lt;!-- ③ ダークモード --&gt;
+&lt;div class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"&gt;
+  &lt;!-- dark: 修飾子でダークモード時のスタイルを指定 --&gt;
+&lt;/div&gt;
+
+&lt;!-- ④ Flexbox レイアウト --&gt;
+&lt;nav class="flex items-center justify-between p-4"&gt;
+  &lt;a href="/" class="text-xl font-bold"&gt;Logo&lt;/a&gt;
+  &lt;div class="flex gap-4"&gt;
+    &lt;a href="#" class="hover:text-blue-500 transition-colors"&gt;Home&lt;/a&gt;
+    &lt;a href="#" class="hover:text-blue-500 transition-colors"&gt;About&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;
+
+&lt;!-- ⑤ カードコンポーネント --&gt;
+&lt;div class="max-w-sm rounded-2xl overflow-hidden shadow-lg
+            bg-white dark:bg-gray-800
+            hover:shadow-xl transition-shadow duration-300"&gt;
+  &lt;img class="w-full h-48 object-cover" src="photo.jpg" alt="写真"&gt;
+  &lt;div class="p-6"&gt;
+    &lt;h3 class="text-xl font-bold mb-2"&gt;カードタイトル&lt;/h3&gt;
+    &lt;p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed"&gt;
+      カードの説明テキスト。
+    &lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript — tailwind.config.js（カスタマイズ）</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// tailwind.config.js — プロジェクト固有のカスタマイズ
+
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  // ① 使用するファイルを指定（未使用クラスを自動削除）
+  content: [
+    "./src/**/*.{html,js,jsx,ts,tsx}",  // ← この中のクラスだけ残す
+  ],
+
+  // ② テーマのカスタマイズ
+  theme: {
+    extend: {
+      // ブランドカラーを追加
+      colors: {
+        brand: {
+          50:  '#eff6ff',
+          500: '#3b82f6',              // ← bg-brand-500 で使える
+          900: '#1e3a5f',
+        },
+      },
+
+      // カスタムフォント
+      fontFamily: {
+        sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+      },
+
+      // カスタムアニメーション
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-out',
+        'slide-up': 'slideUp 0.3s ease-out',
+      },
+      keyframes: {
+        fadeIn:  { from: { opacity: 0 }, to: { opacity: 1 } },
+        slideUp: { from: { transform: 'translateY(10px)', opacity: 0 },
+                   to:   { transform: 'translateY(0)',     opacity: 1 } },
+      },
+    },
+  },
+
+  // ③ プラグイン（公式・サードパーティ）
+  plugins: [
+    require('@tailwindcss/forms'),       // フォームのリセット
+    require('@tailwindcss/typography'),   // 記事本文の自動スタイル
+  ],
+};</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 Tailwind CSS のメリット・デメリット</h4>
+            <p><strong>✅ メリット:</strong></p>
+            <p>• <strong>CSSファイルを別途管理しなくていい</strong> — HTML だけで完結<br>
+            • <strong>バンドルサイズが極小</strong> — PurgeCSS により未使用クラスが自動削除（通常10KB以下）<br>
+            • <strong>デザインの一貫性</strong> — 色・余白が設計システムに制約される<br>
+            • <strong>レスポンシブ・ダークモードが簡単</strong> — <code>md:</code> <code>dark:</code> 修飾子</p>
+            <p><strong>❌ デメリット:</strong></p>
+            <p>• <strong>HTMLが長くなる</strong> — クラスが大量に並ぶ（<code>@apply</code> で緩和可能）<br>
+            • <strong>学習コスト</strong> — クラス名を覚える必要がある（VS Code の IntelliSense が補完）<br>
+            • <strong>デザインの自由度</strong> — 設計システム外のスタイルは <code>arbitrary values</code>（<code>w-[137px]</code>）が必要</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 25: Tailwind CSS 実践パターン -->
+      <article class="lesson-card" data-section="htmlcss-25" id="htmlcss-lesson-25">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">25</span>
+            <h3>Tailwind CSS 実践 — 実務でよく使うパターン集</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-25')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 Tailwind の真価は「組み合わせ」のパターンにある</h4></div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML — Tailwind 実践パターン</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ===== ① グラスモーフィズム ===== --&gt;
+&lt;div class="bg-white/10 backdrop-blur-lg border border-white/20
+            rounded-2xl p-8 shadow-2xl"&gt;
+  &lt;!-- bg-white/10 = rgba(255,255,255,0.1)  ← / で透明度を指定 --&gt;
+&lt;/div&gt;
+
+&lt;!-- ===== ② グラデーションテキスト ===== --&gt;
+&lt;h1 class="text-4xl font-bold bg-gradient-to-r from-blue-500 via-purple-500
+           to-pink-500 bg-clip-text text-transparent"&gt;
+  グラデーションテキスト
+&lt;/h1&gt;
+
+&lt;!-- ===== ③ アニメーション付きスケルトンローダー ===== --&gt;
+&lt;div class="animate-pulse space-y-4"&gt;
+  &lt;div class="h-4 bg-gray-300 rounded w-3/4"&gt;&lt;/div&gt;
+  &lt;div class="h-4 bg-gray-300 rounded w-1/2"&gt;&lt;/div&gt;
+  &lt;div class="h-32 bg-gray-300 rounded"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- ===== ④ レスポンシブサイドバーレイアウト ===== --&gt;
+&lt;div class="flex flex-col md:flex-row min-h-screen"&gt;
+  &lt;!-- サイドバー: モバイルで上部、タブレット以上で左側 --&gt;
+  &lt;aside class="w-full md:w-64 bg-gray-900 text-white p-4
+                md:min-h-screen"&gt;
+    &lt;nav class="flex md:flex-col gap-2"&gt;
+      &lt;a href="#" class="px-4 py-2 rounded-lg hover:bg-gray-700
+                        transition-colors"&gt;Dashboard&lt;/a&gt;
+      &lt;a href="#" class="px-4 py-2 rounded-lg hover:bg-gray-700
+                        transition-colors"&gt;Settings&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/aside&gt;
+  &lt;!-- メインコンテンツ --&gt;
+  &lt;main class="flex-1 p-6 bg-gray-50"&gt;
+    &lt;h1 class="text-2xl font-bold mb-6"&gt;Dashboard&lt;/h1&gt;
+  &lt;/main&gt;
+&lt;/div&gt;
+
+&lt;!-- ===== ⑤ @apply でコンポーネント化（CSS内） ===== --&gt;
+&lt;!-- HTMLのクラスが長くなりすぎる場合、CSSにまとめられる --&gt;
+&lt;!-- &lt;button class="btn-primary"&gt;送信&lt;/button&gt; --&gt;</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS — @apply でコンポーネント化</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* @apply — Tailwind のクラスを CSS にまとめる */
+/* 繰り返し使うパターンはコンポーネントとして定義 */
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-500 text-white px-6 py-3 rounded-lg font-bold
+           hover:bg-blue-600 active:bg-blue-700
+           transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  }
+
+  .btn-outline {
+    @apply border-2 border-blue-500 text-blue-500 px-6 py-3 rounded-lg
+           font-bold hover:bg-blue-50 transition-colors duration-200;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300
+           focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
+           transition-all duration-200
+           dark:bg-gray-800 dark:border-gray-600 dark:text-white;
+  }
+
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-md
+           hover:shadow-xl transition-shadow duration-300
+           overflow-hidden;
+  }
+}
+
+/* ===== Tailwind v4 の新機能（2025年〜） ===== */
+/* tailwind.config.js が不要に → CSS内で直接設定 */
+@theme {
+  --color-brand-500: #3b82f6;
+  --font-sans: 'Inter', sans-serif;
+  --breakpoint-tablet: 768px;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 Tailwind v4 の変更点</h4>
+            <p>2025年リリースの <strong>Tailwind v4</strong> では、<code>tailwind.config.js</code> ファイルが不要になり、<strong>CSS内で直接 <code>@theme</code></strong> ディレクティブを使って設定できるようになりました。また、Oxide エンジン（Rust製）により<strong>ビルド速度が10倍以上高速化</strong>されています。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 26: Bootstrap -->
+      <article class="lesson-card" data-section="htmlcss-26" id="htmlcss-lesson-26">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">26</span>
+            <h3>Bootstrap — 世界で最も使われたCSSフレームワーク</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-26')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 Bootstrap = 「コンポーネントを組み合わせるだけ」で完成するUI</h4></div>
+          <div class="explanation-box">
+            <h4>Bootstrap とは？</h4>
+            <p><strong>Bootstrap</strong> は、Twitter社（現X）が2011年に公開した、世界で最も歴史あるCSSフレームワークです。GitHub ★172k（全リポジトリで第4位）を誇り、<strong>管理画面、MVP（最小限の製品）、社内ツール</strong>の開発で今も広く使われています。</p>
+            <p><strong>特長:</strong> CDN で読み込むだけですぐ使える / 豊富なコンポーネント / jQuery 不要（v5〜）</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML — Bootstrap 基本コンポーネント</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- CDN で即座に導入 --&gt;
+&lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"&gt;
+
+&lt;!-- ===== ① グリッドシステム（12カラム） ===== --&gt;
+&lt;div class="container"&gt;               &lt;!-- 中央配置 + 最大幅制限 --&gt;
+  &lt;div class="row g-4"&gt;               &lt;!-- 行（gap: 1.5rem） --&gt;
+    &lt;div class="col-12 col-md-6 col-lg-4"&gt;  &lt;!-- モバイル12列/タブレット6列/PC4列 --&gt;
+      &lt;!-- 12列中の何列分を占めるかで幅を制御 --&gt;
+    &lt;/div&gt;
+    &lt;div class="col-12 col-md-6 col-lg-4"&gt;...&lt;/div&gt;
+    &lt;div class="col-12 col-md-12 col-lg-4"&gt;...&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- ===== ② ボタン ===== --&gt;
+&lt;button class="btn btn-primary"&gt;プライマリ&lt;/button&gt;
+&lt;button class="btn btn-outline-danger"&gt;削除&lt;/button&gt;
+&lt;button class="btn btn-success btn-lg"&gt;大きいボタン&lt;/button&gt;
+&lt;button class="btn btn-secondary" disabled&gt;無効&lt;/button&gt;
+
+&lt;!-- ===== ③ カード ===== --&gt;
+&lt;div class="card shadow-sm"&gt;
+  &lt;img src="photo.jpg" class="card-img-top" alt="写真"&gt;
+  &lt;div class="card-body"&gt;
+    &lt;h5 class="card-title"&gt;タイトル&lt;/h5&gt;
+    &lt;p class="card-text text-muted"&gt;説明テキスト&lt;/p&gt;
+    &lt;a href="#" class="btn btn-primary"&gt;詳細を見る&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- ===== ④ アラート ===== --&gt;
+&lt;div class="alert alert-warning alert-dismissible fade show" role="alert"&gt;
+  &lt;strong&gt;注意！&lt;/strong&gt; この操作は取り消せません。
+  &lt;button type="button" class="btn-close" data-bs-dismiss="alert"&gt;&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- ===== ⑤ ナビバー ===== --&gt;
+&lt;nav class="navbar navbar-expand-lg bg-body-tertiary"&gt;
+  &lt;div class="container-fluid"&gt;
+    &lt;a class="navbar-brand" href="#"&gt;MyApp&lt;/a&gt;
+    &lt;button class="navbar-toggler" data-bs-toggle="collapse"
+            data-bs-target="#navContent"&gt;
+      &lt;span class="navbar-toggler-icon"&gt;&lt;/span&gt;
+    &lt;/button&gt;
+    &lt;div class="collapse navbar-collapse" id="navContent"&gt;
+      &lt;ul class="navbar-nav"&gt;
+        &lt;li class="nav-item"&gt;&lt;a class="nav-link active" href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li class="nav-item"&gt;&lt;a class="nav-link" href="#"&gt;About&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;
+
+&lt;!-- ===== ⑥ モーダル ===== --&gt;
+&lt;button class="btn btn-primary" data-bs-toggle="modal"
+        data-bs-target="#myModal"&gt;モーダルを開く&lt;/button&gt;
+
+&lt;div class="modal fade" id="myModal" tabindex="-1"&gt;
+  &lt;div class="modal-dialog"&gt;
+    &lt;div class="modal-content"&gt;
+      &lt;div class="modal-header"&gt;
+        &lt;h5 class="modal-title"&gt;確認&lt;/h5&gt;
+        &lt;button class="btn-close" data-bs-dismiss="modal"&gt;&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div class="modal-body"&gt;実行してよろしいですか？&lt;/div&gt;
+      &lt;div class="modal-footer"&gt;
+        &lt;button class="btn btn-secondary" data-bs-dismiss="modal"&gt;閉じる&lt;/button&gt;
+        &lt;button class="btn btn-primary"&gt;実行&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 Bootstrap を選ぶべき場面</h4>
+            <p><strong>✅ 最適:</strong> 管理画面 / 社内ツール / MVP（素早くプロトタイプを作りたい時）/ デザイナーがいないチーム<br>
+            <strong>❌ 不向き:</strong> 独自性の高いブランドUI / パフォーマンス重視のサイト（バンドルサイズが大きい）<br>
+            <strong>💡 ヒント:</strong> Bootstrap のデフォルトの見た目が気に入らない場合は、<strong>Sass変数を上書き</strong>してカスタマイズするか、<strong>Bootswatch</strong>（無料テーマ集）を使うと印象が大きく変わります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 27: Material UI / Chakra UI -->
+      <article class="lesson-card" data-section="htmlcss-27" id="htmlcss-lesson-27">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">27</span>
+            <h3>MUI &amp; Chakra UI — React 向けコンポーネントライブラリ</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-27')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 React の props でスタイルを制御 = 型安全なデザインシステム</h4></div>
+          <div class="explanation-box">
+            <h4>React 向けUIライブラリの選択肢</h4>
+            <p>React アプリケーションでは、CSSクラスの代わりに<strong>React コンポーネントとしてUIパーツが提供</strong>されるライブラリが主流です。props でバリアント（種類）やサイズを制御でき、TypeScript の型チェックが効くため、<strong>間違ったクラス名を書いてしまう事故</strong>が起きません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TSX — Material UI（MUI）</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ===== Material UI（MUI v5） =====
+// Google の Material Design ガイドラインに準拠
+// npm install @mui/material @emotion/react @emotion/styled
+
+import { Button, TextField, Card, CardContent, Typography,
+         AppBar, Toolbar, IconButton, Badge } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+// ① テーマのカスタマイズ
+const theme = createTheme({
+  palette: {
+    primary: { main: '#3b82f6' },     // ← ブランドカラー
+    secondary: { main: '#8b5cf6' },
+    mode: 'dark',                      // ← ダークモード
+  },
+  typography: {
+    fontFamily: '"Inter", "Noto Sans JP", sans-serif',
+  },
+  shape: {
+    borderRadius: 12,                  // ← 全コンポーネントの角丸
+  },
+});
+
+// ② コンポーネントの使用
+function App() {
+  return (
+    &lt;ThemeProvider theme={theme}&gt;
+      {/* ③ ボタン — variant と color を props で制御 */}
+      &lt;Button variant="contained" color="primary" size="large"&gt;
+        送信する
+      &lt;/Button&gt;
+      &lt;Button variant="outlined" color="secondary"&gt;
+        キャンセル
+      &lt;/Button&gt;
+
+      {/* ④ テキスト入力 — バリデーション付き */}
+      &lt;TextField
+        label="メールアドレス"
+        type="email"
+        variant="outlined"
+        error={!isValid}                 {/* ← エラー状態 */}
+        helperText="有効なメールアドレスを入力"
+        fullWidth
+      /&gt;
+
+      {/* ⑤ カード */}
+      &lt;Card elevation={3}&gt;              {/* ← 影の強さを数値で */}
+        &lt;CardContent&gt;
+          &lt;Typography variant="h5" gutterBottom&gt;
+            タイトル
+          &lt;/Typography&gt;
+          &lt;Typography variant="body2" color="text.secondary"&gt;
+            説明テキスト
+          &lt;/Typography&gt;
+        &lt;/CardContent&gt;
+      &lt;/Card&gt;
+
+      {/* ⑥ sx prop でインラインスタイル（CSS-in-JS） */}
+      &lt;Box sx={{
+        display: 'flex',
+        gap: 2,                          {/* ← theme.spacing(2) = 16px */}
+        p: 3,                            {/* ← padding: theme.spacing(3) */}
+        bgcolor: 'background.paper',     {/* ← テーマのトークンを参照 */}
+        borderRadius: 2,
+        '&amp;:hover': { boxShadow: 6 },    {/* ← ホバー時の影 */}
+      }}&gt;
+        コンテンツ
+      &lt;/Box&gt;
+    &lt;/ThemeProvider&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TSX — Chakra UI</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ===== Chakra UI =====
+// アクセシビリティ最優先の React UIライブラリ
+// npm install @chakra-ui/react @emotion/react @emotion/styled
+
+import { ChakraProvider, Button, Input, Box, Heading,
+         Text, Stack, useColorMode, useToast } from '@chakra-ui/react';
+
+function LoginForm() {
+  const toast = useToast();             // ← トースト通知フック
+  const { colorMode, toggleColorMode } = useColorMode(); // ← ダークモード
+
+  return (
+    &lt;Box maxW="400px" mx="auto" p={8}
+         bg="white" _dark={{ bg: 'gray.800' }}
+         borderRadius="xl" shadow="lg"&gt;
+
+      &lt;Heading size="lg" mb={6}&gt;ログイン&lt;/Heading&gt;
+
+      &lt;Stack spacing={4}&gt;                {/* ← 子要素間に統一された間隔 */}
+        &lt;Input
+          placeholder="メールアドレス"
+          focusBorderColor="blue.500"     {/* ← フォーカス時の枠線色 */}
+        /&gt;
+        &lt;Input
+          type="password"
+          placeholder="パスワード"
+          focusBorderColor="blue.500"
+        /&gt;
+        &lt;Button
+          colorScheme="blue"
+          size="lg"
+          onClick={() =&gt; toast({         {/* ← トースト通知を表示 */}
+            title: 'ログインしました',
+            status: 'success',
+            duration: 3000,
+          })}
+        &gt;
+          ログイン
+        &lt;/Button&gt;
+      &lt;/Stack&gt;
+    &lt;/Box&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 MUI vs Chakra UI の使い分け</h4>
+            <p><strong>MUI を選ぶ場合:</strong> Material Design に準拠したい / エンタープライズ向け / コンポーネント数が豊富（Data Grid, Date Picker 等の有料コンポーネントもある）</p>
+            <p><strong>Chakra UI を選ぶ場合:</strong> アクセシビリティを最優先にしたい / APIの直感性を重視 / カスタムデザインを適用しやすい / <code>_hover</code>, <code>_dark</code> 等の style props が好き</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 28: shadcn/ui & 最新トレンド -->
+      <article class="lesson-card" data-section="htmlcss-28" id="htmlcss-lesson-28">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">28</span>
+            <h3>shadcn/ui &amp; 最新トレンド — 2025年のCSS選択ガイド</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-28')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「ライブラリをインストール」から「コードをコピペ」の時代へ</h4></div>
+          <div class="explanation-box">
+            <h4>shadcn/ui とは？</h4>
+            <p><strong>shadcn/ui</strong>（<a href="https://ui.shadcn.com" target="_blank">ui.shadcn.com</a>）は、2023年に登場し、急速に普及した<strong>新しいタイプのUIライブラリ</strong>です。従来のライブラリ（MUI, Chakra）は <code>npm install</code> でパッケージとしてインストールしますが、shadcn/ui は<strong>コンポーネントのソースコードを自分のプロジェクトにコピー</strong>します。</p>
+            <p><strong>GitHub ★80k+ / Vercel, Supabase, Cal.com で採用</strong></p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">SHELL — shadcn/ui の導入</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ① 初期化（Tailwind CSS + Radix UI をベースに自動設定）
+npx shadcn@latest init
+
+# ② コンポーネントを「追加」（npm install ではない！）
+npx shadcn@latest add button
+npx shadcn@latest add card
+npx shadcn@latest add dialog
+npx shadcn@latest add input
+npx shadcn@latest add toast
+
+# → コンポーネントのソースコードが src/components/ui/ にコピーされる
+# → 自分のプロジェクトのコードとして自由にカスタマイズ可能</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TSX — shadcn/ui コンポーネント使用例</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// shadcn/ui のコンポーネントは「自分のコード」として存在する
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog, DialogContent, DialogHeader,
+  DialogTitle, DialogTrigger,
+} from "@/components/ui/dialog";
+
+function PricingCard() {
+  return (
+    &lt;Card className="w-[350px]"&gt;          {/* ← Tailwind クラスで装飾 */}
+      &lt;CardHeader&gt;
+        &lt;CardTitle&gt;プロプラン&lt;/CardTitle&gt;
+      &lt;/CardHeader&gt;
+      &lt;CardContent className="space-y-4"&gt;
+        &lt;p className="text-3xl font-bold"&gt;¥2,980&lt;span className="text-sm text-muted-foreground"&gt;/月&lt;/span&gt;&lt;/p&gt;
+
+        &lt;div className="space-y-2"&gt;
+          &lt;Label htmlFor="email"&gt;メールアドレス&lt;/Label&gt;
+          &lt;Input id="email" type="email" placeholder="you@example.com" /&gt;
+        &lt;/div&gt;
+
+        {/* ボタン — variant で見た目を切替 */}
+        &lt;Button className="w-full" size="lg"&gt;
+          今すぐ始める
+        &lt;/Button&gt;
+
+        {/* ダイアログ（モーダル） */}
+        &lt;Dialog&gt;
+          &lt;DialogTrigger asChild&gt;
+            &lt;Button variant="outline" className="w-full"&gt;詳細を見る&lt;/Button&gt;
+          &lt;/DialogTrigger&gt;
+          &lt;DialogContent&gt;
+            &lt;DialogHeader&gt;
+              &lt;DialogTitle&gt;プロプランの詳細&lt;/DialogTitle&gt;
+            &lt;/DialogHeader&gt;
+            &lt;p&gt;機能一覧...&lt;/p&gt;
+          &lt;/DialogContent&gt;
+        &lt;/Dialog&gt;
+      &lt;/CardContent&gt;
+    &lt;/Card&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 shadcn/ui が急成長した理由</h4>
+            <p><strong>1. 完全なコントロール:</strong> コードが自分のリポジトリにあるため、ライブラリのアップデートで突然UIが壊れることがない<br>
+            <strong>2. Tailwind CSS + Radix UI:</strong> スタイルは Tailwind、アクセシビリティは Radix UI（ヘッドレスUI）という最強の組み合わせ<br>
+            <strong>3. コピペ方式:</strong> 不要なコンポーネントをインストールしないため、バンドルサイズが最小限<br>
+            <strong>4. カスタマイズ前提:</strong> デフォルトデザインが控えめで、プロジェクト固有のブランディングを適用しやすい</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>📋 2025年版 CSSフレームワーク選択チャート</h4>
+            <p><strong>Q1: React を使いますか？</strong></p>
+            <p>→ <strong>はい</strong> → Q2 へ<br>
+            → <strong>いいえ</strong> → Q3 へ</p>
+            <p><strong>Q2: デザインの自由度は重要ですか？</strong></p>
+            <p>→ <strong>高い自由度が必要</strong> → <strong>shadcn/ui</strong>（Tailwind + Radix）<br>
+            → <strong>Material Design でOK</strong> → <strong>MUI</strong><br>
+            → <strong>アクセシビリティ最優先</strong> → <strong>Chakra UI</strong></p>
+            <p><strong>Q3: カスタムデザインを作りますか？</strong></p>
+            <p>→ <strong>はい、独自のデザイン</strong> → <strong>Tailwind CSS</strong><br>
+            → <strong>いいえ、素早く作りたい</strong> → <strong>Bootstrap</strong><br>
+            → <strong>CSSだけで軽量に</strong> → <strong>Pico CSS</strong> / <strong>Bulma</strong></p>
+          </div>
+        </div>
+      </article>
+
       <div class="quiz-section" id="htmlcss-quiz">
         <div class="quiz-header">
           <h3>📝 HTML/CSS 理解度チェック</h3>
