@@ -22,6 +22,17 @@ const quizData = {
     {"question": "UPDATE文やDELETE文を実行する際、最も注意すべきことは何ですか？", "options": ["ORDER BY句を必ず付ける", "WHERE句で条件を指定し忘れないこと", "全て大文字で記述すること", "GROUP BY句を含めること"], "correct": 1, "explanation": "WHERE句を忘れると、テーブル内の全ての行に対して更新や削除が行われてしまうため、致命的な事故につながります。"},
     {"question": "SQLの実行計画（インデックスが使われているか等）を確認するコマンドは？", "options": ["CHECK", "EXPLAIN", "SHOW", "DESCRIBE"], "correct": 1, "explanation": "EXPLAIN（または EXPLAIN ANALYZE）を使用すると、データベースがそのクエリをどのように実行するか（全表スキャンか、インデックススキャンか等）を確認できます。"}
   ],
+  
+  "python-prac": [
+    {"question": "リスト内包表記で if-else（三項演算子）を使う場合、正しい構文はどれですか？", "options": ["[x if x > 0 for x in data else -x]", "[x if x > 0 else -x for x in data]", "[for x in data if x > 0 else -x]", "[x for x in data if x > 0 else -x]"], "correct": 1, "explanation": "三項演算子（if-else）は for の前に配置します。[値A if 条件 else 値B for x in iterable] が正しい構文です。"},
+    {"question": "ジェネレータ関数の特徴として正しいものはどれですか？", "options": ["return文で値を返す", "呼び出し時にすべての値をメモリに格納する", "yield文で値を一つずつ返し、状態を保持する", "リストよりも多くのメモリを消費する"], "correct": 2, "explanation": "ジェネレータはyieldで値を一つずつ返し、次にnext()が呼ばれるまで実行を一時停止します。これにより大量データの処理でもメモリ消費を抑えられます。"},
+    {"question": "デコレータで @functools.wraps(func) を使う主な理由は何ですか？", "options": ["デコレータの実行速度を向上させるため", "元の関数の __name__ や __doc__ を保持するため", "デコレータを複数重ねられるようにするため", "引数の型チェックを自動で行うため"], "correct": 1, "explanation": "@functools.wraps(func)を使わないと、デコレートされた関数の__name__がwrapperに、__doc__がNoneになり、デバッグやドキュメント生成に支障をきたします。"},
+    {"question": "collections.Counter同士で引き算をした場合、負の値を持つ要素はどうなりますか？", "options": ["そのまま負の値として残る", "0として残る", "自動的に除外される", "ValueErrorが発生する"], "correct": 2, "explanation": "Counter同士の減算では、結果が0以下になる要素は自動的に結果から除外されます。例: Counter(a=3) - Counter(a=5) は Counter() になります。"},
+    {"question": "re.match() と re.search() の違いとして正しい説明はどれですか？", "options": ["matchは最初のマッチ、searchは全てのマッチを返す", "matchは文字列の先頭からのみマッチし、searchは文字列全体を走査する", "matchは大文字小文字を区別しないが、searchは区別する", "matchはコンパイル済みパターンのみ使える"], "correct": 1, "explanation": "re.match()は文字列の先頭からマッチを試みます。re.search()は文字列全体を走査して最初のマッチを探します。"},
+    {"question": "loggingモジュールのデフォルトのログレベルはどれですか？", "options": ["DEBUG", "INFO", "WARNING", "ERROR"], "correct": 2, "explanation": "デフォルトのログレベルはWARNINGです。そのため、logging.debug()やlogging.info()の出力はデフォルト設定では表示されません。"},
+    {"question": "json.dumps() と json.dump() の違いは何ですか？", "options": ["dumps()はファイルに書き込み、dump()は文字列を返す", "dumps()はJSON文字列を返し、dump()はファイルオブジェクトに書き込む", "dumps()はインデントが付き、dump()はインデントなし", "dumps()はASCII限定、dump()はUnicode対応"], "correct": 1, "explanation": "dumps()のsは'string'の意味で、JSON文字列を返します。dump()はファイルオブジェクトを引数に取り、直接書き込みます。"},
+    {"question": "PEP 8においてクラス名の命名規則として正しいものはどれですか？", "options": ["snake_case（スネークケース）", "CamelCase（キャメルケース/パスカルケース）", "UPPER_SNAKE_CASE（大文字スネークケース）", "kebab-case（ケバブケース）"], "correct": 1, "explanation": "PEP 8ではクラス名はCamelCase（各単語の先頭を大文字）で書きます。変数・関数名はsnake_case、定数はUPPER_SNAKE_CASEです。"}
+  ],
   "genai": [
     {"question": "現在の生成AIブームの火付け役となった「文章全体の文脈を理解し、並列処理を可能にした」技術はどれですか？", "options": ["エキスパートシステム", "RNN", "CNN", "Transformer"], "correct": 3, "explanation": "2017年に発表されたTransformerは、Self-Attention（自己注意機構）により文中の単語間の関連性を全体的に捉え、LLMの基礎となりました。"},
     {"question": "AIが事実とは異なる「もっともらしい嘘」を出力してしまう現象を何と呼びますか？", "options": ["ハルシネーション", "過学習", "プロンプトインジェクション", "特異点（シンギュラリティ）"], "correct": 0, "explanation": "ハルシネーション（幻覚）は、LLMが単に「次に来る確率が高い単語」を予測しているだけで、事実検索をしているわけではないために発生します。"},
@@ -972,6 +983,23 @@ const puzzleData = {
     ],
     correctOrder: ["db-p1", "db-p2", "db-p3", "db-p4", "db-p5"],
     explanation: "SELECT → FROM → GROUP BY(グループ化) → HAVING(グループ化後の条件) → ORDER BY(並び替え) の順序がSQLの正しい構文です。"
+  },
+  
+  "python-prac": {
+    question: "デコレータを使って関数の実行時間を計測するコードを正しい順番に並べてください。",
+    pieces: [
+      { id: "pp-p1", text: "import functools, time" },
+      { id: "pp-p2", text: "def timer(func):" },
+      { id: "pp-p3", text: "    @functools.wraps(func)" },
+      { id: "pp-p4", text: "    def wrapper(*args, **kwargs):" },
+      { id: "pp-p5", text: "        start = time.perf_counter()" },
+      { id: "pp-p6", text: "        result = func(*args, **kwargs)" },
+      { id: "pp-p7", text: "        print(f\"{func.__name__}: {time.perf_counter()-start:.4f}s\")" },
+      { id: "pp-p8", text: "        return result" },
+      { id: "pp-p9", text: "    return wrapper" }
+    ],
+    correctOrder: ["pp-p1", "pp-p2", "pp-p3", "pp-p4", "pp-p5", "pp-p6", "pp-p7", "pp-p8", "pp-p9"],
+    explanation: "import→デコレータ関数定義→@wrapsで元関数のメタ情報を保持→ラッパー関数→計測開始→元関数実行→結果出力→結果返却→ラッパー関数を返す、の順序です。"
   },
   genai: {
     question: "安全なプロンプトの構成要素を、上から論理的な順序に並べてください。",
