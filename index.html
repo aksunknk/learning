@@ -30,7 +30,7 @@
       </p>
       <div class="hero-stats">
         <div class="stat-item">
-          <span class="stat-number">8</span>
+          <span class="stat-number">9</span>
           <span class="stat-label">言語 / フレームワーク</span>
         </div>
         <div class="stat-item">
@@ -38,11 +38,11 @@
           <span class="stat-label">レッスン</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">59</span>
+          <span class="stat-number">67</span>
           <span class="stat-label">クイズ</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">8</span>
+          <span class="stat-number">9</span>
           <span class="stat-label">パズル</span>
         </div>
       </div>
@@ -178,6 +178,16 @@
             <span class="progress-percent" id="python-prac-progress-text">0%</span>
           </div>
         </div>
+        <div class="progress-card testing-card" data-lang="testing">
+          <div class="progress-card-icon">🧪</div>
+          <div class="progress-card-info">
+            <h3>テスト設計</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="testing-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="testing-progress-text">0%</span>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -227,6 +237,10 @@
               <button class="tab-button" data-tab="python-prac" role="tab" aria-selected="false" id="tab-python-prac">
           <span class="tab-icon">🏆</span>
           <span class="tab-label">Python実践試験</span>
+        </button>
+              <button class="tab-button" data-tab="testing" role="tab" aria-selected="false" id="tab-testing">
+          <span class="tab-icon">🧪</span>
+          <span class="tab-label">テスト設計</span>
         </button>
       </div>
       <div class="tab-indicator" id="tab-indicator"></div>
@@ -10887,6 +10901,1210 @@ def file_hash(filepath):
           <button class="reset-btn" onclick="loadPuzzle('python-prac')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
         </div>
         <div class="quiz-result" id="python-prac-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
+    </div>
+
+
+    <!-- TESTING DESIGN TAB CONTENT -->
+    <div class="tab-content" id="content-testing" role="tabpanel">
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="testing-1" id="testing-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>テスト設計の全体像 ── なぜ「テストの設計」が必要なのか</h3>
+          </div>
+          <span class="completion-check" id="check-testing-1">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「とりあえず動かしてみる」ではダメなのか？</h4>
+            <p>初心者がテストと聞くと「コードを書いて実行して、エラーが出なければOK」と考えがちです。しかし<strong>プロの現場では「テストを設計する」</strong>ことが求められます。その理由は明快です ── <strong>バグの70%は仕様の曖昧さやテスト漏れから生まれる</strong>からです。場当たり的な手動テストでは「自分が思いついたケース」しか検証できず、境界値の見落としや条件の組み合わせ漏れが必ず起きます。テスト設計とは、<strong>「何を」「どの技法で」「どこまで」テストするかを体系的に決める技術</strong>です。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>📊 テストの V モデルとテストレベル</h4>
+            <p>ソフトウェア開発の各工程には、対応するテストレベルが存在します。これを「Vモデル」と呼びます。</p>
+            <table style="width:100%; border-collapse: collapse; margin: 1rem 0;">
+              <tr style="background: rgba(99, 102, 241, 0.15); font-weight: bold;">
+                <td style="padding: 0.5rem;">開発工程</td><td style="padding: 0.5rem;">対応するテスト</td><td style="padding: 0.5rem;">検証対象</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem;">要件定義</td><td style="padding:0.4rem;">受入テスト（UAT）</td><td style="padding:0.4rem;">ビジネス要件を満たしているか</td></tr>
+              <tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem;">基本設計</td><td style="padding:0.4rem;">システムテスト（E2E）</td><td style="padding:0.4rem;">システム全体が仕様通りに動くか</td></tr>
+              <tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem;">詳細設計</td><td style="padding:0.4rem;">結合テスト（Integration）</td><td style="padding:0.4rem;">モジュール間の連携が正しいか</td></tr>
+              <tr><td style="padding:0.4rem;">実装</td><td style="padding:0.4rem;">単体テスト（Unit）</td><td style="padding:0.4rem;">関数・クラス単位のロジックが正しいか</td></tr>
+            </table>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>テストピラミッド ── テストの「投資比率」を考える</span></div>
+            <pre><code># ============================================================
+# テストピラミッド ── 下層ほど高速・安価、上層ほど低速・高コスト
+# ============================================================
+#
+#        /\
+#       /  \        E2Eテスト（〜10%）
+#      /    \       ブラウザ操作の自動化、ユーザーフロー全体
+#     /------\      遅い、壊れやすい、保守コスト高
+#    /        \
+#   /  結合    \    結合テスト（〜20%）
+#  /  テスト    \   DB・API・外部サービスとの連携
+# /--------------\  中速、環境依存あり
+# /                \
+# / ユニットテスト  \  ユニットテスト（〜70%）
+# /==================\  関数・クラス単位、最速、安定、安価
+#
+# ⚠️ アンチパターン: 「アイスクリームコーン型」
+# E2Eテストが肥大化し、ユニットテストが少ない状態
+# → CI が遅くなり、テストが頻繁に壊れ、チームがテストを信用しなくなる
+#
+# 🏆 ベストプラクティス:
+# 1. ロジックの検証 → ユニットテストで（高速・安定）
+# 2. モジュール間の疎通 → 結合テストで（適度な範囲）
+# 3. クリティカルフロー → E2Eで（ログイン・決済など最重要シナリオのみ）</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>「テストを書く時間がない」は現場で最もよく聞く言い訳ですが、実態は逆です。テストがないコードは「修正するたびに手動で全機能を確認する」という膨大なコストを後から支払うことになります。Googleの調査によれば、<strong>バグの発見が遅れるほど修正コストは指数関数的に増大</strong>します（単体テストで見つければ1時間、本番障害なら数日〜数週間）。テスト設計は「保険」ではなく「投資」です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="testing-2" id="testing-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>ブラックボックステスト技法① ── 同値分割法と境界値分析</h3>
+          </div>
+          <span class="completion-check" id="check-testing-2">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「全パターンを試す」のが不可能なのか？</h4>
+            <p>仮に年齢（0〜150歳）を入力するフォームがあった場合、全ての整数を試すだけで151パターン、負の数やfloat、文字列まで含めると無限のテストが必要です。<strong>同値分割法</strong>は「同じ振る舞いをするグループ」に分けて代表値だけをテストし、<strong>境界値分析</strong>は「バグが集中する境界」を重点的にテストする技法です。この2つは<strong>JSTQB Foundation Levelでも最も重要な技法</strong>として位置づけられています。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>同値分割法 ── グループの「代表選手」だけを選ぶ</span></div>
+            <pre><code># ============================================================
+# 同値分割法の実践 ── 年齢入力バリデーション
+# ============================================================
+
+def validate_age(age: int) -> str:
+    """年齢を検証し、カテゴリを返す。
+    
+    仕様:
+    - 0未満: エラー（無効な値）
+    - 0〜12: 子供料金
+    - 13〜17: 学生料金
+    - 18〜64: 大人料金
+    - 65〜120: シニア料金
+    - 121以上: エラー（無効な値）
+    """
+    if age < 0 or age > 120:
+        raise ValueError(f"無効な年齢: {age}")
+    if age <= 12:
+        return "子供料金"
+    if age <= 17:
+        return "学生料金"
+    if age <= 64:
+        return "大人料金"
+    return "シニア料金"
+
+# ============================================================
+# 同値分割法によるテスト設計
+# ============================================================
+# 同値クラス（グループ）を特定する:
+#
+# 無効クラス①: age < 0     → 代表値: -5
+# 有効クラス①: 0 <= age <= 12  → 代表値: 5
+# 有効クラス②: 13 <= age <= 17 → 代表値: 15
+# 有効クラス③: 18 <= age <= 64 → 代表値: 30
+# 有効クラス④: 65 <= age <= 120 → 代表値: 80
+# 無効クラス②: age > 120   → 代表値: 150
+#
+# ⚠️ ポイント: 各クラスから「1つの代表値」を選ぶだけでOK
+# 同じクラス内の値は全て同じ振る舞いをする「はず」だから
+
+import pytest
+
+class TestValidateAge:
+    """同値分割法に基づくテストケース"""
+    
+    def test_invalid_negative(self):
+        """無効クラス①: 負の値"""
+        with pytest.raises(ValueError):
+            validate_age(-5)
+    
+    def test_child(self):
+        """有効クラス①: 子供（0〜12歳）"""
+        assert validate_age(5) == "子供料金"
+    
+    def test_student(self):
+        """有効クラス②: 学生（13〜17歳）"""
+        assert validate_age(15) == "学生料金"
+    
+    def test_adult(self):
+        """有効クラス③: 大人（18〜64歳）"""
+        assert validate_age(30) == "大人料金"
+    
+    def test_senior(self):
+        """有効クラス④: シニア（65〜120歳）"""
+        assert validate_age(80) == "シニア料金"
+    
+    def test_invalid_too_old(self):
+        """無効クラス②: 上限超え"""
+        with pytest.raises(ValueError):
+            validate_age(150)</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>境界値分析 ── バグは「境目」に潜む</span></div>
+            <pre><code># ============================================================
+# 境界値分析 ── 同値クラスの「端っこ」を集中的にテスト
+# ============================================================
+# 
+# 同値分割で特定した境界の値をテストする:
+#
+#   -1 | 0 ... 12 | 13 ... 17 | 18 ... 64 | 65 ... 120 | 121
+#    ↑   ↑      ↑   ↑       ↑   ↑       ↑   ↑        ↑    ↑
+#  無効 境界   境界 境界   境界 境界   境界 境界    境界  無効
+#
+# ⚠️ 「オフバイワン（off-by-one）」エラーはプログラミングで
+#    最も多いバグの1つ。< と <= の取り違えで起きる。
+#    境界値分析はまさにこのバグを見つけるための技法。
+
+class TestValidateAgeBoundary:
+    """境界値分析に基づくテストケース"""
+    
+    # --- 下限の境界 ---
+    def test_boundary_minus_1(self):
+        with pytest.raises(ValueError):
+            validate_age(-1)       # 無効側の境界
+    
+    def test_boundary_0(self):
+        assert validate_age(0) == "子供料金"  # 有効側の境界
+    
+    # --- 子供 → 学生 の境界 ---
+    def test_boundary_12(self):
+        assert validate_age(12) == "子供料金"  # 子供の上限
+    
+    def test_boundary_13(self):
+        assert validate_age(13) == "学生料金"  # 学生の下限
+    
+    # --- 学生 → 大人 の境界 ---
+    def test_boundary_17(self):
+        assert validate_age(17) == "学生料金"
+    
+    def test_boundary_18(self):
+        assert validate_age(18) == "大人料金"
+    
+    # --- 大人 → シニア の境界 ---
+    def test_boundary_64(self):
+        assert validate_age(64) == "大人料金"
+    
+    def test_boundary_65(self):
+        assert validate_age(65) == "シニア料金"
+    
+    # --- 上限の境界 ---
+    def test_boundary_120(self):
+        assert validate_age(120) == "シニア料金"
+    
+    def test_boundary_121(self):
+        with pytest.raises(ValueError):
+            validate_age(121)</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務では「同値分割 → 境界値分析」のセットで使うのが基本です。同値分割で大まかなグループを決め、境界値分析で精密なケースを追加します。特にフォームのバリデーション、APIのパラメータチェック、料金計算ロジックなどは、この2つの技法だけでテストケースの8割をカバーできます。<strong>「とりあえず5, 10, 100で試す」ではなく「境界の-1, 0, 1を試す」</strong>が合格ラインのテスト設計です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="testing-3" id="testing-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>ブラックボックステスト技法② ── デシジョンテーブルと状態遷移</h3>
+          </div>
+          <span class="completion-check" id="check-testing-3">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「条件の組み合わせ」を表で管理するのか？</h4>
+            <p>同値分割と境界値は「1つの入力」に対する技法ですが、実務の仕様は<strong>複数の条件が絡み合う</strong>ことがほとんどです。「会員ランクがゴールドで、購入金額が1万円以上で、クーポンを持っている場合は20%割引」── このような条件の組み合わせを漏れなくテストするために<strong>デシジョンテーブル</strong>を使います。また、ログイン画面のような「状態が遷移するシステム」には<strong>状態遷移テスト</strong>が有効です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>デシジョンテーブル ── 条件と動作の組み合わせを表で整理</span></div>
+            <pre><code># ============================================================
+# デシジョンテーブルの例 ── 割引ロジック
+# ============================================================
+# 
+# 条件:
+#   C1: 会員か？        (Y/N)
+#   C2: 購入額 >= 5000円？ (Y/N)
+#   C3: クーポン保有？    (Y/N)
+#
+# デシジョンテーブル:
+# ┌──────────────┬───┬───┬───┬───┬───┬───┬───┬───┐
+# │              │ R1│ R2│ R3│ R4│ R5│ R6│ R7│ R8│
+# ├──────────────┼───┼───┼───┼───┼───┼───┼───┼───┤
+# │ C1: 会員     │ Y │ Y │ Y │ Y │ N │ N │ N │ N │
+# │ C2: 5000円以上│ Y │ Y │ N │ N │ Y │ Y │ N │ N │
+# │ C3: クーポン  │ Y │ N │ Y │ N │ Y │ N │ Y │ N │
+# ├──────────────┼───┼───┼───┼───┼───┼───┼───┼───┤
+# │ 割引率       │20%│10%│15%│ 5%│10%│ 0%│ 5%│ 0%│
+# └──────────────┴───┴───┴───┴───┴───┴───┴───┴───┘
+#
+# 3つの条件 × 2パターン = 2^3 = 8ルール（全組み合わせ）
+
+def calculate_discount(is_member: bool, amount: int, has_coupon: bool) -> float:
+    """デシジョンテーブルに基づく割引率の計算"""
+    discount = 0.0
+    if is_member:
+        discount += 0.05          # 会員基本割引 5%
+    if amount >= 5000:
+        discount += 0.10          # 高額購入割引 10%
+    if has_coupon:
+        discount += 0.05          # クーポン割引 5%
+    return discount
+
+# --- デシジョンテーブルに基づくテスト ---
+import pytest
+
+@pytest.mark.parametrize("is_member, amount, has_coupon, expected", [
+    # R1: 会員 + 高額 + クーポン = 20%
+    (True,  5000, True,  0.20),
+    # R2: 会員 + 高額 + クーポンなし = 10% + 5% = 15%
+    (True,  5000, False, 0.15),
+    # R4: 会員 + 低額 + クーポンなし = 5%
+    (True,  3000, False, 0.05),
+    # R6: 非会員 + 高額 + クーポンなし = 10%
+    (False, 8000, False, 0.10),
+    # R8: 非会員 + 低額 + クーポンなし = 0%
+    (False, 3000, False, 0.00),
+])
+def test_discount(is_member, amount, has_coupon, expected):
+    assert calculate_discount(is_member, amount, has_coupon) == expected</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>状態遷移テスト ── 「今の状態」と「イベント」で次の状態が決まる</span></div>
+            <pre><code># ============================================================
+# 状態遷移テスト ── ログイン認証の状態管理
+# ============================================================
+# 
+# 状態遷移図:
+# [ロック解除] ---(正しいPW)--> [ログイン成功]
+# [ロック解除] ---(誤ったPW)--> [失敗1回目]
+# [失敗1回目]  ---(正しいPW)--> [ログイン成功]
+# [失敗1回目]  ---(誤ったPW)--> [失敗2回目]
+# [失敗2回目]  ---(正しいPW)--> [ログイン成功]
+# [失敗2回目]  ---(誤ったPW)--> [アカウントロック]
+# [アカウントロック] ---(どんな入力)--> [アカウントロック]
+
+class LoginAuth:
+    """3回連続失敗でアカウントをロックするログイン認証"""
+    
+    def __init__(self, correct_password: str, max_attempts: int = 3):
+        self.correct_password = correct_password
+        self.max_attempts = max_attempts
+        self.failed_attempts = 0
+        self.is_locked = False
+    
+    @property
+    def state(self) -> str:
+        if self.is_locked:
+            return "LOCKED"
+        if self.failed_attempts == 0:
+            return "UNLOCKED"
+        return f"FAILED_{self.failed_attempts}"
+    
+    def attempt_login(self, password: str) -> str:
+        if self.is_locked:
+            return "アカウントがロックされています"
+        
+        if password == self.correct_password:
+            self.failed_attempts = 0
+            return "ログイン成功"
+        
+        self.failed_attempts += 1
+        if self.failed_attempts >= self.max_attempts:
+            self.is_locked = True
+            return "アカウントがロックされました"
+        
+        remaining = self.max_attempts - self.failed_attempts
+        return f"パスワードが違います（残り{remaining}回）"
+
+# --- 状態遷移に基づくテスト ---
+class TestLoginAuth:
+    def test_correct_password_from_unlocked(self):
+        """UNLOCKED → ログイン成功"""
+        auth = LoginAuth("secret123")
+        assert auth.attempt_login("secret123") == "ログイン成功"
+        assert auth.state == "UNLOCKED"
+    
+    def test_wrong_then_correct(self):
+        """UNLOCKED → FAILED_1 → ログイン成功"""
+        auth = LoginAuth("secret123")
+        auth.attempt_login("wrong")
+        assert auth.state == "FAILED_1"
+        assert auth.attempt_login("secret123") == "ログイン成功"
+    
+    def test_three_failures_lock(self):
+        """UNLOCKED → FAILED_1 → FAILED_2 → LOCKED"""
+        auth = LoginAuth("secret123")
+        auth.attempt_login("wrong1")
+        auth.attempt_login("wrong2")
+        result = auth.attempt_login("wrong3")
+        assert "ロックされました" in result
+        assert auth.state == "LOCKED"
+    
+    def test_locked_stays_locked(self):
+        """LOCKED → LOCKED（正しいPWでも解除されない）"""
+        auth = LoginAuth("secret123")
+        for _ in range(3):
+            auth.attempt_login("wrong")
+        assert auth.attempt_login("secret123") == "アカウントがロックされています"</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>デシジョンテーブルの全組み合わせ（2^n）は条件が増えると爆発します。実務では「ありえない組み合わせ」を除外したり、後述のペアワイズ法で削減します。状態遷移テストは、ECサイトの注文ステータス（注文→支払い→発送→配達→返品）や、ワークフロー承認（申請→レビュー→承認/差戻し）など「状態が変わるビジネスロジック」で必ず使います。<strong>状態遷移図を描かずにコードを書くのは、地図なしで登山するようなもの</strong>です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="testing-4" id="testing-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>ホワイトボックステスト ── カバレッジ（C0/C1/C2）を理解する</h3>
+          </div>
+          <span class="completion-check" id="check-testing-4">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「テストが通った」だけでは不十分なのか？</h4>
+            <p>ブラックボックステストが「仕様に対するテスト」であるのに対し、<strong>ホワイトボックステストは「コードの内部構造に対するテスト」</strong>です。「テストは全部通っているけれど、実はif文の片方のブランチしか実行されていない」── これではバグが潜んでいても気づけません。カバレッジ（コード網羅率）は「テストがコードのどこを通ったか」を数値化する指標で、C0（命令網羅）→ C1（分岐網羅）→ C2（条件網羅）の順に厳格になります。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>C0/C1/C2 カバレッジの違いを具体的に理解する</span></div>
+            <pre><code># ============================================================
+# カバレッジの3段階 ── 同じコードでも「深さ」が違う
+# ============================================================
+
+def check_eligibility(age: int, income: int) -> str:
+    """ローン審査の適格性チェック"""
+    # 分岐A: age >= 20 AND income >= 3000000
+    if age >= 20 and income >= 3_000_000:   # Line 1: 条件分岐
+        result = "適格"                       # Line 2: True ブランチ
+    else:
+        result = "不適格"                     # Line 3: False ブランチ
+    return result                             # Line 4: return
+
+# ============================================================
+# C0（命令網羅 / Statement Coverage）
+# ── すべての「行」を少なくとも1回実行する
+# ============================================================
+# テストケース1: age=25, income=5000000 → "適格" （Line 1,2,4 を通過）
+# テストケース2: age=18, income=2000000 → "不適格"（Line 1,3,4 を通過）
+# → 全ての行（Line 1〜4）が実行されたので C0 = 100%
+
+# ============================================================
+# C1（分岐網羅 / Branch Coverage）
+# ── すべての「分岐」の True/False を少なくとも1回実行する
+# ============================================================
+# if文の True ブランチ と False ブランチ の両方を通すので、
+# C0 と同じテストケースで C1 も 100% 達成。
+# 
+# ⚠️ しかし「and」の中身は？
+# age >= 20 AND income >= 3000000 の AND は、
+# テストケース1 では 両方True → 全体True
+# テストケース2 では age=18（False）の時点で短絡評価され、
+#   income の条件は評価すらされない！
+
+# ============================================================
+# C2（条件網羅 / Condition Coverage）
+# ── 各「条件式」が True/False の両方になるようにする
+# ============================================================
+# 条件式は2つ: (age >= 20) と (income >= 3000000)
+# 各条件の True/False を網羅するテストケース:
+#
+# ケース1: age=25（T）, income=5000000（T） → "適格"
+# ケース2: age=18（F）, income=5000000（T） → "不適格"
+# ケース3: age=25（T）, income=2000000（F） → "不適格"
+# ケース4: age=18（F）, income=2000000（F） → "不適格"
+#
+# ⚠️ C2 は C0/C1 より厳格。AND/OR の個々の条件を全て
+#    True/False の両方で実行することで、短絡評価の罠を回避する。
+
+# --- pytest で C2 カバレッジを達成するテスト ---
+@pytest.mark.parametrize("age, income, expected", [
+    (25, 5_000_000, "適格"),     # 両方True
+    (18, 5_000_000, "不適格"),   # age False, income True
+    (25, 2_000_000, "不適格"),   # age True, income False
+    (18, 2_000_000, "不適格"),   # 両方False
+])
+def test_check_eligibility(age, income, expected):
+    assert check_eligibility(age, income) == expected</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>pytest-cov でカバレッジを計測する</span></div>
+            <pre><code># ============================================================
+# カバレッジ計測ツール ── pytest-cov の使い方
+# ============================================================
+#
+# インストール:
+# pip install pytest-cov
+#
+# 実行:
+# pytest --cov=src --cov-report=html tests/
+#
+# ⚠️ 上記コマンドの意味:
+# --cov=src       : src ディレクトリ内のコードを計測対象にする
+# --cov-report=html : HTMLレポートを生成（htmlcov/index.html）
+# tests/          : tests/ ディレクトリのテストを実行
+#
+# レポートの読み方:
+# - 緑色の行: テストで実行された行
+# - 赤色の行: テストで実行されなかった行 ← ここにバグが潜む
+# - Missing: 実行されなかった行番号の一覧
+#
+# 🏆 現場の目安:
+# - 80%以上: 多くのプロジェクトで求められる水準
+# - 90%以上: 品質重視のプロジェクト（金融、医療系）
+# - 100%: 現実的には非推奨（テスト保守コストが膨大になる）</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>「カバレッジ100%を目指す」は一見正しそうですが、実務では<strong>80〜90%を維持しつつ、ビジネスクリティカルなロジックは100%にする</strong>のが現実的なバランスです。カバレッジが高くても「意味のないテスト（assertionなし）」で数字だけ稼いでいるケースもあるので、<strong>カバレッジは「テストの質」ではなく「テストの範囲」を示す指標</strong>と心得てください。Pythonの <code>and</code>/<code>or</code> の短絡評価（Short-circuit evaluation）はC1では検出できず、C2が必要になるケースです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="testing-5" id="testing-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>組み合わせテストとペアワイズ法 ── 「組み合わせ爆発」を制する</h3>
+          </div>
+          <span class="completion-check" id="check-testing-5">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「全組み合わせ」は現実的に不可能なのか？</h4>
+            <p>OS（Windows/Mac/Linux）× ブラウザ（Chrome/Firefox/Safari/Edge）× 画面解像度（3種）× ユーザー権限（3種）の場合、全組み合わせは 3×4×3×3 = <strong>108パターン</strong>になります。これにさらにパラメータが加わると数千、数万のケースに膨れ上がる「組み合わせ爆発」が起きます。<strong>ペアワイズ法</strong>は「バグの約70〜80%は2つのパラメータの組み合わせで発生する」という経験則に基づき、<strong>任意の2因子の全ペアを網羅する最小セット</strong>を求める手法です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>ペアワイズ法 ── 108パターンを約15パターンに削減</span></div>
+            <pre><code># ============================================================
+# ペアワイズ法（All-Pairs法）── 具体的な適用例
+# ============================================================
+#
+# パラメータ:
+#   OS:      Windows, Mac, Linux          (3水準)
+#   ブラウザ: Chrome, Firefox, Safari, Edge (4水準)
+#   解像度:  1920x1080, 1366x768, 375x812  (3水準)
+#   権限:    管理者, 一般, ゲスト           (3水準)
+#
+# 全組み合わせ: 3 × 4 × 3 × 3 = 108 パターン
+# ペアワイズ:   約 12〜15 パターンで 2因子の全ペアを網羅
+#
+# ⚠️ ペアワイズのルール:
+# 「任意の2つのパラメータ」の「全ての組み合わせ」が
+# 少なくとも1回はテストケースに含まれるようにする。
+#
+# 例えば、以下のようなテストスイートが生成される:
+# ┌────────┬─────────┬──────────┬──────┐
+# │ OS     │ ブラウザ │ 解像度   │ 権限 │
+# ├────────┼─────────┼──────────┼──────┤
+# │Windows │ Chrome  │ 1920x1080│ 管理 │
+# │Windows │ Firefox │ 1366x768 │ 一般 │
+# │Windows │ Safari  │ 375x812  │ ゲスト│
+# │Mac     │ Chrome  │ 1366x768 │ ゲスト│
+# │Mac     │ Firefox │ 375x812  │ 管理 │
+# │Mac     │ Edge    │ 1920x1080│ 一般 │
+# │Linux   │ Chrome  │ 375x812  │ 一般 │
+# │Linux   │ Safari  │ 1920x1080│ ゲスト│
+# │Linux   │ Edge    │ 1366x768 │ 管理 │
+# │Mac     │ Safari  │ 1366x768 │ 管理 │
+# │Windows │ Edge    │ 375x812  │ 管理 │
+# │Linux   │ Firefox │ 1920x1080│ ゲスト│
+# └────────┴─────────┴──────────┴──────┘
+# → 12パターンで全ての2因子ペアを網羅！
+# （108 → 12 = 約89%の削減）
+
+# --- Python での実装例（allpairspy ライブラリ使用） ---
+# pip install allpairspy
+
+from allpairspy import AllPairs
+
+parameters = [
+    ["Windows", "Mac", "Linux"],             # OS
+    ["Chrome", "Firefox", "Safari", "Edge"],  # ブラウザ
+    ["1920x1080", "1366x768", "375x812"],    # 解像度
+    ["管理者", "一般", "ゲスト"],              # 権限
+]
+
+# ペアワイズテストケースを生成
+test_cases = list(AllPairs(parameters))
+print(f"全組み合わせ: {3*4*3*3} パターン")
+print(f"ペアワイズ: {len(test_cases)} パターン")
+
+for i, case in enumerate(test_cases, 1):
+    print(f"Case {i:2d}: OS={case[0]:7s} Browser={case[1]:7s} "
+          f"Resolution={case[2]:10s} Role={case[3]}")</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>ペアワイズ法は「バグの発見率」と「テスト工数」のバランスが極めて優秀です。NIST（米国国立標準技術研究所）の調査では、<strong>ソフトウェアの欠陥の約67%は2因子の相互作用で発生</strong>し、3因子まで含めると93%をカバーできるとされています。実務ではPICTool（Microsoft製・無料）やallpairspyなどのツールを使ってテストケースを自動生成します。<strong>「全組み合わせは無理だからランダムに選ぶ」ではなく「科学的に削減する」</strong>のがプロのテスト設計です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="testing-6" id="testing-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>テスト駆動開発（TDD）── Red-Green-Refactor サイクル</h3>
+          </div>
+          <span class="completion-check" id="check-testing-6">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「テストを先に書く」のか？</h4>
+            <p>TDD（Test-Driven Development）は、<strong>「コードを書く前にテストを書く」</strong>開発手法です。「実装してからテスト」ではなく「テストしてから実装」です。直感に反するように聞こえますが、この順序には深い理由があります ── テストを先に書くことで、<strong>①仕様を明確にし、②最小限の実装に集中し、③安全にリファクタリングできる</strong>のです。Kent Beck が提唱したこの手法は、今やアジャイル開発の中核的プラクティスです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>TDD 実践 ── FizzBuzz をテストファーストで実装する</span></div>
+            <pre><code># ============================================================
+# TDD実践: FizzBuzz を Red-Green-Refactor で作る
+# ============================================================
+# 仕様:
+# - 3の倍数なら "Fizz"
+# - 5の倍数なら "Buzz"
+# - 15の倍数なら "FizzBuzz"
+# - それ以外は数字をそのまま文字列で返す
+
+# ========== Step 1: RED（失敗するテストを書く） ==========
+# test_fizzbuzz.py
+import pytest
+
+def test_returns_number_as_string():
+    """最もシンプルなケースから始める"""
+    assert fizzbuzz(1) == "1"
+    assert fizzbuzz(2) == "2"
+
+# → NameError: name 'fizzbuzz' is not defined（RED!）
+
+# ========== Step 2: GREEN（最小限の実装） ==========
+# fizzbuzz.py
+def fizzbuzz(n: int) -> str:
+    return str(n)
+
+# → テスト通過！（GREEN!）
+
+# ========== Step 3: 次の RED ==========
+def test_returns_fizz_for_multiples_of_3():
+    assert fizzbuzz(3) == "Fizz"
+    assert fizzbuzz(6) == "Fizz"
+    assert fizzbuzz(9) == "Fizz"
+
+# → AssertionError: '3' != 'Fizz'（RED!）
+
+# ========== Step 4: GREEN ==========
+def fizzbuzz(n: int) -> str:
+    if n % 3 == 0:
+        return "Fizz"
+    return str(n)
+
+# → テスト通過！（GREEN!）
+
+# ========== Step 5: 次の RED ==========
+def test_returns_buzz_for_multiples_of_5():
+    assert fizzbuzz(5) == "Buzz"
+    assert fizzbuzz(10) == "Buzz"
+
+# → AssertionError（RED!）
+
+# ========== Step 6: GREEN ==========
+def fizzbuzz(n: int) -> str:
+    if n % 3 == 0:
+        return "Fizz"
+    if n % 5 == 0:
+        return "Buzz"
+    return str(n)
+
+# ========== Step 7: FizzBuzz のケース（RED → GREEN） ==========
+def test_returns_fizzbuzz_for_multiples_of_15():
+    assert fizzbuzz(15) == "FizzBuzz"
+    assert fizzbuzz(30) == "FizzBuzz"
+
+# 最終実装:
+def fizzbuzz(n: int) -> str:
+    if n % 15 == 0:   # ⚠️ 15の判定を先に！（3でも5でも割れるため）
+        return "FizzBuzz"
+    if n % 3 == 0:
+        return "Fizz"
+    if n % 5 == 0:
+        return "Buzz"
+    return str(n)
+
+# ========== Step 8: REFACTOR ==========
+# リファクタリング ── テストが通る状態を維持しながら改善
+def fizzbuzz(n: int) -> str:
+    """FizzBuzz: 小さなサイクルを繰り返して完成させた。
+    
+    ⚠️ TDDのコツ:
+    - 一度に1つのテストだけ追加する（欲張らない）
+    - テストが通ったらすぐコミットする（Green = セーブポイント）
+    - リファクタリング中は新機能を追加しない
+    """
+    result = ""
+    if n % 3 == 0:
+        result += "Fizz"
+    if n % 5 == 0:
+        result += "Buzz"
+    return result or str(n)</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>TDDは「全てのコードにTDDを適用せよ」という教条ではありません。<strong>ロジックが複雑な関数</strong>（料金計算、権限判定、状態遷移など）にはTDDが非常に有効ですが、UIのプロトタイピングやCRUDの定型処理には過剰な場合もあります。現場では「テストファーストの精神は持ちつつ、状況に応じて柔軟に」が正解です。TDDで育つ最も大切なスキルは「テスト可能な設計（Testable Design）」を考える力です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="testing-7" id="testing-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>pytest 実践ガイド ── fixture / parametrize / conftest</h3>
+          </div>
+          <span class="completion-check" id="check-testing-7">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ pytest が unittest より選ばれるのか？</h4>
+            <p><code>unittest</code> はPython標準ライブラリですが、テストクラスの継承が必要で記述量が多くなります。<strong>pytest</strong> は「普通の関数と assert だけでテストが書ける」シンプルさが最大の魅力です。さらに <strong>fixture</strong>（前処理・後処理の自動化）、<strong>parametrize</strong>（パラメータ化テスト）、<strong>conftest.py</strong>（共通設定の自動読み込み）により、大規模プロジェクトでも保守しやすいテストコードを書けます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>fixture ── テストの「準備と片付け」を自動化する</span></div>
+            <pre><code># ============================================================
+# pytest fixture ── テストデータの準備を分離する
+# ============================================================
+import pytest
+import json
+from pathlib import Path
+
+# --- 基本的な fixture ---
+@pytest.fixture
+def sample_user():
+    """テスト用のユーザーデータを生成する fixture。
+    
+    ⚠️ fixture はテスト関数の引数名で自動注入される
+    （DIコンテナのような仕組み）
+    """
+    return {"id": 1, "name": "Alice", "role": "admin"}
+
+def test_user_is_admin(sample_user):
+    """sample_user fixture が自動的に注入される"""
+    assert sample_user["role"] == "admin"
+
+# --- setup / teardown を含む fixture（yield 使用） ---
+@pytest.fixture
+def temp_config_file(tmp_path):
+    """一時的な設定ファイルを作成し、テスト後に自動削除。
+    
+    ⚠️ tmp_path は pytest 組み込みの fixture
+    テストごとに一時ディレクトリを自動生成・自動削除してくれる
+    """
+    config = {"database": "test_db", "debug": True}
+    config_path = tmp_path / "config.json"
+    config_path.write_text(json.dumps(config))
+    
+    yield config_path  # ← ここまでが setUp、ここから tearDown
+    
+    # テスト後の片付け（ファイル削除等）
+    # tmp_path は pytest が自動削除するので実際は不要だが例として
+    print(f"Cleanup: {config_path}")
+
+def test_config_loading(temp_config_file):
+    config = json.loads(temp_config_file.read_text())
+    assert config["database"] == "test_db"
+
+# --- fixture のスコープ ---
+@pytest.fixture(scope="module")
+def db_connection():
+    """モジュール内で1回だけ実行される fixture。
+    
+    ⚠️ scope の種類:
+    - "function"（デフォルト）: 各テスト関数ごとに実行
+    - "class": 各テストクラスごとに1回
+    - "module": 各ファイルごとに1回
+    - "session": テスト全体で1回
+    """
+    conn = {"host": "localhost", "connected": True}
+    yield conn
+    conn["connected"] = False</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>parametrize と conftest.py</span></div>
+            <pre><code># ============================================================
+# @pytest.mark.parametrize ── 同じロジックを複数データでテスト
+# ============================================================
+
+def is_palindrome(s: str) -> bool:
+    """回文判定（大文字小文字を区別しない）"""
+    cleaned = s.lower().replace(" ", "")
+    return cleaned == cleaned[::-1]
+
+@pytest.mark.parametrize("input_str, expected", [
+    ("racecar", True),
+    ("hello", False),
+    ("A Santa at NASA", True),    # スペース含む回文
+    ("Was it a car or a cat I saw", True),
+    ("", True),                    # 空文字列は回文
+    ("a", True),                   # 1文字も回文
+])
+def test_is_palindrome(input_str, expected):
+    """6パターンのテストが1つの関数で完結。
+    
+    ⚠️ parametrize のメリット:
+    - テストロジックの重複を排除できる
+    - 新しいケースの追加がデータの1行追加だけで済む
+    - 各パラメータが独立したテストとして実行される
+    """
+    assert is_palindrome(input_str) == expected
+
+# ============================================================
+# conftest.py ── プロジェクト全体で共有する fixture
+# ============================================================
+# conftest.py は「特別なファイル名」で、pytest が自動的に読み込む。
+# import 不要で、配下のテストファイルから fixture を使える。
+#
+# プロジェクト構造の例:
+# project/
+# ├── conftest.py          ← プロジェクト全体の共通 fixture
+# ├── tests/
+# │   ├── conftest.py      ← tests/ 配下の共通 fixture
+# │   ├── test_user.py
+# │   └── api/
+# │       ├── conftest.py  ← api/ 配下の共通 fixture
+# │       └── test_api.py
+#
+# ⚠️ conftest.py は「ディレクトリのスコープ」に対応する。
+#    tests/conftest.py の fixture は tests/ 以下の全テストで使える。
+#    tests/api/conftest.py の fixture は tests/api/ 以下でのみ使える。</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>fixture は「テストの前処理だけ」ではありません。<strong>DB のシード投入、APIクライアントの初期化、テスト用のDockerコンテナ起動</strong>など、あらゆる「準備と片付け」を fixture 化します。<code>scope="session"</code> でDB接続を全テストで共有し、各テスト後にトランザクションをロールバックする ── これが実務の定番パターンです。<code>conftest.py</code> はチーム開発で特に重要で、認証トークンの生成など共通処理を一箇所に集約できます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="testing-8" id="testing-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>モックとスタブ ── 外部依存を切り離す技術</h3>
+          </div>
+          <span class="completion-check" id="check-testing-8">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「本物」を使わずにテストするのか？</h4>
+            <p>APIを呼ぶ関数のテストで、毎回外部サーバーにリクエストを投げていたらどうなるか ── テストが遅くなり、ネットワーク障害でテストが壊れ、料金が発生し、テストデータで本番を汚染するリスクもあります。<strong>モック</strong>は「外部依存の偽物」を作ってテスト対象を完全に分離する技術です。「テストしたいのは自分のコードのロジックであって、外部APIの挙動ではない」── この原則を理解することがモックの本質です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>unittest.mock ── 外部APIをモックで差し替える</span></div>
+            <pre><code># ============================================================
+# モック ── 外部APIを偽物に置き換えてテストする
+# ============================================================
+from unittest.mock import patch, MagicMock
+import json
+
+# --- テスト対象のプロダクションコード ---
+import urllib.request
+
+def fetch_weather(city: str) -> dict:
+    """天気APIからデータを取得して加工する。
+    
+    このテストでは「APIの呼び出し」をモック化して、
+    「返ってきたデータの加工ロジック」だけをテストする。
+    """
+    url = f"https://api.weather.example.com/v1/{city}"
+    response = urllib.request.urlopen(url)
+    data = json.loads(response.read().decode())
+    
+    return {
+        "city": city,
+        "temperature": data["main"]["temp"],
+        "description": data["weather"][0]["description"],
+    }
+
+# --- モックを使ったテスト ---
+class TestFetchWeather:
+    
+    @patch("urllib.request.urlopen")
+    def test_fetch_weather_success(self, mock_urlopen):
+        """APIレスポンスをモックに差し替えてテスト。
+        
+        ⚠️ @patch のポイント:
+        - 引数は「テスト対象のモジュールから見た」インポートパスを指定
+        - モック化された関数はテストメソッドの引数として受け取る
+        - .return_value で戻り値を設定する
+        """
+        # Arrange: モックのレスポンスを準備
+        fake_response = MagicMock()
+        fake_response.read.return_value = json.dumps({
+            "main": {"temp": 25.5},
+            "weather": [{"description": "晴れ"}]
+        }).encode()
+        mock_urlopen.return_value = fake_response
+        
+        # Act: テスト対象を実行
+        result = fetch_weather("Tokyo")
+        
+        # Assert: 結果を検証
+        assert result["city"] == "Tokyo"
+        assert result["temperature"] == 25.5
+        assert result["description"] == "晴れ"
+        
+        # モックが正しい URL で呼ばれたことを検証
+        mock_urlopen.assert_called_once_with(
+            "https://api.weather.example.com/v1/Tokyo"
+        )
+    
+    @patch("urllib.request.urlopen")
+    def test_fetch_weather_api_error(self, mock_urlopen):
+        """APIがエラーを返した場合のテスト"""
+        mock_urlopen.side_effect = urllib.error.URLError("Connection refused")
+        
+        with pytest.raises(urllib.error.URLError):
+            fetch_weather("Unknown")</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>モックの最大の罠は<strong>「モックしすぎて何もテストしていない」</strong>状態になることです。外部依存はモック化しつつも、自分のコードのロジックは必ず実際に実行してテストしましょう。<code>patch</code> のパスは「インポートされる場所」を指定するのが鉄則です（定義されている場所ではない）。例えば <code>myapp.service</code> で <code>from requests import get</code> している場合、<code>@patch("myapp.service.get")</code> と書きます。<code>@patch("requests.get")</code> ではモックが効きません。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="testing-9" id="testing-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>結合テストと E2E テスト ── ピラミッドの上層戦略</h3>
+          </div>
+          <span class="completion-check" id="check-testing-9">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜユニットテストだけでは不十分なのか？</h4>
+            <p>ユニットテストは「個々の部品」が正しいことを保証しますが、<strong>部品と部品を組み合わせたときに初めて発生するバグ</strong>は検出できません。例えば「APIは正しいJSONを返す」「フロントエンドは正しいJSONをパースする」── それぞれのテストが通っていても、APIのレスポンスフィールド名が <code>user_name</code> でフロントが <code>username</code> を期待していたら動きません。結合テストとE2Eテストは、この「つなぎ目のバグ」を見つけるための技法です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>結合テスト ── FastAPI + DB の例</span></div>
+            <pre><code># ============================================================
+# 結合テスト ── API と DB の連携をテストする
+# ============================================================
+# FastAPI のテストクライアントを使った例
+from fastapi.testclient import TestClient
+from myapp.main import app
+import pytest
+
+@pytest.fixture
+def client():
+    """テスト用HTTPクライアント。
+    
+    ⚠️ TestClient はサーバーを起動せずに
+    HTTP リクエストをシミュレートできる
+    """
+    with TestClient(app) as c:
+        yield c
+
+@pytest.fixture(autouse=True)
+def reset_database():
+    """各テスト前にDBをクリーンな状態にリセット。
+    
+    ⚠️ autouse=True で全テストに自動適用
+    結合テストでは「テスト間の独立性」が極めて重要
+    """
+    # テスト用DBにシードデータを投入
+    seed_test_data()
+    yield
+    # テスト後にデータをクリーンアップ
+    cleanup_test_data()
+
+class TestUserAPI:
+    def test_create_user(self, client):
+        """POST /users → 201 Created"""
+        response = client.post("/users", json={
+            "name": "Alice",
+            "email": "alice@example.com"
+        })
+        assert response.status_code == 201
+        data = response.json()
+        assert data["name"] == "Alice"
+        assert "id" in data  # IDが自動生成されていること
+    
+    def test_get_user(self, client):
+        """GET /users/1 → 200 OK"""
+        # Arrange: まずユーザーを作成
+        client.post("/users", json={
+            "name": "Bob", "email": "bob@example.com"
+        })
+        # Act: 取得
+        response = client.get("/users/1")
+        # Assert
+        assert response.status_code == 200
+        assert response.json()["name"] == "Bob"
+    
+    def test_get_nonexistent_user(self, client):
+        """GET /users/999 → 404 Not Found"""
+        response = client.get("/users/999")
+        assert response.status_code == 404</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>E2E テスト ── Playwright でブラウザ操作を自動化</span></div>
+            <pre><code># ============================================================
+# E2Eテスト ── ユーザーの操作フロー全体を検証
+# ============================================================
+# pip install playwright
+# playwright install
+
+from playwright.sync_api import sync_playwright
+
+def test_login_flow():
+    """ログイン → ダッシュボード表示 の E2E テスト。
+    
+    ⚠️ E2Eテスト設計の鉄則:
+    1. 「クリティカルパス」のみをテストする（全機能を網羅しない）
+    2. テストデータは事前に準備する（UIからデータを作成しない）
+    3. CSSセレクタではなく data-testid を使う（UIの変更に強い）
+    """
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        
+        # ログインページにアクセス
+        page.goto("http://localhost:3000/login")
+        
+        # フォームに入力
+        page.fill("[data-testid='email-input']", "test@example.com")
+        page.fill("[data-testid='password-input']", "password123")
+        page.click("[data-testid='login-button']")
+        
+        # ダッシュボードにリダイレクトされることを確認
+        page.wait_for_url("**/dashboard")
+        assert page.title() == "ダッシュボード"
+        
+        # ユーザー名が表示されていることを確認
+        welcome = page.text_content("[data-testid='welcome-message']")
+        assert "test@example.com" in welcome
+        
+        browser.close()
+
+# ⚠️ E2Eテストが壊れやすい原因トップ3:
+# 1. 要素の待機不足（ページ読み込み前にアサート）
+#    → page.wait_for_selector() を使う
+# 2. テストデータの不整合（前のテストが残したデータ）
+#    → 各テスト前にDBをリセットする
+# 3. CSSクラス名の変更でセレクタが壊れる
+#    → data-testid 属性を使う</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>E2Eテストは「氷山の一角」だけをテストする覚悟が必要です。全ページ・全機能のE2Eテストを書くと、<strong>CI が1時間以上かかり、しかも毎週どこかが壊れる</strong>という地獄が待っています。実務では「ログイン→主要機能→ログアウト」「会員登録→メール認証→初回ログイン」「商品選択→カート→決済」など、<strong>ビジネスインパクトが最大の3〜5フロー</strong>に絞るのが鉄則です。それ以外はユニットテストと結合テストでカバーします。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="testing-10" id="testing-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>CI/CD とテスト戦略 ── テストを「文化」にする</h3>
+          </div>
+          <span class="completion-check" id="check-testing-10">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「ローカルでテストが通った」では不十分なのか？</h4>
+            <p>「自分の環境では動く」── この言葉は現場で最も信用されないフレーズです。OS、Pythonのバージョン、環境変数、依存ライブラリの微妙な差異で、テストの挙動は変わります。<strong>CI（Continuous Integration）</strong>は、コードがリポジトリにプッシュされるたびに自動的にテストを実行し、「誰の環境でも同じ結果」を保証する仕組みです。テストは書くだけでなく、<strong>自動で実行され、失敗したら即座に通知される</strong>体制を作って初めて価値を持ちます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>GitHub Actions ── CI パイプラインの設定例</span></div>
+            <pre><code># ============================================================
+# .github/workflows/test.yml ── GitHub Actions の CI 設定
+# ============================================================
+
+name: Python Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]  # 複数バージョンで並列テスト
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+      
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=src --cov-report=xml --cov-fail-under=80 tests/
+          # ⚠️ --cov-fail-under=80:
+          # カバレッジが80%を下回ったらCI失敗にする（品質ゲート）
+      
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+
+# ============================================================
+# テスト戦略の設計 ── 何をどの段階で実行するか
+# ============================================================
+#
+# 1. プルリクエスト作成時（高速フィードバック）
+#    └── ユニットテスト + リンター（〜2分以内が理想）
+#
+# 2. マージ後（main ブランチ）
+#    └── ユニット + 結合テスト + カバレッジ計測
+#
+# 3. デプロイ前（ステージング環境）
+#    └── E2Eテスト（クリティカルパスのみ）
+#
+# 4. 定期実行（夜間バッチ）
+#    └── 全テスト + パフォーマンステスト + セキュリティスキャン</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>テスト文化を根付かせるためのルールとツール</span></div>
+            <pre><code># ============================================================
+# テストの「品質ゲート」 ── マージ前に必ずクリアする基準
+# ============================================================
+
+# pyproject.toml の設定例
+# [tool.pytest.ini_options]
+# minversion = "7.0"
+# addopts = "-ra -q --strict-markers"
+# testpaths = ["tests"]
+# markers = [
+#     "slow: marks tests as slow (deselect with '-m "not slow"')",
+#     "integration: marks integration tests",
+#     "e2e: marks end-to-end tests",
+# ]
+
+# [tool.coverage.run]
+# source = ["src"]
+# omit = ["*/tests/*", "*/migrations/*"]
+
+# [tool.coverage.report]
+# fail_under = 80
+# show_missing = true
+# exclude_lines = [
+#     "pragma: no cover",
+#     "if __name__ == .__main__.",
+#     "raise NotImplementedError",
+# ]
+
+# ============================================================
+# テストの分類と実行の使い分け
+# ============================================================
+#
+# 高速テストだけ実行（開発中の頻繁な実行に最適）:
+# pytest -m "not slow and not integration and not e2e"
+#
+# 結合テストを含めて実行:
+# pytest -m "not e2e"
+#
+# 全テスト実行（CI/CDパイプライン用）:
+# pytest
+#
+# ⚠️ テストの命名規則（チームで統一すること）:
+# test_[何をテストするか]_[どんな条件で]_[期待する結果]
+# 例: test_calculate_discount_when_member_and_coupon_returns_20_percent</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>テストの最大の敵は「壊れたテストを放置する文化」です。CIが赤いまま何日も放置されると、チームは「テストなんて信用できない」と感じ、テストを書くモチベーションが消えます。<strong>「CIが赤い＝全員で最優先で直す」</strong>というルールを初日から徹底してください。また、テストの命名は <code>test_1</code>, <code>test_2</code> ではなく「何を検証しているか」が名前だけでわかるようにしましょう。半年後にテストが落ちたとき、名前を見るだけで原因を推測できるかどうかが、メンテナンス性を左右します。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Quiz Section -->
+      <div class="quiz-section" id="testing-quiz">
+        <div class="quiz-header"><h3>🧪 テスト設計 理解度チェック</h3></div>
+        <div class="quiz-question" id="testing-quiz-question"></div>
+        <div class="quiz-options" id="testing-quiz-options"></div>
+        <div class="quiz-result" id="testing-quiz-result"></div>
+        <div class="quiz-navigation">
+          <button class="quiz-nav-btn" id="testing-quiz-prev" onclick="prevQuestion('testing')">← 前の問題</button>
+          <span class="quiz-counter" id="testing-quiz-counter"></span>
+          <button class="quiz-nav-btn" id="testing-quiz-next" onclick="nextQuestion('testing')">次の問題 →</button>
+        </div>
+        <div class="quiz-progress-container"><div class="quiz-progress-bar" id="testing-quiz-progress"></div></div>
+      </div>
+      <div class="puzzle-section" id="testing-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 コード組み立てパズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="testing-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board"><div class="puzzle-source" id="testing-puzzle-source"></div><div class="puzzle-dropzone" id="testing-puzzle-dropzone"><div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div></div></div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('testing')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('testing')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="testing-puzzle-result" style="margin-top: 1rem;"></div>
       </div>
     </div>
 

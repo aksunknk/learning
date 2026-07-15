@@ -23,6 +23,17 @@ const quizData = {
     {"question": "SQLの実行計画（インデックスが使われているか等）を確認するコマンドは？", "options": ["CHECK", "EXPLAIN", "SHOW", "DESCRIBE"], "correct": 1, "explanation": "EXPLAIN（または EXPLAIN ANALYZE）を使用すると、データベースがそのクエリをどのように実行するか（全表スキャンか、インデックススキャンか等）を確認できます。"}
   ],
   
+  
+  "testing": [
+    {"question": "テストピラミッドにおいて、最も多く書くべきテストの種類はどれですか？", "options": ["E2Eテスト", "結合テスト", "ユニットテスト", "受入テスト"], "correct": 2, "explanation": "テストピラミッドでは、高速で安価なユニットテストを最も多く書き（約70%）、結合テスト（〜20%）、E2Eテスト（〜10%）の順に少なくするのが推奨されます。"},
+    {"question": "同値分割法で年齢入力（0〜120歳が有効）をテストする場合、最低限必要な同値クラスの数は？", "options": ["2つ（有効・無効）", "3つ（無効/有効/無効）", "4つ以上", "1つ（有効のみ）"], "correct": 1, "explanation": "最低限、「0未満（無効）」「0〜120（有効）」「121以上（無効）」の3つの同値クラスに分割する必要があります。"},
+    {"question": "境界値分析の主な目的はどれですか？", "options": ["全ての入力値をテストすること", "境界付近に集中するオフバイワンエラーを検出すること", "テストケースの数を最大化すること", "内部構造を把握すること"], "correct": 1, "explanation": "バグの多くは範囲の境界付近（<= と < の取り違えなど）で発生します。境界値分析は境界の値とその直前・直後の値を重点的にテストする技法です。"},
+    {"question": "C1カバレッジ（分岐網羅）とC0カバレッジ（命令網羅）の違いは何ですか？", "options": ["C1の方が基準が緩い", "C1はif文のTrue/False両方の分岐を通過する必要がある", "C0はC1よりも厳格である", "C1とC0に違いはない"], "correct": 1, "explanation": "C0は全ての命令文を1回実行すればOKですが、C1は全ての分岐（if文のTrue分岐とFalse分岐の両方）を通す必要があり、より厳格です。"},
+    {"question": "ペアワイズ法（All-Pairs法）の根拠となる経験則は何ですか？", "options": ["バグの100%は1つのパラメータで発生する", "バグの約70%は2つのパラメータの組み合わせで発生する", "3つ以上のパラメータのバグは存在しない", "テストケースは常に半分に削減できる"], "correct": 1, "explanation": "NSTの調査では、ソフトウェアの欠陥の約67%は2因子の相互作用で発生するとされています。ペアワイズ法はこの経験則に基づき、任意の2因子の全ペアを網羅する最小テストセットを求めます。"},
+    {"question": "TDD（テスト駆動開発）の正しいサイクル順序はどれですか？", "options": ["Green → Red → Refactor", "Refactor → Red → Green", "Red → Green → Refactor", "Red → Refactor → Green"], "correct": 2, "explanation": "TDDは「Red（失敗するテストを書く）→ Green（テストを通す最小限の実装）→ Refactor（コードを改善）」のサイクルを繰り返します。"},
+    {"question": "unittest.mock の @patch で指定するパスとして正しいのはどれですか？", "options": ["テスト対象の関数が定義されているモジュールのパス", "テスト対象の関数がインポートされているモジュールのパス", "テストファイル自体のパス", "Python標準ライブラリのパス"], "correct": 1, "explanation": "@patch のパスは「テスト対象がインポートしている場所」を指定します。例えばmyapp.serviceでfrom requests import getしている場合、@patch('myapp.service.get')と書きます。"},
+    {"question": "E2Eテストで CSSクラス名の代わりに使うべきセレクタは何ですか？", "options": ["id属性", "XPath", "data-testid属性", "タグ名"], "correct": 2, "explanation": "data-testid属性はテスト専用に設計された属性で、UI デザインの変更（CSSクラスの変更）に影響されません。E2Eテストの安定性を大幅に向上させます。"}
+  ],
   "python-prac": [
     {"question": "リスト内包表記で if-else（三項演算子）を使う場合、正しい構文はどれですか？", "options": ["[x if x > 0 for x in data else -x]", "[x if x > 0 else -x for x in data]", "[for x in data if x > 0 else -x]", "[x for x in data if x > 0 else -x]"], "correct": 1, "explanation": "三項演算子（if-else）は for の前に配置します。[値A if 条件 else 値B for x in iterable] が正しい構文です。"},
     {"question": "ジェネレータ関数の特徴として正しいものはどれですか？", "options": ["return文で値を返す", "呼び出し時にすべての値をメモリに格納する", "yield文で値を一つずつ返し、状態を保持する", "リストよりも多くのメモリを消費する"], "correct": 2, "explanation": "ジェネレータはyieldで値を一つずつ返し、次にnext()が呼ばれるまで実行を一時停止します。これにより大量データの処理でもメモリ消費を抑えられます。"},
@@ -985,6 +996,20 @@ const puzzleData = {
     explanation: "SELECT → FROM → GROUP BY(グループ化) → HAVING(グループ化後の条件) → ORDER BY(並び替え) の順序がSQLの正しい構文です。"
   },
   
+  
+  testing: {
+    question: "pytest の fixture を使ったテストコードを正しい順番に並べてください。",
+    pieces: [
+      { id: "test-p1", text: "import pytest" },
+      { id: "test-p2", text: "@pytest.fixture" },
+      { id: "test-p3", text: "def sample_data():" },
+      { id: "test-p4", text: "    return [\"Alice\", \"Bob\", \"Charlie\"]" },
+      { id: "test-p5", text: "def test_data_length(sample_data):" },
+      { id: "test-p6", text: "    assert len(sample_data) == 3" }
+    ],
+    correctOrder: ["test-p1", "test-p2", "test-p3", "test-p4", "test-p5", "test-p6"],
+    explanation: "import → @pytest.fixture デコレータ → fixture関数定義 → テストデータ返却 → テスト関数（fixture名を引数に指定）→ アサーション の順序です。"
+  },
   "python-prac": {
     question: "デコレータを使って関数の実行時間を計測するコードを正しい順番に並べてください。",
     pieces: [
