@@ -1,0 +1,13 @@
+{
+  "name": "code-foundations",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Code Foundations learning site",
+  "scripts": {
+    "test": "node tests/smoke.js",
+    "serve": "python3 -m http.server 8765"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^24.2.0"
+  }
+}
