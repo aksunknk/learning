@@ -62,7 +62,12 @@
     <section class="progress-overview">
       <div class="progress-header">
         <h2>📊 学習の進捗</h2>
-        <span class="overall-progress-text" id="overall-progress-text">0% 完了</span>
+        <div class="progress-header-actions">
+          <button type="button" class="progress-io-btn" id="export-progress-btn" title="進捗をJSONファイルに保存">⬇ エクスポート</button>
+          <button type="button" class="progress-io-btn" id="import-progress-btn" title="保存した進捗を読み込み">⬆ インポート</button>
+          <input type="file" id="import-progress-file" accept="application/json,.json" hidden>
+          <span class="overall-progress-text" id="overall-progress-text">0% 完了</span>
+        </div>
       </div>
       <div class="progress-bar-container">
         <div class="progress-bar" id="overall-progress-bar"></div>
@@ -211,8 +216,22 @@
       </div>
     </section>
 
+    <!-- Learning Roadmap（推奨学習経路） -->
+    <section class="roadmap-section" aria-label="学習ロードマップ">
+      <div class="roadmap-header">
+        <h2>🗺️ 学習ロードマップ</h2>
+        <p>フルスタックエンジニアへの推奨経路です。上から順に進めると、各章の前提知識が揃った状態で学べます。</p>
+      </div>
+      <div class="roadmap-track" id="roadmap-track"></div>
+      <p class="roadmap-note">📜 Python認定基礎 / 🏆 Python実践試験 / 🤖 生成AIパスポート は、対応する章の学習後いつでも挑戦できる資格・知識の補強コンテンツです。</p>
+    </section>
+
     <!-- Tab Navigation（カテゴリグループ化） -->
     <nav class="tab-navigation" id="tab-nav">
+      <div class="site-search" role="search">
+        <input type="search" id="site-search-input" placeholder="🔍 レッスンを検索（例: JWT / JOIN / useEffect）" autocomplete="off" aria-label="レッスン検索">
+        <div class="search-results" id="search-results" hidden></div>
+      </div>
       <div class="tab-groups" role="tablist" aria-label="学習カテゴリ">
         <button type="button" class="tab-group-btn active" data-group="basics">基礎</button>
         <button type="button" class="tab-group-btn" data-group="backend">バックエンド</button>

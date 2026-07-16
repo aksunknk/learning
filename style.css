@@ -1444,3 +1444,276 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   color: var(--color-text-muted);
   margin-top: 0.3rem;
 }
+
+/* --- Learning Roadmap (WBS 3.1) ---
+   推奨学習経路のステッパー。ノードは対応タブへのリンクで、
+   進捗率により in-progress（学習中）/ done（完了）に色分けされる。 */
+.roadmap-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.roadmap-header h2 {
+  font-size: 1.3rem;
+  margin-bottom: 0.4rem;
+}
+
+.roadmap-header p {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+.roadmap-track {
+  display: flex;
+  align-items: stretch;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  scrollbar-width: thin;
+}
+
+.roadmap-node {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 92px;
+  padding: 0.7rem 0.6rem;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.roadmap-node:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.roadmap-node.in-progress {
+  border-color: var(--color-warning);
+}
+
+.roadmap-node.in-progress .roadmap-percent {
+  color: var(--color-warning);
+}
+
+.roadmap-node.done {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.roadmap-node.done .roadmap-percent {
+  color: var(--color-success);
+}
+
+.roadmap-step {
+  font-size: 0.65rem;
+  font-family: var(--font-code);
+  color: var(--color-text-muted);
+}
+
+.roadmap-icon {
+  font-size: 1.3rem;
+}
+
+.roadmap-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.roadmap-percent {
+  font-size: 0.7rem;
+  font-family: var(--font-code);
+  color: var(--color-text-muted);
+}
+
+.roadmap-arrow {
+  align-self: center;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.roadmap-note {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-top: 0.5rem;
+}
+
+/* --- Site Search (WBS 3.2) --- */
+.site-search {
+  position: relative;
+  padding: 0.5rem 0.25rem 0;
+}
+
+#site-search-input {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+#site-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  max-height: 420px;
+  overflow-y: auto;
+  background: var(--color-surface-overlay);
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  margin-top: 4px;
+}
+
+.search-result-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.7rem 1rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+.search-result-item:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.search-result-tab {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--accent);
+  margin-bottom: 0.2rem;
+}
+
+.search-result-title {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.search-result-snippet {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-top: 0.2rem;
+}
+
+.search-empty {
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* 検索ジャンプ先のハイライト */
+.lesson-card.search-highlight {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  transition: box-shadow 0.4s ease;
+}
+
+/* --- Code Runner (WBS 3.3) --- */
+.run-btn {
+  background: color-mix(in srgb, var(--color-success) 15%, transparent);
+  border: 1px solid var(--color-success);
+  color: var(--color-success);
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-body);
+  margin-left: 0.5rem;
+  transition: all 0.2s;
+}
+
+.run-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-success) 30%, transparent);
+}
+
+.run-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.code-run-output {
+  margin: 0;
+  padding: 0.9rem 1.5rem;
+  border-top: 1px dashed var(--color-border-hover);
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-text-secondary);
+  background: rgba(0,0,0,0.25);
+}
+
+.code-run-output.running { color: var(--color-warning); }
+.code-run-output.done    { color: #7ee787; }
+.code-run-output.error   { color: var(--color-error); }
+
+/* --- Progress Export / Import (WBS 3.4) --- */
+.progress-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.progress-io-btn {
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.progress-io-btn:hover {
+  border-color: var(--accent);
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 768px) {
+  .progress-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .roadmap-node {
+    min-width: 80px;
+  }
+}

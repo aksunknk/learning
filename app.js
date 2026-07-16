@@ -47,6 +47,42 @@ const TAB_ACCENTS = {
   capstone: { accent: "var(--capstone-gold)", glow: "rgba(255,179,0,0.35)" },
 };
 
+// タブごとのレッスン数（静的コンテンツと同期させる）。
+// 遅延読込のため未読込タブはDOMから数えられない。進捗率の分母は
+// この定数を使う。コンテンツ追加時はここも更新する（CIが検証する）。
+const TAB_LESSON_COUNTS = {
+  python: 14,
+  react: 14,
+  typescript: 11,
+  "python-cert": 10,
+  algorithm: 8,
+  webapi: 5,
+  htmlcss: 28,
+  docker: 8,
+  database: 12,
+  genai: 8,
+  "python-prac": 10,
+  testing: 10,
+  git: 8,
+  capstone: 10,
+};
+
+// 学習ロードマップ（推奨順）。フルスタックエンジニアへの最短経路。
+// ここに無いタブ（資格・知識系）は補強コンテンツとして別枠表示する。
+const ROADMAP = [
+  { tab: "htmlcss", label: "HTML/CSS", icon: "🎨" },
+  { tab: "python", label: "Python", icon: "🐍" },
+  { tab: "git", label: "Git", icon: "🌿" },
+  { tab: "algorithm", label: "アルゴリズム", icon: "🧮" },
+  { tab: "database", label: "データベース", icon: "🗄️" },
+  { tab: "webapi", label: "Web/API", icon: "🌐" },
+  { tab: "docker", label: "Docker", icon: "🐳" },
+  { tab: "react", label: "React", icon: "⚛️" },
+  { tab: "typescript", label: "TypeScript", icon: "🔷" },
+  { tab: "testing", label: "テスト設計", icon: "🧪" },
+  { tab: "capstone", label: "キャップストーン", icon: "🏗️" },
+];
+
 const STORAGE_KEYS = {
   completed: "cf_completed",
   quizAnswered: "cf_quizAnswered",
@@ -80,6 +116,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   initParticles();
   initScrollAnimations();
   initPuzzleDropzones();
+  renderRoadmap();
+  initSearch();
+  initProgressIO();
 
   // 初期表示タブを先に読み込み、進捗・クイズ・パズルを有効化する
   const initial =
@@ -123,6 +162,7 @@ async function loadTabContent(tabId) {
     // 注入後にタブ固有のインタラクションを初期化
     initQuizForTab(tabId);
     loadPuzzle(tabId);
+    attachRunButtons(panel);
     observeScrollTargets(panel);
     restoreProgress();
     updateAllProgress();
@@ -354,20 +394,25 @@ function saveProgress() {
   );
 }
 
-// 完了数は「タブ内に実在するカードの data-section」照合で数える。
-// startsWith 前方一致だと python-cert が python に二重計上される。
+// タブごとの完了数を state から直接数える。
+// 完了IDは「タブID-連番」形式なので、^lang-\d+$ の完全一致で照合する
+// （startsWith だと python-cert が python に二重計上される）。
+// 分母は TAB_LESSON_COUNTS（静的定数）を使うため、
+// 未読込のタブでも正しい進捗率が出る。
+function countCompleted(lang) {
+  const re = new RegExp(`^${lang}-\\d+$`);
+  return state.completedSections.filter((id) => re.test(id)).length;
+}
+
 function updateAllProgress() {
   let totalSections = 0;
   let totalCompleted = 0;
 
   TAB_IDS.forEach((lang) => {
-    const sections = document.querySelectorAll(
-      `#content-${lang} .lesson-card`
-    );
-    const completed = [...sections].filter((card) =>
-      state.completedSections.includes(card.dataset.section)
-    ).length;
-    const total = sections.length;
+    const total =
+      TAB_LESSON_COUNTS[lang] ??
+      document.querySelectorAll(`#content-${lang} .lesson-card`).length;
+    const completed = countCompleted(lang);
 
     totalSections += total;
     totalCompleted += completed;
@@ -379,18 +424,65 @@ function updateAllProgress() {
     if (text) text.textContent = `${percent}%`;
   });
 
-  // 未読込タブのレッスン数はまだ分母に入らないため、
-  // 既知の総レッスン数（ヒーロー統計と同期）がある場合はそれを使う。
-  const knownTotal = Number(
-    document.body.dataset.totalLessons || totalSections
-  );
-  const denom = knownTotal > 0 ? knownTotal : totalSections;
   const overallPercent =
-    denom > 0 ? Math.round((totalCompleted / denom) * 100) : 0;
+    totalSections > 0 ? Math.round((totalCompleted / totalSections) * 100) : 0;
   const overallBar = document.getElementById("overall-progress-bar");
   const overallText = document.getElementById("overall-progress-text");
   if (overallBar) overallBar.style.width = `${overallPercent}%`;
   if (overallText) overallText.textContent = `${overallPercent}% 完了`;
+
+  updateRoadmapProgress();
+}
+
+// ==================================================
+// 学習ロードマップ（WBS 3.1）
+// ==================================================
+// ROADMAP 定数から推奨経路のステッパーUIを生成する。
+// 各ノードは対応タブへのリンクになっており、進捗率で
+// 「未着手 / 学習中 / 完了」の3状態に色分けされる。
+function renderRoadmap() {
+  const container = document.getElementById("roadmap-track");
+  if (!container) return;
+
+  container.innerHTML = ROADMAP.map((step, i) => {
+    const arrow =
+      i < ROADMAP.length - 1 ? '<span class="roadmap-arrow">→</span>' : "";
+    return `
+      <button type="button" class="roadmap-node" data-roadmap-tab="${step.tab}"
+              title="${escapeHtml(step.label)} へ移動">
+        <span class="roadmap-step">${i + 1}</span>
+        <span class="roadmap-icon">${step.icon}</span>
+        <span class="roadmap-label">${escapeHtml(step.label)}</span>
+        <span class="roadmap-percent" data-roadmap-percent="${step.tab}">0%</span>
+      </button>${arrow}`;
+  }).join("");
+
+  container.addEventListener("click", (e) => {
+    const node = e.target.closest(".roadmap-node");
+    if (!node) return;
+    switchTab(node.dataset.roadmapTab);
+    document
+      .getElementById("tab-nav")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  updateRoadmapProgress();
+}
+
+function updateRoadmapProgress() {
+  ROADMAP.forEach(({ tab }) => {
+    const node = document.querySelector(`[data-roadmap-tab="${tab}"]`);
+    const label = document.querySelector(`[data-roadmap-percent="${tab}"]`);
+    if (!node || !label) return;
+
+    const total = TAB_LESSON_COUNTS[tab] || 0;
+    const completed = countCompleted(tab);
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    label.textContent = `${percent}%`;
+    node.classList.toggle("done", percent === 100);
+    node.classList.toggle("in-progress", percent > 0 && percent < 100);
+  });
 }
 
 // --------------------------------------------------
@@ -1011,3 +1103,394 @@ window.bootSqlPlayground = bootSqlPlayground;
 window.runSql = runSql;
 window.resetSqlDb = resetSqlDb;
 window.setSqlSample = setSqlSample;
+
+// ==================================================
+// 全文検索（WBS 3.2）
+// ==================================================
+// ビルド工程を持たない静的サイトのため、検索インデックスは
+// 初回フォーカス時に content/*.html を fetch して構築する
+// （2回目以降はブラウザキャッシュが効くため軽い）。
+// 日本語は部分一致で十分実用になるため、トークナイズは行わない。
+let searchIndex = null; // [{tab, section, title, text}]
+let searchIndexPromise = null;
+
+async function buildSearchIndex() {
+  if (searchIndex) return searchIndex;
+  if (searchIndexPromise) return searchIndexPromise;
+
+  searchIndexPromise = (async () => {
+    const parser = new DOMParser();
+    const entries = [];
+
+    await Promise.all(
+      TAB_IDS.map(async (tab) => {
+        try {
+          const res = await fetch(`content/${tab}.html`);
+          if (!res.ok) return;
+          const doc = parser.parseFromString(await res.text(), "text/html");
+          doc.querySelectorAll(".lesson-card").forEach((card) => {
+            const title =
+              card.querySelector(".lesson-title-area h3")?.textContent ?? "";
+            const body =
+              card.querySelector(".lesson-body")?.textContent ?? "";
+            entries.push({
+              tab,
+              section: card.dataset.section,
+              title: title.trim(),
+              // 全文を持つとメモリを食うだけなので検索用に正規化して保持
+              text: body.replace(/\s+/g, " ").trim(),
+            });
+          });
+        } catch {
+          /* 個別タブの失敗は無視（他タブの検索は生かす） */
+        }
+      })
+    );
+
+    searchIndex = entries;
+    return entries;
+  })();
+
+  return searchIndexPromise;
+}
+
+// クエリに一致するレッスンを返す。タイトル一致を本文一致より優先。
+function searchLessons(query, limit = 10) {
+  if (!searchIndex) return [];
+  const q = query.toLowerCase();
+
+  const scored = [];
+  for (const entry of searchIndex) {
+    const inTitle = entry.title.toLowerCase().includes(q);
+    const textIdx = entry.text.toLowerCase().indexOf(q);
+    if (!inTitle && textIdx < 0) continue;
+
+    // 一致箇所の前後を切り出してスニペットにする
+    let snippet = "";
+    if (textIdx >= 0) {
+      const start = Math.max(0, textIdx - 20);
+      snippet =
+        (start > 0 ? "…" : "") +
+        entry.text.slice(start, textIdx + q.length + 40) +
+        "…";
+    }
+    scored.push({ ...entry, snippet, score: inTitle ? 2 : 1 });
+  }
+
+  return scored.sort((a, b) => b.score - a.score).slice(0, limit);
+}
+
+const TAB_LABELS = {
+  python: "Python", react: "React", typescript: "TypeScript",
+  "python-cert": "Python認定基礎", algorithm: "アルゴリズム",
+  webapi: "Web/API", htmlcss: "HTML/CSS", docker: "Docker",
+  database: "データベース", genai: "生成AIパスポート",
+  "python-prac": "Python実践試験", testing: "テスト設計",
+  git: "Git / GitHub", capstone: "キャップストーン",
+};
+
+function initSearch() {
+  const input = document.getElementById("site-search-input");
+  const resultsEl = document.getElementById("search-results");
+  if (!input || !resultsEl) return;
+
+  // インデックス構築は初回フォーカス時（初期表示を重くしない）
+  input.addEventListener("focus", () => buildSearchIndex(), { once: true });
+
+  let debounceId = null;
+  input.addEventListener("input", () => {
+    clearTimeout(debounceId);
+    debounceId = setTimeout(async () => {
+      const q = input.value.trim();
+      if (q.length < 2) {
+        resultsEl.hidden = true;
+        return;
+      }
+      await buildSearchIndex();
+      renderSearchResults(searchLessons(q), q);
+    }, 150);
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") resultsEl.hidden = true;
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".site-search")) resultsEl.hidden = true;
+  });
+
+  resultsEl.addEventListener("click", async (e) => {
+    const item = e.target.closest("[data-result-section]");
+    if (!item) return;
+    resultsEl.hidden = true;
+    input.value = "";
+    await jumpToLesson(item.dataset.resultTab, item.dataset.resultSection);
+  });
+}
+
+function renderSearchResults(results, query) {
+  const resultsEl = document.getElementById("search-results");
+  if (!resultsEl) return;
+
+  if (results.length === 0) {
+    resultsEl.innerHTML = `<p class="search-empty">「${escapeHtml(query)}」に一致するレッスンはありません</p>`;
+    resultsEl.hidden = false;
+    return;
+  }
+
+  resultsEl.innerHTML = results
+    .map(
+      (r) => `
+    <button type="button" class="search-result-item"
+            data-result-tab="${r.tab}" data-result-section="${r.section}">
+      <span class="search-result-tab">${escapeHtml(TAB_LABELS[r.tab] || r.tab)}</span>
+      <span class="search-result-title">${escapeHtml(r.title)}</span>
+      ${r.snippet ? `<span class="search-result-snippet">${escapeHtml(r.snippet)}</span>` : ""}
+    </button>`
+    )
+    .join("");
+  resultsEl.hidden = false;
+}
+
+// 検索結果からレッスンへジャンプ:
+// タブ切替（必要なら読込）→ カードを開く → スクロール → ハイライト
+async function jumpToLesson(tab, sectionId) {
+  await switchTab(tab);
+  const card = document.querySelector(`[data-section="${sectionId}"]`);
+  if (!card) return;
+  card.classList.add("open");
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
+  card.classList.add("search-highlight");
+  setTimeout(() => card.classList.remove("search-highlight"), 2400);
+}
+
+// ==================================================
+// コード実行（WBS 3.3.1 JS / 3.3.3 Python）
+// ==================================================
+// コードブロックの言語ラベルから実行可能なものを判定し、
+// 「▶ 実行」ボタンを自動付与する。
+//   - JavaScript: Web Worker サンドボックスで実行（DOMアクセス不可）
+//   - Python:     Pyodide（WASM CPython）を初回実行時にCDNからロード
+// 教材のコードには外部ライブラリ依存など実行不能なものも含まれるため、
+// エラーは「結果」として素直に表示する方針（エラーを読む練習も学習）。
+const PYODIDE_CDN = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full";
+let pyodideInstance = null;
+let pyodidePromise = null;
+
+function attachRunButtons(root) {
+  root.querySelectorAll(".code-block").forEach((block) => {
+    if (block.querySelector(".run-btn")) return; // 二重付与を防ぐ
+    const label = block.querySelector(".code-lang")?.textContent ?? "";
+    const lang = detectRunnableLang(label);
+    if (!lang) return;
+
+    const header = block.querySelector(".code-header");
+    if (!header) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "run-btn";
+    btn.textContent = "▶ 実行";
+    btn.addEventListener("click", () => runCodeBlock(block, lang, btn));
+    header.appendChild(btn);
+  });
+}
+
+// 言語ラベルから実行エンジンを決める。
+// 「PYTHON — Zulip」のような注釈付きラベルにも一致させる。
+function detectRunnableLang(label) {
+  const l = label.trim().toLowerCase();
+  if (/^python(\b|$|[\s—(-])/.test(l) || /^python-cert/.test(l)) return "python";
+  if (/^(javascript|js)(\b|$|[\s—(-])/.test(l)) return "js";
+  return null;
+}
+
+async function runCodeBlock(block, lang, btn) {
+  const code = block.querySelector("code")?.textContent ?? "";
+  const output = ensureRunOutput(block);
+  output.textContent = "実行中…";
+  output.className = "code-run-output running";
+  btn.disabled = true;
+
+  try {
+    const result =
+      lang === "js" ? await runJsSandbox(code) : await runPython(code, output);
+    output.className = "code-run-output done";
+    output.textContent = result === "" ? "(出力なし)" : result;
+  } catch (err) {
+    output.className = "code-run-output error";
+    output.textContent = String(err.message || err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function ensureRunOutput(block) {
+  let out = block.querySelector(".code-run-output");
+  if (!out) {
+    out = document.createElement("pre");
+    out.className = "code-run-output";
+    block.appendChild(out);
+  }
+  return out;
+}
+
+// JavaScript を Web Worker 内で実行する。
+// Worker はページの DOM / localStorage に触れない隔離環境なので、
+// 教材コードを安全に評価できる。console.log を捕捉して返す。
+function runJsSandbox(code, timeoutMs = 3000) {
+  return new Promise((resolve, reject) => {
+    const workerSrc = `
+      const logs = [];
+      const fmt = (v) => {
+        if (typeof v === "object" && v !== null) {
+          try { return JSON.stringify(v); } catch { return String(v); }
+        }
+        return String(v);
+      };
+      console.log = (...a) => logs.push(a.map(fmt).join(" "));
+      console.error = console.warn = console.info = console.log;
+      self.onmessage = (e) => {
+        try {
+          const result = eval(e.data);
+          if (result !== undefined) logs.push("=> " + fmt(result));
+          self.postMessage({ ok: true, output: logs.join("\\n") });
+        } catch (err) {
+          self.postMessage({ ok: false, error: err.constructor.name + ": " + err.message });
+        }
+      };
+    `;
+    const blob = new Blob([workerSrc], { type: "text/javascript" });
+    const url = URL.createObjectURL(blob);
+    const worker = new Worker(url);
+
+    const timer = setTimeout(() => {
+      worker.terminate();
+      URL.revokeObjectURL(url);
+      reject(new Error(`タイムアウト（${timeoutMs / 1000}秒）— 無限ループの可能性があります`));
+    }, timeoutMs);
+
+    worker.onmessage = (e) => {
+      clearTimeout(timer);
+      worker.terminate();
+      URL.revokeObjectURL(url);
+      if (e.data.ok) resolve(e.data.output);
+      else reject(new Error(e.data.error));
+    };
+
+    worker.postMessage(code);
+  });
+}
+
+// Python を Pyodide（ブラウザ内CPython）で実行する。
+// 本体（約10MB）は初回実行時のみロードし、以降は再利用する。
+// input() やファイルI/O、pip外部ライブラリは動かないため、
+// その場合はPythonの例外がそのまま出力欄に表示される。
+async function loadPyodideOnce(statusEl) {
+  if (pyodideInstance) return pyodideInstance;
+  if (!pyodidePromise) {
+    pyodidePromise = (async () => {
+      if (statusEl) statusEl.textContent = "Python実行環境を読み込み中…（初回のみ・約10MB）";
+      if (typeof loadPyodide === "undefined") {
+        await loadScript(`${PYODIDE_CDN}/pyodide.js`);
+      }
+      pyodideInstance = await loadPyodide({ indexURL: `${PYODIDE_CDN}/` });
+      return pyodideInstance;
+    })();
+  }
+  return pyodidePromise;
+}
+
+async function runPython(code, statusEl) {
+  const pyodide = await loadPyodideOnce(statusEl);
+  if (statusEl) statusEl.textContent = "実行中…";
+
+  // stdout / stderr を捕捉
+  let buffer = "";
+  pyodide.setStdout({ batched: (s) => (buffer += s + "\n") });
+  pyodide.setStderr({ batched: (s) => (buffer += s + "\n") });
+
+  try {
+    const result = await pyodide.runPythonAsync(code);
+    if (result !== undefined && result !== null) {
+      buffer += `=> ${result}`;
+    }
+    return buffer.trimEnd();
+  } catch (err) {
+    // Pythonのトレースバックは学習素材として有用なのでそのまま見せる
+    throw new Error(shortenTraceback(String(err.message || err)));
+  }
+}
+
+// Pyodideのトレースバックは内部フレームを含み長いので、
+// 学習者に意味のある末尾部分（エラー種別と行）だけに要約する。
+function shortenTraceback(tb) {
+  const lines = tb.trimEnd().split("\n");
+  const idx = lines.findIndex((l) => l.includes('File "<exec>"'));
+  return (idx >= 0 ? lines.slice(idx) : lines.slice(-5)).join("\n");
+}
+
+// ==================================================
+// 進捗エクスポート / インポート（WBS 3.4）
+// ==================================================
+// localStorage はブラウザ削除・端末変更で消えるため、
+// JSONファイルとして書き出し / 読み込みできるようにする。
+function exportProgress() {
+  const payload = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    completedSections: state.completedSections,
+    quizAnswered: state.quizAnswered,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `code-foundations-progress-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importProgress(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!Array.isArray(data.completedSections) ||
+          typeof data.quizAnswered !== "object" || data.quizAnswered === null) {
+        throw new Error("形式が不正です");
+      }
+      state.completedSections = data.completedSections.filter(
+        (id) => typeof id === "string"
+      );
+      state.quizAnswered = data.quizAnswered;
+      saveProgress();
+      // クイズUIの復元は再読み込みに任せるのが最も確実
+      location.reload();
+    } catch (err) {
+      alert(`インポートに失敗しました: ${err.message}`);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function initProgressIO() {
+  document
+    .getElementById("export-progress-btn")
+    ?.addEventListener("click", exportProgress);
+
+  const fileInput = document.getElementById("import-progress-file");
+  document
+    .getElementById("import-progress-btn")
+    ?.addEventListener("click", () => fileInput?.click());
+  fileInput?.addEventListener("change", () => {
+    if (fileInput.files?.[0]) importProgress(fileInput.files[0]);
+  });
+}
+
+window.exportProgress = exportProgress;
+// テスト・デバッグ用に実行エンジンも公開
+window.runJsSandbox = runJsSandbox;
+window.runPython = runPython;

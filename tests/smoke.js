@@ -69,7 +69,39 @@ function findChrome() {
   throw new Error("Chrome/Chromium executable not found");
 }
 
+// app.js の TAB_LESSON_COUNTS と content/*.html の実レッスン数の
+// 同期を静的に検証する（進捗率の分母が狂うのを CI で防ぐ）。
+function verifyLessonCounts() {
+  const appSrc = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
+  const match = appSrc.match(/const TAB_LESSON_COUNTS = \{([\s\S]*?)\};/);
+  if (!match) return ["TAB_LESSON_COUNTS not found in app.js"];
+
+  const declared = {};
+  for (const m of match[1].matchAll(/["']?([\w-]+)["']?\s*:\s*(\d+)/g)) {
+    declared[m[1]] = Number(m[2]);
+  }
+
+  const failures = [];
+  for (const [tab, count] of Object.entries(declared)) {
+    const file = path.join(ROOT, "content", `${tab}.html`);
+    if (!fs.existsSync(file)) {
+      failures.push(`content/${tab}.html missing for TAB_LESSON_COUNTS`);
+      continue;
+    }
+    const actual = (
+      fs.readFileSync(file, "utf8").match(/class="lesson-card"/g) || []
+    ).length;
+    if (actual !== count) {
+      failures.push(
+        `TAB_LESSON_COUNTS.${tab} = ${count} but content has ${actual} lessons`
+      );
+    }
+  }
+  return failures;
+}
+
 async function main() {
+  const staticFailures = verifyLessonCounts();
   const server = await startServer();
   let puppeteer;
   try {
@@ -188,6 +220,71 @@ async function main() {
     console.warn("WARN: sql.js boot skipped (no network to CDN?)");
   }
 
+  // ロードマップ（WBS 3.1）
+  results.roadmap = await page.evaluate(() => ({
+    nodes: document.querySelectorAll(".roadmap-node").length,
+    firstTab: document.querySelector(".roadmap-node")?.dataset.roadmapTab,
+  }));
+
+  // 全文検索（WBS 3.2）
+  await page.focus("#site-search-input");
+  await page.type("#site-search-input", "JWT");
+  await page.waitForFunction(
+    () => {
+      const el = document.getElementById("search-results");
+      return el && !el.hidden && el.children.length > 0;
+    },
+    { timeout: 20000 }
+  );
+  results.search = await page.evaluate(() => {
+    const items = [...document.querySelectorAll(".search-result-item")];
+    return {
+      count: items.length,
+      tabs: [...new Set(items.map((i) => i.dataset.resultTab))],
+    };
+  });
+  // 検索結果クリックで該当レッスンへジャンプ
+  await page.click(".search-result-item");
+  await page.waitForFunction(
+    () => document.querySelector(".lesson-card.search-highlight"),
+    { timeout: 20000 }
+  );
+  results.search.jumped = await page.evaluate(
+    () => document.querySelector(".lesson-card.search-highlight")?.dataset.section
+  );
+
+  // JS サンドボックス実行（WBS 3.3.1）
+  results.jsRunner = await page.evaluate(async () => {
+    const out = await window.runJsSandbox?.("console.log(1 + 1); 40 + 2");
+    return out;
+  });
+
+  // Python 実行ボタンの付与確認（WBS 3.3.3）
+  await page.evaluate(() => window.switchTab("python"));
+  await page.waitForFunction(
+    () => document.querySelectorAll("#content-python .lesson-card").length > 0,
+    { timeout: 15000 }
+  );
+  results.pyRunButtons = await page.evaluate(
+    () => document.querySelectorAll("#content-python .run-btn").length
+  );
+
+  // Pyodide 実実行（ネットワーク必須・重いのでソフトチェック）
+  try {
+    results.pyodideOutput = await page.evaluate(async () => {
+      return await window.runPython?.("print(sum(range(10)))", null);
+    });
+  } catch (e) {
+    results.pyodideOutput = null;
+    console.warn("WARN: pyodide run skipped:", e.message.slice(0, 120));
+  }
+
+  // 進捗エクスポートUI（WBS 3.4）
+  results.progressIO = await page.evaluate(() => ({
+    exportBtn: !!document.getElementById("export-progress-btn"),
+    importBtn: !!document.getElementById("import-progress-btn"),
+  }));
+
   // 進捗二重計上チェック（python-cert 完了が python に混入しない）
   await page.evaluate(() => window.switchTab("python-cert"));
   await page.waitForFunction(
@@ -215,8 +312,26 @@ async function main() {
   server.close();
 
   // Assertions
-  const failures = [];
+  const failures = [...staticFailures];
   if (tabs.length !== 14) failures.push(`expected 14 tabs, got ${tabs.length}`);
+
+  // Phase 3
+  if (results.roadmap.nodes !== 11)
+    failures.push(`expected 11 roadmap nodes, got ${results.roadmap.nodes}`);
+  if (results.roadmap.firstTab !== "htmlcss")
+    failures.push(`roadmap should start with htmlcss, got ${results.roadmap.firstTab}`);
+  if (!results.search || results.search.count < 1)
+    failures.push("search returned no results for 'JWT'");
+  if (!results.search?.jumped)
+    failures.push("search result click did not jump to a lesson");
+  if (results.jsRunner !== "2\n=> 42")
+    failures.push(`js sandbox expected "2\\n=> 42", got ${JSON.stringify(results.jsRunner)}`);
+  if (results.pyRunButtons < 5)
+    failures.push(`expected python run buttons, got ${results.pyRunButtons}`);
+  if (results.pyodideOutput !== null && results.pyodideOutput !== "45")
+    failures.push(`pyodide expected "45", got ${JSON.stringify(results.pyodideOutput)}`);
+  if (!results.progressIO.exportBtn || !results.progressIO.importBtn)
+    failures.push("progress export/import buttons missing");
 
   for (const [tab, info] of Object.entries(results.tabs)) {
     if (info.lessons < 1) failures.push(`${tab}: no lessons`);
