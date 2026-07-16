@@ -160,6 +160,34 @@ async function main() {
     }, group);
   }
 
+  // SQLプレイグラウンド（databaseタブ）
+  await page.evaluate(() => window.switchTab("database"));
+  await page.waitForFunction(
+    () => document.querySelectorAll("#content-database .lesson-card").length > 0,
+    { timeout: 15000 }
+  );
+  results.sqlPlayground = await page.evaluate(() => ({
+    bootBtn: !!document.querySelector("#sql-playground .sql-boot-btn"),
+  }));
+  // ネットワークが使える環境では実際に起動してクエリを実行
+  try {
+    await page.evaluate(() => window.bootSqlPlayground());
+    await page.waitForFunction(
+      () => !document.querySelector("#sql-playground .sql-playground-ui")?.hidden,
+      { timeout: 30000 }
+    );
+    results.sqlPlayground.booted = true;
+    results.sqlPlayground.queryResult = await page.evaluate(() => {
+      document.getElementById("sql-input").value =
+        "SELECT COUNT(*) AS n FROM users;";
+      window.runSql();
+      return document.querySelector("#sql-output td")?.textContent;
+    });
+  } catch {
+    results.sqlPlayground.booted = false; // CDN不達環境ではスキップ
+    console.warn("WARN: sql.js boot skipped (no network to CDN?)");
+  }
+
   // 進捗二重計上チェック（python-cert 完了が python に混入しない）
   await page.evaluate(() => window.switchTab("python-cert"));
   await page.waitForFunction(
@@ -188,7 +216,7 @@ async function main() {
 
   // Assertions
   const failures = [];
-  if (tabs.length !== 12) failures.push(`expected 12 tabs, got ${tabs.length}`);
+  if (tabs.length !== 14) failures.push(`expected 14 tabs, got ${tabs.length}`);
 
   for (const [tab, info] of Object.entries(results.tabs)) {
     if (info.lessons < 1) failures.push(`${tab}: no lessons`);
@@ -198,10 +226,24 @@ async function main() {
 
   if ((results.groups.basics || []).length < 2)
     failures.push("basics group too small");
+  if (!(results.groups.basics || []).includes("git"))
+    failures.push("basics group missing git");
   if (!(results.groups.backend || []).includes("docker"))
     failures.push("backend group missing docker");
   if (!(results.groups.frontend || []).includes("react"))
     failures.push("frontend group missing react");
+  if (!(results.groups.practice || []).includes("capstone"))
+    failures.push("practice group missing capstone");
+
+  if (!results.sqlPlayground?.bootBtn)
+    failures.push("sql playground boot button missing");
+  if (
+    results.sqlPlayground?.booted &&
+    results.sqlPlayground.queryResult !== "3"
+  )
+    failures.push(
+      `sql playground query expected "3", got "${results.sqlPlayground.queryResult}"`
+    );
 
   if (results.progress.python !== "0%")
     failures.push(

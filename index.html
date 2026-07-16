@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-total-lessons="134">
+<body data-total-lessons="156">
 
   <!-- ===== HERO SECTION ===== -->
   <header class="hero" id="hero">
@@ -30,19 +30,19 @@
       </p>
       <div class="hero-stats">
         <div class="stat-item">
-          <span class="stat-number">12</span>
+          <span class="stat-number">14</span>
           <span class="stat-label">学習トピック</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">134</span>
+          <span class="stat-number">156</span>
           <span class="stat-label">レッスン</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">95</span>
+          <span class="stat-number">115</span>
           <span class="stat-label">クイズ</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">12</span>
+          <span class="stat-number">14</span>
           <span class="stat-label">パズル</span>
         </div>
       </div>
@@ -188,6 +188,26 @@
             <span class="progress-percent" id="testing-progress-text">0%</span>
           </div>
         </div>
+        <div class="progress-card git-card" data-lang="git">
+          <div class="progress-card-icon">🌿</div>
+          <div class="progress-card-info">
+            <h3>Git / GitHub</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="git-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="git-progress-text">0%</span>
+          </div>
+        </div>
+        <div class="progress-card capstone-card" data-lang="capstone">
+          <div class="progress-card-icon">🏗️</div>
+          <div class="progress-card-info">
+            <h3>キャップストーン</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="capstone-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="capstone-progress-text">0%</span>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -215,6 +235,10 @@
         <button class="tab-button" data-tab="typescript" data-group="basics" role="tab" aria-selected="false" id="tab-typescript">
           <span class="tab-icon">🔷</span>
           <span class="tab-label">TypeScript</span>
+        </button>
+        <button class="tab-button" data-tab="git" data-group="basics" role="tab" aria-selected="false" id="tab-git">
+          <span class="tab-icon">🌿</span>
+          <span class="tab-label">Git / GitHub</span>
         </button>
 
         <button class="tab-button" data-tab="database" data-group="backend" role="tab" aria-selected="false" id="tab-database" hidden>
@@ -250,6 +274,10 @@
         <button class="tab-button" data-tab="genai" data-group="practice" role="tab" aria-selected="false" id="tab-genai" hidden>
           <span class="tab-icon">🤖</span>
           <span class="tab-label">生成AIパスポート</span>
+        </button>
+        <button class="tab-button" data-tab="capstone" data-group="practice" role="tab" aria-selected="false" id="tab-capstone" hidden>
+          <span class="tab-icon">🏗️</span>
+          <span class="tab-label">キャップストーン</span>
         </button>
       </div>
       <div class="tab-indicator" id="tab-indicator"></div>
@@ -339,6 +367,19 @@
       </div>
     </div>
 
+    <div class="tab-content" id="content-git" role="tabpanel" data-content-src="content/git.html" aria-busy="true">
+      <div class="content-placeholder">
+        <div class="content-spinner" aria-hidden="true"></div>
+        <p>コンテンツを読み込み中…</p>
+      </div>
+    </div>
+
+    <div class="tab-content" id="content-capstone" role="tabpanel" data-content-src="content/capstone.html" aria-busy="true">
+      <div class="content-placeholder">
+        <div class="content-spinner" aria-hidden="true"></div>
+        <p>コンテンツを読み込み中…</p>
+      </div>
+    </div>
 
   </main>
 

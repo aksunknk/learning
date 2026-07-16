@@ -1,0 +1,580 @@
+
+      <div class="tab-intro">
+        <h2>🏗️ キャップストーン — 認証付きTODOアプリをゼロから公開まで</h2>
+        <p>ここまで学んだ全知識を接続する総合演習です。FastAPI + SQLite + React + TypeScript で認証付きTODOアプリを構築し、テストを書き、Docker化し、CI/CDで自動デプロイするまでを10ステップで完走します。各レッスンのコードは実際に手元で動かしながら進めてください。</p>
+      </div>
+
+      <article class="lesson-card" data-section="capstone-1" id="capstone-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">01</span><h3>プロジェクト概要 — 完成形と技術選定の理由</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-1')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「チュートリアルを読める」と「作れる」の間には巨大な谷がある — この章はその谷を渡る橋</h4></div>
+          <div class="explanation-box"><h4>何を作るのか</h4>
+            <p>ユーザー登録・ログインができ、ユーザーごとにTODOを管理できるWebアプリです。ポートフォリオとして公開できる品質を目指します。</p>
+            <p><strong>機能要件:</strong> ①ユーザー登録/ログイン（JWT認証） ②TODOのCRUD（自分のTODOだけ見える） ③完了/未完了の切替<br>
+            <strong>非機能要件:</strong> ④pytest/Vitestによる自動テスト ⑤Docker Composeで一発起動 ⑥GitHub ActionsでCI ⑦無料枠でデプロイ</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">構成図 — 全体アーキテクチャ</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>┌────────────────┐  HTTP/JSON   ┌────────────────┐   SQL    ┌──────────┐
+│ React + TS     │ ───────────→ │ FastAPI        │ ───────→ │ SQLite   │
+│ (Vite)         │ ←─────────── │ + SQLAlchemy   │ ←─────── │ (app.db) │
+│ localhost:5173 │              │ localhost:8000 │          └──────────┘
+└────────────────┘              └────────────────┘
+        │                               │
+        └────────── docker compose up ──┘
+                         │
+              GitHub Actions (CI: test → build)
+                         │
+                  Render / Fly.io (無料枠デプロイ)
+
+ディレクトリ構成:
+todo-app/
+├── backend/        # FastAPI アプリ
+│   ├── app/
+│   │   ├── main.py / models.py / auth.py / routers/
+│   └── tests/
+├── frontend/       # React + TypeScript (Vite)
+│   └── src/
+├── docker-compose.yml
+└── .github/workflows/ci.yml</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>技術選定の判断基準を言語化できるようにする:</strong> 面接で「なぜSQLiteなのか」と聞かれたら「単一サーバー・低トラフィックの要件ではPostgreSQLの運用コストが過剰であり、SQLiteはファイル1つでバックアップも容易なため」と答えられること。<strong>選定理由を説明できる技術だけを使う</strong>のがプロの流儀です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="capstone-2" id="capstone-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">02</span><h3>環境構築とCLI基礎 — ターミナルを恐れない</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-2')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 GUIは「できることしかできない」がCLIは「書けることは何でもできる」— エンジニアの作業効率はターミナル習熟度で決まる</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Bash — 最低限のサバイバルCLI</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># 現在地の確認と移動
+pwd                     # いまいるディレクトリを表示
+ls -la                  # ファイル一覧（隠しファイル含む詳細表示）
+cd todo-app/backend     # 移動。cd .. で1つ上へ
+
+# ファイル操作
+mkdir -p backend/app    # ディレクトリ作成（-p で途中の階層も）
+touch app/main.py       # 空ファイル作成
+rm -r dist/             # 削除（-r でディレクトリごと。取り消し不可！）
+
+# 中身の確認と検索
+cat .env.example        # ファイル全体を表示
+grep -rn "TODO" src/    # src/ 以下から "TODO" を行番号付きで検索
+
+# パイプ: コマンドの出力を次のコマンドへ渡す
+ps aux | grep uvicorn   # プロセス一覧から uvicorn を探す
+history | tail -20      # 直近20件のコマンド履歴
+
+# 環境変数
+export DATABASE_URL="sqlite:///./app.db"
+echo $DATABASE_URL</code></pre>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Bash — プロジェクトの初期化</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>mkdir todo-app && cd todo-app
+git init
+
+# バックエンド（Python仮想環境）
+mkdir backend && cd backend
+python3 -m venv venv
+source venv/bin/activate        # Windowsは venv\Scripts\activate
+pip install "fastapi[standard]" sqlalchemy "passlib[bcrypt]" pyjwt pytest httpx
+pip freeze &gt; requirements.txt   # 依存を固定
+
+# フロントエンド
+cd ..
+npm create vite@latest frontend -- --template react-ts
+cd frontend && npm install</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>仮想環境（venv）を省略しない:</strong> グローバルにpip installすると、プロジェクトAとBで依存バージョンが衝突し、ある日突然どちらかが動かなくなります。「プロジェクトごとにvenv」は例外のない鉄則です。ターミナルのプロンプトに <code>(venv)</code> が付いているかを常に確認する癖を付けてください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="capstone-3" id="capstone-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">03</span><h3>API骨格 — FastAPI + SQLAlchemyでモデルを定義する</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-3')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 モデル（DBの形）を最初に固める — APIはモデルの写像にすぎない</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Python — backend/app/models.py</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>from sqlalchemy import ForeignKey, create_engine
+from sqlalchemy.orm import (DeclarativeBase, Mapped, mapped_column,
+                            relationship, sessionmaker)
+
+DATABASE_URL = "sqlite:///./app.db"
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(bind=engine)
+
+class Base(DeclarativeBase): pass
+
+class User(Base):
+    __tablename__ = "users"
+    id:              Mapped[int] = mapped_column(primary_key=True)
+    email:           Mapped[str] = mapped_column(unique=True, index=True)
+    hashed_password: Mapped[str]                 # 平文は絶対に保存しない
+    todos: Mapped[list["Todo"]] = relationship(back_populates="owner")
+
+class Todo(Base):
+    __tablename__ = "todos"
+    id:       Mapped[int]  = mapped_column(primary_key=True)
+    title:    Mapped[str]
+    done:     Mapped[bool] = mapped_column(default=False)
+    owner_id: Mapped[int]  = mapped_column(ForeignKey("users.id"), index=True)
+    owner: Mapped[User] = relationship(back_populates="todos")
+
+Base.metadata.create_all(engine)   # テーブルを作成</code></pre>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Python — backend/app/main.py（起動確認）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>from fastapi import FastAPI
+
+app = FastAPI(title="Todo API")
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+# 起動: fastapi dev app/main.py
+# → http://localhost:8000/docs で自動生成APIドキュメントを確認</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>/health エンドポイントを最初に作る理由:</strong> デプロイ先のロードバランサーやDocker Composeの healthcheck が「アプリが生きているか」を確認するために使います。最初の5分で作っておくと、以降のすべての疎通確認が <code>curl localhost:8000/health</code> の一撃で済みます。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="capstone-4" id="capstone-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">04</span><h3>CRUD実装 — PydanticスキーマとDependsによる責務分離</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-4')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「DBモデル」と「APIスキーマ」を分ける — hashed_password をレスポンスに漏らさないための構造</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Python — backend/app/routers/todos.py</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from ..models import SessionLocal, Todo, User
+from ..auth import get_current_user
+
+router = APIRouter(prefix="/todos", tags=["todos"])
+
+# --- Pydantic スキーマ（APIの入出力契約） ---
+class TodoCreate(BaseModel):        # 入力: クライアントが送ってよいもの
+    title: str
+
+class TodoOut(BaseModel):           # 出力: クライアントに見せてよいもの
+    id: int
+    title: str
+    done: bool
+    model_config = {"from_attributes": True}
+
+# --- DBセッションの依存性注入 ---
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db                    # ルート関数にセッションを渡す
+    finally:
+        db.close()                  # レスポンス後に必ず閉じる
+
+# --- CRUD ---
+@router.get("", response_model=list[TodoOut])
+def list_todos(db: Session = Depends(get_db),
+               user: User = Depends(get_current_user)):
+    return db.query(Todo).filter(Todo.owner_id == user.id).all()
+
+@router.post("", response_model=TodoOut, status_code=201)
+def create_todo(body: TodoCreate, db: Session = Depends(get_db),
+                user: User = Depends(get_current_user)):
+    todo = Todo(title=body.title, owner_id=user.id)
+    db.add(todo); db.commit(); db.refresh(todo)
+    return todo
+
+@router.patch("/{todo_id}", response_model=TodoOut)
+def toggle_todo(todo_id: int, db: Session = Depends(get_db),
+                user: User = Depends(get_current_user)):
+    todo = db.get(Todo, todo_id)
+    if not todo or todo.owner_id != user.id:      # 他人のTODOは404
+        raise HTTPException(status_code=404)
+    todo.done = not todo.done
+    db.commit(); db.refresh(todo)
+    return todo</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 他人のリソースには 403 ではなく 404 を返す</h4><p>「あなたのものではない」(403) と返すと、<strong>そのIDのリソースが存在すること自体が漏れます</strong>。存在の有無を隠すため、認可エラーもまとめて404にするのがセキュリティの定石です（GitHubも他人のプライベートリポジトリには404を返します）。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>response_model は「出力のホワイトリスト」:</strong> ORMオブジェクトをそのまま返しても、response_model に無いフィールドは自動で除外されます。「うっかり hashed_password が JSON に含まれていた」という事故を構造的に防げるのがこの設計の価値です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="capstone-5" id="capstone-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">05</span><h3>認証 — パスワードハッシュとJWT</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-5')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 パスワードは「復元できない形」で保存する — bcryptハッシュは同じ入力でも毎回違う値になる（ソルト内蔵）</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Python — backend/app/auth.py</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>import os, jwt
+from datetime import datetime, timedelta, timezone
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from passlib.context import CryptContext
+from pydantic import BaseModel, EmailStr
+from sqlalchemy.orm import Session
+
+SECRET_KEY = os.environ["SECRET_KEY"]     # .env から注入。コードに直書きしない
+ALGORITHM = "HS256"
+
+pwd_context = CryptContext(schemes=["bcrypt"])
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+class RegisterIn(BaseModel):
+    email: EmailStr
+    password: str
+
+@router.post("/register", status_code=201)
+def register(body: RegisterIn, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.email == body.email).first():
+        raise HTTPException(409, "email already registered")
+    user = User(email=body.email,
+                hashed_password=pwd_context.hash(body.password))  # ハッシュ化
+    db.add(user); db.commit()
+    return {"id": user.id}
+
+@router.post("/login")
+def login(form: OAuth2PasswordRequestForm = Depends(),
+          db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == form.username).first()
+    if not user or not pwd_context.verify(form.password, user.hashed_password):
+        raise HTTPException(401, "invalid credentials")   # どちらが違うかは言わない
+    payload = {"sub": str(user.id),
+               "exp": datetime.now(timezone.utc) + timedelta(hours=1)}
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    return {"access_token": token, "token_type": "bearer"}
+
+def get_current_user(token: str = Depends(oauth2_scheme),
+                     db: Session = Depends(get_db)) -&gt; User:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except jwt.PyJWTError:
+        raise HTTPException(401, "invalid token")
+    user = db.get(User, int(payload["sub"]))
+    if not user:
+        raise HTTPException(401, "user not found")
+    return user</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 JWTの仕組みと注意点</h4><p>JWTは「サーバーの署名付きの身分証」です。中身（payload）は<strong>Base64エンコードされているだけで誰でも読めます</strong>。秘密情報を入れてはいけません。署名により改ざんは検知できますが、<strong>有効期限が切れるまで無効化できない</strong>のが弱点です。だから exp（有効期限）は短め（1時間程度）に設定します。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>ログイン失敗時に「メールが存在しません」と返さない:</strong> 攻撃者に登録済みメールアドレスの一覧を推測させる材料になります（ユーザー列挙攻撃）。「メールまたはパスワードが違います」に統一するのが定石です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="capstone-6" id="capstone-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">06</span><h3>セキュリティ要点 — OWASPの視点でアプリを点検する</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-6')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 セキュリティは機能ではなく「全機能に貫かれる性質」— リリース前チェックリストを持て</h4></div>
+          <div class="explanation-box"><h4>このアプリに関係するOWASP Top 10の項目</h4>
+            <p><strong>① インジェクション（SQLi）:</strong> SQLAlchemyのクエリビルダを使う限り安全。<code>text()</code> に文字列連結でユーザー入力を渡した瞬間に脆弱化する。<br>
+            <strong>② 認証の不備:</strong> パスワードはbcrypt、トークンは短命JWT、ログイン失敗メッセージは曖昧に（前レッスンで対応済み）。<br>
+            <strong>③ アクセス制御の不備:</strong> 「自分のTODOだけ操作できる」チェックをすべてのエンドポイントで行う。1箇所でも漏れると全ユーザーのデータが読める。<br>
+            <strong>④ XSS:</strong> Reactは値の埋め込みを自動エスケープする。<code>dangerouslySetInnerHTML</code> を使わない限り基本的に安全。<br>
+            <strong>⑤ 設定ミス:</strong> SECRET_KEYのコミット、デバッグモードの本番運用、CORSの全開放（<code>allow_origins=["*"]</code>）が三大事故。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Python — CORSの正しい設定</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",          # 開発時のVite
+        "https://your-app.example.com",   # 本番フロント
+    ],                                     # "*" は絶対NG（認証付きAPIでは特に）
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PATCH", "DELETE"],
+    allow_headers=["Authorization", "Content-Type"],
+)</code></pre>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">チェックリスト — リリース前の10項目</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>□ .env が .gitignore に入っている（git log にも秘密が無い）
+□ SECRET_KEY は環境変数から注入している
+□ パスワードは bcrypt でハッシュ化している
+□ すべてのSQL/ORMクエリでユーザー入力を連結していない
+□ 全エンドポイントで「所有者チェック」をしている
+□ CORS の allow_origins を列挙している（* でない）
+□ JWTの有効期限が適切（数時間以内）
+□ エラーレスポンスに内部情報（スタックトレース）が出ない
+□ 依存パッケージの脆弱性を確認した（pip-audit / npm audit）
+□ HTTPSで配信される（デプロイ先の設定確認）</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>生成AIの出力コードはセキュリティ観点で必ずレビュー:</strong> AIは「動くコード」を出しますが「安全なコード」とは限りません。特にCORS全開放・文字列連結SQL・平文パスワード保存は、AI出力に高頻度で混入します。上のチェックリストをAI出力コードのレビューにもそのまま使ってください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="capstone-7" id="capstone-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">07</span><h3>フロントエンド接続 — React + TypeScriptでAPIを叩く</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 API通信は「型付きの関数」に閉じ込める — コンポーネントの中に fetch を散らばらせない</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">TypeScript — frontend/src/api.ts（API層）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>const BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+
+export interface Todo {
+  id: number;
+  title: string;
+  done: boolean;
+}
+
+function authHeaders(): HeadersInit {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function request&lt;T&gt;(path: string, init?: RequestInit): Promise&lt;T&gt; {
+  const res = await fetch(`${BASE}${path}`, {
+    ...init,
+    headers: { "Content-Type": "application/json",
+               ...authHeaders(), ...init?.headers },
+  });
+  if (res.status === 401) {              // トークン切れ → ログインへ
+    localStorage.removeItem("token");
+    location.href = "/login";
+  }
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json() as Promise&lt;T&gt;;
+}
+
+export const api = {
+  listTodos: ()            =&gt; request&lt;Todo[]&gt;("/todos"),
+  createTodo: (title: string) =&gt;
+    request&lt;Todo&gt;("/todos", { method: "POST",
+                              body: JSON.stringify({ title }) }),
+  toggleTodo: (id: number) =&gt;
+    request&lt;Todo&gt;(`/todos/${id}`, { method: "PATCH" }),
+};</code></pre>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">TypeScript — frontend/src/TodoList.tsx</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>import { useEffect, useState } from "react";
+import { api, type Todo } from "./api";
+
+export function TodoList() {
+  const [todos, setTodos] = useState&lt;Todo[]&gt;([]);
+  const [title, setTitle] = useState("");
+  const [error, setError] = useState&lt;string | null&gt;(null);
+
+  useEffect(() =&gt; {
+    api.listTodos().then(setTodos).catch(e =&gt; setError(e.message));
+  }, []);
+
+  async function add() {
+    if (!title.trim()) return;
+    const todo = await api.createTodo(title);
+    setTodos(prev =&gt; [...prev, todo]);     // 新しい配列を作って更新
+    setTitle("");
+  }
+
+  async function toggle(id: number) {
+    const updated = await api.toggleTodo(id);
+    setTodos(prev =&gt; prev.map(t =&gt; (t.id === id ? updated : t)));
+  }
+
+  if (error) return &lt;p role="alert"&gt;読み込みに失敗しました: {error}&lt;/p&gt;;
+
+  return (
+    &lt;div&gt;
+      &lt;input value={title} onChange={e =&gt; setTitle(e.target.value)} /&gt;
+      &lt;button onClick={add}&gt;追加&lt;/button&gt;
+      &lt;ul&gt;
+        {todos.map(t =&gt; (
+          &lt;li key={t.id} onClick={() =&gt; toggle(t.id)}&gt;
+            {t.done ? "✅" : "⬜"} {t.title}
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Todo型がバックエンドのTodoOutと二重管理になっている点に注目:</strong> 実務規模ではこれが破綻の温床になるため、FastAPIが自動生成するOpenAPIスキーマから <code>openapi-typescript</code> でTS型を自動生成します。「バックエンドの変更がフロントの型エラーとして即座に現れる」状態が理想です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="capstone-8" id="capstone-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">08</span><h3>テスト — pytestとVitestで「壊れたら気づける」状態を作る</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 テストは「未来の自分への保険」— リファクタリングできるコードとできないコードの分かれ目</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Python — backend/tests/test_todos.py</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>import pytest
+from fastapi.testclient import TestClient
+from app.main import app
+
+client = TestClient(app)
+
+@pytest.fixture
+def auth_header():
+    """テスト用ユーザーを登録してトークンを返す fixture"""
+    client.post("/auth/register",
+                json={"email": "test@example.com", "password": "secret123"})
+    res = client.post("/auth/login",
+                      data={"username": "test@example.com",
+                            "password": "secret123"})
+    token = res.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+def test_create_and_list_todo(auth_header):
+    res = client.post("/todos", json={"title": "牛乳を買う"},
+                      headers=auth_header)
+    assert res.status_code == 201
+    assert res.json()["title"] == "牛乳を買う"
+
+    res = client.get("/todos", headers=auth_header)
+    assert len(res.json()) == 1
+
+def test_todos_require_auth():
+    """トークン無しは401 — セキュリティの回帰を防ぐテスト"""
+    assert client.get("/todos").status_code == 401
+
+def test_cannot_touch_others_todo(auth_header):
+    """他人のTODOは404 — アクセス制御の回帰を防ぐテスト"""
+    res = client.patch("/todos/99999", headers=auth_header)
+    assert res.status_code == 404</code></pre>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">TypeScript — frontend/src/api.test.ts（Vitest）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>import { describe, it, expect, vi, beforeEach } from "vitest";
+import { api } from "./api";
+
+beforeEach(() =&gt; {
+  vi.stubGlobal("fetch", vi.fn());   // 本物の通信はしない
+});
+
+describe("api.listTodos", () =&gt; {
+  it("returns parsed todos", async () =&gt; {
+    (fetch as ReturnType&lt;typeof vi.fn&gt;).mockResolvedValue({
+      ok: true, status: 200,
+      json: () =&gt; Promise.resolve([{ id: 1, title: "test", done: false }]),
+    });
+    const todos = await api.listTodos();
+    expect(todos).toHaveLength(1);
+    expect(todos[0].title).toBe("test");
+  });
+
+  it("throws on server error", async () =&gt; {
+    (fetch as ReturnType&lt;typeof vi.fn&gt;).mockResolvedValue({
+      ok: false, status: 500, json: () =&gt; Promise.resolve({}) });
+    await expect(api.listTodos()).rejects.toThrow("API error: 500");
+  });
+});</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>何をテストすべきか迷ったら「壊れたら困る順」:</strong> ①認証・認可（事故ると即インシデント）②お金・データを扱うロジック ③バグ修正した箇所（回帰防止）。UIの見た目のテストは費用対効果が低いので後回しで構いません。カバレッジ100%より「重要な20%を確実に」が実務の解です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="capstone-9" id="capstone-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">09</span><h3>Docker化 — docker composeで「誰の環境でも動く」を実現する</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-9')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「私の環境では動く」を撲滅する — 環境そのものをコードとして配布する</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Dockerfile — backend/Dockerfile</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>FROM python:3.12-slim
+
+WORKDIR /app
+
+# 依存ファイルを先にコピー（レイヤーキャッシュを効かせる）
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# ソースコードは最後にコピー（コード変更時も上のレイヤーは再利用）
+COPY . .
+
+EXPOSE 8000
+CMD ["fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">YAML — docker-compose.yml</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY}        # .env から読み込まれる
+    volumes:
+      - db-data:/app/data               # SQLiteファイルの永続化
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      retries: 5
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy      # backendが健康になってから起動
+
+volumes:
+  db-data:
+
+# 起動:   docker compose up --build
+# 停止:   docker compose down
+# ログ:   docker compose logs -f backend</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>COPY の順序がビルド時間を支配する:</strong> Dockerはレイヤー単位でキャッシュします。requirements.txt を先にCOPYしておけば、コードだけ変更した再ビルドでは <code>pip install</code>（数分）がスキップされ数秒で終わります。この「変更頻度が低いものを上に」がDockerfile設計の第一原則です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="capstone-10" id="capstone-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">10</span><h3>CI/CDとデプロイ — GitHub Actionsから無料枠公開まで</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-10')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 CI = 「壊れたコードがmainに入るのを機械に見張らせる」— 人間の注意力に頼らない</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">YAML — .github/workflows/ci.yml</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r backend/requirements.txt
+      - run: pytest backend/tests
+        env:
+          SECRET_KEY: test-only-secret     # テスト用のダミー値
+
+  frontend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+        working-directory: frontend
+      - run: npx vitest run
+        working-directory: frontend</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 無料枠デプロイの選択肢（2026年時点）</h4>
+            <p><strong>フロントエンド:</strong> GitHub Pages / Cloudflare Pages（静的ビルドを配信、完全無料）<br>
+            <strong>バックエンド:</strong> Render（無料枠あり・スリープあり）、Fly.io（小規模無料）。Dockerイメージをそのままデプロイできるため、レッスン09の成果物が直接使えます。<br>
+            <strong>手順の骨子:</strong> ①デプロイ先にリポジトリを接続 ②環境変数（SECRET_KEY等）を管理画面で設定 ③mainへのマージで自動デプロイ。<strong>秘密情報は必ずデプロイ先の環境変数機能で注入</strong>し、リポジトリには置きません。</p>
+          </div>
+          <div class="explanation-box"><h4>🎓 完走おめでとうございます — 次にやるべきこと</h4>
+            <p>このアプリには伸びしろが大量にあります。<strong>①リフレッシュトークンの実装 ②SQLiteからPostgreSQLへの移行（Alembicでマイグレーション） ③E2Eテスト（Playwright） ④ログと監視（structlog + Sentry）</strong>。1つ選んで自力で拡張し、その過程をPRとして自分のリポジトリに積んでください。<strong>その履歴こそが、あなたのポートフォリオになります。</strong></p>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「デプロイして終わり」ではなく「デプロイしてから始まる」:</strong> 本番で初めて踏む問題（環境変数の設定漏れ、CORSエラー、コールドスタート）こそが最高の教材です。エラーメッセージを恐れず、ログ → 原因の仮説 → 検証のループを回してください。この診断能力がフルスタックエンジニアの本体です。</p></div>
+        </div>
+      </article>
+
+      <!-- Capstone Quiz -->
+      <div class="quiz-section" id="capstone-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">キャップストーン（総合演習）の知識を確認しましょう。</p>
+        <div id="capstone-quiz-container"></div>
+        <div class="quiz-result" id="capstone-quiz-result"></div>
+      </div>
+
+      <!-- Capstone Puzzle -->
+      <div class="puzzle-section" id="capstone-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 コード組み立てパズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="capstone-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board"><div class="puzzle-source" id="capstone-puzzle-source"></div><div class="puzzle-dropzone" id="capstone-puzzle-dropzone"><div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div></div></div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('capstone')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('capstone')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="capstone-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

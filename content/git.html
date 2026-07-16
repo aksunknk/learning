@@ -1,0 +1,284 @@
+
+      <div class="tab-intro">
+        <h2>🌿 Git / GitHub — チーム開発の共通言語</h2>
+        <p>コードの歴史を記録し、安全に実験し、他人と協働するための道具がGitです。実務では初日から使います。「コミットとは何か」から「やらかしたときの復旧」まで、現場で必要な操作を一通り身につけましょう。</p>
+      </div>
+
+      <article class="lesson-card" data-section="git-1" id="git-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">01</span><h3>バージョン管理とは — Gitの3つの領域</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('git-1')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 Gitは「セーブポイント付きのタイムマシン」— ファイル名_final_v2_最新.zip とは今日でお別れ</h4></div>
+          <div class="explanation-box"><h4>なぜバージョン管理が必要なのか？</h4>
+            <p>コードを書いていると「昨日までは動いていたのに」「どこを変えたか思い出せない」が必ず起きます。Gitは<strong>変更の歴史をすべて記録</strong>し、任意の時点に戻れるようにします。さらに、複数人が同じコードを同時に編集しても安全に合流（マージ）できます。</p>
+            <p>Gitを理解する鍵は<strong>3つの領域</strong>です。ファイルはこの3つの間を移動します。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">概念図 — 3つの領域</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>┌──────────────────┐  git add   ┌──────────────────┐  git commit ┌──────────────────┐
+│ ワーキングツリー │ ─────────→ │ ステージングエリア│ ──────────→ │  リポジトリ      │
+│ (作業中のファイル)│            │ (次のコミットの   │             │ (確定した歴史)   │
+│                  │ ←───────── │  荷造りスペース)  │             │ .git ディレクトリ │
+└──────────────────┘ git restore└──────────────────┘             └──────────────────┘
+
+・ワーキングツリー: いま編集しているファイルそのもの
+・ステージング:     「次のセーブに含めるもの」を選ぶ場所
+・リポジトリ:       コミット（スナップショット）の保管庫</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>なぜステージングが挟まっているのか:</strong> 「バグ修正とリファクタリングを同時にやってしまった」とき、ステージングがあれば<strong>変更の一部だけを選んでコミット</strong>できます（<code>git add -p</code>）。この「変更を意味の単位に分ける」機能こそがGitの設計思想の核心です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="git-2" id="git-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">02</span><h3>基本サイクル — init / add / commit / log / diff</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('git-2')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 日常の90%は「編集 → status → add → commit」のループ — 手に馴染むまで繰り返す</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Bash — 最初のコミットまで</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ① リポジトリを作る（プロジェクトで最初に1回だけ）
+git init
+
+# ② いま何が起きているかを確認する（迷ったら常にこれ）
+git status
+
+# ③ 変更をステージングに載せる
+git add main.py          # ファイル指定
+git add .                # カレント以下すべて（.gitignore 対象は除外）
+
+# ④ コミット = スナップショットを確定する
+git commit -m "Add login validation"
+
+# ⑤ 歴史を眺める
+git log --oneline --graph   # 1行表示 + ブランチの分岐図
+
+# ⑥ 差分を見る
+git diff                 # ワーキングツリー vs ステージング
+git diff --staged        # ステージング vs 直前のコミット</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 良いコミットメッセージの型</h4>
+            <p>1行目は<strong>「何をしたか」を命令形で50文字以内</strong>（例: <code>Fix off-by-one error in pagination</code>）。「なぜ」が自明でない場合は空行を挟んで本文に書きます。「修正」「更新」だけのメッセージは、3ヶ月後の自分にとって無情報です。</p>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>コミットの粒度は「1つの論理的変更 = 1コミット」:</strong> 「バグ修正とタイポ修正と機能追加」を1コミットに混ぜると、あとで片方だけ取り消す（revert）ことができなくなります。逆に細かすぎる「WIP」「fix」「fix2」の連打も歴史を汚します。<strong>レビュアーが1コミットずつ読んで理解できる単位</strong>が正解です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="git-3" id="git-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">03</span><h3>ブランチとHEAD — 並行世界を作って安全に実験する</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('git-3')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 ブランチは「コミットを指す軽量なポインタ」— 作るのに1秒もかからないので、気軽に作って気軽に捨てる</h4></div>
+          <div class="explanation-box"><h4>ブランチの正体</h4>
+            <p>ブランチと聞くと「コードのコピー」を想像しがちですが、実体は<strong>特定のコミットを指す名前付きポインタ</strong>（41バイトのテキストファイル）です。だから作成も切替も一瞬です。<strong>HEAD</strong> は「いま自分がどのブランチにいるか」を指すポインタです。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Bash — ブランチ操作</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ブランチを作って移動する（-c = create）
+git switch -c feature/login-form
+
+# いまどこにいるか確認
+git branch          # * が付いているのが現在地（HEAD）
+
+# main に戻る
+git switch main
+
+# 不要になったブランチを削除
+git branch -d feature/login-form   # マージ済みなら消せる
+git branch -D feature/login-form   # 強制削除（未マージでも消す）
+
+# 歴史のイメージ:
+#            ┌── C3 ── C4   ← feature/login-form
+# C1 ── C2 ──┤
+#            └── C5        ← main (HEAD)</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>main に直接コミットしない:</strong> 個人開発でも「main は常に動く状態を保ち、作業はブランチで行う」習慣を付けてください。チーム開発ではmainへの直接pushは保護設定（Branch Protection）で物理的に禁止されるのが普通です。ブランチ名は <code>feature/〜</code>、<code>fix/〜</code> のように種別を接頭辞にすると一覧性が上がります。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="git-4" id="git-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">04</span><h3>mergeとコンフリクト解消 — 怖くない、慌てない</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('git-4')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 コンフリクトは「エラー」ではなく「Gitが判断を人間に委ねた」だけ — マーカーを読めば怖くない</h4></div>
+          <div class="explanation-box"><h4>マージとコンフリクトの仕組み</h4>
+            <p><code>git merge</code> は2つのブランチの変更を合流させます。別々のファイル・別々の行を変更していればGitが自動で統合しますが、<strong>同じファイルの同じ行</strong>を両方が変更していた場合、Gitはどちらが正しいか判断できません。これがコンフリクト（衝突）です。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Bash — コンフリクトの発生と解消</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>git switch main
+git merge feature/pricing
+# CONFLICT (content): Merge conflict in price.py
+
+# ファイルを開くとマーカーが挿入されている:
+# &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+# TAX_RATE = 0.10          ← 自分側（main）の内容
+# =======
+# TAX_RATE = 0.08          ← 相手側（feature/pricing）の内容
+# &gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/pricing
+
+# ① 正しい内容に手で編集する（マーカーは全部消す）
+# ② 解消したことをGitに伝える
+git add price.py
+# ③ マージを完了する
+git commit               # メッセージは自動生成されるのでそのままでOK
+
+# 途中でやめたくなったら（マージ前の状態に戻る）:
+git merge --abort</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>コンフリクトを小さくするのは「こまめなマージ」:</strong> 長生きしたブランチほどmainから離れ、コンフリクトが巨大化します。作業ブランチには <code>git merge main</code> で定期的にmainを取り込んでください。また、解消時に「両方の変更を活かすべき」ケースが多いことに注意。機械的に片方を選ぶと相手の修正を消してしまいます（これが実務で最も多いマージ事故です）。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="git-5" id="git-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">05</span><h3>リモートリポジトリ — clone / fetch / pull / push</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('git-5')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 pull = fetch + merge — 「pullで何が起きるか」を分解して理解すればリモート操作は怖くない</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Bash — リモートの基本操作</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># GitHub上のリポジトリを手元に複製する
+git clone https://github.com/user/repo.git
+
+# リモートの最新状態を「取得だけ」する（手元のコードは変わらない）
+git fetch origin
+
+# 取得 + 現在のブランチに統合（= fetch + merge）
+git pull origin main
+
+# 手元のコミットをリモートに送る
+git push origin feature/login-form
+
+# 新しいブランチを初めてpushするとき（-u で追跡関係を記録）
+git push -u origin feature/login-form
+# 以降は git push / git pull だけでOKになる
+
+# リモートの登録状況を確認
+git remote -v
+# origin  https://github.com/user/repo.git (fetch)
+# origin  https://github.com/user/repo.git (push)</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 push が拒否されたら</h4>
+            <p><code>! [rejected] ... non-fast-forward</code> は「リモートに自分の知らないコミットがある」という意味です。まず <code>git pull</code> でリモートの変更を取り込み、必要ならコンフリクトを解消してから再度pushします。<strong><code>git push --force</code> で上書きしてはいけません</strong>。チームメイトのコミットが消えます。</p>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「1日の終わりにpush」を習慣に:</strong> ローカルにしかないコミットは、PCの故障で永遠に失われます。作業ブランチは未完成でもpushして構いません（それを共有するためのDraft PRという仕組みもあります）。リモートはバックアップでもあるのです。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="git-6" id="git-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">06</span><h3>GitHubフロー — Pull Requestを中心とした開発の流れ</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('git-6')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 Pull Request は「マージしてください」という依頼書 — コードレビューと自動テストの関所を通ってからmainに入る</h4></div>
+          <div class="explanation-box"><h4>GitHubフローの5ステップ</h4>
+            <p>世界中のチームが使う最もシンプルな開発フローです。</p>
+            <p><strong>① ブランチを切る</strong> — mainから <code>feature/xxx</code> を作成<br>
+            <strong>② コミットを積む</strong> — 小さな単位でこまめにコミット<br>
+            <strong>③ pushしてPRを開く</strong> — タイトルと説明で「何を・なぜ」を伝える<br>
+            <strong>④ レビューとCI</strong> — 指摘に対応してコミットを追加（PRに自動反映される）<br>
+            <strong>⑤ マージしてブランチ削除</strong> — mainは常にデプロイ可能な状態を保つ</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Bash + GitHub — PRを出すまで</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>git switch -c fix/cart-total-rounding
+# ...編集...
+git add -p                       # 変更を確認しながらステージング
+git commit -m "Fix rounding error in cart total"
+git push -u origin fix/cart-total-rounding
+
+# → GitHubの画面に「Compare & pull request」ボタンが出る
+#   PRの説明に書くべきこと:
+#   - 何を変更したか（What）
+#   - なぜ必要か（Why）
+#   - 動作確認の方法（How to test）
+
+# OSSに貢献する場合は fork（自分のアカウントへの複製）から:
+# fork → clone → ブランチ → push → 本家リポジトリへPR</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>PRは小さいほど速くマージされる:</strong> 統計的に、レビュー時間はPRのサイズに対して非線形に増えます。400行を超えるPRはレビューの質が急落します。「機能の一部でも動く単位」で分割してPRを出すのがプロの作法です。また、<strong>自分でPRの差分を最初にセルフレビュー</strong>してからレビュアーを呼ぶと、指摘が半減します。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="git-7" id="git-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">07</span><h3>やらかし復旧大全 — restore / reset / revert / reflog</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('git-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 コミット済みの変更はほぼ絶対に復元できる — 慌てて余計なコマンドを打つ前に reflog</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Bash — 状況別リカバリー早見表</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># 【状況1】ファイルの変更を取り消したい（コミット前）
+git restore main.py              # 最後のコミットの状態に戻す
+git restore --staged main.py    # add を取り消す（変更自体は残る）
+
+# 【状況2】直前のコミットメッセージを間違えた
+git commit --amend -m "正しいメッセージ"
+# ※ push済みのコミットにamendしてはいけない（歴史が食い違う）
+
+# 【状況3】直前のコミット自体をなかったことにしたい（未push）
+git reset --soft HEAD~1    # コミットだけ取り消し、変更はstagedのまま
+git reset --hard HEAD~1    # 変更ごと完全に消す（要注意！）
+
+# 【状況4】push済みのコミットを取り消したい
+git revert abc1234         # 「打ち消しコミット」を新たに作る
+# → 歴史を書き換えないので、共有ブランチではこれ一択
+
+# 【状況5】reset --hard で消してしまった／ブランチを消してしまった
+git reflog                 # HEADの移動履歴がすべて残っている
+# abc1234 HEAD@{1}: commit: 消えたはずのコミット
+git switch -c rescue abc1234   # そのコミットからブランチを復元</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 reset と revert の使い分け</h4>
+            <p><strong>reset</strong> は歴史そのものを巻き戻す（push前の自分専用）。<strong>revert</strong> は「取り消した」という新しい歴史を追加する（push後・共有ブランチ用）。この区別を間違えてpush済みブランチをresetすると、チーム全員のリポジトリと食い違いが起きます。</p>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>reflogの保持期間はデフォルト90日:</strong> つまり3ヶ月以内のやらかしはほぼ確実に救えます。本当に失われるのは「一度もaddしていないファイルの変更」だけです。だからこそ、実験前に <code>git add</code> か <code>git stash</code>（一時退避）をしておく癖が保険になります。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="git-8" id="git-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">08</span><h3>実務Tips — .gitignore / stash / rebase入門</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('git-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「コミットしてはいけないもの」を最初に決める — .gitignore はプロジェクト開始時の必須作業</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">.gitignore — 典型的な除外設定</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># 依存パッケージ（サイズが巨大 & 再生成可能）
+node_modules/
+venv/
+__pycache__/
+
+# 秘密情報（漏洩事故の最多原因！）
+.env
+*.pem
+credentials.json
+
+# ビルド成果物・エディタ設定
+dist/
+build/
+.DS_Store
+.vscode/</code></pre>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Bash — stash と rebase</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># stash: 作業を一時退避（急な割り込み作業に）
+git stash               # 変更を退避して作業ツリーをきれいに
+git stash pop           # 退避した変更を戻す
+
+# rebase: ブランチの根本を付け替えて歴史を一直線にする
+git switch feature/xxx
+git rebase main         # mainの最新の上に自分のコミットを載せ直す
+# マージコミットが無い直線的な歴史になりログが読みやすい
+
+# ⚠️ rebaseの鉄則: push済み（共有済み）のコミットをrebaseしない
+#    歴史を書き換えるため、他人のリポジトリと食い違いが起きる</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 APIキーをコミットしてしまったら</h4>
+            <p>「すぐ消せばバレない」は通用しません。<strong>歴史に残った秘密情報はpushした時点で漏洩したものとして扱い、まずキーを無効化・再発行</strong>してください。歴史からの完全削除には <code>git filter-repo</code> などの専用ツールが必要で、共有リポジトリでは全員の協力が要ります。予防（.gitignore + push前の <code>git diff --staged</code> 確認）が圧倒的に安上がりです。</p>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>迷ったらこの使い分け:</strong> 個人ブランチの整理は rebase、共有ブランチへの統合は merge、共有済みコミットの取り消しは revert。この3原則だけ守れば、Gitで取り返しのつかない事故はまず起きません。</p></div>
+        </div>
+      </article>
+
+      <!-- Git Quiz -->
+      <div class="quiz-section" id="git-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">Git / GitHubの知識を確認しましょう。</p>
+        <div id="git-quiz-container"></div>
+        <div class="quiz-result" id="git-quiz-result"></div>
+      </div>
+
+      <!-- Git Puzzle -->
+      <div class="puzzle-section" id="git-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 コード組み立てパズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="git-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board"><div class="puzzle-source" id="git-puzzle-source"></div><div class="puzzle-dropzone" id="git-puzzle-dropzone"><div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div></div></div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('git')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('git')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="git-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

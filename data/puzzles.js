@@ -29,6 +29,31 @@ const puzzleData = {
     correctOrder: ["db-p1", "db-p2", "db-p3", "db-p4", "db-p5"],
     explanation: "SELECT → FROM → GROUP BY(グループ化) → HAVING(グループ化後の条件) → ORDER BY(並び替え) の順序がSQLの正しい構文です。"
   },
+  git: {
+    question: "機能ブランチで作業してPull Requestを出すまでの流れを正しい順番に並べてください。",
+    pieces: [
+      { id: "git-p1", text: "git switch -c feature/login-form" },
+      { id: "git-p2", text: "# ...ファイルを編集..." },
+      { id: "git-p3", text: "git add -p" },
+      { id: "git-p4", text: "git commit -m \"Add login form validation\"" },
+      { id: "git-p5", text: "git push -u origin feature/login-form" },
+      { id: "git-p6", text: "# GitHub で Pull Request を作成" }
+    ],
+    correctOrder: ["git-p1", "git-p2", "git-p3", "git-p4", "git-p5", "git-p6"],
+    explanation: "ブランチ作成 → 編集 → ステージング（add）→ コミット → リモートへpush → PR作成 が GitHub フローの基本サイクルです。mainに直接コミットしない習慣が重要です。"
+  },
+  capstone: {
+    question: "FastAPIのログイン処理の流れを正しい順番に並べてください。",
+    pieces: [
+      { id: "cap-p1", text: "user = db.query(User).filter(User.email == form.username).first()" },
+      { id: "cap-p2", text: "if not user or not pwd_context.verify(form.password, user.hashed_password):" },
+      { id: "cap-p3", text: "    raise HTTPException(401, \"invalid credentials\")" },
+      { id: "cap-p4", text: "token = jwt.encode({\"sub\": str(user.id), \"exp\": expires}, SECRET_KEY)" },
+      { id: "cap-p5", text: "return {\"access_token\": token, \"token_type\": \"bearer\"}" }
+    ],
+    correctOrder: ["cap-p1", "cap-p2", "cap-p3", "cap-p4", "cap-p5"],
+    explanation: "ユーザー検索 → パスワード検証（失敗なら401、どちらが違うかは言わない）→ JWT発行 → トークン返却 が認証エンドポイントの基本構造です。"
+  },
   
   
   testing: {
