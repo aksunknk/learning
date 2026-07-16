@@ -1,0 +1,945 @@
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="typescript-1" id="typescript-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>TypeScriptとは何か（なぜ導入するのか）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 実行前にバグを潰せる強力な盾（なぜTypeScriptが必要なのか）</h4>
+            <p>現代のWebアプリケーションは巨大化・複雑化しています。JavaScriptの「動的型付け」という自由さは、小規模なスクリプトでは便利ですが、チーム開発や大規模開発においては「実行するまでエラーに気付けない」という致命的な弱点になります。TypeScriptを導入する最大の理由は、<strong>「開発中のリアルタイムなバグ検知」</strong>と<strong>「コード自体が信頼できるドキュメントになること」</strong>です。これにより、心理的安全性をもって大胆なリファクタリングが可能になります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>JavaScriptの弱点</h4>
+            <p>JavaScriptは「何でもあり」の言語です。文字の変数に後から数値を代入したり、存在しないプロパティにアクセスしても、コードを書いている最中には何も教えてくれません。ブラウザで実行して初めて「Uncaught TypeError」として爆発します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ❌ 危険なJavaScript（静的型チェックがない世界）
+// 何の型でも受け入れるため、想定外のデータが入るリスクがあります。
+
+function calculateTotal(price, taxRate) {
+  // 意図せず文字列が渡されても計算しようとしてしまい、
+  // '10000.1' などの予期せぬ結果（バグ）を生み出します。
+  return price + (price * taxRate);
+}
+
+let user = 'Alice';
+user = 25;  // 別の型を再代入してもエラーにならない（後でバグの温床に）
+
+const person = { name: 'Bob' };
+// 存在しないプロパティにアクセスしても、エディタは警告しません。
+// 実行時（ブラウザ）で初めて "TypeError: Cannot read properties of undefined" となりクラッシュします。
+// console.log(person.age.toString());</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>TypeScriptがもたらす革命</h4>
+            <p>TypeScriptは、JavaScriptに「型（Type）」というルールを追加したものです。VSCodeなどのエディタ上で、コードを書いている最中にリアルタイムでバグを指摘（赤波線）してくれます。開発スピードが遅くなると思われがちですが、バグ探しの時間が消滅するため結果的に開発が圧倒的に早くなります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ✅ 安全なTypeScript（静的型付けの世界）
+// 型アノテーションによって「開発者の意図」をコンパイラに伝えます。
+
+function calculateTotal(price: number, taxRate: number): number {
+  return price + (price * taxRate);
+}
+// calculateTotal("1000", 0.1); 
+// ❌ Argument of type 'string' is not assignable to parameter of type 'number'.
+
+let safeUser: string = 'Alice';
+// safeUser = 25; 
+// ❌ エディタが即座に「Type 'number' is not assignable to type 'string'」と警告！
+
+const safePerson: { name: string } = { name: 'Bob' };
+// safePerson.age 
+// ❌ エディタが「Property 'age' does not exist」と警告！
+// このように、実行する前にエディタ（VSCode等）上で全てのバグを検知できます。</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>TypeScriptを導入したばかりのチームでよく起きるのが「型定義に時間がかかりすぎて開発スピードが落ちる」という嘆きです。しかし、これは一時的なものです。実務では「型エラーに悩まされる時間」よりも「本番環境での謎のバグ調査にかかる時間」の方が圧倒的にコストが高くなります。最初は厳密な型定義に慣れなくても、まずは最低限の型付けから始め、徐々に厳密にしていく（Gradual Typing）アプローチをおすすめします。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="typescript-2" id="typescript-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>基本の型と型推論</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 全部に型を書く必要はありません（なぜ型推論を活用するのか）</h4>
+            <p>TypeScriptの強力な機能の一つが「型推論」です。初期値から明白な型まで全て手書きするのは、コードの記述量が増え、可読性を下げるノイズになります。型推論に任せるべきところは任せ、関数の引数や戻り値といった「境界（インターフェース）」にのみ明示的に型を書くことで、簡潔でメンテナンス性の高いコードが実現します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>型推論（Type Inference）</h4>
+            <p>TypeScriptは非常に賢いため、最初から全ての変数に型を書かなくても、代入された値から勝手に型を推測してくれます。実務では「明らかに分かるものには型を書かない」のが一般的です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// --- 型推論（Type Inference）の活用 ---
+// TypeScriptのコンパイラは文脈から型を賢く推測します。
+
+let message = 'Hello'; // 自動的に string 型と推論される
+// 初心者は `let message: string = 'Hello';` と書きがちですが、これは冗長です。
+// message = 123; // ❌ Type 'number' is not assignable to type 'string'.
+
+// 配列やオブジェクトも推論されます
+const numbers = [1, 2, 3]; // number[] と推論
+const defaultUser = { id: 1, isActive: true }; 
+// { id: number; isActive: boolean; } と推論
+
+// ✅ プロの実務での書き方：自明な変数には型を書かず、推論に任せる
+let currentAge = 25;
+let isVisible = false;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>明示的な型指定が必要な場面</h4>
+            <p>型推論が効かない場面（関数の引数や、後から値を代入する変数など）では、人間が明示的に型を教える必要があります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// --- 明示的な型指定が必要な場面 ---
+// コンパイラが推論できない箇所や、意図を明確にしたい箇所には型を書きます。
+
+// 1. 関数の引数（any型への推論を防ぐため必須）と戻り値（意図しない返り値を防ぐ）
+function greet(name: string, age: number): string {
+  // 戻り値の型を明示することで、関数内部の変更による予期せぬ型変更を防げます
+  return `Hello ${name}, you are ${age} years old.`;
+}
+
+// 2. 宣言と初期化を分ける場合
+// 初期値がないと `any` 型と推論されてしまうため、型を明示します。
+let loadedData: string[];
+// ...API通信などの非同期処理...
+loadedData = ['apple', 'banana'];
+
+// 3. 推論される型よりも広い（または狭い）型を持たせたい場合
+let statusText: 'loading' | 'success' | 'error' = 'loading';
+// 単なる `string` ではなく、特定のリテラルのユニオン型にしたい場合など。</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務のコードレビューでは「推論可能な型をわざわざ書いている（冗長）」「戻り値の型をサボっている」の2点がよく指摘されます。特に、関数の戻り値は型推論に任せることも可能ですが、チーム開発では<strong>「関数のシグネチャ（引数と戻り値の型）はドキュメントである」</strong>という考え方に基づき、戻り値の型を明示的に書くルールにしているプロジェクトが多数派です。これにより、関数の中身を読む前に入出力の仕様を把握できます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="typescript-3" id="typescript-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>InterfaceとType Alias（オブジェクトの設計図）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 データの「設計図」を作って使い回す（なぜInterface/Typeを使うのか）</h4>
+            <p>オブジェクトがどのような構造（プロパティと型）を持っているかを定義することは、TypeScriptにおける設計の要です。毎回 <code>{ id: number, name: string }</code> と書くのはDRY（Don't Repeat Yourself）原則に反します。名前を付けた設計図（型定義）を用意することで、コードのあちこちで使い回せ、変更があった場合も1箇所の修正で済みます。また、チームメンバー間で「このデータは何を持っているべきか」の共通認識を作ることができます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>Interface（インターフェース）の力</h4>
+            <p>「ユーザー」というデータが「id(数値)」と「name(文字列)」を持っている、というルール（設計図）を定義します。APIのレスポンスやReactのPropsで最もよく使われる超重要機能です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// --- Interface（インターフェース）によるオブジェクトの型定義 ---
+// 拡張性が高く、オブジェクトの構造を定義する際によく使われます。
+
+interface User {
+  id: number;
+  name: string;
+  email?: string;       // プロパティ名の末尾の「?」は省略可能（オプショナル）を意味します
+  readonly createdAt: Date; // readonlyをつけると、作成後の変更（再代入）を禁止できます
+}
+
+// 設計図に従ってデータを作成
+const user1: User = {
+  id: 1,
+  name: 'Alice',
+  createdAt: new Date(),
+  // emailは省略可能なので、定義しなくてもエラーになりません
+};
+
+// ❌ 意図しない操作を防ぐ
+// user1.age = 25; // ❌ 定義されていないプロパティの追加はエラー
+// user1.createdAt = new Date(); // ❌ readonlyなので再代入不可</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Type Alias（型エイリアス）</h4>
+            <p>Interfaceとほぼ同じですが、<code>type</code> キーワードを使って定義します。Union型（後述）など、複雑な型を作る場合に便利です。最近のReact開発では <code>type</code> を好むプロジェクトも多いです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// --- Type Alias（型エイリアス）による型定義 ---
+// オブジェクトだけでなく、あらゆる型に名前を付けることができます。
+
+type Point = {
+  x: number;
+  y: number;
+};
+
+// Interfaceのように使えます
+const p: Point = { x: 10, y: 20 };
+
+// Typeの強み：Union型や関数の型など、複雑な型も定義可能
+type ID = string | number; // プリミティブのユニオン
+type Status = 'active' | 'inactive' | 'banned'; // 文字列リテラルのユニオン
+
+// 関数の型のエイリアス
+type OnClickHandler = (event: MouseEvent) => void;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>「InterfaceとType Alias、どちらを使うべきか？」はTS開発者界隈で永遠のテーマです。結論から言うと、<strong>現代のプロジェクトでは「基本的にすべて <code>type</code> で統一する」派が優勢になりつつあります。</strong> <code>type</code> の方がUnionやIntersectionなど柔軟な表現ができ、記述がシンプルだからです。ただし、ライブラリの型を拡張（Declaration Merging）する必要がある場合は <code>interface</code> が必須です。チームのコーディング規約に従うのが一番ですが、迷ったら <code>type</code> を使っておけば実務上困ることはほぼありません。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="typescript-4" id="typescript-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>Union型とIntersection型</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 型同士を「または」や「かつ」で組み合わせる（なぜ合成型が必要なのか）</h4>
+            <p>現実世界のデータは常にシンプルとは限りません。「文字列または数値で来るID」や「既存のデータ構造に新しいプロパティを追加したもの」など、複雑なデータを表現する必要があります。Union型とIntersection型を使うことで、既存の小さな型を組み合わせて、柔軟かつ正確な型のモデリングが可能になります。これにより、過度に緩い <code>any</code> に頼ることなく、型安全性を維持できます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>Union型（A または B）</h4>
+            <p>APIのステータス（成功、ローディング、エラー）のように、「決まった複数の値のうちどれか」を表現するのに非常に便利です。<code>|</code>（パイプ）記号を使います。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// --- Union型（A または B） ---
+// APIからのレスポンスや、複数の状態を取り得る変数の表現に必須です。
+
+// IDが文字列の場合もあれば、古いシステムの名残で数値の場合もあるケース
+let userId: string | number;
+userId = 101;
+userId = 'user_101';
+
+// 💡 実務での強力な活用法：リテラル型のユニオン（Discriminated Unionsの基礎）
+// 特定の文字列しか許容しないため、タイポを完全に防げます。
+type FetchState = 'idle' | 'loading' | 'success' | 'error';
+let currentFetchState: FetchState = 'loading';
+
+// currentFetchState = 'failed'; 
+// ❌ エディタが即座に警告。「'failed' は FetchState に含まれていない」と教えてくれます。
+
+function handleResponse(state: FetchState) {
+  // switch文の中で条件分岐する際、caseの補完（サジェスト）が効きます！
+  switch (state) {
+    case 'loading': return 'ロード中...';
+    case 'success': return '完了しました';
+    // ...
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Intersection型（A かつ B）</h4>
+            <p>複数のInterfaceやTypeをガッチャンコして、巨大な1つの型を作る機能です。<code>&amp;</code>（アンパサンド）記号を使います。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// --- Intersection型（A かつ B） ---
+// 複数のオブジェクト型を結合して、すべてのプロパティを持つ新しい型を作ります。
+
+type PersonInfo = { 
+  name: string; 
+  age: number;
+};
+
+type EmployeeInfo = { 
+  employeeId: string; 
+  department: string;
+};
+
+// Personの属性とEmployeeの属性、両方をすべて満たす必要がある
+type WorkerData = PersonInfo & EmployeeInfo;
+
+const newWorker: WorkerData = {
+  name: 'Alice',
+  age: 30,
+  employeeId: 'EMP-001',
+  department: 'Engineering'
+};
+
+// 💡 実務での活用例：ベースとなるPropsに、追加のPropsを結合する
+type ButtonBaseProps = { text: string; disabled?: boolean };
+type SubmitButtonProps = ButtonBaseProps & { onSubmit: () => void };</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Union型（<code>|</code>）を使って複数の状態を表現するときは、それぞれの状態を明確に区別できるようにする<strong>「タグ付きユニオン（Discriminated Union）」</strong>というテクニックが実務の標準です。例えばAPIのレスポンス型を <code>type ApiResult = { status: 'success', data: Data } | { status: 'error', message: string };</code> のように定義します。これにより、<code>if (result.status === 'success')</code> と判定したブロック内では、自動的に <code>result.data</code> へのアクセスが安全（型エラーなし）に許可されるようになります。これはTSの型の絞り込み機能を最大限に活かす超重要テクニックです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="typescript-5" id="typescript-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>ReactでTypeScriptを使う（Propsの型定義）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 コンポーネント間のデータのやり取りをガチガチに守る（なぜReactでTSを使うのか）</h4>
+            <p>React開発において、コンポーネントはパズルのピースのようなものです。親から子へ渡されるデータ（Props）に型がなければ、ピースの形が合わずにバグを引き起こします。Propsの型を定義することは「このコンポーネントを使うための仕様書」を書くことと同義です。これにより、コンポーネントの再利用性が劇的に向上し、コンパイル時に「必須のPropsが渡されていない」「間違った型のデータが渡されている」といったミスを未然に防ぐことができます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>コンポーネントに型をつける</h4>
+            <p>Reactのコンポーネントが受け取る <code>props</code> に型を定義することで、親コンポーネントから間違ったデータ（文字列を期待しているのに数値を渡すなど）が渡されるのを完全に防ぎます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React from 'react';
+
+// 1. Propsの設計図（Type Alias）を定義する
+// コンポーネント名の後ろに "Props" をつけるのが一般的な命名規則です。
+type UserCardProps = {
+  name: string;
+  age: number;
+  // ? をつけると省略可能なPropsになります
+  isAdmin?: boolean;
+  // 関数をPropsとして受け取る場合の型定義
+  onDelete?: (id: string) => void;
+};
+
+// 2. コンポーネントの引数（分割代入）に型を適用する
+// isAdmin = false のように、デフォルト値を設定することも可能です。
+function UserCard({ name, age, isAdmin = false, onDelete }: UserCardProps) {
+  return (
+    <div className="card">
+      <h2>{name}</h2>
+      <p>Age: {age}</p>
+      {isAdmin && <span className="badge">Admin</span>}
+      
+      {/* onDeleteが渡されている場合のみボタンを表示し、実行する */}
+      {onDelete && (
+        <button onClick={() => onDelete(name)}>Delete</button>
+      )}
+    </div>
+  );
+}
+
+// --- 親コンポーネントでの利用例 ---
+function App() {
+  return (
+    <div>
+      {/* ❌ 必須Props（age）が不足しているとエラー！ */}
+      {/* <UserCard name="Alice" /> */}
+
+      {/* ❌ ageに文字列を渡すとエラー！ */}
+      {/* <UserCard name="Alice" age="25" /> */}
+
+      {/* ✅ 正しいデータの渡し方 */}
+      <UserCard 
+        name="Alice" 
+        age={25} 
+        isAdmin={true} 
+        onDelete={(id) => console.log(`Deleted ${id}`)} 
+      />
+    </div>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>React 18以降、コンポーネントの型定義において <code>React.FC</code> を使うべきか、使わないべき（ただの関数として定義し、引数に型をつけるだけ）かで議論があります。現在のトレンドとしては <strong>「<code>React.FC</code> は使わず、純粋な関数として定義する」</strong> アプローチが主流になりつつあります。理由は、<code>React.FC</code> が暗黙的に <code>children</code> を許可していた過去の仕様の名残や、ジェネリクスを使ったコンポーネントを作りづらいなどのデメリットがあるためです。チームの規約を確認し、最新のベストプラクティスに従いましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="typescript-6" id="typescript-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>型の柔軟性（ジェネリクス/Generics）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 どんな型でも受け入れつつ、型安全を保つ魔法（なぜジェネリクスを使うのか）</h4>
+            <p>「どんな型のデータでも扱える関数やクラスを作りたい」と考えたとき、<code>any</code> を使ってしまうと型の恩恵が完全に失われます。ジェネリクス（Generics）は、「型を引数として受け取る」仕組みです。これにより、「使われる時に初めて型が決まる」柔軟性と、「一度決まったらその型として厳密に扱われる」安全性を両立できます。特に、汎用的なコンポーネントやAPIクライアントを作成する際に欠かせない概念です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>ジェネリクス（&lt;T&gt;）とは？</h4>
+            <p>関数やクラスを作るときに「後から型を決める」仕組みです。「引数として渡された型を、戻り値の型としても使う」といった柔軟な対応が可能になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// --- ジェネリクス（&lt;T&gt;）の基本 ---
+// T は Type の頭文字。慣例として T, U, V などが使われます。
+// 「引数 arg の型を T とし、戻り値の型も T とする」という意味。
+
+function identity&lt;T&gt;(arg: T): T {
+  return arg;
+}
+
+// 呼び出し時に T の具体的な型を指定（バインディング）します。
+const numVal = identity&lt;number&gt;(123);   // T は number になり、戻り値も number
+const strVal = identity&lt;string&gt;('ABC'); // T は string になり、戻り値も string
+
+// 💡 実際にはTypeScriptの型推論が強力なので、多くの場合省略可能です。
+const boolVal = identity(true); // 引数が boolean なので、T は boolean と推論される
+
+// --- 複数のジェネリクス ---
+function mergeObjects&lt;T, U&gt;(obj1: T, obj2: U): T &amp; U {
+  return { ...obj1, ...obj2 };
+}
+const mergedResult = mergeObjects({ name: 'Alice' }, { age: 30 });
+// mergedResult は { name: string; age: number; } 型として推論されます。</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>実務での頻出パターン（APIレスポンス）</h4>
+            <p>ジェネリクスは、APIのレスポンス型を定義するときに大活躍します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// --- 実務での頻出パターン：APIレスポンスの共通化 ---
+// ページネーションやメタデータを含むAPIレスポンスの構造は共通化しつつ、
+// 中身のデータの型だけを柔軟に変えたい場合にジェネリクスが大活躍します。
+
+// T を使って、dataプロパティの型を後から決められるようにする
+interface ApiResponse&lt;T&gt; {
+  status: 'success' | 'error';
+  message: string;
+  data: T; // ここが動的に変わる！
+}
+
+interface UserData { id: number; name: string; }
+interface ProductData { id: string; price: number; }
+
+// ユーザー一覧APIの戻り値
+let myUserResponse: ApiResponse&lt;UserData[]&gt;;
+// myUserResponse.data は UserData[] 型として補完・チェックされる！
+
+// 商品詳細APIの戻り値
+let myProductResponse: ApiResponse&lt;ProductData&gt;;
+// myProductResponse.data は ProductData 型として扱われる！</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>ジェネリクスは非常に強力ですが、やりすぎるとコードが黒魔術化して読めなくなります。よくある罠として、ジェネリクスに対する制約（Constraints）をかけ忘れることがあります。「どんな型でもいいけど、最低限 <code>id</code> プロパティは持っていてほしい」といった場合は、<code>extends</code> キーワードを使って <code>function processItem&lt;T extends { id: string }&gt;(item: T) { ... }</code> のように制約をかけます。これにより、関数内で <code>item.id</code> に安全にアクセスできるようになります。制約なきジェネリクスは、時に <code>any</code> と同等の扱いづらさを生むので注意しましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="typescript-7" id="typescript-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>TypeScriptとDOM操作（イベントの型）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ブラウザ固有の機能に型をつける（なぜイベント型を学ぶのか）</h4>
+            <p>Reactでフォーム入力やボタンクリックなどのユーザーアクションを扱う際、イベントハンドラにはイベントオブジェクト（<code>e</code>）が渡されます。TypeScriptでは、この <code>e</code> が「どのHTML要素から発生した、何のイベントなのか」を正確に型付けしないと、<code>e.target.value</code> といったプロパティにアクセスできません。適切にイベントの型をつけることで、DOM操作に関するタイポや未定義プロパティへのアクセスエラーを撲滅できます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>イベントオブジェクトの型</h4>
+            <p>Reactで onClick や onChange を扱う際、イベントオブジェクト <code>e</code> には適切な型を付ける必要があります。これを怠ると <code>e.target.value</code> にアクセスできずエラーになります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React, { ChangeEvent, MouseEvent, FormEvent, useState } from 'react';
+
+function MyForm() {
+  const [text, setText] = useState('');
+
+  // --- inputのonChangeイベントの型 ---
+  // ChangeEvent&lt;T&gt; の T には、イベントが発生するHTML要素の型（HTMLInputElement）を指定します。
+  const handleChange = (e: ChangeEvent&lt;HTMLInputElement&gt;) => {
+    // e.target.value が string 型として安全に取得できます。
+    setText(e.target.value);
+  };
+
+  // --- buttonのonClickイベントの型 ---
+  // MouseEvent&lt;T&gt; を使います。
+  const handleClick = (e: MouseEvent&lt;HTMLButtonElement&gt;) => {
+    // デフォルトの動作やイベントバブリングを止めるメソッドも安全に呼べます。
+    e.preventDefault();
+    console.log('Button clicked:', text);
+  };
+
+  // --- formのonSubmitイベントの型 ---
+  // 実務ではForm全体のsubmitイベントを扱うことが多いです。
+  const handleSubmit = (e: FormEvent&lt;HTMLFormElement&gt;) => {
+    e.preventDefault(); // 画面リロードを防ぐ
+    console.log('Form submitted:', text);
+  };
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input 
+        type="text" 
+        value={text} 
+        onChange={handleChange} 
+        placeholder="Enter your name"
+      /&gt;
+      &lt;button type="submit" onClick={handleClick}&gt;Submit&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>イベントの型（<code>ChangeEvent&lt;HTMLInputElement&gt;</code> など）を毎回インポートして覚えるのは大変です。実務でのちょっとした裏技として、<strong>インラインでアロー関数を書く</strong>と、TypeScriptの文脈的な型推論（Contextual Typing）が働き、引数の <code>e</code> の型を自動的に推論してくれます。例えば、<code>onChange={(e) => setText(e.target.value)}</code> と書けば、わざわざ型をインポートして宣言する必要はありません。ロジックが長い場合は関数として切り出して明示的に型をつけ、短い場合はインラインで書いて推論に任せる、という使い分けが開発効率を上げます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="typescript-8" id="typescript-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>よくあるエラーとアンチパターン</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 TypeScriptを使う意味をなくしてしまう書き方（なぜアンチパターンを知るべきか）</h4>
+            <p>TypeScriptを導入しても、「コンパイルエラーを黙らせること」を目的にしてしまうと、かえって危険なコードを生み出します。特に <code>any</code> 型の乱用や、型の強制キャスト（Type Assertion）は、TypeScriptのセーフティネットに自ら穴を開ける行為です。なぜこれらが危険なのか、そしてどのように代替すべきか（<code>unknown</code> やオプショナルチェーン）を知ることは、堅牢なアプリケーションを構築するための必須科目です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>any型への逃避（最大のアンチパターン）</h4>
+            <p>型エラーが解決できないとき、とりあえず <code>any</code> を使ってしまうのは最悪のアンチパターンです。型チェックが完全に無効になり、ただのJavaScriptに退化してしまいます。どうしても型が分からない場合は <code>any</code> ではなく <code>unknown</code> を使います。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// --- ❌ any型への逃避（最大のアンチパターン） ---
+// anyは「型チェックを放棄する」という宣言です。絶対に使ってはいけません。
+
+function processDataAny(data: any) {
+  // dataがどんな型であろうとエラーにならないため、存在しないメソッドも呼べてしまう
+  return data.toUpperCase(); // 実行時にdataが数値ならクラッシュ！
+}
+
+// --- ✅ unknown型による安全な代替 ---
+// unknownは「型が分からない」ことを表す安全な型です。
+// 具体的な型だと証明（型の絞り込み）するまでは操作を許可しません。
+
+function safeProcessUnknown(data: unknown) {
+  // data.toUpperCase(); // ❌ この時点では許可されない
+
+  // typeof や instanceof を使って型を特定する（Type Narrowing）
+  if (typeof data === 'string') {
+    // このブロック内では、dataは間違いなく string だとTSが理解する
+    return data.toUpperCase(); 
+  }
+  return null;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Object is possibly null（値がないかもしれない問題）</h4>
+            <p>APIのレスポンスやDOMの取得など、「値が存在しないかもしれない（null/undefined）」ケースでそのままプロパティにアクセスしようとすると怒られます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// --- ❌ 無理やりな型アサーション（as） ---
+// 開発者が「これはこの型だ！」とTSを無理やり黙らせる行為。バグの温床になります。
+const someElement = document.getElementById('my-input') as HTMLInputElement;
+// もしIDが間違っていて null だった場合でも、TSはHTMLInputElementだと信じ込み、
+// someElement.value にアクセスしようとして実行時エラーになります。
+
+// --- ✅ オプショナルチェーン（?.）による安全なアクセス ---
+// 値が存在しないかもしれない（null / undefined）ケースでの安全策。
+
+interface UserProfile { profile?: { bio: string } }
+const currentUser: UserProfile = {};
+
+// ❌ エラー: Object is possibly 'undefined'
+// console.log(currentUser.profile.bio);
+
+// ✅ profileが存在しない場合はエラーにならず、安全に undefined を返して処理を抜ける
+console.log(currentUser.profile?.bio); 
+
+// nullish coalescing（??）と組み合わせた初期値の設定
+const userBio = currentUser.profile?.bio ?? 'No bio available';</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>既存のJavaScriptプロジェクトをTypeScriptに移行する際や、外部ライブラリの型が不完全な場合、どうしても一時的に <code>any</code> を使わざるを得ない場面（いわゆる "Escape Hatch"）が出てきます。その場合、チームのルールとして <strong><code>// eslint-disable-next-line @typescript-eslint/no-explicit-any</code></strong> と共に、「なぜここでanyを使ったのか」の理由（TODOコメントなど）を必ず書き残すようにしましょう。沈黙のanyは技術的負債になりますが、理由が明記されたanyは管理可能な負債になります。最終的には <code>unknown</code> と型ガードに置き換える計画を立てましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="typescript-9" id="typescript-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>Final Mission: Todoアプリ構築（結合・API通信編）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 フロントとバックエンドを型で繋ぐ（なぜAPI通信に型をつけるのか）</h4>
+            <p>現代のWeb開発における最大のバグの温床は「フロントエンドとバックエンドの認識のズレ」です。「バックエンドがキー名を変更したのに、フロントエンドが古いキー名のまま参照して画面が真っ白になる」といった事故が多発します。APIのレスポンスに対して厳格な型（Interface）を定義し、通信層でそれを保証することで、バックエンドの仕様変更が即座にフロントエンドの型エラーとして検知できるようになり、システム全体の堅牢性が劇的に向上します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>InterfaceによるAPIスキーマの定義</h4>
+            <p>FastAPIのPydanticモデル（バックエンド）と全く同じ構造をTypeScriptのInterface（フロントエンド）で定義することで、通信データを一貫して安全に扱えます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 1. APIのレスポンススキーマ（設計図）を定義する
+// バックエンド（例：FastAPIのPydanticモデル）の定義と完全に一致させます。
+interface TodoItem {
+  id: string;        // UUID想定
+  title: string;
+  completed: boolean;
+  createdAt: string; // ISO 8601形式の日付文字列
+}
+
+// 2. 非同期関数の戻り値に Promise&lt;T&gt; を指定する
+// これにより、この関数を呼び出した側は「TodoItemの配列」が返ってくることを確信できます。
+async function fetchTodos(): Promise&lt;TodoItem[]&gt; {
+  try {
+    const response = await fetch('http://localhost:8000/tasks');
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    // fetchのjson()メソッドの戻り値は `any` 型なので、
+    // 開発者の責任で「これはTodoItemの配列である」とアサーション（as）します。
+    // ※より安全にする場合は、Zodなどのスキーマバリデーションライブラリを使用します。
+    const data = (await response.json()) as TodoItem[];
+    
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch todos:', error);
+    // エラーハンドリング（実務では専用のエラー型を返したりする）
+    return [];
+  }
+}
+
+// --- 使う側のコンポーネント ---
+async function renderTodos() {
+  const todos = await fetchTodos();
+  // todos は TodoItem[] なので、補完が効き、typoも防げる！
+  todos.forEach(todo => {
+    console.log(`[${todo.completed ? 'x' : ' '}] ${todo.title}`);
+  });
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p><code>const data = await response.json() as TodoItem[];</code> という書き方は、実はTypeScriptの「型チェック」ではなく、開発者の「自己申告」です。もしAPIから全然違う形のデータが返ってきても、TypeScriptはエラーを出さず（コンパイル時にはAPIの返り値がわからないため）、実行時に謎のバグを引き起こします。これを防ぐため、実務のモダンな開発では <strong>Zod</strong> や <strong>Runtypes</strong> といったバリデーションライブラリを使い、実行時にAPIのレスポンスが本当に期待した型に一致しているかを検証（パース）する仕組みを導入するのが一般的です。これにより、フロントエンドの境界線で不正なデータを完璧に弾くことができます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="typescript-10" id="typescript-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>上級編: ユーティリティ型（Utility Types）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 既存の型をパズルのように変形して使い回す（なぜUtility Typesを使うのか）</h4>
+            <p>実務では、基本となるデータモデル（UserやProductなど）から少しだけ形を変えた型が必要になる場面が頻出します。「新規作成API用だからIDは不要（Omit）」「更新API用だから全項目任意（Partial）」「一覧表示用だから名前とサムネイルだけ必要（Pick）」などです。これらを毎回新しく定義し直すと、元の型にプロパティが追加された際に更新漏れが発生します。ユーティリティ型を使えば、1つのベース型から派生型を動的に生成でき、保守性が圧倒的に向上します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>Partial, Omit, Pick</h4>
+            <p>実務では「あの型のIDだけ抜いた型が欲しい」「新規作成時は全項目必須だが、更新APIでは全項目を任意（?）にしたい」といった要求が頻出します。これを一瞬で叶えるのがユーティリティ型です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// --- ベースとなる巨大な型 ---
+interface UserEntity {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;
+  createdAt: Date;
+}
+
+// 1. Partial&lt;T&gt; : すべてのプロパティを任意（?付き）にする
+// PATCHリクエスト（一部だけ更新するAPI）のBody型に最適です。
+type UpdateUserDto = Partial&lt;UserEntity&gt;;
+/* 
+{
+  id?: number;
+  name?: string;
+  email?: string;
+  age?: number;
+  createdAt?: Date;
+}
+*/
+const updateData: UpdateUserDto = { name: 'Bob' }; // 他の項目がなくてもOK
+
+// 2. Omit&lt;T, K&gt; : 指定したプロパティを除外する
+// 新規作成時（IDや作成日時はDB側で自動付与されるため不要）などに使います。
+type CreateUserDto = Omit&lt;UserEntity, 'id' | 'createdAt'&gt;;
+/*
+{
+  name: string;
+  email: string;
+  age?: number;
+}
+*/
+
+// 3. Pick&lt;T, K&gt; : 指定したプロパティだけを抽出する
+// Omitの逆。リスト表示用の軽量なデータ型を作る時などに便利です。
+type ContactInfo = Pick&lt;UserEntity, 'name' | 'email'&gt;;
+
+// 4. Readonly&lt;T&gt; : すべてのプロパティを読み取り専用にする
+type ImmutableUser = Readonly&lt;UserEntity&gt;;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Utility Typesは便利ですが、これらを何重にもネストさせたり複雑に組み合わせすぎると（例：<code>Pick&lt;Partial&lt;Omit&lt;User, 'id'&gt;&gt;, 'name'&gt;</code>）、最終的にどんな型になっているのかエディタ上のホバー表示で追いきれなくなり、チームメンバーを混乱させます。型はあくまで「可読性」と「安全性の担保」のためにあります。複雑なUtility Typesパズルになりそうな場合は、無理に合成せず、素直に新しい <code>interface</code> を定義してコメントを添えた方が、ドキュメントとしての価値が高まる場合が多いです。DRY原則と可読性のバランスを見極めましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="typescript-11" id="typescript-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>上級編: 型ガードと絞り込み（Type Narrowing）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 不確実なデータを安全な型に「確定」させる（なぜ型ガードを使うのか）</h4>
+            <p>TypeScriptのコンパイラはコードを解析して型を推論しますが、外部APIのレスポンスやユーザー入力、ローカルストレージの値など、「実行時になってみないと分からないデータ（unknown）」に対しては無力です。これを安全に扱うためには、実行時のJavaScriptのロジック（if文など）を使ってデータの構造をチェックし、それが特定の型であることをTypeScriptコンパイラに「証明」する必要があります。これが「型ガード（Type Guard）と絞り込み（Type Narrowing）」というTypeScript特有の強力な概念です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>ユーザー定義型ガード</h4>
+            <p>外部APIからのレスポンスなど、TypeScriptにとって <code>any</code> や <code>unknown</code> なデータが、本当に目的の型（Interface）を満たしているかを「実行時のロジック」でチェックし、TypeScriptに「これは安全だ」と教え込む究極の防衛術です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>interface Bird {
+  type: 'bird';
+  fly: () => void;
+}
+
+// 戻り値の「obj is Bird」が型ガード（Type Predicate）の印
+// この関数が true を返せば、TSは引数 obj を Bird 型だと確信する
+function isBird(obj: any): obj is Bird {
+  // 実行時のJavaScriptロジックとして、オブジェクトの構造を厳密にチェックする
+  return (
+    obj !== null && 
+    typeof obj === 'object' && 
+    'fly' in obj && 
+    typeof obj.fly === 'function'
+  );
+}
+
+function processAnimal(animal: unknown) {
+  // ここでは animal は unknown なので fly() は呼べない
+  // animal.fly(); // ❌ Object is of type 'unknown'.
+
+  if (isBird(animal)) {
+    // 💡 型ガードを通過したこのブロックの中では、
+    // animal は完全に Bird 型として扱われ、サジェストも効く！
+    animal.fly();
+  } else {
+    console.log('飛べません（Birdではありません）');
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>ユーザー定義型ガード（<code>obj is T</code>）は非常に強力ですが、「開発者が書いたバリデーションロジックが間違っていたら、間違った型をTSに信じ込ませてしまう」というリスク（asの危険性に近い）をはらんでいます。例えば、ロジック内で <code>return true</code> とだけ書けば、どんなデータでもその型だと判定されてしまいます。そのため、実務では複雑な型ガードを自作する代わりに、前述の <strong>Zod</strong> などのスキーマ検証ライブラリの <code>.safeParse()</code> メソッドを使って、検証と型ガードを同時に行うのが現在のモダンフロントエンド開発のデファクトスタンダードです。自作する場合は、ロジックに抜け穴がないか厳重なテストが必要です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Typescript Quiz -->
+
+<div class="quiz-section" id="typescript-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">TypeScript の型システムの理解度を確認しましょう。</p>
+        <div id="typescript-quiz-container"></div>
+        <div class="quiz-result" id="typescript-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="typescript-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="typescript-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="typescript-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="typescript-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('typescript')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('typescript')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="typescript-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

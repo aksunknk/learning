@@ -1,0 +1,626 @@
+      <div class="tab-intro webapi-intro">
+        <h2>🌐 Web / API 実践</h2>
+        <p>フロントとバックエンドを繋ぐ「通信と型」の契約を学びます。</p>
+      </div>
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="webapi-1" id="webapi-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>Web開発の土台：HTTP・JSON・クライアント/サーバー</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 FastAPIとTypeScriptに入る前に押さえる通信の基礎</h4>
+            <p><strong>なぜHTTPとJSONの仕様を厳格に意識すべきなのか？</strong><br>
+            フロントエンド（ブラウザ）とバックエンド（サーバー）は全く異なるメモリ空間で動く別のアプリケーションです。それらを繋ぐ唯一の架け橋が「HTTPプロトコル」と「JSONデータ」という"契約"です。この契約が曖昧なまま実装を進めると、「画面に値が表示されない」「予期せぬエラーで落ちる」といった結合時の不具合が多発します。型安全なフレームワークを使う前に、根本となる通信レイヤーの語彙を揃えることが、堅牢なシステムを作る第一歩となります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>クライアント/サーバーとHTTPの役割</h4>
+            <p>Webアプリは、ブラウザ（クライアント）がリクエストを送り、サーバーがレスポンスを返す往復で成り立ちます。HTTP はこの往復の約束事であり、メソッド（GET/POST/PATCH/DELETE）、URL、ヘッダ、ボディ、ステータスコードで意味を表現します。FastAPI はこの HTTP 契約を Python コードで宣言し、TypeScript 側はその契約を型として扱うことで、実装と仕様のズレを早期に減らせます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTTP</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 【HTTPリクエストの構造】
+# メソッド パス プロトコルバージョンの形式。
+# GETはリソースの取得。副作用がないことを期待される。
+GET /api/lessons?limit=10 HTTP/1.1
+Host: api.example.com
+# クライアントが受け取れるデータ形式（JSON）を明示。
+# 初心者はヘッダの指定を忘れがちだが、Content-TypeやAcceptは超重要。
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1Ni...</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>ステータスコードとエラーハンドリング</h4>
+            <p>2xx は成功、4xx はクライアント入力起因、5xx はサーバー内部起因、という大枠を運用で徹底するとデバッグ効率が上がります。例えば 422 は入力バリデーション不一致、404 は対象なし、409 は競合、500 は想定外障害です。フロントは `ok` だけ見るのではなく、ステータスとエラーボディの構造を合わせて扱うべきです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 【実践的なエラーハンドリング】
+async function fetchLessons() {
+  const response = await fetch('/api/lessons', {
+    headers: { 'Accept': 'application/json' }
+  });
+
+  if (!response.ok) {
+    // 【Senior Engineer Comment】
+    // 単にErrorを投げるだけでなく、ステータスコードに応じて
+    // ユーザーへのフィードバックやログレベルを変えるのが現場の基本。
+    if (response.status === 401) {
+      throw new Error('セッションが切れました。再ログインしてください。');
+    }
+    if (response.status === 422) {
+      // バリデーションエラー時はサーバーから詳細をパースして表示
+      const errBody = await response.json();
+      console.error('Validation Error:', errBody.detail);
+      throw new Error('入力内容に誤りがあります。');
+    }
+    // 500系などの汎用エラー
+    throw new Error(`システムエラーが発生しました (HTTP ${response.status})`);
+  }
+
+  return response.json();
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>JSON契約とバージョニングの意識</h4>
+            <p>JSON は軽量ですが、自由度が高すぎるため契約管理が必要です。フィールド名、型、nullable、必須/任意を固定し、将来変更時は後方互換を意識します。安易な breaking change はフロントを即座に壊します。理想は OpenAPI を単一の真実源にすることです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JSON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>{
+  // 【JSONレスポンスのスキーマ設計】
+  // nullを許容するかどうかの設計がTypeScriptの `?` に直結する。
+  "id": "lesson-1",
+  "title": "HTTP Basics",
+  "quiz_count": 2,
+  // 日付はISO8601フォーマットの文字列で渡すのが定石。
+  "created_at": "2023-10-01T12:00:00Z",
+  // 削除予定のフィールドには明確に非推奨（deprecated）の意図を持たせる
+  "deprecated_field": null 
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>通信デバッグでは「ブラウザの開発者ツール（Networkタブ）」が最強の武器です。「リクエストヘッダが正しく送られているか」「レスポンスは本当にJSONか（HTMLのエラーページが返ってきていないか）」を確認する癖をつけましょう。APIが動かないときの9割は、URLのタイポ、認証ヘッダの欠落、またはCORS（Cross-Origin Resource Sharing）の設定漏れです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="webapi-2" id="webapi-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>TypeScript 概要：型で壊れ方を先に制御する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 any回避・ユニオン・型狭窄・APIレスポンス型の設計</h4>
+            <p><strong>なぜTypeScriptで厳格に型を定義するのか？</strong><br>
+            「型エラーを直すのが面倒」と思うかもしれませんが、型エラーは「本番環境でユーザーが遭遇するはずだったクラッシュ」を、手元のエディタが事前に防いでくれている証拠です。とくにAPIから取得するデータは外部要因で構造が変わりやすいため、<code>any</code>でやり過ごすと「プロパティが存在しない（undefined is not a function）」というJS特有の致命的エラーの温床になります。型はコードのドキュメントであり、最大の防御壁です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>TypeScriptを使う理由</h4>
+            <p>TypeScript は JavaScript の上位互換で、静的型検査を追加する言語です。実行時の挙動は JS ですが、ビルド時に型不一致を検出できます。API 駆動開発では「サーバーが返す shape」と「画面が期待する shape」の不一致が主なバグ源なので、型で先に落とす効果が大きいです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 【型の定義とNull安全性】
+type LessonMeta = {
+  id: string;
+  title: string;
+  order: number;
+  // 【Senior Engineer Comment】
+  // 省略可能なプロパティは `?` を使うが、
+  // 「値がないこと」を明示したい場合は `| null` を使うのが安全。
+  description: string | null; 
+};
+
+// 使用例
+const lesson: LessonMeta = {
+  id: "l1",
+  title: "TS Basics",
+  order: 1,
+  description: null // 明示的にnullを入れる必要がある
+};</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>ユニオン型と型狭窄</h4>
+            <p>実務データは単一型でないことが多く、ユニオン型（A | B）で扱います。分岐時に `in`、`typeof`、ユーザー定義 type guard を使い、処理可能な型へ狭窄（Type Narrowing）します。レスポンスの成功/失敗を discriminated union（判別可能なユニオン型）で定義すると、UI分岐を安全に書けます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 【Discriminated Unionによる安全な状態管理】
+// 共通のプロパティ（ここでは 'ok' または 'status'）を持たせるのがコツ。
+type ApiResult&lt;T&gt; =
+  | { status: 'success'; data: T }
+  | { status: 'error'; message: string; code: number };
+
+function handleResult(result: ApiResult&lt;LessonMeta[]&gt;) {
+  // 【Senior Engineer Comment】
+  // ここで result.data にアクセスするとコンパイルエラーになる。
+  // まだ 'success' かどうか確定していないからだ。
+  
+  if (result.status === 'success') {
+    // このブロック内では result は必ず success 型と推論される（型狭窄）
+    console.log(result.data.map(l =&gt; l.title));
+  } else {
+    // ここでは error 型と推論されるため、code にアクセス可能
+    console.error(`Error ${result.code}: ${result.message}`);
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>strictモード運用</h4>
+            <p>tsconfig の `strict: true` を基準にし、必要な箇所だけ局所的に緩和する方針が保守上有利です。FastAPI 側変更時にフロントが即エラーになる状態は、むしろ望ましい監視機構です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JSON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "moduleResolution": "node",
+    // 【Senior Engineer Comment】
+    // 新規プロジェクトでは絶対に `strict: true` をオンにする。
+    // `any`の暗黙的利用や、nullチェックの漏れをコンパイラが弾いてくれる。
+    "strict": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    // オプショナルなプロパティに undefined を明示的に代入するのを防ぐ
+    "exactOptionalPropertyTypes": true
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>API連携時に `fetch(...).then(res =&gt; res.json())` の戻り値は `any`（正確には `Promise&lt;any&gt;`）になります。ここで `as MyType` と型アサーションを使うのは非常に危険です。実務では <strong>Zod</strong> などのスキーマ検証ライブラリを使って、実行時にJSONの構造をパース＆バリデーションし、安全に型をつける手法（Parse, don't validate）が主流です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="webapi-3" id="webapi-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>FastAPI 概要：ルーティング・バリデーション・依存性注入</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 最小構成から実務構成へ進むための基礎</h4>
+            <p><strong>なぜFastAPIは「型」を中心に設計されているのか？</strong><br>
+            Pythonのような動的型付け言語で堅牢なWeb APIを作るための最適解が、「型ヒント」をフレームワークのコアに据えることでした。FastAPIでは、関数の引数と戻り値に型をつけるだけで、入力のバリデーション（Pydantic）から、OpenAPI（Swagger）ドキュメントの自動生成まで全てが連動して動きます。これにより「ドキュメントと実装の乖離」というAPI開発最大の苦痛から解放されます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>ルート関数と自動ドキュメント</h4>
+            <p>FastAPI は Python の型ヒントを活用して OpenAPI ドキュメントを自動生成します。`@app.get` などでエンドポイントを宣言し、関数シグネチャにクエリ・パス・ボディを記述するだけで、/docs で実行可能な仕様書が得られます。フロント連携と QA 自動化に直接効く資産です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi import FastAPI, Query
+
+app = FastAPI(title="Learning API", version="1.0.0")
+
+# 【パスオペレーションの定義】
+# 関数の引数に型をつけるだけで自動的にクエリパラメータとして認識される
+@app.get('/api/health')
+def health(
+    verbose: bool = Query(False, description="詳細な状態を返すか")
+) -&gt; dict:
+    # 【Senior Engineer Comment】
+    # このエンドポイントを定義した瞬間、`/docs` にアクセスすると
+    # `verbose` チェックボックス付きのテストUIが自動生成される。
+    if verbose:
+        return {'status': 'ok', 'db_connected': True, 'uptime': 3600}
+    return {'status': 'ok'}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Pydanticモデルで入力を閉じる</h4>
+            <p>リクエストボディは Pydantic モデルで受けることで、型・範囲・必須性を統一的に検証できます。`extra='forbid'` を使えば未定義フィールドを拒否でき、契約逸脱を防げます。入力検証をルート内で手書きすると重複と漏れが増えるため、モデルに寄せるのが合理的です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from pydantic import BaseModel, ConfigDict, Field
+
+# 【Pydanticによる厳格なバリデーション】
+class QuizAnswerIn(BaseModel):
+    # 余分なフィールドが送られてきたら422エラーにする（悪意ある攻撃の防止）
+    model_config = ConfigDict(extra='forbid')
+    
+    # 必須フィールド（文字列）
+    lesson_id: str
+    
+    # 0以上の整数のみ受け付ける（バリデーションルール）
+    choice_index: int = Field(..., ge=0, description="選択肢のインデックス")
+
+@app.post('/api/quiz/answer')
+def submit_answer(payload: QuizAnswerIn):
+    # 【Senior Engineer Comment】
+    # この関数が呼ばれた時点で、payloadの中身は確実に型と条件を満たしている。
+    # 「choice_indexがマイナスだったら…」などのバリデーションロジックを
+    # ビジネスロジック内に書く必要がなくなるのが最大のメリット。
+    return {"accepted_answer": payload.choice_index}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>依存性注入（Depends）の基本</h4>
+            <p>DB セッション、認証情報、設定値などは `Depends` に切り出すと、ルート関数を薄く保てます。依存関数を差し替えるだけでテストが書きやすくなり、関心分離が進みます。重要なのは「責務を薄く保つこと」です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi import Depends, HTTPException
+from typing import Annotated
+
+# 【依存性の注入（DI）】
+def get_db_session():
+    # 本来は yield を使ってセッションを返し、終了後に閉じる
+    db = {"items": ["apple", "banana"]}
+    yield db
+    # 処理終了後に必ず実行されるクリーンアップ
+    print("DB Session closed")
+
+def verify_token(token: str) -&gt; str:
+    if token != "secret":
+        raise HTTPException(status_code=401, detail="無効なトークン")
+    return "user_123"
+
+# Dependsを使うことで、関数の実行前に前提条件の処理とデータ取得を済ませる
+@app.get('/items')
+def list_items(
+    session: dict = Depends(get_db_session),
+    user_id: str = Depends(verify_token)
+):
+    # 【Senior Engineer Comment】
+    # ルーター関数（コントローラー）には「認証の検証」や「DB接続の確立」の
+    # ロジックが一切含まれていない。テスト時は `app.dependency_overrides` を
+    # 使ってモックのDBやユーザーIDに簡単に差し替えられる。
+    return {"user": user_id, "data": session["items"]}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>FastAPIの <code>response_model</code> は必ず設定しましょう。これを怠ると、内部処理で使っていたパスワードやDB内部IDなどの「ユーザーに見せてはいけない情報」が、意図せずJSONでフロントに漏洩する事故（Data Leak）に繋がります。出力もPydanticモデルで絞り込むのが現場の鉄則です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="webapi-4" id="webapi-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>React + TypeScript 通信基礎：副作用・中断・UI状態</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 fetchの基本からメモリリーク回避まで</h4>
+            <p><strong>なぜReactでのデータ通信は難しいのか？</strong><br>
+            Reactのコンポーネントは「状態（State）からUI（View）への純粋な変換」を目指していますが、API通信のような「外部システムとのやり取り（副作用）」は、その純粋性を壊します。ユーザーが通信の完了を待たずに別のページへ移動したり、ボタンを連打したりするケースを考慮しないと、「アンマウントされたコンポーネントの状態を更新しようとした」というエラーや、古いデータが新しいデータを上書きする競合（Race Condition）が発生します。これを制御するのがフロントエンドの難所です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>useEffectでのデータ取得の基本形</h4>
+            <p>React では描画と副作用を分離するため、通信は通常 useEffect に置きます。依存配列が変わるたびに effect は再実行されるため、「どの値の変化で再取得するか」を明示する設計が必要です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import { useState, useEffect } from 'react';
+
+// 【useEffectを用いたデータフェッチ】
+function LessonDetail({ lessonId }: { lessonId: string }) {
+  const [data, setData] = useState&lt;any&gt;(null);
+
+  useEffect(() =&gt; {
+    // IDがない場合はフェッチしない
+    if (!lessonId) return;
+
+    // 【Senior Engineer Comment】
+    // useEffectには非同期関数（async）を直接渡せないため、
+    // 内部で関数を定義して即座に呼び出すパターンが一般的。
+    const fetchData = async () =&gt; {
+      const res = await fetch(`/api/lessons/${lessonId}`);
+      const json = await res.json();
+      setData(json);
+    };
+
+    fetchData();
+  }, [lessonId]); // lessonIdが変わるたびに再実行
+
+  return &lt;div&gt;{data?.title}&lt;/div&gt;;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>AbortControllerで中断可能にする</h4>
+            <p>画面遷移や再クリックで古い通信が残ると状態競合を起こします。AbortController を毎回生成し cleanup で abort することで、アンマウント後の setState や古いレスポンス反映を抑制できます。これは体感性能よりも整合性の問題です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>useEffect(() =&gt; {
+  if (!lessonId) return;
+
+  // 【AbortControllerによる通信キャンセルの実装】
+  const ac = new AbortController();
+
+  const fetchData = async () =&gt; {
+    try {
+      // signalをfetchのオプションに渡す
+      const res = await fetch(`/api/lessons/${lessonId}`, { 
+        signal: ac.signal 
+      });
+      const json = await res.json();
+      setData(json);
+    } catch (err: any) {
+      // 【Senior Engineer Comment】
+      // 中断された場合はAbortErrorが飛んでくるので、
+      // これは異常なエラーとして扱わずに握りつぶす。
+      if (err.name === 'AbortError') {
+        console.log('通信がキャンセルされました');
+        return;
+      }
+      console.error('Fetch error:', err);
+    }
+  };
+
+  fetchData();
+
+  // クリーンアップ関数: コンポーネントが破棄されたり、
+  // 次のuseEffectが走る直前に呼ばれ、通信を強制中断する。
+  return () =&gt; ac.abort();
+}, [lessonId]);</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>表示状態の分割</h4>
+            <p>最低限、`loading` / `error` / `data` を分けて管理すると UI の説明責務が明確になります。単一 state に詰め込むより、状態遷移を列挙しやすく、障害時メッセージも制御しやすいです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 【UI状態の堅牢な管理】
+type ViewState&lt;T&gt; = {
+  isLoading: boolean;
+  error: string | null;
+  data: T | null;
+};
+
+// コンポーネントでの使用イメージ
+const [state, setState] = useState&lt;ViewState&lt;LessonMeta&gt;&gt;({
+  isLoading: true, // 初期ロード中
+  error: null,
+  data: null,
+});
+
+// 【Senior Engineer Comment】
+// 実務では「ローディング中」「エラー発生」「データ表示」の3つのUIを
+// 必ず網羅してコーディングすること。どれか一つでも抜けると、
+// ユーザーは「画面が真っ白で止まった」と感じて離脱します。
+if (state.isLoading) return &lt;Spinner /&gt;;
+if (state.error) return &lt;ErrorAlert message={state.error} /&gt;;
+if (!state.data) return &lt;EmptyState /&gt;;
+
+return &lt;LessonView data={state.data} /&gt;;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>素の <code>useEffect</code> と <code>fetch</code> を使って自前でキャッシュやローディング状態を管理するのは、実はバグの温床になりやすく非常に困難です。実際のプロダクションコードでは、<strong>SWR</strong> や <strong>TanStack Query (React Query)</strong> といった「データフェッチライブラリ」を導入し、フェッチ・キャッシュ・再検証の複雑さを丸投げするのが現在のスタンダードです。まずは素の動きを理解した上でライブラリへステップアップしましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="webapi-5" id="webapi-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>非同期処理の基礎からSSEへ：asyncio実践入門</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 event loop・非ブロッキング・ストリーミング設計</h4>
+            <p><strong>なぜ生成AIのレスポンスは「少しずつ」送る必要があるのか？</strong><br>
+            LLM（大規模言語モデル）の推論や重いデータ処理は数秒〜数十秒かかります。通常のHTTPリクエストのように「全部終わるまで待ってから返す」と、ユーザーは「アプリがフリーズした」と勘違いします。そこで、文字が生成されるたびに即座に送信する「ストリーミング（SSE）」技術が重要になります。これをPythonで実現するには、1つの処理が全体を止めてしまわない「非同期処理（asyncio）」の深い理解が不可欠です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>event loopと非ブロッキングの考え方</h4>
+            <p>asyncio は event loop が多数タスクを協調的に切り替えるモデルです。`await` で制御を返すことで他タスクが進みます。逆に time.sleep や重い同期処理を挟むとループ全体が停止し、同時接続性能が落ちます。「どの処理がブロッキングか」を見分ける習慣が必須基礎です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import asyncio
+import time
+
+# 【ブロッキング vs 非ブロッキング】
+async def bad_handler():
+    # 【❌ 悪い例】
+    # time.sleepはスレッド全体をブロックするため、他のユーザーの
+    # リクエストも全員待たされてしまう（大渋滞の発生）。
+    time.sleep(5)
+    return {"status": "ok"}
+
+async def good_handler():
+    # 【✅ 良い例】
+    # asyncio.sleepはイベントループに制御を返す（await）ため、
+    # 待っている間に他のユーザーのリクエストを処理できる。
+    # API呼び出しやDBクエリも同様に「await」できるライブラリを使うべき。
+    await asyncio.sleep(5)
+    return {"status": "ok"}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>SSEの最小構成</h4>
+            <p>SSE（Server-Sent Events） は `text/event-stream` で逐次テキストを送る方式です。各イベントを改行で区切る必要があります。WebSocket ほど双方向でなくてもよい場面（サーバーからの一方向の垂れ流し）では、実装負荷が低く運用しやすい利点があります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import json
+from fastapi.responses import StreamingResponse
+
+# 【ジェネレータを用いたSSEデータの生成】
+async def generate_events():
+    tokens = ["Hello", " ", "World", "!"]
+    for tok in tokens:
+        # 少しずつ処理しているシミュレーション
+        await asyncio.sleep(0.5)
+        
+        # SSEの厳密なフォーマット: "data: {JSON}\n\n"
+        # 【Senior Engineer Comment】
+        # 最後の改行2つ（\n\n）がメッセージの区切りとなる。
+        # これが欠けるとフロント側で受信イベントが発火しないので注意。
+        payload = json.dumps({"token": tok}, ensure_ascii=False)
+        yield f"data: {payload}\n\n"</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>中断とバックプレッシャ</h4>
+            <p>ストリーミングは開始より終了制御が難所です。クライアント切断時に生成タスクを止めないと、GPU 推論が裏で走り続けます。さらに受信側が遅いと送信バッファが詰まり、待機が連鎖します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>@app.get("/api/llm/stream")
+async def stream_response(request: Request):
+    async def event_iter():
+        try:
+            async for token in actual_llm_generation():
+                # クライアントが切断されていないか定期的にチェック
+                if await request.is_disconnected():
+                    # 【Senior Engineer Comment】
+                    # ブラウザのタブを閉じられたら直ちに推論を止める。
+                    # クラウドGPUのコストを無駄にしないための最重要ポイント。
+                    print("Client disconnected. Stop generation.")
+                    break
+                
+                yield f"data: {token}\n\n"
+        except asyncio.CancelledError:
+            # タスクがキャンセルされた場合のクリーンアップ
+            print("Stream task cancelled")
+            raise
+
+    # media_typeを指定することでブラウザがSSEとして認識する
+    return StreamingResponse(
+        event_iter(), 
+        media_type='text/event-stream'
+    )</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>SSEを実稼働環境（NginxやAWS ALBなどの裏）にデプロイすると、「ローカルでは動くのに本番だとバッファリングされて一気にテキストが表示される」という現象に高確率で遭遇します。プロキシサーバー側で <code>proxy_buffering off;</code> 等の設定を入れないと、せっかくのストリーミングが途中で堰き止められてしまうためインフラ設定にも目を配る必要があります。</p>
+          </div>
+        </div>
+      </article>
+      <!-- Webapi Quiz -->
+      
+<div class="quiz-section" id="webapi-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">Web APIの基礎知識を確認しましょう。</p>
+        <div id="webapi-quiz-container"></div>
+        <div class="quiz-result" id="webapi-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="webapi-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="webapi-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="webapi-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="webapi-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('webapi')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('webapi')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="webapi-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

@@ -1,0 +1,1679 @@
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="python-1" id="python-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>変数とデータ型（基礎中の基礎）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 データを格納する「箱」と、その種類について</h4>
+            <p><strong>なぜ変数が必要なのか？</strong>変数がなければ、プログラムはただ1回計算して終わる電卓に過ぎません。ユーザーからの入力や、APIからのレスポンスなど、「状態（データ）」を一時的に保存・更新し、次の処理へと渡していくために絶対不可欠な概念です。また、後からコードを読む人間（やAI）に対して「この値は何を意味しているか」という<strong>意図を伝える最大のドキュメント</strong>にもなります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>変数とデータ型の基礎</h4>
+            <p>Pythonは「動的型付け」と呼ばれる言語で、変数を作るときに型を宣言する必要がありません。しかし、だからこそ「今この変数には何型のデータが入っているのか」を意識しないと、予期せぬエラー（TypeErrorなど）を招きます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ❌ 悪い例（マジックナンバー：数値が直接書かれていて意図が不明）
+# プロの現場でこれを書くと確実にコードレビューで弾かれます。
+print(1000 * 1.1)
+
+# ✅ 良い例（変数を使って意味を持たせる）
+price = 1000        # int型（整数）
+tax_rate = 1.1      # float型（浮動小数点）
+
+# 計算結果を新たな変数に格納する
+total_price = int(price * tax_rate) # 明示的にintでキャストし、小数点以下を切り捨てる
+
+# f-string（f文字列）を使った出力
+# str型とint型を直接 + で繋ぐとエラーになるため、実務ではf-stringを多用します。
+print(f"商品の税込価格は {total_price} 円です。")</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>変数名には必ず「具体的で検索しやすい名前」をつけてください。<code>a = 10</code> や <code>data = [...]</code> のような曖昧な命名は、デバッグ時に地獄を見ます。また、Pythonでは変数名にスネークケース（例: <code>user_name</code>）を使うのがPEP8という標準規約で決まっています。AIにコード生成を依頼する際も、「user_nameという変数に...」と具体的に指定すると精度が劇的に上がります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="python-2" id="python-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>リストと辞書（データの集まり）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 複数のデータを一括で管理する魔法の道具</h4>
+            <p><strong>なぜリストや辞書が必要なのか？</strong>「100人のユーザーデータ」を <code>user1</code>, <code>user2</code>... <code>user100</code> と変数で定義するのは不可能です。リストを使えば「順序のあるデータの列」を、辞書を使えば「ラベル（キー）で引けるデータのまとまり」を1つの変数として管理できます。特に辞書は、現代のWeb開発で標準フォーマットとなっているJSONと1対1で対応するため、API通信において最重要のデータ構造です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>リスト（配列）と辞書（dict）の使い分け</h4>
+            <p>単純な一覧ならリスト、属性のまとまりなら辞書を使います。この2つをネスト（入れ子）にする構造が、実務で最も頻繁に登場します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># --- リストの基本と罠 ---
+fruits = ['Apple', 'Banana', 'Orange']
+
+# インデックスは0から始まる
+print(fruits[0])  # -&gt; Apple
+
+# ⚠️ リストの末尾を取得するPython特有の書き方
+print(fruits[-1]) # -&gt; Orange (要素数がわからなくても最後が取れる)
+
+# ❌ IndexError: 存在しないインデックスへのアクセス
+# print(fruits[3]) # アプリケーションがクラッシュする原因第1位！
+
+
+# --- 辞書の基本と実践的な使い方 ---
+# APIから取得したJSONは、そのままPythonの辞書として扱われます
+user_profile = {
+    "id": 101,
+    "username": "bob_smith",
+    "is_active": True,
+    "roles": ["admin", "editor"] # 辞書の中にリストを入れる（頻出パターン）
+}
+
+# キーを使ったアクセス
+print(user_profile["username"])
+
+# 💡 安全なアクセス方法 (.get)
+# 存在しないキーに user_profile["age"] とアクセスするとKeyErrorでクラッシュします。
+# 実務では外部データからのアクセスには必ず .get() を使い、デフォルト値を設定します。
+age = user_profile.get("age", 20) # ageがなければ20を返す
+print(f"年齢: {age}")</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>APIのレスポンスなど「外部から受け取ったデータ」を処理する際は、絶対に辞書の直接アクセス（<code>data["key"]</code>）を使わず、<code>data.get("key")</code> を使う癖をつけてください。データ欠損時にアプリ全体が停止（500エラー）するのを防ぐことができます。リストと辞書を組み合わせた「辞書のリスト（<code>[{}, {}, {}]</code>）」はDBのテーブルデータを表す基本形なので、この操作に慣れることが最初の壁になります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="python-3" id="python-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>条件分岐（If文）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 状況に応じてプログラムの動きを変える</h4>
+            <p><strong>なぜIf文が重要なのか？</strong>If文（条件分岐）は、プログラムに「意思決定」をさせるための機能です。「ログイン済みならダッシュボードへ、未ログインならトップページへ」「残高不足ならエラーを返す」といったビジネスロジックは、すべてIf文で表現されます。If文のないプログラムは、ただの一本道のスクリプトです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>If-elif-else の基本と、Pythonならではの真偽判定</h4>
+            <p>Pythonはインデント（字下げ）でブロックを表現します。また、暗黙の真偽値（Falsy/Truthy）を活用することで、非常にシンプルで読みやすいコードを書くことができます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>user_age = 20
+has_ticket = True
+
+# 複数の条件を組み合わせる (and / or)
+if user_age &gt;= 18 and has_ticket:
+    print("入場可能です。")
+elif user_age &lt; 18 and has_ticket:
+    print("未成年は保護者の同伴が必要です。")
+else:
+    print("チケットがないため入場できません。")
+
+# --- Python特有の暗黙の真偽判定 (Falsy) ---
+# 以下の値はすべて「False」として判定されます。
+# [], {}, "", 0, None
+
+user_name = ""
+cart_items = []
+
+# ❌ 冗長で素人っぽい書き方
+if len(cart_items) == 0:
+    print("カートは空です")
+
+# ✅ プロが書くPythonic（Pythonらしい）な書き方
+# リストが空であればFalseとなるので、notで反転させます
+if not cart_items:
+    print("カートは空です (Pythonic)")
+
+if not user_name:
+    print("名前が入力されていません")</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務では「早期リターン（Early Return）」というテクニックを多用します。if文を深くネスト（入れ子）にするのではなく、「エラー条件ならさっさと <code>return</code> や <code>raise</code> で処理を抜ける」ように書くと、メインの処理がスッキリして可読性が爆上がりします（これをガード節とも呼びます）。AIはネストの深いコードを生成しがちなので、「早期リターンで書き直して」と指示するのが効果的です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="python-4" id="python-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>繰り返し処理（ForループとWhileループ）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 面倒な単純作業を一瞬で終わらせる</h4>
+            <p><strong>なぜ繰り返し処理が必要なのか？</strong>「10件のデータを処理する」のと「100万件のデータを処理する」のは、プログラムのコード上は全く同じ手間で書くことができます。これがコンピューターの圧倒的なパワーの源泉です。Forループは「決まった回数・データ数だけ繰り返す」場合に使われ、Whileループは「特定の条件を満たすまでずっと繰り返す（例: ユーザーが終了を選ぶまで）」場合に使われます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>Forループと内包表記</h4>
+            <p>PythonのForループは、他言語（C言語の for i=0; i&lt;N など）と異なり、「データのかたまりから1つずつ要素を取り出す」という直感的な動きをします。さらに、リストを一瞬で作る「リスト内包表記」はPython最大の強みです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>users = ["Alice", "Bob", "Charlie"]
+
+# 1. 基本的なForループ
+# usersリストから1つずつ要素を取り出し、userという変数に代入して実行
+for user in users:
+    print(f"Hello, {user}!")
+
+# 2. 辞書のループ (.items()を使うのが鉄則)
+scores = {"Math": 90, "English": 85}
+for subject, score in scores.items():
+    print(f"{subject}: {score}点")
+
+# --- 🔥 Pythonicな必殺技：リスト内包表記 ---
+prices = [100, 200, 300]
+
+# ❌ 冗長な書き方
+taxed_prices = []
+for p in prices:
+    taxed_prices.append(int(p * 1.1))
+
+# ✅ リスト内包表記 (List Comprehension)
+# ループを回しながら新しいリストを1行で生成。実行速度も通常のForより速いです。
+taxed_prices = [int(p * 1.1) for p in prices]
+
+# さらに条件でフィルタリングも可能（200円以上の商品だけ抽出）
+high_prices = [p for p in prices if p >= 200]
+print(high_prices) # [200, 300]</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務で「ループを回しながら、現在のインデックス（何番目か）も知りたい」というケースが頻出します。ここで <code>for i in range(len(users)):</code> のようなC言語風のコードを書くと素人感が出ます。プロは必ず <code>for i, user in enumerate(users):</code> を使います。Pythonでは「いかにループを簡潔に、安全に回すか（内包表記、enumerate、zipなどの活用）」がコード品質の指標になります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="python-5" id="python-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>関数の定義と呼び出し</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 何度も使う処理をひとまとめにして再利用する</h4>
+            <p><strong>なぜ関数に分けるのか？</strong>コードが100行、1000行と長くなってくると、「どこで何をしているか」が全く追えなくなります。関数は複雑な処理に「名前」をつけてカプセル化する機能です。また、「仕様変更があったときに、直す箇所が1箇所で済む（保守性が高い）」というのが最大のメリットです。優れた関数は、名前を見るだけで中身を読まなくても何をするか分かるようになっています。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>関数の基本（def）と、型ヒント（Type Hints）</h4>
+            <p>Python 3.5以降、引数と戻り値に「型」を注釈できるようになりました（型ヒント）。これは必須ではありませんが、現代の開発（特にFastAPIなど）では事実上の必須スキルです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ❌ 型ヒントなしの古い書き方（引数に何を入れていいか、エディタが推測できない）
+def calculate_tax(price, tax_rate=0.1):
+    return int(price * (1 + tax_rate))
+
+# ✅ モダンなPythonの書き方（型ヒントとDocstringを完備）
+def calculate_tax_modern(price: int, tax_rate: float = 0.1) -&gt; int:
+    """
+    税込み価格を計算する関数
+    
+    Args:
+        price (int): 税抜き価格
+        tax_rate (float): 税率 (デフォルトは0.1=10%)
+        
+    Returns:
+        int: 小数点を切り捨てた税込み価格
+    """
+    return int(price * (1 + tax_rate))
+
+# 呼び出し方
+result1 = calculate_tax_modern(1000)             # デフォルト値 0.1 が使われる
+result2 = calculate_tax_modern(1000, tax_rate=0.08) # キーワード引数で指定（可読性が高い）
+
+print(result1) # 1100
+print(result2) # 1080</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>関数の設計で最も大切なのは「単一責任の原則（1つの関数は1つのことだけをする）」です。「データをDBから取得して、計算して、メールで送信する」という関数を作ってはいけません。「取得」「計算」「送信」の3つの関数に分けるべきです。関数名に <code>and</code> が含まれそうになったら（例: <code>fetch_and_calculate</code>）、それは関数を分割すべきサインです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="python-6" id="python-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>データ構造の極意（辞書とタプルの使い分け）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 リストだけでは対応できない実務のデータ設計</h4>
+            <p><strong>なぜ複数のデータ構造が存在するのか？</strong>リストは便利ですが「どこからでも要素を変更できる」という性質があります。これが原因で「知らない間に別の関数でデータが書き換えられていた」というバグが頻発します。「絶対に書き換えられないデータ構造（タプル）」や「一意の要素を超高速に検索できるデータ構造（集合: set）」を適材適所で使い分けることで、バグを未然に防ぐ堅牢な設計が可能になります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>ミュータブル（変更可能）とイミュータブル（変更不可）</h4>
+            <p>リストや辞書は「ミュータブル」ですが、タプルや文字列は「イミュータブル」です。重要な定数や、辞書のキーにはイミュータブルなオブジェクトしか使えません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># --- タプル (Tuple) の基本 ---
+# () で作成。一度作ったら要素の追加や変更ができない
+db_config = ("localhost", 5432, "admin", "password")
+
+# db_config[1] = 8080 # TypeError: タプルは変更不可！
+# 💡 意図せず設定が書き換わるのを防ぐため、定数的な設定値はタプルにします。
+
+# アンパック代入（実務で多用します）
+host, port, user, pwd = db_config
+print(f"接続先: {host}:{port}")
+
+# --- 集合 (Set) の基本 ---
+# {} で作成。重複を許さず、順番を持たない
+visited_users = {"Alice", "Bob", "Alice"}
+print(visited_users) # -&gt; {'Bob', 'Alice'} （重複は自動で消える）
+
+# 💡 リストからの重複排除に一瞬で使える
+raw_data = [1, 2, 2, 3, 3, 3]
+unique_data = list(set(raw_data)) # -&gt; [1, 2, 3]
+
+# 💡 要素の存在確認 (in演算子) は、リストよりSetの方が圧倒的に高速(O(1))です
+if "Alice" in visited_users:
+    print("既に訪問済みです")</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>「数万件のデータの中から、特定のIDが含まれているか確認する」という処理を書く際、リストに対して <code>if user_id in user_list:</code> とすると、先頭から1つずつ探すためとんでもなく処理が遅くなります。検索対象を事前に <code>user_set = set(user_list)</code> のように集合（Set）に変換しておくだけで、検索速度が数千倍になることがあります。データ構造の選択は、そのままアルゴリズムのパフォーマンスに直結します。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="python-7" id="python-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>堅牢なコードの要（try-exceptによる例外処理）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 AIのコードによく欠けている「エラー発生時の備え」</h4>
+            <p><strong>なぜ例外処理が必要なのか？</strong>API通信の失敗、ファイルの読み込みエラー、ユーザーの不正な入力など、現実のプログラムは「予期せぬエラー（例外）」だらけです。例外処理を書かないと、1つのエラーでシステム全体が停止（クラッシュ）してしまいます。AIは正常に動く前提（Happy Path）のコードを生成しがちなため、「もしここでエラーが起きたらどうリカバリーするか」を設計するのが人間の重要な役割です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>try-except-finally ブロックの基本</h4>
+            <p>危険な処理を <code>try</code> ブロックで囲み、エラー時の対応を <code>except</code> で定義します。<code>finally</code> はエラーの有無に関わらず最後に必ず実行したい後処理（ファイルのクローズなど）に使います。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>def safe_divide(a, b):
+    try:
+        # エラーが起きるかもしれない処理
+        result = a / b
+        print(f"計算結果: {result}")
+        return result
+        
+    except ZeroDivisionError:
+        # 特定のエラー（0での割り算）をピンポイントでキャッチ
+        print("🚨 エラー: 0で割ることはできません。")
+        return None
+        
+    except TypeError as e:
+        # 例外オブジェクト(e)から詳細なエラー情報を取得
+        print(f"🚨 型エラー: 数値を入力してください。詳細: {e}")
+        return None
+        
+    except Exception as e:
+        # ❌ 全てのエラーを握りつぶす「ベアExcept」
+        # 開発中のバグまで隠してしまうので多用は厳禁ですが、
+        # アプリ全体を落とさないための最後の砦として使います。
+        print(f"⚠️ 予期せぬエラーが発生しました: {e}")
+        return None
+        
+    finally:
+        # 成功しても失敗しても必ず実行される（DBの切断などに使用）
+        print("💡 割り算の処理が終了しました。\n")
+
+safe_divide(10, 2)   # 正常系
+safe_divide(10, 0)   # 異常系 (ZeroDivisionError)
+safe_divide(10, "a") # 異常系 (TypeError)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>絶対にやってはいけないアンチパターンが「<code>except Exception: pass</code>（全てのエラーを無視して何もしない）」です。これをやると、本当に致命的なバグが起きたときにログすら残らず、原因究明が不可能になります。実務では <code>except</code> の中で必ずロガー（<code>logging.error</code> など）を使ってエラー内容をファイルや監視システムに記録します。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="python-8" id="python-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>よくあるエラーとアンチパターン</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 初学者が陥りやすい罠と解決策</h4>
+            <p><strong>なぜアンチパターンを知る必要があるのか？</strong>文法的には正しくても、「構造的な欠陥（バグの温床）」になる書き方があります。これをアンチパターンと呼びます。特にPython特有の「参照」や「ミュータブルなデフォルト引数」に関する罠は、発生すると非常に気づきにくく、解決に数日を要することもあります。先人たちの失敗から学びましょう。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>ミュータブルなデフォルト引数の罠（超頻出）</h4>
+            <p>関数のデフォルト引数に <code>[]</code> や <code>{}</code> を使うと、関数を呼び出すたびに「同じリスト」が使い回されてしまい、データがどんどん蓄積していくという恐ろしいバグを引き起こします。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ❌ 恐ろしいアンチパターン
+# Pythonでは、関数のデフォルト引数は「関数が定義された時に1回だけ」評価されます。
+def add_item_bad(item, target_list=[]):
+    target_list.append(item)
+    return target_list
+
+print(add_item_bad("Apple"))  # ["Apple"]
+print(add_item_bad("Banana")) # ["Apple", "Banana"] (空のリストを期待したのに前回のが残っている！)
+
+# ✅ 正解パターン (Noneを使う)
+def add_item_good(item, target_list=None):
+    if target_list is None:
+        target_list = [] # 呼び出されるたびに新しいリストを作る
+    target_list.append(item)
+    return target_list
+
+print(add_item_good("Apple"))  # ["Apple"]
+print(add_item_good("Banana")) # ["Banana"] (期待通り！)
+
+# --- もう一つの罠：ループ中の破壊的変更 ---
+# ❌ ループしているリスト自身の要素を削除してはいけない
+nums = [1, 2, 2, 3]
+for n in nums:
+    if n == 2:
+        nums.remove(n) 
+# 結果: [1, 2, 3] (2が1つ残ってしまう。インデックスが狂うため)
+
+# ✅ 新しいリストを作る（内包表記がベスト）
+clean_nums = [n for n in nums if n != 2]
+# 結果: [1, 3]</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務では、この「ミュータブルの罠」を避けるために、関数内に入ってきた引数（リストや辞書など）を直接書き換える「破壊的変更」を極力避けます。代わりに <code>new_list = list(old_list)</code> のようにコピーを作ってから操作するか、内包表記で新しいオブジェクトを返すのがモダンな設計です（イミュータブルなプログラミングパラダイム）。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="python-9" id="python-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>Final Mission: FastAPIによるTodoバックエンド構築</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 APIサーバーを作って、フロントと通信してみよう</h4>
+            <p><strong>なぜAPIサーバーを作るのか？</strong>これまでの学習は「パソコンの中で完結する処理」でしたが、世の中のアプリは「ブラウザ（フロントエンド）」と「サーバー（バックエンド）」がインターネット越しに通信して動きます。その架け橋となるのがAPIです。FastAPIは、Pythonで最も速く、かつ型安全にAPIを構築できるモダンなフレームワークです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>FastAPIとPydanticの連携</h4>
+            <p>API開発で一番大変な「バリデーション（送られてきたデータが正しいかのチェック）」を、Pydanticの型定義だけで自動化できるのがFastAPIの最大の魅力です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List
+
+app = FastAPI()
+
+# --- Pydanticによるデータの型（スキーマ）定義 ---
+# リクエストやレスポンスの「設計図」をクラスで作ります
+class Task(BaseModel):
+    id: int
+    title: str
+    completed: bool = False # デフォルト値
+
+# 疑似データベース（実際はPostgreSQLなどを使います）
+tasks_db = []
+
+# --- GET: 一覧の取得 ---
+@app.get('/tasks', response_model=List[Task])
+def get_tasks():
+    return tasks_db
+
+# --- POST: 新規作成 ---
+@app.post('/tasks', response_model=Task, status_code=201)
+def create_task(task: Task):
+    # クライアントが id に文字列を送ってきたら、
+    # FastAPIがこの関数に入る前に自動で422エラーを返してくれます。
+    # そのため、ここでは task.title などが100%安全に文字列として使えます。
+    
+    # IDの重複チェック
+    if any(t.id == task.id for t in tasks_db):
+        raise HTTPException(status_code=400, detail="既に存在するIDです")
+        
+    tasks_db.append(task)
+    return task</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>フロントエンド（ReactやVue）と連携するとき、必ず最初にぶつかる壁が「CORS（Cross-Origin Resource Sharing）エラー」です。ポート番号が違う（例: フロントは3000、バックは8000）だけでブラウザが通信を遮断します。FastAPIでは <code>CORSMiddleware</code> を追加する数行のコードで解決します。実務では本番環境のドメインのみを <code>allow_origins</code> に指定してセキュリティを担保します。</p>
+          </div>
+        </div>
+      </article>
+
+<article class="lesson-card" data-section="python-10" id="python-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>上級編: デコレータの魔法</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 関数の外側から機能を「トッピング」する技術</h4>
+            <p><strong>なぜデコレータが必要なのか？</strong>「全てのAPIリクエストの実行時間を計測したい」「管理者権限があるかチェックしたい」といった要件があったとします。全ての関数の中に計測コードやチェックコードを書くと、本質的なロジックが埋もれてしまいます。デコレータ（@xxx）を使えば、元の関数のコードを1文字も変えずに、関数の外側から「処理の前後」に共通機能をガバッと被せる（ラップする）ことができます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>デコレータの仕組みと作り方</h4>
+            <p>デコレータの正体は「関数を引数として受け取り、新しい関数を返す関数（高階関数）」です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import time
+from functools import wraps
+
+# --- 自作デコレータの定義 ---
+def time_logger(func):
+    @wraps(func) # 元の関数名(docstringなど)を保持するための必須のお作法
+    def wrapper(*args, **kwargs):
+        start = time.time()             # 実行「前」の処理
+        
+        result = func(*args, **kwargs)  # 元の関数をここで実行！
+        
+        end = time.time()               # 実行「後」の処理
+        print(f"⏱️ [{func.__name__}] 実行時間: {end - start:.4f}秒")
+        
+        return result                   # 元の関数の結果をそのまま返す
+    return wrapper
+
+# --- デコレータの使い方 ---
+# @をつけるだけで、関数に「時間計測」の機能がトッピングされる
+@time_logger
+def heavy_process():
+    """1秒かかる重い処理"""
+    time.sleep(1)
+    return "処理完了"
+
+# 呼び出し側は普通に呼ぶだけ
+print(heavy_process())
+# 出力:
+# ⏱️ [heavy_process] 実行時間: 1.0012秒
+# 処理完了</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Flaskの <code>@app.route</code> や FastAPIの <code>@app.get</code> もすべてこのデコレータの応用です。実務では「ログイン必須チェック（<code>@login_required</code>）」や「失敗時の自動リトライ（<code>@retry(3)</code>）」など、横断的関心事（Cross-cutting concerns）を分離するために多用されます。自分でゼロからデコレータを書く機会は少ないですが、フレームワークを使う上で「裏で何が起きているか」を理解しておくことはシニアエンジニアへの第一歩です。</p>
+          </div>
+        </div>
+      </article>
+<article class="lesson-card" data-section="python-11" id="python-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>上級編: ジェネレータとメモリ節約</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 大量のデータを少しずつ処理するエコな仕組み</h4>
+            <p><strong>なぜジェネレータが必要なのか？</strong>「100GBのCSVファイルを読み込んで処理する」コードを書いたとします。リストで一度に読み込もうとすると、PCのメモリ（RAM）がパンクしてクラッシュします（OOMエラー）。ジェネレータ（<code>yield</code>）を使えば、「1行読み込んで処理し、終わったら次の1行を読む」という一時停止と再開が可能になり、どれだけデータが大きくても一定の少ないメモリで処理し続けることができます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>yield キーワードの魔法</h4>
+            <p><code>return</code> は値を返して関数を完全に終了させますが、<code>yield</code> は値を返したあとに「関数の状態を保持したまま一時停止」します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># --- ジェネレータ関数の定義 ---
+def read_huge_file(file_path):
+    # ファイル全体を読み込まず、1行ずつ返すエコな関数
+    with open(file_path, "r", encoding="utf-8") as f:
+        for line in f:
+            yield line.strip()  # 値を返して一時停止する！
+
+# --- 呼び出し側 ---
+# 100GBのファイルでもメモリ使用量はほぼゼロ
+# for line in read_huge_file("huge_data.csv"):
+#     print(line)
+
+# --- ジェネレータの動きを実感する ---
+def countdown(num):
+    print("🚀 カウントダウン開始！")
+    while num > 0:
+        yield num  # ここで一時停止し、呼び出し元に値を返す
+        num -= 1
+
+gen = countdown(3)
+# next() を呼ぶたびに、yieldの次の行から再開される
+print(next(gen)) # 🚀 カウントダウン開始！ -> 3
+print(next(gen)) # 2
+print(next(gen)) # 1
+# print(next(gen)) # StopIterationエラー（終了）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>ChatGPTなどの生成AIアプリを作るとき、回答が「1文字ずつパラパラと流れてくる（ストリーミング）」のを見たことがあると思います。あれはバックエンドでまさにこの <code>yield</code> を使ったジェネレータが動いています。「データが全て揃うのを待たずに、生成できた分からクライアントに返す」ことで、ユーザーの体感待ち時間をゼロにする究極のUXハックです。</p>
+          </div>
+        </div>
+      </article>
+<article class="lesson-card" data-section="python-12" id="python-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>実践OSSコードリーディング — 有名ライブラリの中身を読む</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 プロのコードを「読む」ことが最強の学習法</h4>
+            <p><strong>なぜ重要なのか？</strong> OSS（オープンソース）のコードは、世界中のトップエンジニア達が数々のバグや仕様変更と戦った結果の「生きた教材」です。これらを読むことで、エラーハンドリング、拡張性、後方互換性、パフォーマンスといった「プロがどのような設計判断をするか」を直接学ぶことができます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>なぜOSSのコードを読むのか？</h4>
+            <p>教科書やチュートリアルのコードは「教えるために簡略化」されています。一方、<strong>実際に何百万人が使っているOSSライブラリのコード</strong>は、エラーハンドリング、拡張性、後方互換性、パフォーマンスなど、現実の制約と戦った結果です。これらを読み解くことで、「プロがどのような設計判断をするか」を直接学べます。</p>
+            <p>ここでは、Pythonで最も有名なOSSライブラリ3つ（<strong>Flask</strong>、<strong>Requests</strong>、<strong>Click</strong>）の実際のソースコードを一行ずつ解説します。</p>
+          </div>
+
+          <!-- ===== Flask: Scaffold.__init__ ===== -->
+          <div class="explanation-box">
+            <h4>📖 ① Flask — Scaffold クラスの初期化</h4>
+            <p><strong>リポジトリ:</strong> <code>pallets/flask</code>（License: BSD-3-Clause）<br>
+            <strong>ファイル:</strong> <code>src/flask/sansio/scaffold.py</code><br>
+            <strong>概要:</strong> Flaskアプリの基盤クラスです。<code>Flask</code> クラスも <code>Blueprint</code> クラスも、この <code>Scaffold</code> を継承しています。「Webフレームワークの骨格がどう作られるか」の実例です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Flask (pallets/flask)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 出典: pallets/flask — src/flask/sansio/scaffold.py
+# License: BSD-3-Clause
+# https://github.com/pallets/flask
+
+from __future__ import annotations          # ← ① 型ヒントの後方互換性
+import os                                    # ← ② OSレベルのパス操作
+import typing as t                           # ← ③ typing を t として短縮インポート
+from collections import defaultdict          # ← ④ デフォルト値付き辞書
+from functools import update_wrapper         # ← ⑤ デコレータのメタデータ保持
+
+class Scaffold:
+    """Flask と Blueprint の共通基盤クラス"""
+
+    _static_folder: str | None = None        # ← ⑥ クラス変数でデフォルト値を定義
+    _static_url_path: str | None = None
+
+    def __init__(
+        self,
+        import_name: str,                    # ← ⑦ 通常は __name__ を渡す
+        static_folder: str | os.PathLike[str] | None = None,
+        static_url_path: str | None = None,
+        template_folder: str | os.PathLike[str] | None = None,
+        root_path: str | None = None,        # ← ⑧ 全引数に型ヒントがついている
+    ):
+        self.import_name = import_name        # ← ⑨ パッケージ名を記録
+
+        self.static_folder = static_folder
+        self.static_url_path = static_url_path
+        self.template_folder = template_folder
+
+        if root_path is None:                 # ← ⑩ 明示的に指定されなければ
+            root_path = get_root_path(self.import_name)  # 自動検出
+
+        self.root_path = root_path            # ← ⑪ 絶対パスとして保存
+
+        # ↓ ⑫ URLのエンドポイント名 → ビュー関数 のマッピング辞書
+        self.view_functions: dict[str, ft.RouteCallable] = {}
+
+        # ↓ ⑬ エラーハンドラ: {スコープ: {HTTPコード: {例外クラス: 処理関数}}}
+        self.error_handler_spec: dict[
+            ft.AppOrBlueprintKey,
+            dict[int | None, dict[type[Exception], ft.ErrorHandlerCallable]],
+        ] = defaultdict(lambda: defaultdict(dict))
+
+        # ↓ ⑭ リクエスト前に実行する関数リスト
+        self.before_request_funcs: dict[
+            ft.AppOrBlueprintKey, list[ft.BeforeRequestCallable]
+        ] = defaultdict(list)
+
+        # ↓ ⑮ リクエスト後に実行する関数リスト
+        self.after_request_funcs: dict[
+            ft.AppOrBlueprintKey, list[ft.AfterRequestCallable[t.Any]]
+        ] = defaultdict(list)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 一行ずつ解説</h4>
+            <p><strong>① <code>from __future__ import annotations</code></strong> — Python 3.7以降で使える機能で、型ヒントの評価を遅延させます。これにより <code>str | None</code> のような新しい記法を古いバージョンでも使えるようにしています。OSSでは後方互換性が命なので、このインポートは非常に一般的です。</p>
+            <p><strong>③ <code>import typing as t</code></strong> — <code>typing</code> モジュールを <code>t</code> と短く別名をつけてインポートしています。型ヒントは頻繁に書くので、タイピング量を減らすためのOSSの慣習です。</p>
+            <p><strong>④ <code>defaultdict</code></strong> — 通常の <code>dict</code> は存在しないキーにアクセスすると <code>KeyError</code> が出ますが、<code>defaultdict</code> は自動でデフォルト値を生成します。Flaskでは「まだ登録されていないBlueprint名のキー」にアクセスされた時にも安全に動作するよう使われています。</p>
+            <p><strong>⑤ <code>update_wrapper</code></strong> — デコレータを適用すると元の関数名やdocstringが消えてしまいます。<code>update_wrapper</code> はそれを防ぐためのもので、Flask の <code>@app.route</code> の内部で使われています。</p>
+            <p><strong>⑥ クラス変数でのデフォルト値</strong> — <code>_static_folder = None</code> のようにクラス直下で定義しています。アンダースコア始まりは「外部から直接アクセスしないでね」という慣習（プライベート変数の規約）です。</p>
+            <p><strong>⑧ 全引数に型ヒント</strong> — <code>str | os.PathLike[str] | None</code> のように、引数が取りうる型を全て明示しています。<code>os.PathLike</code> は <code>pathlib.Path</code> などのパスオブジェクトも受け入れることを意味しています。</p>
+            <p><strong>⑬ ネストされた defaultdict</strong> — <code>defaultdict(lambda: defaultdict(dict))</code> は「辞書の辞書の辞書」を自動生成する構造です。エラーハンドラをスコープ（全体 or Blueprint単位）× HTTPステータスコード × 例外の種類の3階層で管理する設計です。</p>
+          </div>
+
+          <!-- ===== Requests: api.py ===== -->
+          <div class="explanation-box">
+            <h4>📖 ② Requests — HTTP リクエストの中核関数</h4>
+            <p><strong>リポジトリ:</strong> <code>psf/requests</code>（License: Apache-2.0）<br>
+            <strong>ファイル:</strong> <code>src/requests/api.py</code><br>
+            <strong>概要:</strong> <code>requests.get()</code> を呼んだとき、内部で何が起きているかの全貌です。わずか数行で「セッション管理」「リソースの確実な解放」「関数の委譲」という重要パターンが凝縮されています。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Requests (psf/requests)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 出典: psf/requests — src/requests/api.py
+# License: Apache-2.0
+# https://github.com/psf/requests
+
+from . import sessions                        # ← ① 同パッケージの sessions モジュール
+from .models import Response                  # ← ② レスポンスの型
+
+def request(method, url, **kwargs):           # ← ③ 全HTTPメソッドの共通関数
+    """Constructs and sends a Request.
+
+    :param method: GET, POST, PUT, DELETE など
+    :param url: リクエスト先のURL
+    :param kwargs: headers, params, data, json など全てのオプション
+    """
+    with sessions.Session() as session:       # ← ④ with文でセッションを自動管理
+        return session.request(               # ← ⑤ 実際の処理はSession に委譲
+            method=method, url=url, **kwargs
+        )
+
+def get(url, params=None, **kwargs):          # ← ⑥ ユーザーが直接呼ぶ関数
+    """Sends a GET request."""
+    return request("GET", url,                # ← ⑦ request() に委譲するだけ
+                   params=params, **kwargs)
+
+def post(url, data=None, json=None, **kwargs):
+    """Sends a POST request."""
+    return request("POST", url,               # ← ⑧ POST も同じパターン
+                   data=data, json=json, **kwargs)
+
+def put(url, data=None, **kwargs):
+    return request("PUT", url, data=data, **kwargs)
+
+def delete(url, **kwargs):
+    return request("DELETE", url, **kwargs)
+
+def head(url, **kwargs):
+    kwargs.setdefault("allow_redirects", False)  # ← ⑨ HEAD特有のデフォルト設定
+    return request("HEAD", url, **kwargs)
+
+def patch(url, data=None, **kwargs):
+    return request("PATCH", url, data=data, **kwargs)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 一行ずつ解説</h4>
+            <p><strong>③ <code>**kwargs</code></strong> — 「キーワード引数の辞書」です。<code>headers</code>, <code>timeout</code>, <code>cookies</code> など、任意のオプションを全て受け取れるようにしています。ユーザーが <code>requests.get(url, timeout=5)</code> と呼ぶと、<code>kwargs = {"timeout": 5}</code> として渡されます。</p>
+            <p><strong>④ <code>with sessions.Session() as session:</code></strong> — これがこのファイルの最重要ポイントです。<strong>コンテキストマネージャ</strong>（with文）により、リクエスト完了後にTCP接続が確実にクローズされます。<code>try-finally</code> と同等ですが、遥かに読みやすいコードになっています。</p>
+            <p><strong>⑤ <code>session.request()</code> への委譲</strong> — <code>request()</code> 関数自身は何も処理をしていません。全ての実際の処理（DNS解決、接続確立、データ送受信）は <code>Session</code> クラスに委譲しています。これが<strong>単一責任の原則（SRP）</strong>の実践例です。</p>
+            <p><strong>⑥⑦ <code>get()</code> は <code>request("GET", ...)</code> を呼ぶだけ</strong> — <code>get()</code>, <code>post()</code>, <code>put()</code> などは全て <code>request()</code> のラッパーです。「ユーザーにとって使いやすいインターフェース」を提供しつつ、内部的にはコードの重複を避けています。これが<strong>ファサードパターン</strong>です。</p>
+            <p><strong>⑨ <code>kwargs.setdefault()</code></strong> — <code>head()</code> メソッドだけ、デフォルトでリダイレクトを追跡しないよう設定しています。<code>setdefault</code> は「まだそのキーが設定されていなければデフォルト値を入れる」メソッドで、ユーザーが明示的に指定した場合はそちらが優先されます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💡 このコードから学べるプロの設計パターン</h4>
+            <p><strong>1. ファサードパターン:</strong> 複雑な内部処理をシンプルなインターフェースで覆い隠す。<code>requests.get(url)</code> の裏では DNS解決、TCP接続、SSL/TLSハンドシェイク、ヘッダー構築、レスポンス解析が全自動で行われています。</p>
+            <p><strong>2. DRY原則:</strong> <code>get()</code>, <code>post()</code> 等は全て <code>request()</code> に委譲。HTTPメソッドごとにコードを書かないことで、バグの混入を防いでいます。</p>
+            <p><strong>3. コンテキストマネージャ:</strong> リソース管理（接続のクローズ）を <code>with</code> 文で自動化。これを忘れると接続リークが起きます。</p>
+          </div>
+
+          <!-- ===== Click: デコレータの仕組み ===== -->
+          <div class="explanation-box">
+            <h4>📖 ③ Click — CLIフレームワークのデコレータ設計</h4>
+            <p><strong>リポジトリ:</strong> <code>pallets/click</code>（License: BSD-3-Clause）<br>
+            <strong>ファイル:</strong> <code>src/click/decorators.py</code><br>
+            <strong>概要:</strong> Pythonのデコレータの実用例として最も美しいOSSの一つです。<code>@click.command()</code> や <code>@click.option()</code> がどのように動くかを解き明かします。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Click (pallets/click)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 出典: pallets/click — src/click/decorators.py
+# License: BSD-3-Clause
+# https://github.com/pallets/click
+
+import inspect                                # ← ① 関数の引数情報を取得するモジュール
+from functools import update_wrapper          # ← ② デコレータ適用後も元の関数情報を保持
+
+def command(name=None, cls=None, **attrs):    # ← ③ デコレータファクトリ
+    """@click.command() デコレータの実装"""
+    if cls is None:
+        cls = Command                         # ← ④ デフォルトは Command クラス
+
+    def decorator(func):                      # ← ⑤ 実際のデコレータ関数
+        cmd = cls(                            # ← ⑥ 関数を Command オブジェクトに変換
+            name=name or func.__name__.lower().replace("_", "-"),
+            callback=func,                    # ← ⑦ 元の関数をコールバックとして保存
+            params=_params_from_func(func),   # ← ⑧ 関数の引数から自動でパラメータ生成
+            **attrs,
+        )
+        cmd.__doc__ = func.__doc__            # ← ⑨ docstring を引き継ぐ
+        return cmd                            # ← ⑩ 関数の代わりに Command を返す
+    return decorator                          # ← ⑪ デコレータファクトリ → デコレータを返す
+
+def option(*param_decls, **attrs):            # ← ⑫ @click.option() の実装
+    """オプション引数（--verbose 等）をコマンドに追加する"""
+    def decorator(func):
+        # ↓ ⑬ 関数に __click_params__ 属性を追加
+        if not hasattr(func, "__click_params__"):
+            func.__click_params__ = []
+        # ↓ ⑭ Option オブジェクトをリストに積む
+        func.__click_params__.append(Option(param_decls, **attrs))
+        return func                           # ← ⑮ 関数自体はそのまま返す
+    return decorator</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 一行ずつ解説</h4>
+            <p><strong>③ デコレータファクトリ</strong> — <code>@click.command()</code> は「括弧付き」で呼ばれています。これは <code>command()</code> が直接デコレータではなく、<strong>デコレータを「生成して返す」ファクトリ関数</strong>だということです。この2段階構造により、<code>@click.command(name="greet")</code> のようにオプションを渡せるようになります。</p>
+            <p><strong>⑥⑩ 関数を Command オブジェクトに変換</strong> — ここが Click の核心です。<code>@click.command()</code> を付けた関数は、<strong>関数ではなく Command オブジェクトに差し替えられます</strong>。つまり「デコレータが関数を全く別のモノに変えてしまう」のです。これにより、ヘルプ表示や引数のバリデーションなどの機能が自動的に追加されます。</p>
+            <p><strong>⑧ <code>_params_from_func(func)</code></strong> — 関数の引数定義（名前、デフォルト値、型ヒント）を自動的に解析して、CLIのパラメータに変換します。<code>inspect</code> モジュールを使って関数のシグネチャを読み取る高度なテクニックです。</p>
+            <p><strong>⑬⑭ 関数にカスタム属性を追加</strong> — <code>func.__click_params__ = []</code> という行は、Pythonの「関数もオブジェクト」という特性を活用しています。関数に独自の属性を自由に追加でき、後から別のコードがその情報を読み取れます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 OSSコードリーディングのコツ</h4>
+            <p><strong>1. 「呼び出し元」から読む:</strong> いきなり内部実装を読まず、まず「このコードがどう使われるか」から理解しましょう。<code>requests.get(url)</code> → <code>request("GET", url)</code> → <code>session.request()</code> の流れを追うイメージです。</p>
+            <p><strong>2. テストコードを読む:</strong> OSSのテストファイル（<code>tests/</code> ディレクトリ）は「このコードの正しい使い方」の宝庫です。ドキュメントより正確で、実動するサンプルコードでもあります。</p>
+            <p><strong>3. git blame を活用する:</strong> 「なぜこのコードがこう書かれているか」を知るには、<code>git blame</code> で変更履歴を追い、そのコミットメッセージやPull Requestの議論を読むのが最も確実な方法です。</p>
+          </div>
+        
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>OSSコードリーディングのコツは「呼び出し元」から読むことです。いきなり内部実装を読まず、まず「このコードがどう使われるか」から理解しましょう。また、OSSのテストファイル（tests/ディレクトリ）は「このコードの正しい使い方」の宝庫であり、ドキュメントよりも正確な実動サンプルです。</p>
+          </div>
+        </div>
+      </article>
+<article class="lesson-card" data-section="python-13" id="python-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">13</span>
+            <h3>実サービスのコードを読む — Zulip（チームチャットサービス）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-13')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Slack代替の本番チャットサービスの内部構造を読み解く</h4>
+            <p><strong>なぜ重要なのか？</strong> ライブラリではなく「実際のWebアプリケーション」のコードを読むことで、データベース設計（テーブルやインデックス）、ミドルウェアによるパフォーマンス計測、セキュリティ対策（入力のサニタイズなど）という本番稼働に欠かせない「非機能要件」のリアルを学べます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>Zulip とは？</h4>
+            <p><strong>Zulip</strong>（<a href="https://zulip.com" target="_blank">zulip.com</a>）は、Slack のオープンソース代替として開発されたチームチャットサービスです。Python + Django で構築されており、GitHub ★22k 以上、多くの大学や企業で実際に使われています。コードの品質が非常に高く、<strong>「OSSの中で最も読みやすいコードベース」</strong>と評されることもあります。</p>
+            <p><strong>リポジトリ:</strong> <code>zulip/zulip</code>（License: Apache-2.0）<br>
+            <strong>技術スタック:</strong> Python 3 / Django / PostgreSQL / Redis / Tornado（非同期通信）/ TypeScript（フロントエンド）</p>
+          </div>
+
+          <!-- ===== Zulip: Message モデル ===== -->
+          <div class="explanation-box">
+            <h4>📖 ① メッセージモデル — チャットサービスの心臓部</h4>
+            <p><strong>ファイル:</strong> <code>zerver/models/messages.py</code><br>
+            <strong>概要:</strong> チャットサービスにとって「メッセージ」は最も重要なデータです。Zulipのメッセージモデルは、<strong>送信者、受信者、トピック、Markdown本文、レンダリング済みHTML</strong>を全て管理する設計になっています。Django ORM の実践的な使い方の教科書のようなコードです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Zulip (zulip/zulip)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 出典: zulip/zulip — zerver/models/messages.py
+# License: Apache-2.0
+# https://github.com/zulip/zulip
+
+import time                                    # ← ① パフォーマンス計測用
+from django.db import models                   # ← ② Django ORM のモデル基底クラス
+from django.db.models import CASCADE, F, Q     # ← ③ 外部キー削除方針, F式, Q式
+from django.utils.timezone import now as timezone_now  # ← ④ タイムゾーン対応の現在時刻
+
+class AbstractMessage(models.Model):           # ← ⑤ 抽象基底クラス（DB テーブルは作られない）
+    """メッセージの共通フィールドを定義する抽象クラス。
+    Message（通常メッセージ）と ArchivedMessage（アーカイブ済み）の
+    両方がこれを継承する。"""
+
+    id = models.AutoField(                     # ← ⑥ 自動採番の主キー
+        auto_created=True,
+        primary_key=True,
+        verbose_name="ID"
+    )
+
+    sender = models.ForeignKey(                # ← ⑦ 送信者（ユーザーへの外部キー）
+        UserProfile, on_delete=CASCADE         #    ユーザー削除時にメッセージも削除
+    )
+
+    recipient = models.ForeignKey(             # ← ⑧ 受信先（個人、グループ、チャンネル）
+        Recipient, on_delete=CASCADE           #    Recipient は宛先の種類を抽象化
+    )
+
+    realm = models.ForeignKey(                 # ← ⑨ メッセージが属する「組織」
+        Realm, on_delete=CASCADE               #    マルチテナント設計の鍵
+    )
+
+    # ↓ ⑩ メッセージの種類を列挙型で定義
+    class MessageType(models.IntegerChoices):
+        NORMAL = 1                             # 通常のメッセージ
+        RESOLVE_TOPIC_NOTIFICATION = 2         # トピック解決通知（システムメッセージ）
+
+    type = models.PositiveSmallIntegerField(   # ← ⑪ 整数型で種類を管理
+        choices=MessageType.choices,
+        default=MessageType.NORMAL,
+        db_default=MessageType.NORMAL,         # ← ⑫ Django 5.0の新機能: DBレベルのデフォルト
+    )
+
+    # ↓ ⑬ DM（ダイレクトメッセージ）のトピック名に特殊文字を使う工夫
+    # PostgreSQL のクエリプランナー問題を回避するための設計判断
+    DM_TOPIC = "\x07"   # BEL文字（印刷不可能文字）
+
+    subject = models.CharField(                # ← ⑭ トピック名（旧名: subject）
+        max_length=MAX_TOPIC_NAME_LENGTH,
+        db_index=True                          # ← ⑮ 検索高速化のためインデックス付与
+    )
+
+    content = models.TextField()               # ← ⑯ ユーザーが入力した生のMarkdownテキスト
+
+    rendered_content = models.TextField(        # ← ⑰ MarkdownをHTMLに変換した結果
+        null=True                              #    初回保存時は未レンダリングの場合がある
+    )
+
+    date_sent = models.DateTimeField(          # ← ⑱ 送信日時（インデックス付き）
+        "date sent", db_index=True
+    )
+
+    sending_client = models.ForeignKey(        # ← ⑲ どのクライアントから送信されたか
+        Client, on_delete=CASCADE              #    Web, モバイル, API, bot 等を区別
+    )
+
+    last_edit_time = models.DateTimeField(     # ← ⑳ 最終編集日時
+        null=True                              #    未編集なら None
+    )
+
+    edit_history = models.TextField(null=True) # ← ㉑ 編集履歴（JSON文字列で保存）
+
+    # ↓ ㉒ メッセージ内容のフラグ（全て Boolean + インデックス付き）
+    has_attachment = models.BooleanField(default=False, db_index=True)
+    has_image = models.BooleanField(default=False, db_index=True)
+    has_link = models.BooleanField(default=False, db_index=True)
+    is_channel_message = models.BooleanField(default=True, db_index=True)
+
+    class Meta:
+        abstract = True                        # ← ㉓ abstract=True で DBテーブル不生成
+
+    def __str__(self) -&gt; str:                  # ← ㉔ デバッグ用の文字列表現
+        return f"{self.recipient.label()} / {self.subject} / {self.sender!r}"</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 設計の重要ポイント解説</h4>
+            <p><strong>⑤ 抽象基底クラス（Abstract Base Class）</strong><br><code>AbstractMessage</code> は直接テーブルにならず、<code>Message</code>（通常メッセージ）と <code>ArchivedMessage</code>（削除後の一時保管）の2つのテーブルが同じフィールドを持つようにしています。これが<strong>DRY原則</strong>（Don't Repeat Yourself）の実践です。チャットサービスでは「メッセージの削除」≠「本当にデータを消す」であり、一定期間アーカイブに保持してから完全削除するのが一般的です。</p>
+            <p><strong>⑨ マルチテナント設計（realm フィールド）</strong><br>Zulipは1つのサーバーで複数の組織（会社やチーム）をホストできます。<code>realm</code>（組織）を全てのデータに紐づけることで、「A社のデータがB社に見える」事故を構造的に防止しています。SaaSを設計する際の最重要パターンの一つです。</p>
+            <p><strong>⑬ DM_TOPIC の工夫</strong><br>これは非常に興味深い設計判断です。DMにはトピック名がありませんが、DBには空文字 <code>""</code> を入れていました。しかし、空文字をトピック名として使い始めた際に<strong>PostgreSQLのクエリプランナーがDM全体をスキャンしてしまう</strong>パフォーマンス問題が発生。解決策として、印刷不可能文字 <code>\x07</code>（BEL文字）をDM専用のマーカーにしました。こういった「現実の問題に対する泥臭い解決策」がOSSコードを読む醍醐味です。</p>
+            <p><strong>⑯⑰ 生テキストとレンダリング済みHTMLの二重管理</strong><br>MarkdownのレンダリングはCPU負荷が高い処理です。毎回レンダリングするのではなく、<strong>送信時にHTMLに変換して保存</strong>し、表示時はHTMLをそのまま返します。ただし <code>null=True</code> にしているのは、レンダリングロジックを変更した際に再レンダリングが必要になるケースに備えてのことです。</p>
+            <p><strong>㉒ Boolean フラグの設計</strong><br><code>has_attachment</code>, <code>has_image</code>, <code>has_link</code> という3つのフラグは、「画像付きメッセージだけを検索」「リンク付きメッセージだけを表示」のような<strong>フィルタリング機能</strong>のために存在します。全てに <code>db_index=True</code> がついているのは、検索パフォーマンスのためです。</p>
+          </div>
+
+          <!-- ===== Zulip: ミドルウェア ===== -->
+          <div class="explanation-box">
+            <h4>📖 ② リクエスト計測ミドルウェア — 全リクエストのパフォーマンスを監視する仕組み</h4>
+            <p><strong>ファイル:</strong> <code>zerver/middleware.py</code><br>
+            <strong>概要:</strong> Djangoのミドルウェアは「全てのHTTPリクエストの前後に実行される処理」です。Zulipはこの仕組みを使って、<strong>全APIリクエストの処理時間、キャッシュヒット数、Markdownレンダリング回数</strong>を自動的に計測・ログ出力しています。本番サービスのパフォーマンス監視の実例です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Zulip (zulip/zulip)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 出典: zulip/zulip — zerver/middleware.py
+# License: Apache-2.0
+# https://github.com/zulip/zulip
+
+import logging                                  # ← ① Python標準のログ出力
+import time                                      # ← ② 高精度タイマー
+from collections.abc import Callable, MutableMapping
+
+from django.conf import settings                 # ← ③ settings.py の設定値にアクセス
+from django.http import HttpRequest, HttpResponse
+
+# ↓ ④ 専用のロガーを2つ定義（用途別にログを分離）
+logger = logging.getLogger("zulip.requests")     # 通常のリクエストログ
+slow_query_logger = logging.getLogger("zulip.slow_queries")  # 遅いリクエスト専用
+
+def record_request_stop_data(log_data: MutableMapping[str, Any]) -&gt; None:
+    """リクエスト処理終了時のメトリクスを記録する"""
+    log_data["time_stopped"] = time.time()       # ← ⑤ 処理終了時刻
+
+    # ↓ ⑥ キャッシュ（Redis）のアクセス統計を記録
+    log_data["remote_cache_time_stopped"] = get_remote_cache_time()
+    log_data["remote_cache_requests_stopped"] = get_remote_cache_requests()
+
+    # ↓ ⑦ Markdownレンダリングの統計を記録
+    log_data["markdown_time_stopped"] = get_markdown_time()
+    log_data["markdown_requests_stopped"] = get_markdown_requests()
+
+    # ↓ ⑧ 全リクエストプロファイリングが有効なら停止
+    if settings.PROFILE_ALL_REQUESTS:
+        log_data["prof"].disable()
+
+def write_log_line(log_data, path, method, remote_ip, ...) -&gt; None:
+    """リクエストの完全なログ行を出力する（簡略版）"""
+    # ↓ ⑨ 処理時間の計算（ミリ秒単位）
+    time_delta = log_data["time_stopped"] - log_data["time_started"]
+
+    # ↓ ⑩ キャッシュの統計: 何回アクセスし、合計何秒かかったか
+    cache_hits = (log_data["remote_cache_requests_stopped"]
+                 - log_data["remote_cache_requests_started"])
+    cache_time = (log_data["remote_cache_time_stopped"]
+                 - log_data["remote_cache_time_started"])
+
+    # ↓ ⑪ Markdownレンダリングの統計
+    md_count = (log_data["markdown_requests_stopped"]
+               - log_data["markdown_requests_started"])
+    md_time = (log_data["markdown_time_stopped"]
+              - log_data["markdown_time_started"])
+
+    # ↓ ⑫ 構造化ログの出力（monitoring / alerting で活用）
+    logger.info(
+        "%-5s %d %s (db: %dq/%dms, cache: %d/%dms, md: %d/%dms, total: %dms)",
+        method,               # GET, POST 等
+        status_code,          # 200, 404, 500 等
+        path,                 # /api/v1/messages 等
+        db_queries, db_time,  # DBクエリ回数と時間
+        cache_hits, cache_time * 1000,
+        md_count, md_time * 1000,
+        time_delta * 1000,    # 全体の処理時間
+    )
+
+    # ↓ ⑬ 遅いリクエストを別のログファイルに記録
+    if time_delta &gt; 5:  # 5秒以上かかったリクエスト
+        slow_query_logger.info("SLOW: %s %s %dms", method, path, time_delta * 1000)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 設計の重要ポイント解説</h4>
+            <p><strong>④ ロガーの分離</strong><br><code>zulip.requests</code>（通常ログ）と <code>zulip.slow_queries</code>（遅延ログ）を分けることで、<strong>ログの出力先やアラート条件を別々に設定</strong>できます。本番サービスでは「全リクエストは info レベルで記録し、5秒超えたものだけ Slack にアラートを飛ばす」といった設定が一般的です。</p>
+            <p><strong>⑥⑦ メトリクスの「開始時」と「終了時」の差分</strong><br>キャッシュやMarkdownの統計を「リクエスト処理開始時」と「終了時」の差分で計算しています。これは、Pythonプロセスがスレッドプールで複数リクエストを並列処理するため、<strong>グローバルな累計値では正確な計測ができない</strong>からです。「このリクエストだけで何回キャッシュにアクセスしたか」を知るには差分計算が必要なのです。</p>
+            <p><strong>⑫ 構造化ログ</strong><br>ログ出力に <code>db: %dq/%dms, cache: %d/%dms</code> のような構造化フォーマットを使っています。これにより、ログ集約ツール（Datadog, Grafana, ELK Stack 等）で「DBクエリが100回を超えたリクエスト」「キャッシュ時間が処理時間の50%以上のリクエスト」のような<strong>高度な分析・アラート設定</strong>が可能になります。</p>
+          </div>
+
+          <!-- ===== Zulip: メッセージ送信ビュー ===== -->
+          <div class="explanation-box">
+            <h4>📖 ③ メッセージ送信ビュー — APIエンドポイントの構造</h4>
+            <p><strong>ファイル:</strong> <code>zerver/views/message_send.py</code><br>
+            <strong>概要:</strong> チャットの「メッセージ送信」APIのエントリーポイントです。入力バリデーション、権限チェック、ビジネスロジックの委譲という<strong>WebAPIの基本パターン</strong>が凝縮されています。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Zulip (zulip/zulip)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 出典: zulip/zulip — zerver/views/message_send.py
+# License: Apache-2.0
+# https://github.com/zulip/zulip
+
+from typing import Annotated, Literal           # ← ① 型ヒントの高度な記法
+from django.http import HttpRequest, HttpResponse
+from django.utils.translation import gettext as _  # ← ② 多言語化（i18n）対応
+
+from zerver.actions.message_send import (
+    check_send_message,                          # ← ③ 実際の送信ロジック（別モジュール）
+    extract_private_recipients,
+    extract_stream_indicator,
+)
+from zerver.lib.exceptions import JsonableError   # ← ④ JSON形式のエラーレスポンス
+from zerver.lib.response import json_success      # ← ⑤ 統一されたJSONレスポンス
+from zerver.lib.typed_endpoint import typed_endpoint  # ← ⑥ 型安全なAPIエンドポイント
+from zerver.models import Client, UserProfile
+
+@typed_endpoint                                   # ← ⑦ 引数を自動で型チェック・バリデーション
+def zcommand_backend(
+    request: HttpRequest,
+    user_profile: UserProfile,
+    *,                                            # ← ⑧ 以降はキーワード引数のみ
+    command: str,                                 # ← ⑨ 実行するコマンド文字列
+) -&gt; HttpResponse:
+    return json_success(                          # ← ⑩ 統一フォーマットで成功レスポンス
+        request,
+        data=process_zcommands(command, user_profile),
+    )
+
+# ↓ ⑪ ミラーリング（IRC/Jabber連携）のユーザー検証
+class InvalidMirrorInputError(Exception):         # ← ⑫ 専用の例外クラスを定義
+    pass
+
+def create_mirrored_message_users(
+    client: Client,                               # ← ⑬ 全引数に型アノテーション
+    user_profile: UserProfile,
+    recipients: Iterable[str],
+    sender: str,
+    recipient_type_name: str,
+) -&gt; UserProfile:
+    sender_email = sender.strip().lower()          # ← ⑭ 入力のサニタイズ（前後空白除去+小文字化）
+    referenced_users = {sender_email}              # ← ⑮ set でユニークなユーザー集合を管理
+
+    if recipient_type_name == "private":
+        referenced_users.update(                   # ← ⑯ DM の場合は受信者も追加
+            email.lower() for email in recipients  # ← ⑰ ジェネレータ式で変換
+        )
+
+    # ↓ ⑱ クライアント種別に応じて検証関数を切り替え（ストラテジーパターン）
+    if client.name == "irc_mirror":
+        user_check = same_realm_irc_user
+        fullname_function = compute_irc_user_fullname
+    elif client.name in ("jabber_mirror", "JabberMirror"):
+        user_check = same_realm_jabber_user
+        fullname_function = compute_jabber_user_fullname
+    else:
+        raise InvalidMirrorInputError(             # ← ⑲ 不明なクライアントは明示的にエラー
+            "Unrecognized mirroring client"
+        )
+
+    # ↓ ⑳ 全ユーザーが同一組織に属しているか検証
+    for email in referenced_users:
+        if not user_check(user_profile, email):
+            raise InvalidMirrorInputError(
+                "At least one user cannot be mirrored"
+            )</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 設計の重要ポイント解説</h4>
+            <p><strong>⑦ <code>@typed_endpoint</code> デコレータ</strong><br>Zulip 独自のデコレータで、HTTP リクエストのパラメータを<strong>自動的に型チェック・バリデーション</strong>します。<code>command: str</code> と書くだけで、パラメータが未指定なら 400 エラーを自動返却します。Django REST Framework の Serializer と似た機能を、デコレータだけで実現している簡潔な設計です。</p>
+            <p><strong>⑭ 入力のサニタイズ</strong><br><code>sender.strip().lower()</code> — メールアドレスの前後の空白を除去し、小文字に統一しています。「Alice@Example.com」と「alice@example.com」を同一視するためです。ユーザー入力を信用せず必ず正規化するのは、セキュリティの基本です。</p>
+            <p><strong>⑱ ストラテジーパターン</strong><br>IRC ミラーと Jabber ミラーで検証ロジックが異なりますが、<code>if</code> 文で関数を変数に代入して同じインターフェースで呼び出しています。新しいミラータイプを追加する場合も、<code>elif</code> を1つ追加するだけで済む<strong>拡張しやすい設計</strong>です。</p>
+          </div>
+
+          <!-- ===== Zulip: インデックス設計 ===== -->
+          <div class="explanation-box">
+            <h4>📖 ④ データベースインデックス設計 — 大規模サービスの速度の秘密</h4>
+            <p><strong>ファイル:</strong> <code>zerver/models/messages.py</code> の <code>Message.Meta</code><br>
+            <strong>概要:</strong> 数千万件のメッセージを高速に検索するためのインデックス設計です。「なぜこのカラムの組み合わせでインデックスを作るのか」という<strong>設計意図がコメントに明記</strong>されており、DB設計の教材として最高です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Zulip (zulip/zulip)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 出典: zulip/zulip — zerver/models/messages.py（Message クラスの Meta 定義）
+# License: Apache-2.0
+
+class Message(AbstractMessage):
+    """通常のメッセージ（削除されていない活きたメッセージ）"""
+
+    search_tsvector = SearchVectorField(null=True)  # ← ① 全文検索用ベクトル
+
+    # ↓ ② 関連テーブルをデフォルトで JOIN して取得する設定
+    DEFAULT_SELECT_RELATED = ["sender", "realm", "recipient", "sending_client"]
+
+    class Meta:
+        indexes = [
+            # ↓ ③ 全文検索用の GIN インデックス
+            GinIndex(
+                "search_tsvector",
+                fastupdate=False,                    # ← ④ 更新速度より検索速度を優先
+                name="zerver_message_search_tsvector"
+            ),
+
+            # ↓ ⑤ チャンネル内メッセージの一括操作用
+            # 「メッセージの移動」「既読処理」で使う
+            models.Index(
+                "realm_id", "recipient_id", "id",    # ← ⑥ 3カラム複合インデックス
+                name="zerver_message_realm_recipient_id",
+            ),
+
+            # ↓ ⑦ ダイジェストメール生成 & メッセージアーカイブ用
+            # チャンネルごと・日時順にメッセージを取得
+            models.Index(
+                "realm_id", "recipient_id", "date_sent",
+                name="zerver_message_realm_recipient_date_sent",
+            ),
+
+            # ↓ ⑧ エクスポート & ユーザー削除用
+            # 特定ユーザーが送信したメッセージをフィルタリング
+            models.Index(
+                "realm_id", "sender_id", "recipient_id",
+                name="zerver_message_realm_sender_recipient",
+            ),
+        ]</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 設計の重要ポイント解説</h4>
+            <p><strong>③④ 全文検索（GinIndex）</strong><br>PostgreSQLの GIN（Generalized Inverted Index）インデックスを使って、メッセージの全文検索を実現しています。<code>fastupdate=False</code> は「新しいメッセージの挿入速度を多少犠牲にしてでも、検索速度を最優先する」設定です。チャットサービスでは検索のほうが頻繁に使われるため、この判断は合理的です。</p>
+            <p><strong>⑥ 複合インデックスの設計意図</strong><br><code>("realm_id", "recipient_id", "id")</code> の3カラム複合インデックスは、「組織X のチャンネルY のメッセージを ID順に取得する」クエリを超高速にします。最後に <code>id</code> を入れることで、結果の順序付けが<strong>インデックスだけで完結</strong>し、ソート処理が不要になります（これを「カバリングインデックス」と呼びます）。</p>
+            <p><strong>⑦⑧ ユースケース駆動のインデックス設計</strong><br>Zulipのインデックスは全て「このインデックスはどの機能で使われるか」がコメントで明示されています。<strong>「とりあえずインデックスを張る」のではなく、「この機能のこのクエリを速くするために張る」</strong>という目的意識の明確さが、プロのDB設計です。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Zulipから学べる設計原則まとめ</h4>
+            <p><strong>1. コメントで「なぜ」を書く:</strong> Zulipのコードには「何をしているか」だけでなく「なぜそうしたか」が必ずコメントされています。DM_TOPICの <code>\x07</code> が良い例です。</p>
+            <p><strong>2. 抽象化で重複を排除:</strong> <code>AbstractMessage</code> → <code>Message</code> / <code>ArchivedMessage</code> の継承構造は、DRY原則の教科書的実装です。</p>
+            <p><strong>3. 計測しないものは改善できない:</strong> 全リクエストの処理時間・DB呼び出し・キャッシュヒットを自動計測するミドルウェアは、パフォーマンス問題の早期発見に不可欠です。</p>
+          </div>
+        
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Zulipのコードから学ぶ最大の教訓は「コメントには『何をしているか』ではなく『なぜそうしたか（Why）』を書く」という点です。泥臭いハックがコメントに書かれていることで、未来の開発者が「無駄な処理だ」と勘違いして消してしまう本番障害を防ぐことができます。</p>
+          </div>
+        </div>
+      </article>
+<article class="lesson-card" data-section="python-14" id="python-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>FastAPI — 高速&型安全なWeb APIフレームワーク</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 FastAPI = Flask の簡潔さ + 自動ドキュメント + 非同期処理</h4>
+            <p><strong>なぜ重要なのか？</strong> FastAPIは「Flaskのようにシンプルに書ける」のに「自動でSwagger UI（API仕様書）が生成される」「型チェックによりバグを未然に防ぐ」「非同期処理(async/await)対応でNode.js並みに速い」という全てを兼ね備えています。現在のAI・データサイエンス領域のバックエンド開発における事実上のグローバルスタンダードです。</p>
+          </div>
+
+          <!-- FastAPI 概要 -->
+          <div class="explanation-box">
+            <h4>FastAPI とは？</h4>
+            <p><strong>FastAPI</strong> は、Python 3.7 以降の型ヒント（Type Hints）を最大限に活用した<strong>モダンな Web API フレームワーク</strong>です。Flask と同じくらいシンプルに書けて、Django REST Framework 並みの機能（バリデーション、シリアライゼーション、認証）を自動で提供します。</p>
+            <p><strong>主な特長:</strong></p>
+            <p>• <strong>高速:</strong> Starlette + Uvicorn ベースで、Node.js や Go に匹敵するパフォーマンス<br>
+            • <strong>型安全:</strong> Python の型ヒントからバリデーション・ドキュメントを自動生成<br>
+            • <strong>自動ドキュメント:</strong> Swagger UI（/docs）と ReDoc（/redoc）が標準搭載<br>
+            • <strong>非同期対応:</strong> <code>async/await</code> をネイティブサポート<br>
+            • <strong>GitHub ★80k+</strong>、Netflix、Uber、Microsoft が採用</p>
+          </div>
+
+          <!-- 基本的な API 作成 -->
+          <div class="explanation-box">
+            <h4>📖 ① はじめてのFastAPI — Hello World</h4>
+            <p>Flask と比較しながら、FastAPI の基本構文を学びます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — FastAPI 基本</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ① FastAPI のインポートと初期化
+from fastapi import FastAPI          # FastAPI クラスをインポート
+
+app = FastAPI(                       # アプリケーションインスタンスを作成
+    title="My API",                  # ← Swagger UI に表示されるタイトル
+    description="はじめての FastAPI",  # ← API の説明
+    version="1.0.0",                 # ← バージョン情報
+)
+
+# ② GET エンドポイント — Flask の @app.route("/") に相当
+@app.get("/")                        # デコレータで HTTP メソッドとパスを指定
+def read_root():                     # 関数名は自由（ドキュメントに表示される）
+    return {"message": "Hello, World!"}  # ← 辞書を返すと自動で JSON に変換
+
+# ③ パスパラメータ — URL の一部を変数として受け取る
+@app.get("/users/{user_id}")         # {user_id} がパスパラメータ
+def get_user(user_id: int):          # ← int 型ヒントで自動バリデーション
+    return {"user_id": user_id}      # "abc" を渡すと自動で 422 エラー
+
+# ④ クエリパラメータ — ?key=value 形式のパラメータ
+@app.get("/items")
+def list_items(
+    skip: int = 0,                   # ← デフォルト値あり = 省略可能
+    limit: int = 10,                 # ← /items?skip=5&amp;limit=20
+    q: str | None = None,            # ← None許容 = 任意パラメータ
+):
+    return {"skip": skip, "limit": limit, "query": q}
+
+# 起動コマンド: uvicorn main:app --reload
+# → http://localhost:8000/docs で Swagger UI が自動表示</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 Flask との比較</h4>
+            <p><strong>Flask:</strong> <code>@app.route("/users/&lt;int:user_id&gt;")</code> + 手動で <code>jsonify()</code><br>
+            <strong>FastAPI:</strong> <code>@app.get("/users/{user_id}")</code> + 型ヒント <code>user_id: int</code> で自動バリデーション + 自動 JSON 変換</p>
+            <p>FastAPI では <strong>型ヒントを書くだけ</strong> で、入力チェック、エラーメッセージ生成、API ドキュメント生成が全て自動化されます。「型を書く = ドキュメントとテストを同時に書く」のです。</p>
+          </div>
+
+          <!-- Pydantic モデル -->
+          <div class="explanation-box">
+            <h4>📖 ② Pydantic モデル — リクエストボディのバリデーション</h4>
+            <p>FastAPI の最大の強みは <strong>Pydantic</strong> との統合です。Python のクラス定義がそのままバリデーションルール + API ドキュメントになります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — Pydantic モデル</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from pydantic import BaseModel, Field, EmailStr
+from datetime import datetime
+
+# ① Pydantic モデル = データの「設計図」
+class UserCreate(BaseModel):
+    """ユーザー作成リクエストのスキーマ"""
+    name: str = Field(               # ← Field() で詳細なバリデーションルール
+        min_length=1,                # 最低1文字
+        max_length=50,               # 最大50文字
+        examples=["田中太郎"],        # ← Swagger UI のサンプル値
+    )
+    email: EmailStr                  # ← メールアドレス形式を自動検証
+    age: int = Field(ge=0, le=150)   # ← ge=0（0以上）、le=150（150以下）
+    is_active: bool = True           # ← デフォルト値
+
+# ② レスポンスモデル（返却時のデータ形状を定義）
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    created_at: datetime
+    # ↑ パスワードなど、返してはいけないフィールドはここに含めない
+
+# ③ POST エンドポイントでモデルを使う
+@app.post("/users", response_model=UserResponse, status_code=201)
+def create_user(user: UserCreate):   # ← 型ヒント = リクエストボディの自動解析
+    """
+    新しいユーザーを作成します。
+
+    - **name**: ユーザーの表示名（1〜50文字）
+    - **email**: メールアドレス（重複不可）
+    - **age**: 年齢（0〜150）
+    """
+    # ↑ docstring が Swagger UI の説明文になる
+    new_user = save_to_db(user)      # Pydantic モデルのまま DB に保存
+    return new_user                  # response_model で自動フィルタリング
+
+# ④ バリデーションエラーの自動レスポンス例
+# POST /users に {"name": "", "age": -5} を送ると:
+# → 422 Unprocessable Entity
+# {
+#   "detail": [
+#     {"loc": ["body", "name"], "msg": "最低1文字必要", "type": "string_too_short"},
+#     {"loc": ["body", "age"], "msg": "0以上の値が必要", "type": "greater_than_equal"},
+#     {"loc": ["body", "email"], "msg": "必須フィールド", "type": "missing"}
+#   ]
+# }</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 response_model の役割</h4>
+            <p><code>response_model=UserResponse</code> を指定すると、<strong>レスポンスから UserResponse に含まれないフィールド（例: パスワード）が自動的に除外</strong>されます。これはセキュリティ上非常に重要で、「うっかりパスワードハッシュをAPIで返してしまう」事故を構造的に防ぎます。</p>
+          </div>
+
+          <!-- 非同期処理 -->
+          <div class="explanation-box">
+            <h4>📖 ③ 非同期処理（async/await）— 高速な並行処理</h4>
+            <p>FastAPI は Python の <code>async/await</code> をネイティブサポートしており、I/O バウンド（DB読み書き、外部API呼び出し）の処理を効率的に並行実行できます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — 非同期 FastAPI</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import httpx                          # ← 非同期対応の HTTP クライアント
+from fastapi import FastAPI
+
+app = FastAPI()
+
+# ① 同期関数 — 1リクエストずつ順番に処理
+@app.get("/sync")
+def sync_endpoint():
+    # このリクエストの処理中、他のリクエストはブロックされる
+    result = slow_database_query()    # 2秒かかる
+    return {"data": result}
+
+# ② 非同期関数 — 待ち時間中に他のリクエストを処理可能
+@app.get("/async")
+async def async_endpoint():          # ← async キーワードを追加
+    async with httpx.AsyncClient() as client:
+        # await 中に他のリクエストを処理できる
+        response = await client.get(  # ← await で非同期に待機
+            "https://api.example.com/data"
+        )
+    return response.json()
+
+# ③ 複数の外部APIを並行呼び出し
+import asyncio
+
+@app.get("/dashboard")
+async def get_dashboard():
+    async with httpx.AsyncClient() as client:
+        # ↓ 3つのAPIを「同時に」呼び出す（順番に呼ぶと3倍遅い）
+        user_task = client.get("https://api.example.com/user")
+        orders_task = client.get("https://api.example.com/orders")
+        stats_task = client.get("https://api.example.com/stats")
+
+        user, orders, stats = await asyncio.gather(
+            user_task, orders_task, stats_task  # ← 全部まとめて並行実行
+        )
+
+    return {
+        "user": user.json(),
+        "orders": orders.json(),
+        "stats": stats.json(),
+    }
+# 同期: 1秒 + 1秒 + 1秒 = 3秒
+# 非同期: max(1秒, 1秒, 1秒) = 1秒 ← 3倍速い！</code></pre>
+          </div>
+
+          <!-- 依存性注入 -->
+          <div class="explanation-box">
+            <h4>📖 ④ 依存性注入（Dependency Injection）— 認証・DB接続の共通化</h4>
+            <p>FastAPI の依存性注入は、「このエンドポイントには認証が必要」「DB接続を自動で開閉する」といった<strong>共通処理を簡潔に定義</strong>できる仕組みです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON — 依存性注入</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+security = HTTPBearer()              # ← Bearer トークン認証スキーム
+
+# ① 認証の依存関数 — トークンを検証してユーザーを返す
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):                                   # ← Depends() で自動注入
+    token = credentials.credentials
+    user = await verify_token(token)  # トークンからユーザーを特定
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="無効なトークンです",
+        )
+    return user
+
+# ② DB セッションの依存関数 — 接続の開閉を自動管理
+async def get_db():
+    db = SessionLocal()              # DB接続を開く
+    try:
+        yield db                     # ← yield でエンドポイントに渡す
+    finally:
+        db.close()                   # ← リクエスト完了後に必ず閉じる
+
+# ③ エンドポイントで依存関数を使う
+@app.get("/me")
+async def get_my_profile(
+    user = Depends(get_current_user),  # ← 認証済みユーザーを自動注入
+    db = Depends(get_db),              # ← DB接続を自動注入
+):
+    profile = await db.get(User, user.id)
+    return profile
+
+# ④ 管理者権限のチェック（依存関数のチェーン）
+async def require_admin(
+    user = Depends(get_current_user)   # ← 別の依存関数を入れ子にできる
+):
+    if not user.is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="管理者権限が必要です"
+        )
+    return user
+
+@app.delete("/users/{user_id}")
+async def delete_user(
+    user_id: int,
+    admin = Depends(require_admin),    # ← 管理者のみ実行可能
+    db = Depends(get_db),
+):
+    await db.delete(User, user_id)
+    return {"message": "ユーザーを削除しました"}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 なぜ依存性注入が重要か</h4>
+            <p><strong>1. コードの重複排除:</strong> 認証チェックを全エンドポイントに書く代わりに、<code>Depends(get_current_user)</code> と1行書くだけ。</p>
+            <p><strong>2. テスタビリティ:</strong> テスト時に <code>get_db</code> をモックDBに差し替えるだけで、本番コードを一切変更せずにテスト可能。</p>
+            <p><strong>3. 安全なリソース管理:</strong> <code>yield</code> を使った依存関数は、エラーが起きても <code>finally</code> で必ずリソースを解放する。</p>
+          </div>
+
+          <!-- FastAPI プロジェクト構成 -->
+          <div class="explanation-box">
+            <h4>📖 ⑤ 実務レベルのプロジェクト構成</h4>
+            <p>実際のFastAPIプロジェクトの推奨ディレクトリ構成です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">プロジェクト構成例</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>my_api/
+├── main.py                # ← アプリのエントリーポイント
+├── config.py              # ← 環境変数・設定管理
+├── database.py            # ← DB接続設定
+│
+├── models/                # ← SQLAlchemy モデル（DBテーブル定義）
+│   ├── __init__.py
+│   ├── user.py
+│   └── item.py
+│
+├── schemas/               # ← Pydantic スキーマ（リクエスト/レスポンス定義）
+│   ├── __init__.py
+│   ├── user.py            #   UserCreate, UserResponse, UserUpdate
+│   └── item.py
+│
+├── routers/               # ← APIエンドポイントをグループ化
+│   ├── __init__.py
+│   ├── users.py           #   /users 関連のエンドポイント
+│   └── items.py           #   /items 関連のエンドポイント
+│
+├── services/              # ← ビジネスロジック層
+│   ├── __init__.py
+│   └── user_service.py    #   DB操作のロジックを分離
+│
+├── dependencies.py        # ← 共通の依存関数（認証、DB接続）
+├── middleware.py           # ← ミドルウェア（ログ、CORS）
+└── tests/                 # ← テストコード
+    ├── test_users.py
+    └── conftest.py        # ← テスト用のフィクスチャ</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💡 FastAPI のまとめ</h4>
+            <p><strong>型ヒントを書くだけで:</strong> バリデーション + ドキュメント + エディタ補完が全て自動。<br>
+            <strong>async/await:</strong> I/Oバウンド処理を並行実行し、高スループットを実現。<br>
+            <strong>依存性注入:</strong> 認証・DB接続などの横断的関心事を簡潔に管理。<br>
+            <strong>Pydantic:</strong> リクエスト/レスポンスの型安全をコンパイル時に保証。</p>
+          </div>
+        
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>API開発では「ドキュメントと実装のズレ」が永遠の課題でした。コードを直したのにドキュメントの更新を忘れる問題です。FastAPIは「コードの型定義からドキュメントを自動生成する（OpenAPI標準）」ため、この悲劇が構造的に発生しません。実務ではフロントエンドエンジニアに /docs のURLを渡すだけでシームレスな連携が始まります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Python Quiz -->
+
+      <div class="quiz-section" id="python-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">Pythonの基礎から実践までの知識を確認しましょう。</p>
+        <div id="python-quiz-container"></div>
+        <div class="quiz-result" id="python-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="python-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="python-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="python-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="python-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('python')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('python')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="python-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

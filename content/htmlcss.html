@@ -1,0 +1,2285 @@
+
+      <!-- Lesson 1: HTML の基本構造 -->
+      <article class="lesson-card" data-section="htmlcss-1" id="htmlcss-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>HTML の基本構造 — Webページの骨格を理解する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 全てのWebページは HTML で始まる</h4>
+            <p><strong>なぜHTMLが必要なのか？</strong> ブラウザは単なるテキストデータを受け取っても、どこが見出しで、どこがリンクなのか理解できません。HTML（HyperText Markup Language）は、コンテンツに「意味」と「構造」を与えるためのタグ付け言語です。正しい構造を持つHTMLは、検索エンジン（SEO）や視覚障害者のためのスクリーンリーダー（アクセシビリティ）がページを正確に解釈するために不可欠です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>HTMLの基本的な役割</h4>
+            <p>HTMLはページの「骨格」です。デザイン（CSS）や動き（JavaScript）を適用する前に、まずは堅牢な骨格を作ることが重要です。特に近年は「セマンティックHTML」と呼ばれる、タグの意味を正しく使うマークアップが実務で強く求められます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!DOCTYPE html&gt;
+&lt;!-- [解説] HTML5であることを宣言。これがないとブラウザが「後方互換モード」で動き、レイアウトが崩れます --&gt;
+&lt;html lang="ja"&gt;
+&lt;!-- [解説] ルート要素。lang="ja"を指定しないと、翻訳ツールが誤作動したり、音声読み上げがおかしくなります --&gt;
+
+&lt;head&gt;
+  &lt;!-- 画面には表示されないが、ブラウザや検索エンジン向けの設定を記述する領域 --&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;!-- [解説] 文字コード設定。これが抜けると環境によっては日本語が文字化けします --&gt;
+  
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;!-- [解説] スマホ対応の必須設定。これがないとPCサイトがそのまま縮小されて極小表示されます --&gt;
+  
+  &lt;title&gt;My Portfolio&lt;/title&gt;
+  &lt;!-- [解説] ブラウザのタブや検索結果に表示される非常に重要なSEO要素 --&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;!-- ユーザーが実際に画面で見るコンテンツの領域 --&gt;
+  &lt;header&gt;
+    &lt;!-- [解説] サイトのヘッダー。divではなくheaderタグを使うことで意味を持たせます（セマンティック） --&gt;
+    &lt;h1&gt;山田太郎のポートフォリオ&lt;/h1&gt;
+    &lt;nav&gt;
+      &lt;!-- ナビゲーションメニュー --&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#about"&gt;About&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#works"&gt;Works&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;!-- [解説] ページの主要なコンテンツ。1ページに1つだけ配置します --&gt;
+    &lt;article&gt;
+      &lt;!-- [解説] それ単体で独立して成立するコンテンツ（ブログ記事など） --&gt;
+      &lt;h2&gt;最新のプロジェクト&lt;/h2&gt;
+      &lt;p&gt;ReactとTypeScriptを使用したWebアプリ開発...&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;
+    &lt;p&gt;&amp;copy; 2026 Taro Yamada&lt;/p&gt;
+  &lt;/footer&gt;
+
+  &lt;!-- [解説] JSは読み込みで描画をブロックしないよう、bodyの最後に置くか defer 属性を付けます --&gt;
+  &lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>初心者は何でも <code>&lt;div&gt;</code> で囲みがち（いわゆる div soup）ですが、実務ではコードレビューで指摘されます。<code>&lt;main&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code> などを適切に使い分けることで、検索エンジンがページの構造を理解しやすくなり（SEO向上）、視覚障害者向けの音声読み上げソフトがユーザーを正しくナビゲートできるようになります。HTMLは「見た目」ではなく「意味」で作るという意識を持ちましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2: テキスト・リスト・リンク -->
+      <article class="lesson-card" data-section="htmlcss-2" id="htmlcss-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>テキスト・リスト・リンク — コンテンツの基本要素</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 見出し・段落・リスト・リンクは Web の四大要素</h4>
+            <p><strong>なぜこれらの要素が重要なのか？</strong> Web上の情報の9割はテキストです。ユーザーは文章を一字一句読むのではなく「見出しを拾い読み（スキャン）」します。適切な見出し（<code>h1-h6</code>）、箇条書き（<code>ul/ol</code>）、そして他のページへの導線（<code>a</code>）を用意することで、認知負荷を下げ、情報を素早く正確に伝えることができます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- 1. 見出し（Heading） --&gt;
+&lt;!-- [解説] ページ内で最も重要なテーマ。SEOの観点から、&lt;h1&gt;は通常1ページに1回だけ使用します --&gt;
+&lt;h1&gt;フロントエンド開発ガイド&lt;/h1&gt;
+
+&lt;!-- [解説] 見出しレベルは h1 &gt; h2 &gt; h3 の順に階層構造を守ること。h2を飛ばしてh3を使うのはNGです --&gt;
+&lt;h2&gt;第1章：HTMLの基礎&lt;/h2&gt;
+&lt;h3&gt;1.1 タグの役割&lt;/h3&gt;
+
+&lt;!-- 2. 段落（Paragraph）とインライン要素 --&gt;
+&lt;p&gt;
+  HTMLを学ぶ上で、&lt;strong&gt;セマンティック（意味論的）&lt;/strong&gt;なマークアップは非常に重要です。
+  &lt;!-- [解説] 単に太字にしたい（装飾）ならCSSを使います。&lt;strong&gt;は「内容として重要」であることを示します --&gt;
+  単なるテキストファイルが、タグによって&lt;em&gt;構造化されたドキュメント&lt;/em&gt;に変わります。
+&lt;/p&gt;
+
+&lt;!-- 3. リスト（Lists） --&gt;
+&lt;!-- [解説] 順序が意味を持たないリスト（箇条書き） --&gt;
+&lt;h3&gt;必要なツール&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;テキストエディタ（VS Codeなど）&lt;/li&gt;
+  &lt;li&gt;Webブラウザ（Chromeなど）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- [解説] 順序が意味を持つリスト（手順など） --&gt;
+&lt;h3&gt;環境構築のステップ&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;Node.jsをインストールする&lt;/li&gt;
+  &lt;li&gt;プロジェクトフォルダを作成する&lt;/li&gt;
+  &lt;li&gt;コマンドを実行する&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;!-- 4. リンク（Anchor） --&gt;
+&lt;!-- [解説] target="_blank"で別タブを開く際は、セキュリティとパフォーマンスのため rel="noopener noreferrer" を付与します --&gt;
+&lt;a href="https://developer.mozilla.org/" target="_blank" rel="noopener noreferrer"&gt;
+  MDN Web Docsで詳しく学ぶ
+&lt;/a&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務では「見た目を大きくしたいから <code>&lt;h2&gt;</code> ではなく <code>&lt;h1&gt;</code> を使う」といった、デザイン目的でのタグの乱用は厳禁です。見出しレベルのスキップ（h2の下にh4が来る等）は、SEOツールやアクセシビリティ監査ツール（Lighthouse等）でエラーとなります。見た目の調整は必ずCSSで行い、HTMLは「文書の正しい目次」を作るつもりで階層を構成しましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3: 画像・メディア・テーブル -->
+      <article class="lesson-card" data-section="htmlcss-3" id="htmlcss-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>画像・メディア・テーブル — リッチコンテンツの埋め込み</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 リッチメディアは最適化とアクセシビリティが命</h4>
+            <p><strong>なぜ画像やテーブルの扱いが特別なのか？</strong> テキストと違い、画像はファイルサイズが大きく、ページの読み込み速度（パフォーマンス）に直結します。また、視覚に頼る情報であるため、目の見えないユーザーや検索エンジンには内容が伝わりません。そのため、「軽量化」「レイアウトシフト（CLS）の防止」「代替テキスト（alt）の提供」という3つの配慮がエンジニアの腕の見せ所になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- 1. 基本的な画像とCLS防止 --&gt;
+&lt;!-- [解説] width と height を必ず指定します。これによりブラウザが事前に画像のスペースを確保し、
+     読み込み後のガクッというレイアウトのズレ（CLS）を防ぎます --&gt;
+&lt;img 
+  src="images/hero-banner.jpg" 
+  alt="青空の下でノートパソコンを開いて作業するエンジニア" 
+  width="1200" 
+  height="600"
+  loading="lazy" &lt;!-- [解説] 画面外の画像を遅延読み込みし、初期ロードを高速化 --&gt;
+&gt;
+
+&lt;!-- 2. レスポンシブ画像（デバイスに応じた最適化） --&gt;
+&lt;!-- [解説] スマホにPC用の巨大な画像を読み込ませるのは通信の無駄です。
+     pictureタグで画面幅に応じた最適な画像をブラウザに選択させます --&gt;
+&lt;picture&gt;
+  &lt;source media="(max-width: 768px)" srcset="images/hero-sm.webp" type="image/webp"&gt;
+  &lt;source media="(min-width: 769px)" srcset="images/hero-lg.webp" type="image/webp"&gt;
+  &lt;!-- 全ての条件に外れた場合や、picture非対応ブラウザ用のフォールバック --&gt;
+  &lt;img src="images/hero-lg.jpg" alt="キャンペーンのバナー" width="1200" height="600"&gt;
+&lt;/picture&gt;
+
+&lt;!-- 3. アクセシブルなテーブル（表） --&gt;
+&lt;!-- [解説] divで表のような見た目を作るのはNG。データ表には必ずtableを使います --&gt;
+&lt;table&gt;
+  &lt;caption&gt;2024年度 四半期別売上推移&lt;/caption&gt; &lt;!-- [解説] 表のタイトル --&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;!-- [解説] scope="col" で「この見出しは列に対するもの」と明示 --&gt;
+      &lt;th scope="col"&gt;四半期&lt;/th&gt;
+      &lt;th scope="col"&gt;売上高（万円）&lt;/th&gt;
+      &lt;th scope="col"&gt;達成率&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;!-- [解説] scope="row" で「この見出しは行に対するもの」と明示 --&gt;
+      &lt;th scope="row"&gt;第1四半期&lt;/th&gt;
+      &lt;td&gt;4,500&lt;/td&gt;
+      &lt;td&gt;105%&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>画像に対する <code>alt</code> 属性は「とりあえず何か入れる」のではなく、<strong>「画像が表示されなかった時、代わりに読まれて意味が通じる文章」</strong>を入れます。ただし、単なる装飾目的の画像（アイコンやあしらい）の場合は <code>alt=""</code> と空に設定し、スクリーンリーダーが不要な情報を読み上げるのを防ぎます（alt属性自体を省略するのはエラーになるので注意）。また、実務ではパフォーマンス向上のため、PNGやJPEGではなく、WebPやAVIF形式の画像が標準的に使われます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4: フォーム -->
+      <article class="lesson-card" data-section="htmlcss-4" id="htmlcss-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>フォーム — ユーザー入力を受け取る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 フォームはWebサイトにおける「対話の窓口」</h4>
+            <p><strong>なぜフォームの作り込みが重要なのか？</strong> ユーザー登録、商品の購入、お問い合わせなど、Webサービスのコンバージョン（目標達成）はすべてフォームを通じて行われます。使いにくいフォームはユーザーの離脱を招き、売上や登録率に直結します。ブラウザの標準機能を活用した入力補助（適切なキーボードの表示、自動補完、HTMLレイヤーでのバリデーション）を行うことで、ユーザー体験を劇的に向上させることができます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- [解説] action は送信先URL、method は送信方式（データの登録・更新は必ずPOST） --&gt;
+&lt;form action="/api/register" method="POST" class="registration-form"&gt;
+
+  &lt;!-- 1. ラベルと入力欄の紐付け（超重要） --&gt;
+  &lt;div class="form-group"&gt;
+    &lt;!-- [解説] labelのfor属性とinputのid属性を一致させます。
+         これにより、ラベルの文字をクリックしても入力欄にフォーカスが当たります --&gt;
+    &lt;label for="username"&gt;ユーザー名 &lt;span class="required"&gt;*&lt;/span&gt;&lt;/label&gt;
+    &lt;input 
+      type="text" 
+      id="username" 
+      name="username" 
+      required 
+      minlength="3" 
+      maxlength="20"
+      placeholder="例: yamada_taro"
+      autocomplete="username" &lt;!-- [解説] ブラウザの自動入力（オートコンプリート）を助けます --&gt;
+    &gt;
+  &lt;/div&gt;
+
+  &lt;!-- 2. メールアドレス（専用キーボードの表示） --&gt;
+  &lt;div class="form-group"&gt;
+    &lt;label for="email"&gt;メールアドレス &lt;span class="required"&gt;*&lt;/span&gt;&lt;/label&gt;
+    &lt;!-- [解説] type="email"にすると、スマホで入力時に「@」が含まれたキーボードが自動で出ます --&gt;
+    &lt;input 
+      type="email" 
+      id="email" 
+      name="email" 
+      required 
+      autocomplete="email"
+    &gt;
+  &lt;/div&gt;
+
+  &lt;!-- 3. パスワードと複雑なバリデーション --&gt;
+  &lt;div class="form-group"&gt;
+    &lt;label for="password"&gt;パスワード &lt;span class="required"&gt;*&lt;/span&gt;&lt;/label&gt;
+    &lt;!-- [解説] pattern属性を使うと、JSを書かなくても正規表現でチェックが可能 --&gt;
+    &lt;input 
+      type="password" 
+      id="password" 
+      name="password"
+      required 
+      minlength="8"
+      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+      title="大文字・小文字・数字をそれぞれ1文字以上含む、8文字以上で入力してください"
+    &gt;
+  &lt;/div&gt;
+
+  &lt;!-- 4. クリックしやすいチェックボックス --&gt;
+  &lt;div class="form-group checkbox-group"&gt;
+    &lt;!-- [解説] inputをlabelで囲むパターン。これでも文字クリックでチェック可能です --&gt;
+    &lt;label&gt;
+      &lt;input type="checkbox" name="terms" required&gt;
+      利用規約とプライバシーポリシーに同意する
+    &lt;/label&gt;
+  &lt;/div&gt;
+
+  &lt;button type="submit" class="submit-btn"&gt;アカウントを作成&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>スマホでの入力ストレスを減らすため、適切な <code>type</code> 属性（<code>email</code>, <code>tel</code>, <code>number</code> など）と <code>autocomplete</code> 属性を指定するのは現代のWeb開発では必須マナーです。<br>また、<code>&lt;label&gt;</code> をサボると、視覚障害者がスクリーンリーダーを使った際に「テキスト入力欄です」としか読み上げられず、何を打ち込めばいいのか全く分からなくなります。フォームの実装品質は、開発者のユーザーへの思いやりが最も顕著に表れる部分です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5: CSS の基本 -->
+      <article class="lesson-card" data-section="htmlcss-5" id="htmlcss-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>CSS の基本 — セレクタとプロパティ</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 CSS = 「何を（セレクタ）」+「どう見せるか（プロパティ）」</h4>
+            <p><strong>なぜCSSがHTMLから分離されているのか？</strong> 昔はHTMLの中に直接色やレイアウト（<code>&lt;font color="red"&gt;</code>など）を書いていましたが、ページ数が増えると変更が地獄になりました。文書構造（HTML）と装飾（CSS）を分離することで、1つのCSSファイルを修正するだけで1000ページのサイト全体の色を一瞬で変えることができるようになります（保守性の向上）。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 1. セレクタ（対象の指定方法） ===== */
+
+/* 要素セレクタ：ページ内の全ての p タグに影響（広範囲すぎるので実務ではリセット以外であまり使わない） */
+p { 
+  color: #333333; 
+  line-height: 1.8; 
+}
+
+/* クラスセレクタ：最もよく使う。.（ドット）で始める。複数の要素に使い回せる */
+.alert-message { 
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+/* IDセレクタ：# で始める。1ページに1回しか使えない。（詳細度が高くなりすぎるため、実務では避ける傾向） */
+#main-header { 
+  border-bottom: 1px solid #eaeaea; 
+}
+
+/* ===== 2. 状態を表す擬似クラス ===== */
+
+/* [解説] a:hover（ホバー時）などの状態指定。ユーザーのアクションに対するフィードバックを作る */
+.custom-button {
+  background-color: #2563eb;
+  color: white;
+  transition: background-color 0.2s; /* ホバー時の色の変化をフワッとさせる */
+}
+
+.custom-button:hover {
+  background-color: #1d4ed8; /* マウスが乗った時に少し暗くする */
+}
+
+/* [解説] フォーカス時（キーボードのTabキーで選択された時など）。アクセシビリティに必須 */
+input:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* ===== 3. カスタムプロパティ（CSS変数） ===== */
+
+/* [解説] 実務では色は直接書かず、変数として定義して全体で使い回す */
+:root {
+  --primary-color: #2563eb;
+  --text-main: #1f2937;
+  --spacing-md: 16px;
+}
+
+.card-title {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>CSS初心者が必ずハマるのが「詳細度（Specificity）の壁」です。「CSSを書いたのに反映されない！」という時の原因の9割はこれです。<br>
+            強さの順は <code>!important</code> ＞ <code>#ID</code> ＞ <code>.クラス</code> ＞ <code>タグ</code> となります。<br>
+            どうしても効かないからと <code>!important</code> を使うのは<strong>劇薬</strong>です。あとで誰も上書きできなくなり、プロジェクトが破綻します。実務では「IDセレクタと!importantは原則禁止とし、すべてクラスセレクタで設計する」のがモダンCSSの鉄則です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6: ボックスモデル -->
+      <article class="lesson-card" data-section="htmlcss-6" id="htmlcss-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>ボックスモデル — 全てのレイアウトの基礎</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 全HTML要素は「箱（ボックス）」として描画される</h4>
+            <p><strong>なぜボックスモデルの理解が必須なのか？</strong> CSSのレイアウト崩れ（要素がはみ出す、隙間が空きすぎる等）の99%は、この「箱の計算」を開発者が誤解していることから起きます。全ての要素は「コンテンツ（中身）」「padding（内側の余白）」「border（枠線）」「margin（外側の余白）」という4つの層から成り立っています。この層の足し算・引き算を理解しないと、思い通りのレイアウトを作ることは絶対に不可能です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== ボックスモデルの構成 ===== */
+/*
+  ┌─────────────── margin（外側の余白: 兄弟要素との距離） ───────────────┐
+  │ ┌──────────── border（境界線: 要素の境界） ───────────────┐    │
+  │ │ ┌──────── padding（内側の余白: 背景色が適用される） ─────────┐  │    │
+  │ │ │                                                      │  │    │
+  │ │ │          content（コンテンツ: テキストや画像）         │  │    │
+  │ │ │                                                      │  │    │
+  │ │ └──────────────────────────────────────────────────────┘  │    │
+  │ └────────────────────────────────────────────────────────┘    │
+  └──────────────────────────────────────────────────────────┘
+*/
+
+/* ★ 最重要: box-sizing を全要素で統一する */
+/* [解説] デフォルト（content-box）だと「width: 200px; padding: 20px; border: 1px;」のとき、
+   実際の要素の幅は 200 + 40(左右padding) + 2(左右border) = 242px になり、親要素からはみ出します。
+   border-box にすると、200px の中に padding と border が含まれるため、計算が圧倒的に楽になります。 */
+*, *::before, *::after {
+  box-sizing: border-box; 
+}
+
+.product-card {
+  width: 300px;         /* ← border-box なので、paddingを足しても最終的な幅は必ず300pxになります */
+  padding: 24px;        /* 内側の余白（カードのフチから文字までの距離） */
+  border: 1px solid #e5e7eb; /* 境界線（1ピクセル・実線・グレー） */
+  margin: 16px auto;    /* 外側の余白（上下16px、左右はautoで中央揃え） */
+  border-radius: 12px;  /* 角丸（borderの角を丸くする） */
+  background-color: white; /* 背景色（paddingの領域まで塗りつぶされる） */
+}
+
+/* margin の相殺（Margin Collapsing）の罠 */
+.section-a { margin-bottom: 40px; }
+.section-b { margin-top: 30px; }
+/* [解説] section-a の下に section-b がある場合、間の余白は 40+30=70px には「ならず」、
+   大きい方の 40px のみ が適用されます。これを「マージン相殺」と呼びます。 */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>現代のWeb制作において <code>box-sizing: border-box;</code> の設定は<strong>呼吸と同じくらい当たり前</strong>に行われます。これがないCSSは「バグの温床」として即座に修正対象になります。<br>
+            また、初心者は要素間の隙間を作るときに <code>padding</code> と <code>margin</code> を適当に使い分けがちですが、「背景色・クリック判定を含めたいなら <code>padding</code>」「他の要素との距離をとりたいだけなら <code>margin</code>」という明確な使い分け基準を持っておきましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7: Flexbox -->
+      <article class="lesson-card" data-section="htmlcss-7" id="htmlcss-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>Flexbox — 柔軟な1次元レイアウト</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Flexbox = 「横に並べる」「縦に並べる」「中央に置く」を簡単に</h4>
+            <p><strong>なぜFlexboxが革命的だったのか？</strong> 昔は要素を横に並べるために <code>float</code> や <code>display: inline-block</code> というハック（本来の用途とは違う無理やりな手法）を使っていましたが、「高さが揃わない」「中央揃えが至難の業」という地獄がありました。Flexboxの登場で、「親要素に1行書くだけで子要素が綺麗に整列し、余った隙間も自動計算される」という夢のようなレイアウト構築が可能になりました。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== Flexbox の基本 ===== */
+
+/* ① グローバルナビゲーション（横並び） */
+.navbar {
+  display: flex;                   /* [解説] この要素をFlexコンテナにする。子要素は自動的に横並びになる */
+  justify-content: space-between;  /* [解説] 主軸（横）の配置。ロゴを左端、メニューを右端に「散らす」 */
+  align-items: center;             /* [解説] 交差軸（縦）の配置。高さが違っても要素を「上下中央」に揃える */
+  gap: 24px;                       /* [解説] 子要素同士の間にだけ24pxの隙間を作る（margin不要！） */
+}
+
+/* ② 完璧な中央配置（最もよく使う最強パターン） */
+.modal-overlay {
+  display: flex;
+  justify-content: center;        /* 水平方向の中央 */
+  align-items: center;            /* 垂直方向の中央 */
+  min-height: 100vh;              /* 画面全体の高さを確保 */
+  /* [解説] 昔のCSSでは「完全な上下左右中央揃え」は超難問でしたが、今はこれだけでOKです */
+}
+
+/* ③ 縦並びのカード（Flexboxは横だけじゃない） */
+.card {
+  display: flex;
+  flex-direction: column;          /* [解説] 並べる方向を「縦」に変更 */
+  height: 100%;                    /* [解説] 親コンテナの高さ一杯に広げる */
+}
+
+.card-content {
+  flex-grow: 1;                    /* [解説] 余った縦の空間をこの要素がすべて吸収して伸びる。
+                                      結果として、続く .card-footer が一番下に押し下げられます */
+}
+
+/* ④ 折り返し（レスポンシブなタグ一覧などに） */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;                 /* [解説] デフォルトでは親からはみ出しても1行に押し込もうとするため、
+                                      画面幅が足りない時は「次の行に折り返す」設定 */
+  gap: 8px;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Flexbox を使うとき、要素間の隙間を <code>margin</code> で設定しているコードをよく見かけますが、現代の実務では <strong><code>gap</code> プロパティを使うのが絶対的な正解</strong>です。<code>margin</code> だと「リストの一番最後の要素の右側にも不要な余白ができてしまい、全体のバランスが崩れる」という問題が起きますが、<code>gap</code> は「要素と要素の<strong>間</strong>」にしか余白を作らないため、ネガティブマージンなどの面倒な調整が一切不要になります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8: CSS Grid -->
+      <article class="lesson-card" data-section="htmlcss-8" id="htmlcss-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>CSS Grid — 強力な2次元レイアウト</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Grid = 行と列の両方を同時に制御できるレイアウトシステム</h4>
+            <p><strong>なぜFlexboxだけでなくGridも必要なのか？</strong> Flexboxは「1次元（横一列、または縦一列）」の並びを制御するのに対し、CSS Gridは「2次元（縦横のマス目、チェス盤のようなもの）」を制御します。ページ全体の骨格（ヘッダー、サイドバー、メインコンテンツ、フッター）を作ったり、写真ギャラリーのように縦横をピシッと揃えたい場面では、FlexboxよりもGridの方が圧倒的に少ないコードで堅牢に実装できます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== CSS Grid の基本 ===== */
+
+/* ① シンプルな均等グリッド（商品一覧などに最適） */
+.product-grid {
+  display: grid;
+  /* [解説] 1fr は「利用可能な空間の1等分（fraction）」という意味。
+     repeat(3, 1fr) は「1fr 1fr 1fr」と同じで、綺麗に3列均等の幅になります */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px; /* Flexbox同様、Gridでも要素間の隙間はgapで指定します */
+}
+
+/* ② 名前付きエリア（視覚的で最強のレイアウト手法） */
+.dashboard-layout {
+  display: grid;
+  /* [解説] まるでアスキーアートのように、どこに何を置くかを視覚的に定義できます。
+     この直感性こそがGrid最大のメリットです。 */
+  grid-template-areas:
+    "header  header  header"
+    "sidebar content content"
+    "sidebar footer  footer";
+  
+  /* [解説] 列の幅：1列目（sidebar）は250px、残り2列は1fr（均等） */
+  grid-template-columns: 250px 1fr 1fr;
+  /* [解説] 行の高さ：1行目と3行目は内容に合わせる（auto）、2行目は残り全部（1fr） */
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
+
+/* 名前付きエリアへの要素の割り当て */
+.header  { grid-area: header; }
+.sidebar { grid-area: sidebar; background: #f9fafb; }
+.main    { grid-area: content; padding: 2rem; }
+.footer  { grid-area: footer; }
+
+/* ③ レスポンシブの究極系（メディアクエリ不要の自動折り返し） */
+.auto-grid {
+  display: grid;
+  /* [解説] minmax(280px, 1fr) = カードの最小幅は280px。
+     auto-fit = 画面幅が許す限り、自動的に列数を増やしたり減らしたりする。
+     たったこれだけでスマホ（1列）〜PC（複数列）に対応するレイアウトが完成します。 */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務での「Flexbox と Grid の使い分け基準」は以下の通りです。<br>
+            ・<strong>Flexbox:</strong> 中身（コンテンツ）ベース。中身の大きさに合わせて要素が並ぶ（ボタンのグループ、ナビゲーションメニューなど）。<br>
+            ・<strong>Grid:</strong> 枠組み（コンテナ）ベース。先にグリッドという「枠」を決めて、そこに要素をはめ込んでいく（ページ全体のレイアウト、カード一覧など）。<br>
+            「外側の大枠はGridで区画整理し、その区画の内部の細かい配置はFlexboxで並べる」という組み合わせが現代のベストプラクティスです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9: レスポンシブデザイン -->
+      <article class="lesson-card" data-section="htmlcss-9" id="htmlcss-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>レスポンシブデザイン — あらゆるデバイスに対応する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 モバイルファースト = 小さい画面から先にデザインする</h4>
+            <p><strong>なぜ「スマホ向け」を基準に作るのか？</strong> 現代のWebトラフィックの6割以上はスマートフォンです。技術的な理由として、PC向けの複雑なレイアウトをスマホ向けに「削る・解除する」CSSを書くのは非常に困難でバグを生みやすいからです。逆に、スマホ向けのシンプルな一列レイアウトを基準とし、画面が広くなった時だけ「横に並べる・要素を増やす」という足し算のCSS（モバイルファーストアプローチ）を書く方が、コードが圧倒的に綺麗で保守しやすくなります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== モバイルファーストのメディアクエリ設計 ===== */
+
+/* ① ベーススタイル（モバイル向け: ~767pxを想定） */
+/* [解説] メディアクエリの外側に書くスタイルが、すべてのベースになります */
+.container {
+  padding: 16px;
+  width: 100%;
+}
+
+.navigation-menu {
+  display: none; /* スマホではヘッダーメニューを隠し、代わりにハンバーガーメニューを出す等 */
+}
+
+.article-layout {
+  display: flex;
+  flex-direction: column; /* スマホでは画像とテキストを縦並びに */
+  gap: 16px;
+}
+
+/* ② タブレット以上（768px以上）のスタイルを「上書き」する */
+@media (min-width: 768px) {
+  /* [解説] 画面幅が768px以上の時"だけ"、この中のルールが適用されます */
+  .container {
+    padding: 32px;
+  }
+  
+  .navigation-menu {
+    display: flex; /* 画面が広いのでメニューを表示 */
+  }
+
+  .article-layout {
+    flex-direction: row; /* タブレット以上では横並びに変更 */
+  }
+}
+
+/* ③ PC・大型ディスプレイ以上（1024px以上） */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1200px; /* 無限に広がらないよう最大幅を制限 */
+    margin: 0 auto;    /* 画面の中央に配置 */
+    padding: 40px;
+  }
+}
+
+/* ===== レスポンシブな可変フォントサイズ（モダンな手法） ===== */
+h1.title {
+  /* [解説] clamp(最小値, 推奨値, 最大値) 
+     画面幅（vw）に応じてフォントサイズが無段階に滑らかに変わります。
+     メディアクエリを何個も書く必要がなくなる魔法のプロパティです。 */
+  font-size: clamp(1.5rem, 4vw + 1rem, 3rem);
+}
+
+/* ===== 画像のはみ出し防止（必須） ===== */
+img {
+  max-width: 100%; /* 親要素より大きくならない（はみ出さない） */
+  height: auto;    /* 縦横比（アスペクト比）を崩さずに縮小する */
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務の現場では「ブレイクポイント（画面幅の切り替わりポイント）を何pxにするか」でよく議論になりますが、現代のデファクトスタンダードは <code>768px</code>（iPadの縦向き）と <code>1024px</code>（iPadの横向き/小型PC）を基準にすることが多いです（Tailwind CSSの <code>md:</code> <code>lg:</code> もこれを採用しています）。<br>
+            また、特定のスマホ（iPhone 14等）のピクセル数に合わせたブレイクポイントを作ってはいけません。デバイスのサイズは毎年変わるため、「デザインが崩れたタイミング」でブレイクポイントを入れるのが本質的なレスポンシブ設計です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10: アニメーション & モダンCSS -->
+      <article class="lesson-card" data-section="htmlcss-10" id="htmlcss-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>アニメーション &amp; モダンCSS — 動きのあるUIを作る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 微細なアニメーションがUIの「手触り」を決める</h4>
+            <p><strong>なぜアニメーションが必要なのか？</strong> 現実世界の物体は、瞬間移動したり一瞬で色が変わったりしません。WebUIにおいても、ボタンの色がパッと変わるより、0.2秒かけてフワッと変わる方が人間の脳にとって「自然で心地よい」と感じられます。これをマイクロインタラクションと呼びます。ただし、過度なアニメーションはユーザーを酔わせ、パフォーマンスを低下させるため「控えめで、意味のある動き」を実装することがシニアエンジニアの条件です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== transition（状態変化の滑らかなアニメーション） ===== */
+
+.interactive-button {
+  background-color: #3b82f6;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  
+  /* [解説] 変化させるプロパティ、時間、イージング（変化のカーブ）を指定します。
+     transform（移動・拡大縮小）と box-shadow だけを対象にすることで、
+     ブラウザの描画負荷を最小限に抑えます。 */
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.2s ease-out;
+}
+
+/* ホバー（マウスオーバー）時の状態 */
+.interactive-button:hover {
+  /* [解説] 上に2px浮き上がり、影を落とすことで「押せる」アフォーダンスを強調 */
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+}
+
+/* アクティブ（クリックした瞬間）の状態 */
+.interactive-button:active {
+  /* [解説] 押し込まれる物理的な感触を表現 */
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ===== @keyframes（複雑なループ・入場アニメーション） ===== */
+
+/* [解説] キーフレームでアニメーションの「台本」を定義します */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px); /* 20px下から始まる */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);    /* 本来の位置に収まる */
+  }
+}
+
+.fade-in-element {
+  /* [解説] forwards を指定すると、アニメーション終了時の状態（to）を維持します */
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* ===== グラスモーフィズム（すりガラス風・モダンUI） ===== */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.15); /* 半透明の白 */
+  backdrop-filter: blur(12px);           /* [解説] 背面の要素をぼかす魔法のプロパティ */
+  -webkit-backdrop-filter: blur(12px);   /* Safari対応 */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>アニメーションを実装する際の<strong>「絶対の掟」</strong>があります。それは「<code>width</code>、<code>height</code>、<code>margin</code>、<code>top/left</code>」などの<strong>レイアウトに関わるプロパティをアニメーションさせてはいけない</strong>ということです。これらを動かすと、ブラウザは毎秒60回「周囲の要素への影響計算（リフロー）」を行うため、スマホが発熱し画面がカクつきます。<br>
+            位置を動かす時は必ず <code>transform: translate()</code> を、表示/非表示の切り替えは <code>opacity</code> を使ってください。これらはGPUで処理されるため、驚くほど滑らか（60fps）に動きます。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — 実務で差がつくテクニック</h4>
+        <p>基本を理解した次のステップとして、CSS設計手法、アクセシビリティ、パフォーマンス最適化、実務レベルのフォームデザインなどを学びます。</p>
+      </div>
+
+      <!-- Lesson 11: CSS設計手法（BEM, OOCSS） -->
+      <article class="lesson-card" data-section="htmlcss-11" id="htmlcss-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>CSS 設計手法 — BEM / OOCSS で保守性を高める</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 CSSは「書く」より「壊さない」ほうが難しい</h4>
+            <p><strong>なぜ設計手法（ルール）が必要なのか？</strong> CSSには「スコープ（適用範囲の制限）」がありません。どこかのページの見出しを直そうと <code>h2 { color: red; }</code> と書くと、全く関係ない別ページの見出しまで赤くなってしまう「スタイルの汚染」が頻発します。この「どこをいじったらどこが壊れるかわからない恐怖」を防ぐために、クラス名の命名規則（BEMなど）をチームで統一し、予測可能で安全なCSSを維持する設計手法が生み出されました。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== BEM (Block, Element, Modifier) 命名規則 ===== */
+/* [解説] ロシアのYandex社が考案した、世界で最も有名なCSS命名規則。
+   クラス名を見ただけで「どのコンポーネントの」「どの要素で」「どんな状態か」が一目でわかります。 */
+
+/* ① Block (独立した塊) */
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ② Element (Blockを構成する子要素。アンダースコア2つ「__」で繋ぐ) */
+.product-card__image {
+  width: 100%;
+  height: auto;
+  /* [解説] .product-card img { } ではなく、あえてクラスを付与します。
+     これにより詳細度が常に低く（10点）保たれ、上書きが容易になります。 */
+}
+
+.product-card__title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* ③ Modifier (バリエーションや状態。ハイフン2つ「--」で繋ぐ) */
+.product-card--featured {
+  /* [解説] 特集カード用のバリエーション。Blockのクラスに追記して使います 
+     例: &lt;div class="product-card product-card--featured"&gt; */
+  border-color: #fbbf24; /* 金色の枠線 */
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+}
+
+.product-card__title--large {
+  font-size: 1.5rem; /* 大きなタイトルのバリエーション */
+}
+
+/* ===== OOCSS (Object Oriented CSS) ===== */
+/* [解説] 構造（レイアウト）と見た目（スキン）を分離する考え方 */
+
+/* 構造クラス (どこにでも使い回せるレイアウトの骨格) */
+.media-object {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* 見た目クラス (色や装飾のみを担当) */
+.skin-bordered {
+  border: 1px solid #e5e7eb;
+}
+.skin-shadow {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 使う時は HTML 側で組み合わせる: 
+   &lt;div class="media-object skin-shadow"&gt; */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>BEMの初心者がやりがちな失敗が「HTMLのネスト（入れ子）をそのままクラス名に反映させてしまう」ことです。例えば <code>.card__body__list__item</code> のような長すぎる名前はNGです（Grandchild要素の禁止）。BEMのElementは「Blockの直接の構成要素」として扱い、階層が深くても <code>.card__item</code> のようにフラットに命名するのが正解です。<br>現在では Vue/React/CSS Modules などの「コンポーネント指向フレームワーク」によってCSSのスコープ問題が技術的に解決されている現場も多いですが、BEMの「コンポーネントの関心を分離する」という思想は、現代の開発でも形を変えて引き継がれています。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 12: アクセシビリティ -->
+      <article class="lesson-card" data-section="htmlcss-12" id="htmlcss-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>アクセシビリティ（a11y） — 全ての人が使えるWebを作る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 アクセシビリティは「配慮」ではなく「基本品質」</h4>
+            <p><strong>なぜアクセシビリティ（a11y）に取り組むのか？</strong> 目が見えない（スクリーンリーダーを利用する）、マウスが使えない（キーボード操作のみ）、色覚特性がある、あるいは「日差しが強くてスマホの画面が見づらい」「骨折して片手しか使えない」といった一時的な状況も含めると、全てのユーザーがアクセシビリティの恩恵を受けます。正しいHTMLを書き、適切なコントラストを確保することは、検索エンジンにコンテンツを正しく認識させること（SEO）にも直結します。世界的な法制化も進んでおり、プロのWebエンジニアには必須のスキルです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML & CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ===== 1. WAI-ARIA (W3Cのアクセシビリティ仕様) ===== --&gt;
+
+&lt;!-- [解説] アイコンだけのボタン（×ボタンなど）は、音声読み上げソフトが「ボタン」としか読み上げず、何が起きるか分かりません。
+     aria-label を付けることで「閉じるボタン」と認識させます。 --&gt;
+&lt;button aria-label="メニューを閉じる" class="close-btn"&gt;
+  &lt;svg&gt;...&lt;/svg&gt; &lt;!-- 視覚的なバツ印 --&gt;
+&lt;/button&gt;
+
+&lt;!-- [解説] エラーメッセージの読み上げ。
+     aria-live="polite" を設定した領域にJSでエラーを差し込むと、画面を見ずとも「エラーが出ました」と読み上げられます。 --&gt;
+&lt;div aria-live="polite" class="error-message"&gt;&lt;/div&gt;
+
+&lt;!-- [解説] aria-expanded はアコーディオンやメニューが「開いているか・閉じているか」の状態を伝えます --&gt;
+&lt;button aria-expanded="false" aria-controls="mobile-menu"&gt;メニュー&lt;/button&gt;
+
+
+/* ===== 2. アクセシブルな CSS ===== */
+
+/* [解説] キーボードのTabキーで操作するユーザーのための「フォーカスリング」。
+   マウスでクリックした時は出さず、キーボード操作時だけアウトラインを出すモダンな擬似クラスです。
+   outline: none; でフォーカスを完全に消すのは絶対NG（現在地が迷子になります）。 */
+.btn:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+.btn:focus:not(:focus-visible) {
+  outline: none; /* マウスクリック時はアウトラインを出さない */
+}
+
+/* [解説] 視覚的には隠すが、スクリーンリーダーには読み上げさせるための万能クラス。
+   display: none; だと音声読み上げもスキップされてしまうため、この手法を使います。 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* [解説] OSの設定で「視差効果（アニメーション）を減らす」をオンにしているユーザー向け。
+   激しいアニメーションで酔ってしまう人を守ります。 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>アクセシビリティの最初の登竜門は<strong>コントラスト比（文字色と背景色の明度差）</strong>です。デザインカンプがおしゃれな薄いグレー（例: 白背景に <code>#999999</code> の文字）で作られていた場合、WCAG（Web Content Accessibility Guidelines）の基準（最低 4.5:1）を満たさず、多くのユーザーにとって「読めない」サイトになります。エンジニアは実装時にChrome DevTools等のコントラストチェッカーで警告が出た場合、デザイナーに「アクセシビリティの観点から色を少し濃くしても良いか」と提案できるのが真のプロフェッショナルです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 13: 高度なセレクタとカスタムプロパティ -->
+      <article class="lesson-card" data-section="htmlcss-13" id="htmlcss-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">13</span>
+            <h3>高度なセレクタ &amp; カスタムプロパティ活用</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-13')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 セレクタと変数を極めれば、JSなしで柔軟なUIが作れる</h4>
+            <p><strong>なぜ高度なCSSの機能を使うのか？</strong> 昔は「要素の数を数える」「特定の属性を持つものだけ装飾する」「親要素の状態に応じて子要素を変える」といった処理には必ずJavaScriptが必要でした。しかし、最新のCSSセレクタ（<code>:has()</code>、<code>:is()</code>等）やカスタムプロパティ（CSS変数）を使いこなせば、パフォーマンス上のオーバーヘッドゼロ（JSを使わない）で、クリーンかつダイナミックなスタイリングが可能になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 1. :is() と :where()（コードの重複を減らす） ===== */
+/* [解説] 以前は header h1, header h2, header h3 { ... } と長く書いていましたが、
+   :is() を使うと短く書けます。:where() は詳細度が「0」になるため、ライブラリのデフォルトスタイルなどで重宝します。 */
+header :is(h1, h2, h3) {
+  color: #1e293b;
+  margin-bottom: 0.5em;
+}
+
+/* ===== 2. :has()（CSS革命。親要素や前の兄弟要素を参照できる） ===== */
+/* [解説] 「画像を持っているカード"だけ"背景色を変える」という、かつてはJS必須だった処理。
+   :has(img) がカードの中に img が存在するかを判定し、存在する場合のみスタイルを適用します。 */
+.card:has(img) {
+  background-color: #f0fdf4; /* 画像があれば薄緑色に */
+}
+
+/* [解説] フォームのエラーハンドリング。入力欄（input）が無効（invalid）な場合、
+   その親要素（.form-group）の中にあるラベル文字を赤くする。 */
+.form-group:has(input:invalid) label {
+  color: #ef4444; /* エラー時はラベルを赤に */
+}
+
+/* ===== 3. カスタムプロパティ（変数）の高度な活用 ===== */
+/* [解説] ダークモード対応。メディアクエリ内で変数の「中身」だけを書き換えます。
+   個別の要素の色をいちいち再定義する必要がなくなり、保守性が劇的に上がります。 */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #0f172a;
+  --accent-color: #2563eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #0f172a;    /* 背景を黒系に反転 */
+    --text-color: #f8fafc;  /* 文字を白系に反転 */
+    --accent-color: #60a5fa;/* アクセントカラーを明るめに調整 */
+  }
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  /* 色が変わる時にフワッとアニメーションさせる */
+  transition: background-color 0.3s, color 0.3s;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>CSSの <code>:has()</code> 擬似クラスは、2023年末に全主要ブラウザでサポートが完了した「CSS史上最大級のゲームチェンジャー」です。これにより、React等のJS側で「isError」という状態（State）を管理してクラスを切り替えていた処理の多くを、純粋なCSSだけで完結させることができるようになりました。<br>
+            ただし、<code>:has()</code> は非常に強力な反面、無闇に多用しすぎるとブラウザのレンダリングパフォーマンスに影響を与える可能性があります。「本当にJSで状態管理すべきか、CSSで解決すべきか」をコンポーネントの責務として切り分ける視点が必要です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 14: 実務レベルのコンポーネント設計 -->
+      <article class="lesson-card" data-section="htmlcss-14" id="htmlcss-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>実務レベルのコンポーネント設計 — カード・モーダル・ナビ</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 よく使うUIパターンを完璧に作れることがプロの条件</h4>
+            <p><strong>なぜ定番コンポーネントの作り込みが重要なのか？</strong> どのWebアプリケーションを作っても「カード」「モーダル（ポップアップ）」「ナビゲーションバー」は必ず登場します。これらを毎回ゼロから適当に作っていると、画面によって余白が違ったり、スマホで見た時にモーダルの裏側がスクロールしてしまったり（スクロールチェーン問題）、アクセシビリティが損なわれたりします。ベストプラクティスとなる「型」を身につけることが、開発スピードと品質向上のカギです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML & CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ===== 1. ネイティブ HTML &lt;dialog&gt; によるモーダル ===== --&gt;
+&lt;!-- [解説] 昔は JS で div を表示・非表示していましたが、今は &lt;dialog&gt; 要素が標準です。
+     Escキーで閉じる処理や、裏側の要素にフォーカスが当たらない制御（フォーカストラップ）を
+     ブラウザが勝手にやってくれます。 --&gt;
+
+&lt;dialog id="confirmModal" class="modal"&gt;
+  &lt;div class="modal-content"&gt;
+    &lt;h3&gt;削除の確認&lt;/h3&gt;
+    &lt;p&gt;本当にこのアイテムを削除しますか？この操作は取り消せません。&lt;/p&gt;
+    
+    &lt;!-- [解説] method="dialog" にすると、ボタンを押した時に JS なしでモーダルが閉じます --&gt;
+    &lt;form method="dialog" class="modal-actions"&gt;
+      &lt;button class="btn-cancel"&gt;キャンセル&lt;/button&gt;
+      &lt;button class="btn-danger"&gt;削除する&lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/div&gt;
+&lt;/dialog&gt;
+
+&lt;!-- モーダルを開くためのJS（これだけで動きます） --&gt;
+&lt;button onclick="document.getElementById('confirmModal').showModal()"&gt;削除&lt;/button&gt;
+
+
+/* ===== モーダルのスタイリング ===== */
+.modal {
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 90%;
+}
+
+/* [解説] ::backdrop は dialog 要素の「裏側（背景）」を指定する擬似要素です。
+   JSでオーバーレイ用の div を作る必要はもうありません。 */
+.modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒背景 */
+  backdrop-filter: blur(4px);           /* 背景をすりガラス風にぼかす */
+}
+
+/* [解説] アニメーション。open属性が付いた時にフェードインします */
+.modal[open] {
+  animation: modalFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 2. 洗練されたカードコンポーネント ===== */
+.card-modern {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden; /* 角丸から画像がはみ出すのを防ぐ */
+  /* [解説] 控えめな影が上品さのコツ。真っ黒の影は素人感が出ます */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-modern:hover {
+  transform: translateY(-4px); /* ホバーで少し浮き上がる */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p><code>&lt;dialog&gt;</code> 要素は非常に便利ですが、<code>dialog.show()</code>（モードレス・背景操作可能）と <code>dialog.showModal()</code>（モーダル・背景操作不可）の2種類の開き方がある点に注意してください。実務で求められる「ポップアップ中はそのポップアップにしか触れないようにしたい」場合は、必ず <code>showModal()</code> を使います。<br>
+            また、モーダルの下（背面）のページがスクロールしてしまう問題（スクロールチェーン）を防ぐため、JSでモーダルを開く際に <code>document.body.style.overflow = 'hidden'</code> をセットし、閉じる時に元に戻す処理を入れるのがプロダクション品質の基本です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 15: タイポグラフィ -->
+      <article class="lesson-card" data-section="htmlcss-15" id="htmlcss-lesson-15">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">15</span>
+            <h3>タイポグラフィ — フォントと文字組みの技術</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-15')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Webデザインの印象の90%はタイポグラフィで決まる</h4>
+            <p><strong>なぜ文字のスタイリングにそこまでこだわるのか？</strong> ユーザーがWebサイトに訪れる主な目的は「文章を読むこと」です。文字の大きさ、行間、文字間隔、フォントの選択がわずかに違うだけで、サイト全体の「信頼感」「読みやすさ（可読性）」「ブランドイメージ」が激変します。プロのエンジニアは、デフォルトのブラウザスタイルに依存せず、数学的に計算された「タイプスケール」と読みやすい余白設計を持っています。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 1. フォントファミリー（フォントスタック）のベストプラクティス ===== */
+/* [解説] OSに最初から入っているシステムフォントを優先して指定する「System Font Stack」。
+   Webフォント（Google Fonts等）を読み込む通信の遅延（FOUT/FOIT）を防ぎ、
+   各OSのユーザーにとって最も見慣れた綺麗な文字を表示する現代の最適解です。 */
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  
+  /* ===== 2. 本文の可読性チューニング ===== */
+  font-size: 16px;          /* 本文は16pxが標準（ブラウザデフォルト） */
+  line-height: 1.6;         /* [解説] 日本語の行間は 1.6〜1.8 が最も読みやすい */
+  letter-spacing: 0.05em;   /* [解説] 字間をわずかに空けると、スマホ等で詰まって見えるのを防ぐ */
+  color: #334155;           /* 真っ黒（#000）は目が疲れるため、濃いダークグレーを使う */
+  
+  /* [解説] フォントのレンダリングを滑らかにし、ギザギザを抑える（Mac向け） */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 3. 見出しのチューニング ===== */
+h1, h2, h3 {
+  /* [解説] 見出しは文字が大きいので、行間（line-height）を本文より「狭く」する。
+     こうしないと、改行された見出しの上下がスカスカに見えてしまいます。 */
+  line-height: 1.3;
+  color: #0f172a;           /* 見出しは本文より少し暗く・強くしてコントラストをつける */
+  font-weight: 700;
+}
+
+/* ===== 4. 長文の折り返し制御 ===== */
+p {
+  /* [解説] 人間の目は1行あたり40文字〜70文字を超えると、次の行の先頭を見失いやすくなります。
+     max-width に文字数基準の単位（ch）を指定することで、画面が広くても横長になりすぎるのを防ぎます。 */
+  max-width: 70ch; 
+  margin-bottom: 1.5em; /* 段落同士の間隔は、行間より広く取るのが鉄則 */
+}
+
+/* [解説] 長いURLや英単語がコンテナを突き破るのを防ぐ必須設定 */
+.break-text {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>日本語Webデザインで長年エンジニアを悩ませてきた「見出しの文字の折り返し位置がおかしい（単語の途中で改行されて不自然になる）」問題ですが、最新のCSSでは <code>text-wrap: balance;</code> （見出しの各行の長さを均等にする）や、<code>word-break: auto-phrase;</code>（日本語の自然な文節で改行する※一部ブラウザサポート開始）という強力なプロパティが登場しています。<br>
+            また、Webフォント（Noto Sans JPなど）を使う場合は、データサイズが数MBに及ぶことがあるため、必要な文字の太さ（ウェイト）だけを読み込むようにし、パフォーマンス低下に十分注意してください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 16: CSSトランジションとTransformの応用 -->
+      <article class="lesson-card" data-section="htmlcss-16" id="htmlcss-lesson-16">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">16</span>
+            <h3>トランジション &amp; Transform 応用 — インタラクティブUI</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-16')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 高度なTransformで、フラットな画面に「奥行き」と「躍動感」を生む</h4>
+            <p><strong>なぜTransformを極める必要があるのか？</strong> CSSの <code>transform</code> プロパティは、要素の移動（translate）、回転（rotate）、拡縮（scale）、傾斜（skew）を行うだけでなく、ブラウザのレンダリングにおいて「GPUアクセラレーション（ハードウェア支援）」をトリガーする特別なプロパティです。JSで座標を計算してゴリゴリ動かすよりも、CSSのTransformを活用する方が圧倒的に動作が軽く、モバイル端末でも60fpsのヌルヌルとした美しいインタラクションを実現できます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 1. 3Dホバーエフェクト（奥行きを持たせる） ===== */
+.card-3d-wrapper {
+  /* [解説] 親要素に perspective を指定することで、子要素の 3D transform に遠近感が生まれます。
+     値が小さいほど「パース（歪み）」がきつくなります。 */
+  perspective: 1000px;
+}
+
+.card-3d {
+  width: 300px;
+  height: 400px;
+  background: white;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  /* [解説] transform-style: preserve-3d で、子要素も3D空間に配置されるようになります */
+  transform-style: preserve-3d;
+}
+
+.card-3d-wrapper:hover .card-3d {
+  /* [解説] Y軸（縦の軸）を中心に回転させ、さらに手前（Z軸）に引き寄せる */
+  transform: rotateY(15deg) rotateX(5deg) translateZ(20px);
+  box-shadow: -10px 20px 30px rgba(0,0,0,0.15);
+}
+
+/* ===== 2. スケルトンローディング（データ取得中のプレースホルダー） ===== */
+/* [解説] ユーザーに「待たされている」と感じさせないためのモダンなUIテクニック。
+   背景のグラデーションをアニメーションさせることで、波が右へ流れるように見せます。 */
+.skeleton-box {
+  background: #e2e8f0;
+  /* 左から右へ: 薄いグレー → 白っぽいグレー → 薄いグレー のグラデーション */
+  background: linear-gradient(
+    90deg,
+    #e2e8f0 25%,
+    #f8fafc 50%,
+    #e2e8f0 75%
+  );
+  /* 背景サイズを要素の2倍幅にする */
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite linear;
+  border-radius: 4px;
+}
+
+@keyframes loading-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== 3. カスタムイージング（動きの質感を高める） ===== */
+.drawer-menu {
+  transform: translateX(-100%); /* 画面左外に隠しておく */
+  /* [解説] 単なる 'ease' や 'linear' ではなく、独自のベジェ曲線を使う。
+     ここでは「最初は素早く飛び出し、最後はゆっくり止まる」という、物理法則に近い自然な動きを実現。 */
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.drawer-menu.is-open {
+  transform: translateX(0); /* 画面内に表示 */
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>ブラウザのアニメーションパフォーマンスを語る上で欠かせないのが「コンポジタ（合成）層」への切り出しです。<code>transform</code> と <code>opacity</code> は、メインスレッド（JSなどが動く場所）とは別のGPUプロセスで処理されるため、アニメーションがカクつきません。<br>
+            かつては強制的にGPU処理させるハックとして <code>transform: translateZ(0);</code>（意味もなくZ軸に0移動させる）が多用されていましたが、現代では <code>will-change: transform;</code> プロパティを指定することで「これからこの要素は動くから、GPUの準備をしておいてくれ」とブラウザに明確に指示を出すのがモダンな最適化手法です（ただし多用するとメモリを食い潰すので、本当に複雑なアニメーション要素に限定してください）。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 最新CSS仕様とパフォーマンス最適化</h4>
+        <p>CSS Nesting、@layer、Scroll-driven Animations、Container Queries など、2024〜2025年にブラウザに実装された最新仕様と、Core Web Vitals を最適化するテクニックを学びます。</p>
+      </div>
+
+      <!-- Lesson 17: CSS Nesting & @layer -->
+      <article class="lesson-card" data-section="htmlcss-17" id="htmlcss-lesson-17">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">17</span>
+            <h3>CSS Nesting &amp; @layer — ネイティブCSSの新時代</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-17')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Sass（プリプロセッサ）不要！ブラウザが標準でネストを理解する</h4>
+            <p><strong>なぜネイティブCSSの新機能が重要なのか？</strong> これまでCSSを書くエンジニアの9割は、Sass（SCSS）というツールを使い、CSSを「入れ子（ネスト）」にして書いていました。しかし2023年〜2024年にかけて、全モダンブラウザが「ネイティブのCSSネスト」と「@layer（カスケードレイヤー）」をサポートしたことで、Node.js等のビルド環境を用意しなくても、素のCSSファイルだけで最高に綺麗で構造化されたコードが書ける時代に突入したのです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 1. ネイティブ CSS Nesting ===== */
+/* [解説] 親要素のセレクタを何度も書く必要がなくなり、HTMLの構造とCSSの構造が一致します */
+.article-card {
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+
+  /* 子要素へのスタイル適用（ネスト） */
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: #64748b;
+    line-height: 1.6;
+  }
+
+  /* [解説] &（アンパサンド）は親自身（この場合は .article-card）を指します。
+     ホバー時や擬似要素の指定に使います。 */
+  &amp;:hover {
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+  }
+
+  /* メディアクエリもネスト可能（コンポーネント内に閉じ込められる！） */
+  @media (min-width: 768px) {
+    padding: 32px;
+  }
+}
+
+/* ===== 2. @layer（カスケードレイヤー）による詳細度管理 ===== */
+/* [解説] これまでCSSは「後に書いたもの」や「セレクタが強い（詳細度が高い）もの」が勝ち、
+   「!important」の乱用合戦が起きていました。
+   @layer はその優先順位を「層」として完全に制御する革命的機能です。 */
+
+/* レイヤーの優先順位を宣言（右に行くほど優先度が高い） */
+@layer reset, framework, custom;
+
+@layer framework {
+  /* フレームワーク側のスタイル（詳細度が高くても、層が低いので負ける） */
+  .btn.primary#super-btn { 
+    background: blue; 
+  }
+}
+
+@layer custom {
+  /* 自分たちで書くスタイル */
+  /* [解説] 普通ならID付きの上のルールに負けますが、custom層の方が優先度が高い宣言に
+     なっているため、こちらの green が確実に勝ちます！ */
+  .btn { 
+    background: green; 
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>CSS Nestingは便利ですが、Sass時代から続く「アンチパターン」もそのまま引き継いでしまいます。それは<strong>「ネストを深くしすぎる」</strong>ことです。<br>
+            <code>.nav { ul { li { a { span { color: red; } } } } }</code> のように深くネストすると、ブラウザが解析する最終的なセレクタは <code>.nav ul li a span</code> となり、詳細度が無駄に跳ね上がるだけでなく、HTMLの構造にガチガチに依存した「ちょっとHTMLを変えただけで壊れる脆いCSS」になってしまいます。<br>
+            <strong>「ネストは最大でも3階層まで」</strong>というルールをチームで徹底するのが、保守性の高いCSSを維持する最大の秘訣です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 18: Container Queries & Subgrid -->
+      <article class="lesson-card" data-section="htmlcss-18" id="htmlcss-lesson-18">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">18</span>
+            <h3>Container Queries &amp; Subgrid — コンポーネント駆動レイアウト</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-18')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 画面幅ではなく「親要素の幅」でスタイルを変える大革命</h4>
+            <p><strong>なぜメディアクエリ（Media Queries）だけでは限界なのか？</strong> メディアクエリは「画面全体（ウィンドウ）の幅」を見て切り替えます。しかし現代の開発は、Reactなどの「再利用可能なコンポーネント」を組み合わせます。同じカードコンポーネントでも、メインエリアに置かれた時は広く、サイドバーに置かれた時は狭いはずです。画面幅で条件分岐していては「サイドバーに置いたカードが崩れる」という問題が発生します。そこで登場したのが、親の幅に応じて変化する「Container Queries（コンテナクエリ）」です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 1. Container Queries（コンテナクエリ） ===== */
+
+/* [解説] まず、コンポーネントを囲む親要素を「コンテナ」として宣言します */
+.card-wrapper {
+  /* inline-size は「横幅」を監視するという意味 */
+  container-type: inline-size;
+  container-name: card-container; /* 任意の名前（省略可） */
+}
+
+/* カードのデフォルト（狭い時＝モバイルやサイドバー内）のスタイル */
+.card {
+  display: flex;
+  flex-direction: column; /* 縦並び */
+  padding: 16px;
+}
+
+/* [解説] @media の代わりに @container を使う！
+   画面幅ではなく、「.card-wrapper の幅」が 400px を超えた時に適用されます */
+@container card-container (min-width: 400px) {
+  .card {
+    flex-direction: row; /* 横幅に余裕があるので、画像とテキストを横並びに */
+    padding: 24px;
+  }
+}
+
+/* コンテナクエリ専用の単位（cqw） */
+.card-title {
+  /* [解説] vw（画面幅の%）ではなく、cqw（コンテナ幅の%）でフォントサイズを可変にする */
+  font-size: clamp(1rem, 5cqw, 2rem);
+}
+
+/* ===== 2. Subgrid（サブグリッド） ===== */
+/* [解説] Gridレイアウトの中で、「孫要素」の列や行を「祖父要素」のグリッドに揃える魔法。
+   カード内の「タイトル」「画像」「ボタン」の高さを、隣のカードとピシッと揃えたい時に使います。 */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  display: grid;
+  /* 親（.card-grid）の行グリッドを継承する！これで隣のカードと中身の高さが揃います */
+  grid-template-rows: subgrid;
+  grid-row: span 3; /* カード自体は3行分を使用する */
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>コンテナクエリは、「Write Once, Use Anywhere（一度書けば、どこに配置しても綺麗に収まる）」というコンポーネント指向開発の最終ピースです。これまでは「サイドバー用のカード」「メインエリア用のカード」など、配置場所ごとに複数のバリエーションクラス（例: <code>.card--sidebar</code>）を作る必要がありましたが、コンテナクエリなら1つの <code>.card</code> クラスだけで自己完結します。ReactやVue、Storybookなどを利用するモダンな現場では、メディアクエリよりもコンテナクエリをベースに設計するパラダイムシフトが起きています。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 19: Scroll-driven Animations -->
+      <article class="lesson-card" data-section="htmlcss-19" id="htmlcss-lesson-19">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">19</span>
+            <h3>Scroll-driven Animations — スクロール連動アニメーション</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-19')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「スクロール量」をアニメーションの進行度にする（JS完全不要）</h4>
+            <p><strong>なぜこれが革命なのか？</strong> ページをスクロールするとふわっと現れる要素や、スクロール量に応じて上部のプログレスバーが伸びるUI。これまでは「JavaScript（Intersection Observer や Scroll イベント）」を使って実装するのが常識でした。しかし、JSによるスクロールイベントの監視はブラウザのメインスレッドを占有し、スクロールの「カクつき」の原因になります。CSSの <strong>Scroll-driven Animations</strong> を使えば、すべてブラウザの内部処理（別スレッド）で完結するため、圧倒的なパフォーマンスでリッチな表現が可能になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 1. スクロールプログレスバー ===== */
+/* [解説] 記事をどれくらい読んだかを示す、画面上部のバー。JSは一切不要です！ */
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: #2563eb;
+  transform-origin: left;      /* 左端を起点に伸びる */
+  
+  /* 普通のアニメーションを指定 */
+  animation: grow-progress linear;
+  
+  /* [解説] アニメーションの「時間（進行度）」を、ページのスクロール量に連動させる魔法 */
+  animation-timeline: scroll();
+}
+
+@keyframes grow-progress {
+  from { transform: scaleX(0); } /* ページの一番上では幅0% */
+  to   { transform: scaleX(1); } /* ページの一番下では幅100% */
+}
+
+/* ===== 2. スクロールで現れるフェードインアニメーション ===== */
+/* [解説] 要素が画面内に入ってきたらフワッと表示する、パララックスサイトでよくある実装 */
+
+.fade-in-section {
+  animation: reveal-up linear both;
+  
+  /* [解説] view() は、「この要素自体が画面（ビューポート）と交差している割合」を進行度に使う関数 */
+  animation-timeline: view();
+  
+  /* [解説] 要素が画面の下から20%見えた時点でアニメーションを開始し、
+     画面下から80%の位置に来た時点でアニメーションを完了させる */
+  animation-range: entry 20% cover 80%;
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Scroll-driven Animations は2023年に追加されたばかりの非常に新しい仕様であり、古いブラウザ（特にSafariなど）では対応が遅れている場合があります。実務で導入する際は、<strong>「プログレッシブ・エンハンスメント」</strong>という考え方が必須です。<br>
+            これは、「アニメーションが効かなくてもページの内容は100%読める・使えるようにしておき、最新ブラウザのユーザーにだけリッチな体験（アニメーション）を上乗せする」というアプローチです。<code>@supports (animation-timeline: scroll())</code> というCSSの機能判定クエリを使って、対応ブラウザのみにスタイルを適用する安全な実装を心がけましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 20: Core Web Vitals 最適化 -->
+      <article class="lesson-card" data-section="htmlcss-20" id="htmlcss-lesson-20">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">20</span>
+            <h3>Core Web Vitals 最適化 — パフォーマンスで SEO を制する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-20')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 パフォーマンスは「UX」であり、Google検索順位の「絶対評価基準」</h4>
+            <p><strong>なぜCSSがSEOに関係するのか？</strong> Googleは「Core Web Vitals（コアウェブバイタル）」という3つの指標でサイトの健全性を評価し、検索順位に直結させています。そのうちの2つ、<strong>LCP</strong>（Largest Contentful Paint：メインコンテンツがどれだけ早く表示されるか）と、<strong>CLS</strong>（Cumulative Layout Shift：読み込み中に画面がガクッとズレないか）は、HTML/CSSの書き方によって劇的にスコアが変化します。どんなにデザインが美しくても、表示が遅くレイアウトがずれるサイトは、技術的負債とみなされます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML & CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ===== 1. LCP (最大コンテンツの描画) の最適化 ===== --&gt;
+&lt;head&gt;
+  &lt;!-- [解説] ページで一番目立つ画像（ヒーローバナーなど）は、ブラウザに「最優先で読み込んで！」と指示を出します。
+       fetchpriority="high" は現代のLCP改善の特効薬です。 --&gt;
+  &lt;link rel="preload" as="image" href="hero.webp" fetchpriority="high"&gt;
+  
+  &lt;!-- [解説] 逆に、レンダリングをブロックする外部フォントは投機的接続（preconnect）で事前準備だけ済ませます --&gt;
+  &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;!-- [解説] ファーストビュー（スクロールせず見える範囲）の画像には loading="lazy" を絶対に付けてはいけません！
+       遅延読み込みされてしまい、LCPスコアが致命的に悪化します。 --&gt;
+  &lt;img src="hero.webp" alt="メインバナー" fetchpriority="high"&gt;
+  
+  &lt;!-- 画面外の画像には loading="lazy" を付ける --&gt;
+  &lt;img src="footer-logo.png" alt="ロゴ" loading="lazy"&gt;
+&lt;/body&gt;
+
+/* ===== 2. CLS (累積レイアウトシフト) の完全排除 ===== */
+/* [解説] 画像が読み込まれた瞬間に後続のテキストが押し下げられる「ガクッ」という現象（CLS）を防ぐ。
+   アスペクト比（aspect-ratio）を指定することで、画像データが届く前からブラウザが正確なスペースを確保します。 */
+.article-image {
+  width: 100%;
+  aspect-ratio: 16 / 9; /* 横16：縦9の比率で領域を確保 */
+  background-color: #f1f5f9; /* 読み込み前のプレースホルダー色 */
+  object-fit: cover;
+}
+
+/* [解説] Webフォント読み込みによるレイアウトシフト（FOUT）の防止。
+   システムの代替フォントとWebフォントの大きさが違うと、フォント適用時に文字幅が変わって行がズレます。
+   size-adjust を使って代替フォントの大きさを微調整し、ズレを最小化します。 */
+@font-face {
+  font-family: 'Adjusted Fallback';
+  src: local(Arial);
+  size-adjust: 104%;
+  ascent-override: 90%;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務では、実装が終わった後にGoogle LighthouseやPageSpeed Insightsというツールを使って必ずスコア計測を行います。「CSSファイルをどこで読み込んでいるか（インライン展開するか）」「不必要なCSSがバンドルされていないか」といったビルド設定も重要になります。<br>
+            また、よくあるミスが「カルーセル（スライダー）の初期表示崩れ」です。JSが実行されてスライダーが構築されるまでの数ミリ秒間、画像が縦にズラッと並んでしまう現象は最悪のCLSを引き起こします。初期状態でもCSSだけで隠す（<code>overflow: hidden;</code>等）設計をしておくのがシニアエンジニアの配慮です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 21: CSSアーキテクチャ実践 -->
+      <article class="lesson-card" data-section="htmlcss-21" id="htmlcss-lesson-21">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">21</span>
+            <h3>CSS アーキテクチャ実践 — 大規模プロジェクトの設計</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-21')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ディレクトリ構成と責務の分割が「負債」を防ぐ</h4>
+            <p><strong>なぜファイル分割やアーキテクチャが必要なのか？</strong> 趣味で作る1ページのサイトなら、1つの <code>style.css</code> に数百行書けば動きます。しかし、実務でのWebアプリケーションは何十人ものエンジニアが同時に触り、何百もの画面が存在します。1つのファイルに全画面のスタイルを詰め込むと、あっという間に「誰がどこに何を書いたか分からない」「消したらどこが壊れるか分からない」恐怖の数万行のファイル（巨大な泥団子）が完成します。FLOCSS などのアーキテクチャは、CSSの「置き場所」と「責務」を明確に定義し、スケールするプロジェクトを作るための先人たちの知恵の結晶です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">ディレクトリ構成 (FLOCSS風)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 大規模プロジェクトのCSSディレクトリツリー ===== */
+/* [解説] Sass や PostCSS の @import / @use を使ってファイルを分割し、
+   最終的に1つのCSSファイルにコンパイル（ビルド）するのが一般的です。 */
+
+stylesheets/
+├── foundation/           /* [解説] 基盤となる設定。デザインシステムの中核 */
+│   ├── _reset.css        /* ブラウザのデフォルトスタイルを初期化 */
+│   ├── _variables.css    /* カラー、フォントサイズなどのカスタムプロパティ（CSS変数） */
+│   └── _base.css         /* body や a タグなどのプロジェクト全体の基本スタイル */
+│
+├── layout/               /* [解説] ページ全体の大枠。共通のガワを作る */
+│   ├── _header.css       /* 全ページ共通のヘッダー */
+│   ├── _footer.css       /* 全ページ共通のフッター */
+│   └── _grid.css         /* ページ全体のグリッドシステム */
+│
+├── object/               /* [解説] 再利用可能なUIコンポーネント群 */
+│   ├── component/        /* 独立した小さな部品（ボタン、バッジ、入力欄） */
+│   │   ├── _button.css
+│   │   └── _form.css
+│   │
+│   ├── project/          /* 複数の component を組み合わせた特定の塊（商品カード、記事リストなど） */
+│   │   ├── _product-card.css
+│   │   └── _article-list.css
+│   │
+│   └── utility/          /* 単一の役割だけを持つ便利なクラス（Sassのヘルパーなど） */
+│       ├── _margin.css   /* .u-mt-10 { margin-top: 10px; } など */
+│       └── _text.css     /* .u-text-center { text-align: center; } など */
+│
+└── app.css               /* [解説] これらすべてをインポートするエントリーポイント */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>FLOCSS などのアーキテクチャを導入した直後、チーム内で最も議論になるのが「これは Component か？ Project か？」という分類の迷いです。<br>
+            実務での判断基準のコツは、<strong>「その要素が他のプロジェクト（別会社・別サービス）に持っていってもそのまま使えるか？」</strong>です。例えば <code>.c-button</code>（ただの青いボタン）は汎用的なので Component ですが、<code>.p-article-card</code>（特定のニュースサイト特有のレイアウトを持つカード）は Project に分類されます。迷ったときは「より具体的で依存度が高いもの（Project）」に入れておき、後から汎用化できそうなら Component に格上げする、という運用が安全です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 22: モダンCSS総合演習 -->
+      <article class="lesson-card" data-section="htmlcss-22" id="htmlcss-lesson-22">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">22</span>
+            <h3>総合演習 — モダンCSS でランディングページを構築</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-22')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 点と点の知識を線で繋ぎ、「プロダクト」として完成させる</h4>
+            <p><strong>なぜ総合演習が必要なのか？</strong> Flexboxの知識、Gridの知識、変数の知識を単体で知っていても、実際のWebページを作る際には「どこでどれを使うべきか」という全体設計（アーキテクチャ）の視点が問われます。モダンなランディングページ（LP）は、レスポンシブ対応、アクセシビリティ、パフォーマンス最適化のすべての要素が絡み合う総力戦です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML & CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ===== LPの実践的マークアップとスタイリング ===== --&gt;
+&lt;!-- [解説] セマンティックHTMLとモダンCSSを組み合わせた骨格 --&gt;
+
+&lt;!-- 1. グローバルナビゲーション（上部固定＆すりガラス） --&gt;
+&lt;header class="site-header"&gt;
+  &lt;div class="container header-inner"&gt;
+    &lt;a href="/" class="logo" aria-label="トップページへ"&gt;TechService&lt;/a&gt;
+    &lt;nav&gt;
+      &lt;ul class="nav-list"&gt;
+        &lt;li&gt;&lt;a href="#features"&gt;特徴&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#pricing"&gt;料金&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#contact" class="btn-primary"&gt;お問い合わせ&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/nav&gt;
+  &lt;/div&gt;
+&lt;/header&gt;
+
+&lt;style&gt;
+.site-header {
+  position: sticky;        /* スクロール追従 */
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px); /* 背面のぼかし */
+  border-bottom: 1px solid #e2e8f0;
+}
+.header-inner {
+  display: flex;           /* Flexboxで左右分割 */
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+}
+.nav-list {
+  display: flex;
+  gap: 24px;               /* メニュー間の余白 */
+  list-style: none;
+}
+&lt;/style&gt;
+
+&lt;!-- 2. ヒーローセクション（ファーストビュー） --&gt;
+&lt;main&gt;
+  &lt;section class="hero-section"&gt;
+    &lt;div class="container hero-grid"&gt;
+      &lt;div class="hero-content"&gt;
+        &lt;h1 class="hero-title"&gt;次世代の&lt;br&gt;開発体験をあなたに&lt;/h1&gt;
+        &lt;p class="hero-desc"&gt;モダンなツールチェーンで、チームの生産性を劇的に向上させます。&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class="hero-image"&gt;
+        &lt;!-- [解説] 最も重要な画像なので fetchpriority="high" を付与 --&gt;
+        &lt;img src="hero-mockup.webp" alt="ダッシュボードのスクリーンショット" fetchpriority="high"&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+.hero-grid {
+  display: grid;
+  /* スマホは1列、PC（768px以上）は2列のレスポンシブGrid */
+  grid-template-columns: 1fr;
+  gap: 40px;
+  align-items: center;
+  padding-block: 80px; /* 上下のpadding（論理プロパティ） */
+}
+
+@media (min-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 1fr 1fr; /* PCでは左右均等分割 */
+  }
+}
+
+.hero-title {
+  font-size: clamp(2rem, 5vw, 4rem); /* 可変フォントサイズ */
+  line-height: 1.2;
+  text-wrap: balance; /* タイトルの折り返しを美しく */
+}
+&lt;/style&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>LPの実装で最もエンジニアの力量が出るのが「<strong>ファーストビューの表示速度とレイアウトシフト（CLS）対策</strong>」です。デザイナーの意図通りに美しいフォントや大きな高画質画像を配置すると、読み込みに時間がかかり「真っ白な画面」が長く続きます。<br>
+            実務では、Webフォントの遅延を防ぐために <code>font-display: swap;</code> を指定し、ヒーロー画像のサイズは WebP/AVIF に圧縮、そしてGridの枠を <code>min-height</code> などでガッチリ確保しておくことで「テキストが先に出て、あとから画像が入っても画面がガタつかない」堅牢なページに仕上げます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- htmlcss Quiz -->
+
+      <!-- ===== CSSフレームワーク編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #8b5cf6; background: rgba(139,92,246,0.08);">
+        <h4>🟣 CSSフレームワーク編 — 実務で使われる主要フレームワークを比較・習得する</h4>
+        <p>Tailwind CSS、Bootstrap、Material UI（MUI）など、実際のプロダクト開発で使用率の高いフレームワークの設計思想、基本構文、使い分けを学びます。</p>
+      </div>
+
+      <!-- Lesson 23: CSSフレームワーク概論 -->
+      <article class="lesson-card" data-section="htmlcss-23" id="htmlcss-lesson-23">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">23</span>
+            <h3>CSSフレームワーク概論 — なぜ素のCSSだけでは辛いのか</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-23')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 車輪の再発明を防ぎ、ビジネスの価値（機能）に集中する</h4>
+            <p><strong>なぜCSSフレームワークを使うのか？</strong> 「ボタンの角丸は何pxにするか？」「モーダルの背景の黒は透明度何%にするか？」「スマホの横幅のブレイクポイントは？」——素のCSS（Vanilla CSS）を書く場合、すべてのプロジェクトでこれらの定義をゼロから考える必要があります。しかし、世の中のWebサイトのUI要素は8割方共通しています。フレームワークは世界中の天才エンジニアやデザイナーが熟考した「美しく、アクセシブルで、レスポンシブなUIの型」を提供してくれます。これにより、私たちは「ボタンのデザイン」ではなく「ユーザーがボタンを押した後のビジネスロジック」の開発に時間を全振りできるのです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>CSSフレームワークの3つのパラダイム（進化の歴史）</h4>
+            <p>フレームワークには思想があり、時代と共に進化してきました。</p>
+            <ul>
+              <li><strong>第1世代：コンポーネント型（Bootstrap, Bulma）</strong><br>
+                <code>&lt;button class="btn btn-primary"&gt;</code> のように、あらかじめデザインが完成されたクラスを付与する方式。爆速で開発できるが、どのサイトも「Bootstrapっぽい見た目」になりがちで、後からのカスタマイズが難しい（!important 地獄になりやすい）。
+              </li>
+              <li><strong>第2世代：ユーティリティファースト型（Tailwind CSS）</strong><br>
+                <code>&lt;button class="bg-blue-500 hover:bg-blue-700 text-white p-4 rounded"&gt;</code> のように、CSSのプロパティと1対1で対応する極小クラスをHTMLに直接書いていく方式。CSSファイルを一切書かずに自由自在なデザインを作れ、クラス名の命名という最大のストレスから解放される。現在のデファクトスタンダード。
+              </li>
+              <li><strong>第3世代：Headless UI / Component Library（shadcn/ui, MUI, Chakra UI）</strong><br>
+                ReactやVueなどのモダンJSフレームワークを前提とし、アクセシビリティ（キーボード操作など）だけを完璧に実装した「透明な部品」に、Tailwindなどで独自のスタイルを注入する方式。現在最も熱い領域。
+              </li>
+            </ul>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML比較</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- 素のCSSの場合 --&gt;
+&lt;!-- [解説] HTMLはスッキリするが、別のCSSファイルに移動して .custom-alert の中身を数十分かけて書き、
+     さらにスマホ用のメディアクエリも書く必要がある。 --&gt;
+&lt;div class="custom-alert error"&gt;
+  &lt;p class="custom-alert-title"&gt;エラーが発生しました&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- コンポーネント型（Bootstrap）の場合 --&gt;
+&lt;!-- [解説] クラスを付けるだけで即座に美しいエラー表示になるが、
+     「余白をあと2px広くしたい」などの微調整に独自のCSS上書きが必要になる。 --&gt;
+&lt;div class="alert alert-danger" role="alert"&gt;
+  エラーが発生しました
+&lt;/div&gt;
+
+&lt;!-- ユーティリティ型（Tailwind CSS）の場合 --&gt;
+&lt;!-- [解説] HTMLはクラス名で少し長くなるが、CSSファイルとHTMLファイルを往復する手間がゼロ。
+     「md:p-6」のように、メディアクエリ（レスポンシブ）すらHTMLの中に書ける。 --&gt;
+&lt;div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative md:p-6"&gt;
+  &lt;span class="font-bold"&gt;エラーが発生しました&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>初心者の頃は「素のCSSを極めないとフレームワークを使ってはいけないのでは？」と不安になりがちですが、実務では<strong>「素のCSSが書けること」と「フレームワークを使いこなせること」の両方</strong>が求められます。Tailwind CSSは内部的にFlexboxやGrid、CSS変数などのモダンCSSの仕組みをそのままラップしているだけなので、根本のCSS知識がないと「どのユーティリティクラスを組み合わせれば望むレイアウトになるか」が分かりません。「CSSの基礎を学ぶ → Tailwindで爆速化する」というルートが最強のフロントエンドエンジニアへの近道です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 24: Tailwind CSS -->
+      <article class="lesson-card" data-section="htmlcss-24" id="htmlcss-lesson-24">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">24</span>
+            <h3>Tailwind CSS — ユーティリティファーストの革命</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-24')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 HTMLから離れずにデザインを構築し、クラス名の命名から解放される</h4>
+            <p><strong>なぜTailwind CSSが世界を制覇したのか？</strong> 従来のCSS開発の最大の苦痛は「クラス名に名前をつけること（BEMなど）」と「不要になったCSSを消すのが怖くてファイルが肥大化し続けること」でした。Tailwindは <code>mt-4</code> (margin-top: 16px) や <code>flex</code> などの極小クラスをHTMLに直接書くスタイルです。これにより、名前を考える時間がゼロになり、HTMLを消せばスタイルも確実に消えるため「安全に削除できるCSS」が実現しました。ReactやNext.jsのような「コンポーネントベース」の現代の開発手法と完璧に噛み合ったことが、覇権を握った最大の理由です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML (Tailwind CSS)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ===== 1. 基本的なスタイリング ===== --&gt;
+&lt;!-- [解説] 
+  bg-white       : background-color: white;
+  rounded-xl     : border-radius: 12px;
+  shadow-md      : box-shadow; (ほどよい影)
+  p-6            : padding: 1.5rem (24px); 
+--&gt;
+&lt;div class="bg-white rounded-xl shadow-md p-6 max-w-sm mx-auto"&gt;
+
+  &lt;!-- ===== 2. Flexbox とレイアウト ===== --&gt;
+  &lt;!-- [解説] flex, items-center, gap-4 を書くだけで完璧な横並び・中央揃えが完成 --&gt;
+  &lt;div class="flex items-center gap-4 mb-4"&gt;
+    &lt;img class="w-12 h-12 rounded-full object-cover" src="avatar.jpg" alt="プロフィール"&gt;
+    &lt;div&gt;
+      &lt;h2 class="text-xl font-bold text-gray-900"&gt;山田 太郎&lt;/h2&gt;
+      &lt;p class="text-sm text-gray-500"&gt;フロントエンドエンジニア&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;p class="text-gray-700 leading-relaxed"&gt;
+    Tailwind CSSを使うと、CSSファイルを行ったり来たりするコンテキストスイッチがなくなり、
+    開発速度が劇的に向上します。
+  &lt;/p&gt;
+
+  &lt;!-- ===== 3. ホバー・フォーカス・レスポンシブ ===== --&gt;
+  &lt;!-- [解説] 'hover:' や 'focus:' を頭につけるだけで擬似クラスを表現できます。
+       さらに 'md:' をつければ「タブレット以上の画面幅の時だけ」という条件になります！ --&gt;
+  &lt;button class="
+    mt-6 w-full py-2 px-4 
+    bg-blue-600 text-white font-semibold rounded-lg 
+    hover:bg-blue-700 
+    focus:ring-4 focus:ring-blue-300 focus:outline-none
+    transition-colors duration-200
+    md:w-auto md:px-8
+  "&gt;
+    フォローする
+  &lt;/button&gt;
+
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Tailwind を初めて見た人は「HTMLがクラス名で汚れすぎて気持ち悪い（インラインスタイルと何が違うの？）」と必ず感じます。しかし、インラインスタイルとの決定的違いは「<strong>デザインシステムに制約される</strong>」という点です。<br>
+            インラインスタイルでは <code>padding: 17px;</code> と適当な値が書けますが、Tailwindの <code>p-4</code> は厳密に <code>16px</code>、<code>p-5</code> は <code>20px</code> とデザイントークン（ルール）が強制されるため、チーム全員が書いても「全体に統一感のある余白や色」が自然に担保されます。コードの見た目の汚さというデメリットを、開発スピードと保守性のメリットがはるかに凌駕するため、世界中のメガベンチャーが採用しているのです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 25: Tailwind CSS 実践パターン -->
+      <article class="lesson-card" data-section="htmlcss-25" id="htmlcss-lesson-25">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">25</span>
+            <h3>Tailwind CSS 実践 — 実務でよく使うパターン集</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-25')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 暗記不要。公式ドキュメントとパターンの組み合わせで戦う</h4>
+            <p><strong>なぜパターンを知っておくべきなのか？</strong> Tailwindのクラス（ユーティリティ）は数千種類あり、すべてを暗記するのは不可能です（公式のVS Code拡張機能による自動補完を利用するのが大前提です）。しかし、「要素の中央揃え」「グリッド分割」「ダークモード対応」といった実務で毎日登場する鉄板の「クラスの組み合わせ（イディオム）」を知っておくことで、CSSを組み立てる思考スピードが格段に上がります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML (Tailwind CSS)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ===== パターン1: 完璧な画面中央揃え ===== --&gt;
+&lt;!-- [解説] min-h-screen (min-height: 100vh) で画面高さを確保し、
+     flex, items-center, justify-center でど真ん中に配置 --&gt;
+&lt;div class="min-h-screen flex items-center justify-center bg-gray-50"&gt;
+  &lt;div class="p-8 bg-white shadow-lg rounded-2xl"&gt;中央配置完了&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- ===== パターン2: レスポンシブなカードグリッド ===== --&gt;
+&lt;!-- [解説] grid をベースに、スマホでは1列（デフォルト）、
+     md(768px以上)で2列、lg(1024px以上)で3列に自動変化する黄金パターン --&gt;
+&lt;div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4"&gt;
+  &lt;div class="bg-white p-6 rounded-lg shadow"&gt;カード 1&lt;/div&gt;
+  &lt;div class="bg-white p-6 rounded-lg shadow"&gt;カード 2&lt;/div&gt;
+  &lt;div class="bg-white p-6 rounded-lg shadow"&gt;カード 3&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- ===== パターン3: ダークモードの切り替え ===== --&gt;
+&lt;!-- [解説] 'dark:' プレフィックスをつけるだけで、OSやサイト設定が
+     ダークモードの時だけ適用されるスタイルを記述できます。 --&gt;
+&lt;div class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white p-6 rounded-xl"&gt;
+  &lt;h3 class="text-lg font-medium"&gt;ダークモード対応コンポーネント&lt;/h3&gt;
+  &lt;p class="text-slate-500 dark:text-slate-400 mt-2"&gt;
+    夜間でも目に優しいカラーリングに自動で切り替わります。
+  &lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- ===== パターン4: グループホバー (親にホバーで子が変化) ===== --&gt;
+&lt;!-- [解説] 親に 'group' をつけ、子に 'group-hover:' をつけると、
+     親要素にマウスが乗った時に子要素の色や動きを変えられます。超便利！ --&gt;
+&lt;a href="#" class="group block max-w-xs mx-auto rounded-lg p-6 bg-white ring-1 ring-slate-900/5 shadow-lg space-y-3 hover:bg-sky-500 hover:ring-sky-500"&gt;
+  &lt;div class="flex items-center space-x-3"&gt;
+    &lt;h3 class="text-slate-900 group-hover:text-white text-sm font-semibold"&gt;
+      新規プロジェクト
+    &lt;/h3&gt;
+  &lt;/div&gt;
+  &lt;p class="text-slate-500 group-hover:text-white text-sm"&gt;
+    親の枠内どこにマウスを乗せても、この文字色も白に変わります。
+  &lt;/p&gt;
+&lt;/a&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Tailwindで最も気を付けるべきアンチパターンは「動的なクラス名の文字列結合」です。<br>
+            ❌ 悪い例: <code>&lt;div class="bg-${color}-500"&gt;</code><br>
+            Tailwindのビルドシステムは、ソースコードを静的にスキャンして「使われている文字列」だけを含む軽量なCSSを生成（Purge）します。上記のように文字列をJSで結合してしまうと、ツールが <code>bg-red-500</code> なのか <code>bg-blue-500</code> なのか予測できず、最終的なCSSファイルからその色が削除されて「色が効かないバグ」になります。<br>
+            ✅ 良い例: <code>&lt;div class="${ isError ? 'bg-red-500' : 'bg-blue-500' }"&gt;</code> のように、必ずクラス名の完全な文字列をコード上に残すようにしてください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 26: Bootstrap -->
+      <article class="lesson-card" data-section="htmlcss-26" id="htmlcss-lesson-26">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">26</span>
+            <h3>Bootstrap — 世界で最も使われたCSSフレームワーク</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-26')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 レスポンシブWebデザインを世界に普及させた立役者</h4>
+            <p><strong>なぜ今でもBootstrapを知る必要があるのか？</strong> TailwindやReact専用ライブラリが流行している現在でも、世界中の既存Webサイトの数百万サイト（企業システムの管理画面など）はBootstrapで動いています。Twitter社が開発したこのフレームワークは「12カラムのグリッドシステム」や「クラスを付けるだけで動く美しいUIパーツ」を提供し、CSSが苦手なバックエンドエンジニアでも即座に見栄えの良い画面を作れる革命を起こしました。過去の遺産ではなく、既存プロジェクトの保守や社内ツールの爆速モックアップ作成においては、未だに現役の強力な武器です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML (Bootstrap)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ===== 1. Bootstrapの代名詞：12カラムグリッドシステム ===== --&gt;
+&lt;!-- [解説] 画面の横幅を12分割し、要素がそのうち「いくつ分の幅を使うか」でレイアウトします --&gt;
+&lt;div class="container"&gt;
+  &lt;div class="row"&gt;
+    &lt;!-- スマホ(col-12)では1列(幅100%)、PC(col-md-6)では2列(12の半分の6=50%) --&gt;
+    &lt;div class="col-12 col-md-6"&gt;
+      &lt;div class="p-3 border bg-light"&gt;左側のコンテンツ&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="col-12 col-md-6"&gt;
+      &lt;div class="p-3 border bg-light"&gt;右側のコンテンツ&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- ===== 2. 組み込みコンポーネント（カードとボタン） ===== --&gt;
+&lt;!-- [解説] 細かいスタイリングは一切不要。デザイン済みのクラスを付与するだけです --&gt;
+&lt;div class="card" style="width: 18rem;"&gt;
+  &lt;img src="thumbnail.jpg" class="card-img-top" alt="記事サムネイル"&gt;
+  &lt;div class="card-body"&gt;
+    &lt;h5 class="card-title"&gt;Bootstrapの基礎&lt;/h5&gt;
+    &lt;p class="card-text"&gt;クラスを組み合わせるだけで美しいカードが完成します。&lt;/p&gt;
+    
+    &lt;!-- btn-primary で青い主要ボタン、btn-danger で赤い警告ボタンになる --&gt;
+    &lt;a href="#" class="btn btn-primary"&gt;詳細を読む&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- ===== 3. モーダルダイアログ（JS記述不要！） ===== --&gt;
+&lt;!-- [解説] data-bs-toggle と data-bs-target 属性を書くだけで、
+     裏側でBootstrapのJSがよしなにモーダルの開閉アニメーションを処理してくれます。 --&gt;
+&lt;button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal"&gt;
+  設定を開く
+&lt;/button&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Bootstrapを実務で使う際の最大の敵は「<strong>Bootstrap臭（どのサイトも同じような青いボタンのデザインに見える現象）</strong>」です。これを防ぐために、独自のCSSファイルを用意して <code>.btn-primary { background-color: purple !important; }</code> のように強引に上書き（オーバーライド）を試みる初心者が後を絶ちません。しかし、これをやると詳細度の戦争が始まり、やがてCSSが完全に壊れます。<br>
+            正しいカスタマイズ方法は、Bootstrapの「Sassの変数（<code>$primary</code> など）」をビルド前に書き換えることです。これにより、ボタンだけでなく、アラートやボーダーなど関連するすべての青色が、美しい統一感を保ったまま紫色に一括変換されます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 27: Material UI / Chakra UI -->
+      <article class="lesson-card" data-section="htmlcss-27" id="htmlcss-lesson-27">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">27</span>
+            <h3>Material UI (MUI) / Chakra UI — React向けコンポーネント</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-27')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 JSの中にCSSを取り込み、コンポーネントとして完全にカプセル化する</h4>
+            <p><strong>なぜReact専用のUIライブラリが必要なのか？</strong> Reactなどのモダンフロントエンドでは、画面を「コンポーネント（独立した部品）」の集合体として作ります。従来のCSS（グローバルなクラス名）を使うと「別のコンポーネントのスタイルと衝突する」という問題がありました。MUI や Chakra UI は「ボタンやダイアログ自体がReactコンポーネントとして提供されており、スタイルも内部に閉じ込められている」ため、エンジニアはHTMLとCSSのファイルを行き来することなく、JSファイル1つで堅牢なUIを組み上げることができます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">React (JSX)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 1. Material UI (MUI) ===== */
+/* [解説] GoogleのマテリアルデザインをReactで実装した世界最大のライブラリ。
+   お堅い業務システムや管理画面を「最速で・それっぽく」作るならこれ一択です。 */
+import { Button, TextField, Stack } from '@mui/material';
+
+function MuiForm() {
+  return (
+    // Stack は Flexbox を簡単に扱うためのラッパーコンポーネント
+    &lt;Stack spacing={2} direction="column"&gt;
+      {/* デザイン済みの入力欄（ラベルがアニメーションで動く） */}
+      &lt;TextField label="ユーザー名" variant="outlined" /&gt;
+      &lt;TextField label="パスワード" type="password" variant="outlined" /&gt;
+      {/* 影や波紋エフェクトが最初から組み込まれたボタン */}
+      &lt;Button variant="contained" color="primary"&gt;
+        ログイン
+      &lt;/Button&gt;
+    &lt;/Stack&gt;
+  );
+}
+
+/* ===== 2. Chakra UI ===== */
+/* [解説] MUIよりもカスタマイズ性が高く、TailwindライクにPropsで直接スタイルを当てる設計。
+   現代的なBtoCのWebアプリで非常に人気があります。 */
+import { Box, Button, Text, Flex } from '@chakra-ui/react';
+
+function ChakraCard() {
+  return (
+    // p={5} は padding、shadow="md" は box-shadow、bgは背景色
+    &lt;Box p={5} shadow="md" borderWidth="1px" borderRadius="lg" bg="white"&gt;
+      &lt;Flex align="center" justify="space-between" mb={4}&gt;
+        &lt;Text fontWeight="bold" fontSize="xl"&gt;プレミアムプラン&lt;/Text&gt;
+        &lt;Text color="green.500"&gt;利用中&lt;/Text&gt;
+      &lt;/Flex&gt;
+      &lt;Button colorScheme="blue" size="sm"&gt;
+        プランを変更する
+      &lt;/Button&gt;
+    &lt;/Box&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>MUI（Material UI）は非常に高機能ですが、<strong>「初期ロードのパフォーマンス（バンドルサイズ）が肥大化しやすい」</strong>という強烈なデメリットを持っています。また、デザイナーが作った「Googleのガイドラインから外れた独特なデザインカンプ」をMUIで再現しようとすると、MUIの強固な内部スタイルを無理やり上書き（Override）するハメになり、素のCSSを書くよりも数倍の時間がかかります。<br>
+            実務での選定基準として、「社内システムや管理画面、デザインにそこまでこだわりがないBtoBサービス」ならMUIは最高の生産性を発揮します。逆に「デザイナーのこだわりが強いBtoCサービス」でMUIを採用すると、エンジニアはオーバーライド地獄で泣きを見ることになります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 28: shadcn/ui & 最新トレンド -->
+      <article class="lesson-card" data-section="htmlcss-28" id="htmlcss-lesson-28">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">28</span>
+            <h3>shadcn/ui &amp; 最新トレンド — 2025年のCSS選択ガイド</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('htmlcss-28')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「npm install しない」新しいコンポーネントライブラリの形</h4>
+            <p><strong>なぜshadcn/uiが世界中のエンジニアを熱狂させているのか？</strong> 従来のMUIなどのライブラリは、npmパッケージとしてブラックボックス化されていたため、「内部のコードを直接いじれない（カスタマイズが難しい）」という大きな欠点がありました。shadcn/ui は全く新しいアプローチをとりました。コマンドを叩くと「<strong>あなたのプロジェクトのフォルダに、Tailwind CSSで書かれたコンポーネントの生コード（ソースコード）が直接コピーされる</strong>」のです。ブラックボックスがないため、デザインの変更が完全に自由でありながら、アクセシビリティ（Radix UIを使用）は最高水準を担保しています。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CLI / React (shadcn/ui)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>/* ===== 1. shadcn/ui の導入体験 ===== */
+
+/* [解説] npm install でライブラリをインストールするのではなく、
+   CLIを使って「生コード」を自分のリポジトリに取り込みます。 */
+// ターミナルで実行:
+// npx shadcn-ui@latest add button
+// npx shadcn-ui@latest add dialog
+
+/* すると、自分のプロジェクトの components/ui/button.tsx に
+   生のReactコンポーネントファイルが作成されます。 */
+
+
+/* ===== 2. 実装された Button.tsx の中身（抜粋） ===== */
+/* [解説] 完全に透明な実装。Tailwindクラスの文字列があるだけなので、
+   「角丸を変えたい」「ホバーの色を変えたい」と思ったら、このファイルを直接書き換えるだけです。
+   MUIのような難しいテーマカスタマイズAPIを覚える必要はありません。 */
+
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        outline: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+      },
+      size: {
+        default: "h-9 px-4 py-2",
+        sm: "h-8 rounded-md px-3 text-xs",
+        lg: "h-10 rounded-md px-8",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+/* ...エクスポート処理が続く... */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所（総まとめ）</h4>
+            <p>2025年現在、実務のフロントエンドプロジェクトを立ち上げる際、技術選定の結論はほぼ以下のように集約されます。<br><br>
+            <strong>1. スピードとカスタマイズ性の両立：</strong> React/Next.js + Tailwind CSS + shadcn/ui（現在の最強のデファクトスタンダード）<br>
+            <strong>2. 管理画面などのお堅い要件：</strong> React + Material UI (MUI)<br>
+            <strong>3. LPや静的サイト・ブログ：</strong> Astro + Tailwind CSS（またはネイティブCSS Nesting）<br><br>
+            HTMLとCSSの歴史は「どうやって保守不能なカオスを防ぐか」の歴史でした。最新のツールを使っても、基礎となる「ボックスモデル」「詳細度」「アクセシビリティ」への深い理解がなければ、結局は保守不能なゴミを生み出します。フレームワークは銀の弾丸ではありません。本講座で学んだ「なぜそのCSSがそう動くのか」という基礎力こそが、5年後も陳腐化しないあなたのエンジニアとしてのコアバリューになります。</p>
+          </div>
+        </div>
+      </article>
+
+            <div class="quiz-section" id="htmlcss-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">HTML/CSSの知識を確認しましょう。</p>
+        <div id="htmlcss-quiz-container"></div>
+        <div class="quiz-result" id="htmlcss-quiz-result"></div>
+      </div>
+
+<!-- Puzzle Section -->
+      <div class="puzzle-section" id="htmlcss-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="htmlcss-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="htmlcss-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="htmlcss-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('htmlcss')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('htmlcss')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="htmlcss-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

@@ -1,0 +1,731 @@
+
+      <div class="tab-intro algorithm-intro">
+        <h2>🧮 基本アルゴリズム入門</h2>
+        <p>プログラミングの「考え方」の根幹であるアルゴリズムを、Pythonのコード例とともに学びます。ソートや探索など、実務でもコーディング試験でも必ず問われる必須知識です。</p>
+      </div>
+
+      <!-- Lesson 1: アルゴリズムとは何か -->
+      <article class="lesson-card" data-section="algorithm-1" id="algorithm-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>アルゴリズムとは何か？ — 計算の「レシピ」を理解する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('algorithm-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 アルゴリズム＝問題を解くための「手順」の定義</h4>
+            <p><strong>【なぜ学ぶのか？】</strong> 現代のフレームワークやAIは強力ですが、ブラックボックスのまま使っていると「なぜ遅いのか」「なぜメモリを食い潰すのか」といったパフォーマンス問題に直面したときにお手上げになります。アルゴリズムを学ぶ最大の理由は、システムの「限界」と「最適な使い所」を論理的に予測し、意図した通りのパフォーマンスを引き出せるようになるためです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>計算量（オーダー記法 O記法）— 速さの「ものさし」</h4>
+            <p>アルゴリズムの良し悪しを測る最も重要な指標が<strong>計算量</strong>です。「データが n 個あるとき、処理に何ステップかかるか」を表す記法で、<code>O(n)</code>（線形）、<code>O(n²)</code>（二乗）、<code>O(log n)</code>（対数）などと書きます。</p>
+            <p>例えば、1,000件のデータに対して <code>O(n)</code> のアルゴリズムは約1,000回の処理で済みますが、<code>O(n²)</code> だと約1,000,000回の処理が必要になります。データ量が増えるほどこの差は爆発的に大きくなるため、「正しく動く」だけでなく「効率よく動く」コードを書くことが重要なのです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 計算量の具体例
+import time
+import random
+
+# ==========================================
+# 🛑 Senior Engineer Comment:
+# 初学者がやりがちな「とりあえず二重ループで書く」というアプローチは、
+# O(n²)の計算量となり、データ量が増えるとサービス停止に繋がります。
+# 実務では常に「データが100万件になったらどうなるか？」を意識してください。
+# ==========================================
+
+# O(1) — 定数時間：データ量に関係なく一発で終わる
+def get_first(lst):
+    """リストの先頭要素を返す（常に1ステップ）"""
+    return lst[0]
+
+# O(n) — 線形時間：データが増えると比例して遅くなる
+def find_max(lst):
+    """リスト全体を1回走査して最大値を見つける"""
+    max_val = lst[0]
+    for item in lst:      # n回ループ
+        if item > max_val:
+            max_val = item
+    return max_val
+
+# O(n²) — 二乗時間：データが増えると急激に遅くなる（危険！）
+def has_duplicate_naive(lst):
+    """すべてのペアを比較して重複を探す（非効率）"""
+    # 💡 初学者の罠：リストに対する in 演算子をループ内で使うと、
+    # 隠れた二重ループになり O(n²) になることが多いので注意！
+    for i in range(len(lst)):
+        for j in range(i + 1, len(lst)):
+            if lst[i] == lst[j]:
+                return True
+    return False
+
+# O(n) — 空間（メモリ）を犠牲にして時間（CPU）を買うアプローチ
+def has_duplicate_smart(lst):
+    """セットの O(1) ルックアップを活用した効率版"""
+    # 💡 プロの設計：setを使ったルックアップはハッシュテーブルの恩恵で O(1) になります。
+    # メモリ消費量は増えますが、現代のアーキテクチャでは通常「時間 > メモリ」なのでこれが正解です。
+    seen = set()
+    for item in lst:
+        if item in seen:
+            return True
+        seen.add(item)
+    return False
+
+# 🔬 実測テスト
+data = [random.randint(1, 100000) for _ in range(5000)]
+start = time.perf_counter()
+has_duplicate_naive(data)
+print(f"O(n²) Naive: {time.perf_counter() - start:.5f}秒")
+
+start = time.perf_counter()
+has_duplicate_smart(data)
+print(f"O(n) Smart:  {time.perf_counter() - start:.5f}秒")
+# 実行すると、Smart版が圧倒的に（数百倍〜数千倍）速いことが確認できます。
+</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務では、データベースからのデータ取得やAPIレスポンスの処理で、リストの中に特定のIDが存在するかをチェックする処理（例: N+1問題の解決時など）が頻発します。このとき、リストに対して何度も <code>in</code> 演算子を使ったり二重ループを書いたりすると、データが数千件を超えたあたりで突然システムがフリーズしたように重くなります。「ループの内側でさらにループ（または <code>in</code> や <code>count()</code> などの O(n) 操作）をしていないか？」を常にレビューでチェックしましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2: 線形探索とバイナリサーチ -->
+      <article class="lesson-card" data-section="algorithm-2" id="algorithm-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>探索アルゴリズム — 線形探索と二分探索</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('algorithm-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「探す」操作の効率が、アプリの体感速度を決める</h4>
+            <p><strong>【なぜ学ぶのか？】</strong> データベースのインデックスがなぜ高速なのか、その裏側にあるのが「二分探索」の考え方です。線形探索と二分探索の違いを理解することは、RDB（リレーショナルデータベース）で「フルスキャン」と「インデックススキャン」がどれほど違うかを直感的に理解することに直結します。パフォーマンスチューニングの第一歩です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>線形探索（リニアサーチ）— 先頭から順番に探す</h4>
+            <p>最もシンプルな探索方法です。計算量は <code>O(n)</code> で、最悪の場合リスト全体を走査する必要があります。データ量が少ない場合や、データがソートされていない場合はこれが唯一の選択肢になります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>二分探索（バイナリサーチ）— データを半分に絞って探す</h4>
+            <p><strong>ソート済み</strong>のデータに対してのみ使える探索方法です。真ん中の要素と比較して、ターゲットが大きければ右半分、小さければ左半分に絞り込みます。100万件のデータでもわずか約20回の比較で答えが見つかります（<code>O(log n)</code>）。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 二分探索の実装と活用
+import bisect
+
+# ==========================================
+# 🛑 Senior Engineer Comment:
+# 二分探索を自作する際、初学者はインデックスの境界条件（mid + 1 や mid - 1）
+# でバグ（無限ループや探索漏れ）を出しがちです。
+# 実務では「車輪の再発明」を避け、Python標準ライブラリの `bisect` を使いましょう。
+# ただし、裏側で何が行われているかを知るために一度は自作すべきです。
+# ==========================================
+
+def binary_search(sorted_lst, target):
+    """ソート済みリストに対する二分探索。計算量: O(log n)"""
+    left = 0
+    right = len(sorted_lst) - 1
+
+    # 💡 境界バグ注意: `left <= right` が正解。`<` にすると要素1つのとき失敗します。
+    while left <= right:
+        mid = (left + right) // 2
+        
+        if sorted_lst[mid] == target:
+            return mid                   # 見つかった！
+        elif sorted_lst[mid] < target:
+            left = mid + 1               # 右半分に絞る（midはもう調べたので+1）
+        else:
+            right = mid - 1              # 左半分に絞る（midはもう調べたので-1）
+            
+    return -1                            # 見つからなかった
+
+# 🔬 実行例
+# ⚠️ 致命的なミス: 二分探索の前に必ずソートされていることを確認！
+# DBで言えば「インデックスが貼られていること」と同義です。
+sorted_scores = [43, 55, 61, 72, 88, 95, 100]
+idx = binary_search(sorted_scores, 88)
+print(f"自作関数: 88 はインデックス {idx} にあります")
+
+# 実務での推奨アプローチ: bisect の利用
+# bisect_left は要素を挿入すべき位置（同じ値がある場合は一番左）を返します。
+pos = bisect.bisect_left(sorted_scores, 88)
+
+# bisectが返した位置が本当にtargetか確認するガード節が必要
+if pos != len(sorted_scores) and sorted_scores[pos] == 88:
+    print(f"bisect: 88 はインデックス {pos} にあります")
+else:
+    print("見つかりませんでした")
+</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務では、配列に対する二分探索を直接書く機会は多くありません（ハッシュマップやDBに任せるため）。しかし、この「半分に絞る」という概念は、バグの調査（git bisect）や、分散システムにおける障害ノードの特定、また特定の条件を満たす境界値を探す問題（「〜を満たす最小のXを求めよ」のような最適化問題）に応用されます。デバッグで「どこからバグが混入したか」を探す時、コミット履歴の真ん中を調べて半分に絞っていくのも、立派な二分探索の実践です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3: バブルソート -->
+      <article class="lesson-card" data-section="algorithm-3" id="algorithm-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>ソートアルゴリズム① — バブルソートと選択ソート</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('algorithm-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ソートは全アルゴリズムの基礎 — まず「遅い」方法を知る</h4>
+            <p><strong>【なぜ学ぶのか？】</strong> バブルソートや選択ソートのような O(n²) のアルゴリズムを本番コードで使うことは絶対にありません（組み込み関数が遥かに速いため）。しかし、これらを学ぶ理由は「状態の追跡」「入れ替え（Swap）操作」「ループの境界制御」といったプログラミングの基礎体力が身につくからです。また、「なぜ遅いのか」を肌で感じることで、効率的なアルゴリズムの価値を痛感できます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># バブルソートと挿入ソート
+
+# ==========================================
+# 🛑 Senior Engineer Comment:
+# 以下は学習用のアルゴリズムですが、実務で自前でソートを実装してはいけません。
+# Python組み込みの Timsort ( list.sort() ) は C言語レベルで高度に最適化されており、
+# どんなに頑張ってPythonで書いても太刀打ちできません。
+# ==========================================
+
+def bubble_sort(lst):
+    """
+    バブルソート: 隣接する要素を比較し、条件に合わなければ入れ替える。
+    計算量: O(n²)
+    """
+    arr = lst.copy() # 副作用を防ぐためコピー
+    n = len(arr)
+    for i in range(n):
+        swapped = False
+        # 💡 初学者のミス: 内側のループを `range(n)` にしてしまうと無駄な比較が増えます。
+        # すでにソート済みの末尾 `i` 個は比較から除外するのが正解です。
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                # Pythonの強力な記法：タプルアンパックを使った値の入れ替え
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        
+        # 💡 最適化: 1回も入れ替えが発生しなかったら、既にソート済みなので早期終了
+        if not swapped:
+            break
+    return arr
+
+def insertion_sort(lst):
+    """
+    挿入ソート: ほぼソート済みのデータに対しては O(n) で動作する強力な特性を持つ。
+    Timsortの内部でも、小さな配列のソートにはこれが使われている。
+    """
+    arr = lst.copy()
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        # keyより大きいものを右にズラしていく
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+    return arr
+
+# 実行確認
+data = [64, 34, 25, 12, 22, 11, 90]
+print(f"Bubble Sort: {bubble_sort(data)}")
+print(f"Insertion Sort: {insertion_sort(data)}")
+</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>「ソートは標準ライブラリに任せる」が原則ですが、実務で気を付けるべきは<strong>ソートの安定性（Stable Sort）</strong>と<strong>ソートキーの指定</strong>です。例えば、「まず日付順でソートし、次に優先度順でソートしたい」という場合、Pythonの <code>sort()</code> は「安定ソート（元の順序を保持する）」であることを利用し、優先度の低い条件から順番に複数回ソートをかけるか、タプルをキーにして <code>key=lambda x: (x.priority, x.date)</code> のように一発でソートするテクニックが頻繁に使われます。自前アルゴリズムの仕組みを知っていると、この「安定性」の意味が腑に落ちます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4: マージソートとクイックソート -->
+      <article class="lesson-card" data-section="algorithm-4" id="algorithm-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>ソートアルゴリズム② — マージソートとクイックソート</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('algorithm-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 分割統治法 — 「大きな問題を小さく分けて解く」戦略</h4>
+            <p><strong>【なぜ学ぶのか？】</strong> 現代の実用的なソートアルゴリズム（Timsortなど）のベースとなっているのが O(n log n) で動くこれらのアルゴリズムです。また、「問題を半分に割って、それぞれを解き、最後に統合する」という<strong>分割統治法（Divide and Conquer）</strong>のパラダイムは、MapReduceなどの分散処理や、並列コンピューティングの基本思想そのものです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># クイックソートとマージソート
+
+# ==========================================
+# 🛑 Senior Engineer Comment:
+# 再帰を使った分割統治法のエレガントさが際立つコードです。
+# ただし、Pythonのような言語で深い再帰を行うと RecursionError が起きるため、
+# 実際のプロダクションの巨大データにはループベースの実装や組み込み関数を使います。
+# ==========================================
+
+def quick_sort(lst):
+    """
+    クイックソート: ピボットを基準にリストを分割する。
+    平均計算量: O(n log n)。ただし最悪ケースで O(n²) になる弱点がある。
+    """
+    # 💡 ベースケース（終了条件）: 要素が1つ以下ならソート完了
+    if len(lst) <= 1:
+        return lst
+
+    # ピボット（基準値）の選択。ここでは中央の要素を選択。
+    # ピボットの選び方がパフォーマンスを左右します。
+    pivot = lst[len(lst) // 2]
+    
+    # 💡 リスト内包表記を使った簡潔な分割。
+    # C言語などで実装する場合は「インプレース（メモリ追加不要）」で行うのが一般的ですが、
+    # Pythonの場合は可読性優先でこのように書かれることが多いです。
+    left = [x for x in lst if x < pivot]
+    middle = [x for x in lst if x == pivot]
+    right = [x for x in lst if x > pivot]
+
+    # 分割したものを再帰的にソートして結合
+    return quick_sort(left) + middle + quick_sort(right)
+
+# 🔬 実行例
+data = [38, 27, 43, 3, 9, 82, 10]
+print(f"Quick Sort: {quick_sort(data)}")
+</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>クイックソートはメモリ効率が良く高速ですが、すでにソート済みのデータを与えられたり、悪意のあるデータ（ピボットが常に最小・最大になるような偏ったデータ）を渡されたりすると、性能が O(n²) に激減する脆弱性（DDoS攻撃の一種になり得る）があります。そのため、多くの言語の標準ライブラリでは、クイックソートの弱点を克服した Introsort や Timsort が採用されています。「アルゴリズムには最悪ケース（Worst-case）が存在し、システムダウンの原因になり得る」という視点を持つことがシニアエンジニアの証です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5: 再帰 -->
+      <article class="lesson-card" data-section="algorithm-5" id="algorithm-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>再帰（Recursion）— 自分自身を呼び出す関数</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('algorithm-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 再帰＝「終了条件」と「自分自身の呼び出し」の2つで成り立つ</h4>
+            <p><strong>【なぜ学ぶのか？】</strong> 木構造（ディレクトリ構造やHTMLのDOMツリーなど）やグラフなど、データ構造自体が入れ子になっているものを処理する際、再帰を使わないとコードが非常に複雑な「状態管理の塊」になってしまいます。再帰をマスターすると、複雑な処理をたった数行の美しいコードで表現できるようになります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 再帰の基本と「メモ化」による最適化
+from functools import lru_cache
+
+# ==========================================
+# 🛑 Senior Engineer Comment:
+# 素朴な再帰でフィボナッチ数列を書くのは「やってはいけないアンチパターン」の代表格です。
+# O(2^n)という指数関数の計算量になり、n=40あたりで処理が返ってこなくなります。
+# 再帰を書くときは「同じ計算を二度していないか？」を常に疑ってください。
+# ==========================================
+
+# ❌ 悪い例: 同じ計算を何度も繰り返すため、すぐにフリーズする
+def fib_naive(n):
+    if n <= 1:
+        return n
+    return fib_naive(n - 1) + fib_naive(n - 2)
+
+# ✅ 良い例: 一度計算した結果をキャッシュ（メモ化）する
+# lru_cacheデコレータをつけるだけで、計算量が O(2^n) から O(n) に激減します！
+@lru_cache(maxsize=None)
+def fib_memo(n):
+    if n <= 1:
+        return n
+    return fib_memo(n - 1) + fib_memo(n - 2)
+
+# 🔬 実行例
+# fib_naive(40) を実行すると数秒〜数十秒かかりますが、
+# fib_memo(40) は一瞬（数マイクロ秒）で終わります。
+print(f"Fibonacci(40) = {fib_memo(40)}")
+
+# 📂 実務での再帰の典型例: ネストされた辞書（JSON）からの値抽出
+def find_key_recursive(data, target_key):
+    """複雑にネストされたJSONから特定のキーの値を全て探し出す"""
+    results = []
+    
+    if isinstance(data, dict):
+        for k, v in data.items():
+            if k == target_key:
+                results.append(v)
+            # 値が辞書やリストならさらに潜る
+            if isinstance(v, (dict, list)):
+                results.extend(find_key_recursive(v, target_key))
+                
+    elif isinstance(data, list):
+        for item in data:
+            results.extend(find_key_recursive(item, target_key))
+            
+    return results
+
+nested_payload = {
+    "user": {
+        "id": 1,
+        "profile": {"email": "a@example.com", "role": "admin"}
+    },
+    "logs": [
+        {"action": "login", "email": "a@example.com"}
+    ]
+}
+print(f"見つかった email: {find_key_recursive(nested_payload, 'email')}")
+</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務で再帰を使う際の最大の敵は「スタックオーバーフロー」です。Pythonのデフォルトの再帰の深さ上限は 1,000 に設定されており、これを超えると <code>RecursionError</code> が発生してアプリがクラッシュします。階層の深さが予測できないデータ（ユーザーが作成した無限に深いスレッドやディレクトリなど）を扱う場合、再帰ではなく「スタック（配列）」を用いたループ処理（反復）に書き換えるのが安全な設計です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6: スタックとキュー -->
+      <article class="lesson-card" data-section="algorithm-6" id="algorithm-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>データ構造① — スタックとキュー</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('algorithm-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「どの順番で取り出すか」がデータ構造の本質</h4>
+            <p><strong>【なぜ学ぶのか？】</strong> 「データを入れて、後で取り出す」という単純な操作でも、順序のルールを明確にしないとシステムは破綻します。LIFO（後入れ先出し）のスタックと、FIFO（先入れ先出し）のキューは、OSのメモリ管理、非同期処理のタスク管理、メッセージブローカーなど、あらゆるソフトウェア・アーキテクチャの根底を支える概念です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from collections import deque
+
+# ==========================================
+# 🛑 Senior Engineer Comment:
+# Pythonでキュー（待ち行列）を作るとき、絶対に `list.pop(0)` を使ってはいけません。
+# `list` の先頭要素を削除すると、残りの全要素をメモリ上で前にズラす必要があり、
+# 計算量が O(n) となって壊滅的なパフォーマンス劣化を招きます。
+# 必ず `collections.deque` (両端キュー) の `popleft()` を使いましょう (O(1))。
+# ==========================================
+
+# 📚 スタック (Stack) - LIFO (Last In, First Out)
+# ブラウザの「戻る」ボタンや、エディタの「Undo（元に戻す）」の仕組み
+stack = []
+stack.append("Page A") # Push
+stack.append("Page B")
+stack.append("Page C")
+
+print(f"Stack pop: {stack.pop()}")  # => Page C (最後に入れたものが出る)
+
+# 🚶 キュー (Queue) - FIFO (First In, First Out)
+# メールの送信待ちジョブや、チケットの順番待ちシステムの仕組み
+queue = deque()
+queue.append("Task 1") # Enqueue
+queue.append("Task 2")
+queue.append("Task 3")
+
+print(f"Queue popleft: {queue.popleft()}")  # => Task 1 (最初に入れたものが出る)
+
+# 🛠️ 実践：スタックを用いた括弧の対応チェック（面接頻出！）
+def is_valid_parentheses(s):
+    """括弧が正しく閉じられているかを判定する"""
+    stack = []
+    mapping = {')': '(', '}': '{', ']': '['}
+    
+    for char in s:
+        if char in mapping.values():
+            # 開き括弧ならスタックに積む
+            stack.append(char)
+        elif char in mapping:
+            # 閉じ括弧なら、スタックの先頭（直前の開き括弧）とペアか確認
+            # スタックが空、またはペアが一致しない場合は不正
+            if not stack or stack.pop() != mapping[char]:
+                return False
+                
+    # 最後にスタックが空になっていれば全て正しく閉じられている
+    return len(stack) == 0
+
+print(f"Valid '([])': {is_valid_parentheses('([])')}") # True
+print(f"Valid '([)]': {is_valid_parentheses('([)]')}") # False
+</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務のWebアプリケーションで「時間がかかる処理（画像の変換やメールの一斉送信など）」をユーザーを待たせずに実行したい場合、RedisやRabbitMQといったミドルウェアを使って外部の「メッセージキュー」にタスクを放り込み（Enqueue）、裏側のワーカーサーバーが順番に取り出して処理する（Dequeue）非同期アーキテクチャが必須になります。キューの概念は単なるコード上のデータ構造にとどまらず、インフラ設計の基本パラダイムでもあります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7: ハッシュテーブル -->
+      <article class="lesson-card" data-section="algorithm-7" id="algorithm-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>データ構造② — ハッシュテーブル（辞書の裏側）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('algorithm-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Pythonの dict と set は、なぜ爆速なのか？</h4>
+            <p><strong>【なぜ学ぶのか？】</strong> 「とりあえずリスト」という思考から脱却するためです。データを検索する際、リストは毎回端から探すため O(n) の時間がかかりますが、ハッシュテーブル（辞書やセット）を使えば、データが1億件あっても「一発（O(1)）」でデータにアクセスできます。この仕組みの恩恵と限界（ハッシュ衝突やメモリ消費）を知ることが、スケーラブルなコードを書く必須条件です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ハッシュテーブルの威力
+
+# ==========================================
+# 🛑 Senior Engineer Comment:
+# コーディング面接で「計算量を改善してください」と言われたら、
+# 9割の確率で「ハッシュテーブル（辞書/セット）を導入しろ」という意味です。
+# ネストされたループを、辞書ルックアップに置き換える感覚を掴んでください。
+# ==========================================
+
+# 🛠️ 実践問題: Two Sum (配列の中から、合計がtargetになる2つの数値のインデックスを返す)
+# 例: nums = [2, 7, 11, 15], target = 9 -> 返り値: [0, 1]
+
+# ❌ ナイーブな解法：O(n²)
+def two_sum_naive(nums, target):
+    """二重ループで全ペアを試す。データが多いと死ぬ。"""
+    for i in range(len(nums)):
+        for j in range(i + 1, len(nums)):
+            if nums[i] + nums[j] == target:
+                return [i, j]
+    return []
+
+# ✅ プロの解法：O(n) - ハッシュマップを使用
+def two_sum_hash(nums, target):
+    """
+    「探している相方」を辞書に記録していく。
+    辞書の検索 (in) は O(1) なので、全体で O(n) に抑えられる。
+    """
+    seen = {}  # { 値: インデックス } を保存するハッシュマップ
+    
+    for i, num in enumerate(nums):
+        complement = target - num  # 目標に到達するために「必要な相方の値」
+        
+        # 過去に相方を見ていれば、それが答え！
+        if complement in seen:
+            return [seen[complement], i]
+            
+        # 見つからなければ、自分自身を辞書に登録しておく
+        seen[num] = i
+        
+    return []
+
+# 実行
+print(f"Two Sum: {two_sum_hash([2, 7, 11, 15], 9)}")  # => [0, 1]
+</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>ハッシュマップは魔法のように速いですが、「順序を保証しない（※最近のPythonのdictは挿入順を保持しますが、セットはバラバラです）」ことと、「メモリをリストより多く消費する」点に注意が必要です。大量のデータを扱う際、メモリ不足（OOM: Out Of Memory）でコンテナが強制終了される（Killed）トラブルの原因の多くは、無駄に巨大な辞書をメモリ上に保持していることです。データ量が多い場合は、ジェネレータを用いたり、RedisなどのKVS（キーバリューストア）に処理をオフロードする設計を検討します。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8: グラフと幅優先探索 -->
+      <article class="lesson-card" data-section="algorithm-8" id="algorithm-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>グラフ探索 — BFS（幅優先探索）と DFS（深さ優先探索）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('algorithm-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 SNSの「友達の友達」も、地図の最短経路も、すべてグラフ問題</h4>
+            <p><strong>【なぜ学ぶのか？】</strong> 現実世界の問題（ネットワークのルーティング、ゲームのAI、SNSのレコメンド機能、依存関係の解決など）は、ほとんどが「グラフ構造（点と線）」で表現されます。これを探索するための標準的なアプローチであるBFS（幅優先）とDFS（深さ優先）を知らないと、複雑なデータ関係を紐解くアルゴリズムを自力で設計することができません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from collections import deque
+
+# グラフを隣接リスト（辞書）で表現する
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
+}
+
+# ==========================================
+# 🛑 Senior Engineer Comment:
+# グラフ探索で初学者が必ず陥る罠が「無限ループ」です。
+# A → B → A → B... と循環してしまうのを防ぐため、
+# 必ず `visited` (訪問済みセット) を用意して状態を管理してください。
+# ==========================================
+
+def bfs(graph, start):
+    """
+    BFS (幅優先探索): キューを使い、近いところから同心円状に広がるように探索する。
+    「最短経路」を見つけたい場合はこちらを使う。
+    """
+    visited = set()
+    queue = deque([start])
+    visited.add(start)  # 💡 キューに入れた時点で訪問済みにするのが重複を防ぐコツ
+    order = []
+
+    while queue:
+        node = queue.popleft()
+        order.append(node)
+        
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+                
+    return order
+
+def dfs_iterative(graph, start):
+    """
+    DFS (深さ優先探索): スタックを使い、行けるところまで深く潜る。
+    「すべての経路を網羅」したり「迷路の探索」に向いている。
+    """
+    visited = set()
+    stack = [start]
+    order = []
+
+    while stack:
+        node = stack.pop()
+        
+        if node not in visited:
+            visited.add(node)
+            order.append(node)
+            # スタックに追加（右側から探索させたい場合はreversedを使う等調整する）
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    stack.append(neighbor)
+                    
+    return order
+
+print(f"BFS (最短経路向き): {bfs(graph, 'A')}")
+print(f"DFS (全探索向き):   {dfs_iterative(graph, 'A')}")
+</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務でグラフ探索が使われる典型例は「依存関係の解決」です。例えば、パッケージマネージャ（npmやpip）がライブラリをインストールする際、AというライブラリがBとCに依存し、CがDに依存している...といった状況で、どの順番でインストールすべきか（トポロジカルソート）を決定するためにDFSが裏で動いています。業務でも「複数のタスク間に順序の依存関係があるバッチ処理システム」を組む際などに、このグラフアルゴリズムの知識が直接的に役立ちます。</p>
+          </div>
+        </div>
+      </article>
+
+
+<div class="quiz-section" id="algorithm-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">基本アルゴリズムとデータ構造の知識を確認しましょう。全8問です。</p>
+        <div id="algorithm-quiz-container"></div>
+        <div class="quiz-result" id="algorithm-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="algorithm-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="algorithm-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="algorithm-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="algorithm-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('algorithm')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('algorithm')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="algorithm-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

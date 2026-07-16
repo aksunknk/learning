@@ -1,0 +1,1359 @@
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="react-1" id="react-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>JSXの秘密（HTMLとの違い）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜJavaScriptの中にHTMLを書くのか？（JSXの魔法）</h4>
+            <p>従来のWeb開発では、HTML（構造）、CSS（装飾）、JS（振る舞い）を別々のファイルに分割していました。しかし、モダンなUI開発では「機能ごとに部品（コンポーネント）を分ける」方が圧倒的に管理しやすくなります。JSXは、この「UI構造とロジックを密結合させる」ために発明されました。関心事の分離という概念を「技術ベース」から「機能ベース」へとパラダイムシフトさせた画期的な構文です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>JSXとは何か？</h4>
+            <p>Reactでは、JavaScriptのコードの中に直接HTMLのようなタグ（JSX）を書きます。一見すると気持ち悪いですが、UIとロジックを1つのファイルにまとめることで、コンポーネント指向（部品化）が劇的にやりやすくなります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React from 'react';
+
+// 【Senior Engineer's Note】
+// Reactコンポーネントは常に「大文字」から始めます。
+// 小文字で始めると通常のHTMLタグとして解釈され、Reactはそれを描画できません。
+export default function Welcome() {
+  const name = 'React';
+  
+  // 💡 波括弧 { } の中には「式（Expression）」を書くことができます。
+  // if文やfor文は「文（Statement）」なので書けません。
+  return (
+    <div className="welcome-wrapper">
+      <h1>Hello, {name}</h1>
+    </div>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>HTMLとの決定的な違い</h4>
+            <p>JSXはHTMLに似ていますが、裏側では `React.createElement` などのJavaScript関数呼び出しに変換されます。そのため、JavaScriptの予約語（classやfor）は使えません。この違いを知らないと、AIの出力コードをコピペした時に謎のエラーに悩まされます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>export default function ButtonProfile() {
+  // ❌ 罠1: HTMLのclassは使えない（JSのclass予約語と衝突）
+  // return <div class="container"></div>
+
+  // ✅ 対策: className を使う
+
+  // ❌ 罠2: styleは文字列ではなくオブジェクトで渡す
+  // return <div style="color: red;"></div>
+
+  // ✅ 対策: キャメルケースのオブジェクトで指定する
+  return (
+    <div 
+      className="container"
+      style={{ 
+        color: 'red', 
+        backgroundColor: 'black', // kebab-caseではなくcamelCase
+        paddingTop: '10px'
+      }}
+    >
+      Click Me
+    </div>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>JSXでの条件分岐は論理積（&&）を多用しますが、<code>{count && &lt;Component /&gt;}</code> のように書くと、countが0の時に画面に「0」という数字がそのまま描画されるという非常に有名な罠があります。数値を評価する場合は <code>{count > 0 && &lt;Component /&gt;}</code> または <code>{!!count && &lt;Component /&gt;}</code> のように、必ず真偽値（boolean）に変換してから評価する癖をつけましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="react-2" id="react-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>コンポーネントとProps（UIの部品化）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜコンポーネントに分けるのか？（再利用と保守性の向上）</h4>
+            <p>1つの巨大なファイル（神ファイル）に全ての画面を書くと、修正時の影響範囲が不明瞭になり、バグの温床になります。「ヘッダー」「サイドバー」「記事一覧」のようにUIを独立した部品（コンポーネント）に分割することで、コードの再利用性が高まり、チーム開発でも競合が起きにくくなります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>コンポーネントの分割</h4>
+            <p>Reactの真骨頂は画面を小さな部品に分割できることです。各コンポーネントは独立して動作し、親コンポーネントがそれらを組み合わせてページ全体を構築します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React from 'react';
+
+// 【Senior Engineer's Note】
+// 部品は可能な限り小さく「1つの役割だけを持つ」ように設計します（単一責任の原則）。
+function Header() {
+  return <header className="app-header">My Logo</header>;
+}
+
+function Sidebar() {
+  return <nav className="app-nav">Menu</nav>;
+}
+
+// 親コンポーネントで部品をレゴブロックのように組み合わせる
+export default function App() {
+  return (
+    <div className="layout-grid">
+      <Header />
+      <Sidebar />
+      <main>Main Content</main>
+    </div>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Propsによるデータの受け渡し</h4>
+            <p>親の部品から子の部品へデータを渡す仕組みをProps（プロップス）と呼びます。これは関数の引数と同じ概念ですが、<strong>読み取り専用（Immutable）</strong>であるという絶対ルールがあります。子は親から貰ったデータを直接書き換えてはいけません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 子コンポーネント（propsを受け取る）
+// 【Senior Engineer's Note】
+// 実務では props オブジェクトを直接受け取るより、
+// 分割代入（Destructuring）を使って明示的に受け取るのが一般的です。
+function UserCard({ name, age, isPremium }) {
+  // ❌ props.name = "Bob"; のような再代入は厳禁！
+  return (
+    <div className={`card ${isPremium ? 'premium' : 'standard'}`}>
+      <h2>{name}</h2>
+      <p>Age: {age}</p>
+    </div>
+  );
+}
+
+// 親コンポーネント（propsを渡す）
+export default function UserList() {
+  return (
+    <div className="list">
+      <UserCard name="Alice" age={25} isPremium={true} />
+      <UserCard name="Bob" age={32} isPremium={false} />
+    </div>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Propsにはデータだけでなく「関数」も渡せます（コールバックProps）。親が持つStateを子が更新したい場合は、親で更新関数を定義し、それをPropsとして子に渡すパターンが頻出します。また、型安全性を担保するために実務ではTypeScriptを併用し、Propsの型（<code>type Props = { name: string; age: number }</code>）を必ず定義します。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="react-3" id="react-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>useStateの徹底解剖（状態管理）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜ普通の変数ではなくStateを使うのか？</h4>
+            <p>JavaScriptの通常の変数（<code>let count = 0;</code>）を変更しても、Reactは「データが変わったこと」に気づけません。画面を再描画（レンダリング）して最新のUIを反映させるには、Reactに対して明示的に「データが変わったから画面を更新してね」と伝える必要があります。そのトリガーとなるのが `useState` です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>State（状態）とは何か？</h4>
+            <p>画面を書き換えたいデータ（いいね数、入力中の文字、モーダルの開閉状態など）は、必ず `useState` を使って管理します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React, { useState } from 'react';
+
+export default function Counter() {
+  // count: 現在の値, setCount: 値を更新する関数
+  // useState(0): 初期値を0に設定
+  const [count, setCount] = useState(0);
+
+  // 【Senior Engineer's Note】
+  // stateの更新は「非同期」で行われます。
+  // setCountを呼んだ直後に console.log(count) をしても古い値が出力されます。
+  const handleIncrement = () => {
+    // 連続で更新する場合はコールバック関数を使います
+    // setCount(prev => prev + 1);
+    setCount(count + 1);
+  };
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={handleIncrement}>Click me</button>
+    </div>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>配列やオブジェクトのState更新の罠</h4>
+            <p>Reactは「前のデータと今のデータが同じか」を**参照（メモリのアドレス）**で比較します（浅い比較: Shallow Compare）。配列に `push()` して中身を変えても、配列という「箱（アドレス）」自体は変わっていないため、Reactは「変化なし」と判断して画面を更新しません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React, { useState } from 'react';
+
+export default function ItemList() {
+  const [items, setItems] = useState(['Apple']);
+
+  // ❌ 画面が更新されないバグ（元の配列を直接破壊している）
+  const addBad = () => {
+    items.push('Banana');
+    setItems(items); // React「参照が同じだから更新スキップするね」
+  };
+
+  // ✅ 画面が正しく更新される（新しい配列を作ってセットしている）
+  // 【Senior Engineer's Note】
+  // オブジェクトや配列を更新する際は、必ずスプレッド構文（...）を使って
+  // 「新しいメモリ空間」にデータを作成するイミュータブル（不変）な操作を行います。
+  const addGood = () => {
+    setItems([...items, 'Banana']);
+  };
+
+  return (
+    <div>
+      <button onClick={addGood}>Add Banana</button>
+      <ul>{items.map((item, i) => <li key={i}>{item}</li>)}</ul>
+    </div>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Stateの持ちすぎに注意しましょう。「姓（lastName）」と「名（firstName）」のStateがある時、「フルネーム（fullName）」のStateを別途作るのはアンチパターンです。<code>const fullName = `${lastName} ${firstName}`;</code> のように、既存のStateから算出可能な値は単なる変数としてレンダリング時に計算するのがベストプラクティスです。これを怠ると、データの不整合（姓を変えたのにフルネームが変わらない）が発生します。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="react-4" id="react-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>useEffectの罠と対策（副作用）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜuseEffectが必要なのか？（純粋関数と副作用の分離）</h4>
+            <p>Reactコンポーネントは本来「データを受け取ってHTML（UI）を返す」だけの純粋な関数であるべきです。しかし、現実のアプリでは「サーバーからデータを取得する」「DOMを直接操作する」「タイマーをセットする」といったReactの外の世界との通信が必要です。これらの「副作用（Side Effects）」をコンポーネントの描画サイクルから切り離し、安全に実行するための場所が `useEffect` です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>副作用（Side Effect）とは？</h4>
+            <p>API通信などは、コンポーネントが画面に表示された後（マウント後）に行う必要があります。レンダリング中に直接通信処理を書くと、レンダリングの度に通信が発生してしまいます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React, { useState, useEffect } from 'react';
+
+export default function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+
+  // 【Senior Engineer's Note】
+  // useEffectの第2引数（依存配列）に [userId] を指定することで、
+  // 「初回マウント時」および「userIdが変化した時」だけこの処理が走ります。
+  useEffect(() => {
+    let ignore = false; // レースコンディション対策フラグ
+
+    async function fetchUser() {
+      const res = await fetch(`/api/users/${userId}`);
+      const data = await res.json();
+      if (!ignore) {
+        setUser(data);
+      }
+    }
+
+    fetchUser();
+
+    // クリーンアップ関数
+    return () => { ignore = true; };
+  }, [userId]);
+
+  if (!user) return <div>Loading...</div>;
+  return <div>{user.name}</div>;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>クリーンアップ関数</h4>
+            <p>イベントリスナーやタイマーをセットした場合、コンポーネントが画面から消えるとき（アンマウント時）にそれを解除しないと、裏でタイマーが動き続けるメモリリーク（動作が重くなる原因）になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React, { useEffect, useState } from 'react';
+
+export default function Clock() {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    // 【Senior Engineer's Note】
+    // returnで関数を返すと、コンポーネントの破棄時や、
+    // 次のuseEffectが走る直前に実行されます（お掃除）。
+    return () => clearInterval(timerId);
+  }, []); // 空の依存配列なので、マウント・アンマウント時のみ実行される
+
+  return <div>Current Time: {time.toLocaleTimeString()}</div>;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>React 18のStrict Modeでは、開発環境でのみ `useEffect` が「マウント → アンマウント → マウント」と意図的に2回連続で実行されます。これはクリーンアップ関数が正しく実装されているかをReactが検証するためです。「APIが2回呼ばれてしまう！」と慌ててStrict Modeをオフにするのはアンチパターンです。クリーンアップ処理（abortControllerによるfetchキャンセルなど）を正しく実装して対処しましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="react-5" id="react-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>イベント処理とフォーム（ユーザーの入力を受け取る）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜフォーム入力をReactで「制御」するのか？</h4>
+            <p>HTMLのフォーム要素（input, textarea）は、デフォルトで自身の中に「状態」を持っています。しかしReactの世界では「UIは常にStateを反映したものであるべき（Single Source of Truth）」です。そこで、入力値を常にReactのStateと同期させる「制御されたコンポーネント（Controlled Components）」という手法を用い、バリデーションや即時反映を容易にします。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>イベントハンドラの基本</h4>
+            <p>HTMLの `onclick` とは異なり、Reactでは `onClick` のようにキャメルケースで書き、文字列ではなく「関数そのもの」を渡します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React from 'react';
+
+export default function Button() {
+  // ❌ 罠: 関数を実行した結果を渡してしまう
+  // レンダリングされた瞬間にアラートが出てしまい、クリック時には何も起きない
+  // return <button onClick={alert('Hi!')}>Click</button>;
+
+  // ✅ 対策: 関数そのものを渡す（アロー関数で包むか、関数名のみを渡す）
+  const handleClick = () => {
+    alert('Hi!');
+  };
+
+  return (
+    <div>
+      {/* アロー関数で包むパターン */}
+      <button onClick={() => alert('Inline Hi!')}>Inline</button>
+      
+      {/* 関数への参照を渡すパターン（推奨） */}
+      <button onClick={handleClick}>Handler</button>
+    </div>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>制御されたコンポーネント（Controlled Components）</h4>
+            <p>Reactでは、入力フォームの値をReactのStateで完全に管理するのがベストプラクティスです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React, { useState } from 'react';
+
+export default function Form() {
+  // Stateで入力値を一元管理
+  const [text, setText] = useState('');
+
+  // 【Senior Engineer's Note】
+  // value と onChange は必ずセットで使います。
+  // onChangeがないと、ユーザーがキーボードを叩いても画面上の文字が変化しません
+  // （Stateが更新されないため、UIも更新されない）。
+  const handleChange = (e) => {
+    setText(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault(); // フォームのデフォルトの画面遷移を阻止
+    console.log('Submitted:', text);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={text}
+        onChange={handleChange}
+        placeholder="Type something..."
+      />
+      <button type="submit">Submit</button>
+      <p>Preview: {text}</p>
+    </form>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>入力フォームが多い画面で、全てのinput要素にuseStateを個別に作るとコードが肥大化しパフォーマンスも低下します。実務では <code>React Hook Form</code> というライブラリを導入し「非制御コンポーネント（Uncontrolled Components）」として効率的にフォームを管理するのがモダンフロントエンドの標準です。制御コンポーネントは「入力と同時に検索サジェストを出す」ような即時性が求められる場面に限定して使うことが増えています。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="react-6" id="react-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>副作用の統制（useEffectと依存配列の正しい使い方）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜ依存配列（Dependency Array）でバグが起きるのか？</h4>
+            <p>Reactの useEffect は、「コンポーネントの描画結果」と「外部システム（API等）」を同期するためのツールです。依存配列を間違えると、Reactの描画データ（最新のStateやProps）と、useEffectの内部で参照しているデータがズレてしまい（Stale Closureと呼ばれる古いメモリの参照）、予測不能なバグを引き起こします。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>依存配列の落とし穴</h4>
+            <p>useEffectの第二引数（依存配列）に空の配列 `[]` を渡すと「初回マウント時の一度だけ」実行されます。しかし、useEffectの中で使っている変数が依存配列に含まれていないと、大きな問題になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React, { useEffect, useState } from 'react';
+
+export default function SearchResults({ query }) {
+  const [data, setData] = useState([]);
+
+  // 【Senior Engineer's Note】
+  // ESLintの `react-hooks/exhaustive-deps` ルールは絶対に無視してはいけません。
+  // 警告を消すために無理やり [] にすると、古いクロージャの変数を参照し続けます。
+  useEffect(() => {
+    // ❌ 依存配列にqueryがないと、親から新しいqueryが渡されても再フェッチされない
+    async function fetchData() {
+      const res = await fetch(`/api/search?q=${query}`);
+      const result = await res.json();
+      setData(result);
+    }
+    fetchData();
+  }, [query]); // ✅ 使用している外部変数(query)は全て依存配列に入れる
+
+  return (
+    <ul>
+      {data.map(item => <li key={item.id}>{item.name}</li>)}
+    </ul>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>「コンポーネントの初回マウント時に一度だけ実行したいから」という理由で <code>[]</code> を指定し、ESLintの警告を <code>// eslint-disable-next-line</code> で握りつぶすエンジニアが後を絶ちません。これは技術的負債の第一歩です。useEffect内で使う関数やオブジェクトが毎回新しく生成されて不要な再発火を招く場合は、安易に依存を消すのではなく、その関数を <code>useCallback</code> でキャッシュするか、useEffectの外側（コンポーネントの外）に移動させるのが正しい解決策です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="react-7" id="react-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>状態のバケツリレー回避（PropsとContext）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜContextを使うのか？（Props Drilling問題の解決）</h4>
+            <p>コンポーネントが深くネスト（階層化）されると、親のデータを孫やひ孫に渡すためだけに、中間のコンポーネントが不要なPropsを受け渡す「Props Drilling（バケツリレー）」が発生します。これはコードの可読性を下げ、中間層の再利用性を損ないます。Context APIはこのバケツリレーをスキップし、必要なコンポーネントに直接データを「ワープ」させる仕組みです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>Contextによるグローバルなデータ共有</h4>
+            <p>テーマ設定（ダークモード）やログイン中のユーザー情報など、アプリ全体で参照したいデータに最適です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React, { createContext, useContext, useState } from 'react';
+
+// 1. Contextを作る（初期値はnullなど）
+const ThemeContext = createContext('light');
+
+export default function App() {
+  const [theme, setTheme] = useState('light');
+
+  return (
+    // 2. Providerで包んで値を供給する
+    // この配下にあるコンポーネントは、どれだけ深くてもthemeにアクセスできる
+    <ThemeContext.Provider value={theme}>
+      <div className="app-layout">
+        <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+          Toggle Theme
+        </button>
+        <MiddleComponent />
+      </div>
+    </ThemeContext.Provider>
+  );
+}
+
+// 中間のコンポーネントは theme を受け取る必要がない（綺麗！）
+function MiddleComponent() { 
+  return <DeepComponent />; 
+}
+
+// 【Senior Engineer's Note】
+// 深い階層のコンポーネントが直接データを取得する
+function DeepComponent() {
+  // 3. useContextでContextから直接値を取得する
+  const theme = useContext(ThemeContext);
+  
+  return (
+    <div style={{ background: theme === 'dark' ? '#333' : '#FFF' }}>
+      Current theme is {theme}
+    </div>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Contextは便利ですが、万能ではありません。Providerの `value` が更新されると、そのContextを購読している（useContextしている）<strong>全ての子孫コンポーネントが無条件で再レンダリング</strong>されます。頻繁に更新されるデータ（入力フォームの文字や、ドラッグ＆ドロップの座標など）をContextに入れるとアプリ全体が激しく重くなります。頻繁な更新があるグローバル状態の管理には、Contextではなく `Zustand` や `Jotai` といった専用の状態管理ライブラリを採用するのが実務の定石です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="react-8" id="react-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>よくあるエラーとアンチパターン</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜエラーの意図を理解すべきか？（Reactの制約と規約）</h4>
+            <p>Reactは自由度が高い分、ルール（フックのルールやイミュータビリティ）を破ると容赦なくアプリを破壊（フリーズやクラッシュ）します。初心者が遭遇するエラーの9割は「無限ループ」と「Keyの欠落」です。これらはReactがDOMを効率的に差分更新（Virtual DOM）するための根幹システムを揺るがす行為だから警告されるのです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>無限レンダリング（Too many re-renders）</h4>
+            <p>レンダリング中に直接状態を更新すると、コンポーネントが無限に再描画されてブラウザがフリーズします。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React, { useState } from 'react';
+
+export default function BadCounter() {
+  const [count, setCount] = useState(0);
+  
+  // ❌ 無限ループの罠（絶対にやってはいけない）
+  // レンダリングされる -> setCountが呼ばれる -> Stateが変わる -> 再レンダリングされる -> ...
+  // setCount(count + 1); 
+  
+  // ❌ onClickの記述ミスによる無限ループ
+  // 関数を渡すのではなく、実行した結果を渡してしまうとレンダリング時に即時実行される
+  // return <button onClick={setCount(count + 1)}>Click</button>;
+  
+  // ✅ 正解
+  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Key propの欠落（Each child in a list should have a unique "key" prop）</h4>
+            <p>配列を `map` で展開する際、Reactは要素の追加・削除・並び替えを特定するために `key` を必要とします。これを忘れるとパフォーマンスが落ち、予期せぬUIのバグが起きます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React from 'react';
+
+export default function UserList() {
+  const users = [
+    { id: 'u1', name: 'Alice' },
+    { id: 'u2', name: 'Bob' }
+  ];
+
+  // ❌ keyがないとコンソールに警告が出る
+  // ❌ インデックスをkeyにするのもアンチパターン（リストの順序が変わった時にバグる）
+  // return <ul>{users.map((user, index) => <li key={index}>{user.name}</li>)}</ul>;
+
+  // ✅ データベースのIDなど、一意で変化しない値（UUIDなど）をkeyとして渡す
+  return (
+    <ul>
+      {users.map(user => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>どうしても一意なIDが存在しない文字列の配列などを扱う場合、実務では `crypto.randomUUID()` や `nanoid` といったライブラリを使って、データ追加時にユニークなIDを付与する事前処理を行います。レンダリング中（mapの直前など）にランダムIDを生成してkeyに渡してはいけません。再レンダリングの度にkeyが変わってしまい、要素が全破棄・再生成されてしまい、入力中のフォーカスが外れるなどの深刻なバグを引き起こします。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="react-9" id="react-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>Final Mission: フルスタックTodoアプリ構築・フロントエンド編</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜTodoアプリなのか？（CRUDの基礎を網羅）</h4>
+            <p>Todoアプリは単純に見えますが、Webアプリの基本である「作成（Create）、読み取り（Read）、更新（Update）、削除（Delete）」の全要素を含んでいます。配列のStateをイミュータブルに操作する技術は、React開発の全ての基礎となります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>Todoアプリの実装</h4>
+            <p>タスクの追加、完了の切り替え、削除をReactで実装します。以下のコードは実践的なパターンの集合体です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React, { useState } from 'react';
+
+export default function TodoApp() {
+  const [tasks, setTasks] = useState([]);
+  const [text, setText] = useState('');
+
+  // 【Senior Engineer's Note】
+  // 追加処理（Create）: 配列の末尾に新しいオブジェクトを追加する
+  const addTask = () => {
+    if(!text.trim()) return; // 空文字の送信を防ぐ
+    const newTask = { id: crypto.randomUUID(), text, done: false };
+    setTasks([...tasks, newTask]);
+    setText(''); // 入力欄をクリア
+  };
+
+  // 更新処理（Update）: mapを使って対象のIDだけ状態を反転させる
+  const toggleDone = (id) => {
+    setTasks(tasks.map(t => 
+      t.id === id ? { ...t, done: !t.done } : t
+    ));
+  };
+
+  // 削除処理（Delete）: filterを使って対象のIDを除外する
+  const deleteTask = (id) => {
+    setTasks(tasks.filter(t => t.id !== id));
+  };
+
+  return (
+    <div className="todo-app">
+      <div className="todo-input-group">
+        <input 
+          value={text} 
+          onChange={e => setText(e.target.value)} 
+          onKeyDown={e => e.key === 'Enter' && addTask()}
+        />
+        <button onClick={addTask}>追加</button>
+      </div>
+      <ul>
+        {tasks.map(t => (
+          <li key={t.id} style={{ opacity: t.done ? 0.5 : 1 }}>
+            <label>
+              <input 
+                type="checkbox" 
+                checked={t.done} 
+                onChange={() => toggleDone(t.id)} 
+              />
+              <span style={{ textDecoration: t.done ? 'line-through' : 'none' }}>
+                {t.text}
+              </span>
+            </label>
+            <button onClick={() => deleteTask(t.id)}>削除</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}</code></pre>
+          </div>
+
+          <div class="demo-box" style="margin-top: 2rem; padding: 1.5rem; background: var(--color-surface-raised); border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+            <h4 style="margin-top:0; color: var(--react-cyan); display: flex; align-items: center; gap: 0.5rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+              Todoアプリ モックアップ体験
+            </h4>
+            <p style="font-size: 0.9rem; color: var(--color-text-secondary); margin-bottom: 1rem;">
+              Reactで作るTodoアプリのUIを実際に触ってみましょう。これはフロントエンド（HTML/JS）だけで動作するデモです。
+            </p>
+            <div id="todo-mockup-app" style="background: var(--color-base); padding: 1rem; border-radius: var(--radius-sm);">
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                <input type="text" id="todo-input" placeholder="新しいタスクを入力..." style="flex: 1; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text-primary);">
+                <button onclick="addTodoMockup()" style="background: var(--react-cyan); color: #000; font-weight: bold; padding: 0 1rem; border-radius: 4px; border: none; cursor: pointer;">追加</button>
+              </div>
+              <ul id="todo-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--color-surface); border-radius: 4px; border: 1px solid var(--color-border);">
+                  <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" checked onchange="toggleTodoMockup(this)">
+                    <span style="text-decoration: line-through; opacity: 0.5;">Reactの基礎を学ぶ</span>
+                  </label>
+                  <button onclick="deleteTodoMockup(this)" style="background: transparent; color: var(--color-error); border: none; cursor: pointer;">削除</button>
+                </li>
+              </ul>
+            </div>
+            
+            <script>
+              function addTodoMockup() {
+                const input = document.getElementById('todo-input');
+                const text = input.value.trim();
+                if (!text) return;
+                
+                const ul = document.getElementById('todo-list');
+                const li = document.createElement('li');
+                li.style.cssText = 'display: flex; justify-content: space-between; padding: 0.75rem; background: var(--color-surface); border-radius: 4px; border: 1px solid var(--color-border);';
+                li.innerHTML = '<label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">' +
+                  '<input type="checkbox" onchange="toggleTodoMockup(this)">' +
+                  '<span>' + text + '</span>' +
+                  '</label>' +
+                  '<button onclick="deleteTodoMockup(this)" style="background: transparent; color: var(--color-error); border: none; cursor: pointer;">削除</button>';
+                ul.appendChild(li);
+                input.value = '';
+              }
+              function deleteTodoMockup(btn) {
+                btn.closest('li').remove();
+              }
+              function toggleTodoMockup(checkbox) {
+                const span = checkbox.nextElementSibling;
+                if (checkbox.checked) {
+                  span.style.textDecoration = 'line-through';
+                  span.style.opacity = '0.5';
+                } else {
+                  span.style.textDecoration = 'none';
+                  span.style.opacity = '1';
+                }
+              }
+              document.addEventListener('DOMContentLoaded', () => {
+                  setTimeout(() => {
+                    const input = document.getElementById('todo-input');
+                    if(input) {
+                        input.addEventListener('keypress', function (e) {
+                          if (e.key === 'Enter') addTodoMockup();
+                        });
+                    }
+                  }, 1000);
+              });
+            </script>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>UI上で削除ボタンを押した時、実務では「APIに削除リクエストを送って、成功レスポンスが返ってきてから画面から消す（悲観的UI）」か、「先に画面から要素を消してしまい、裏でAPIリクエストを送り、失敗したら画面を元に戻す（楽観的UI / Optimistic UI）」の2パターンを使い分けます。Twitterの「いいね」のような軽快さが求められる操作は楽観的UIで実装し、決済などの厳密な操作は悲観的UIで実装します。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="react-10" id="react-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>上級編: カスタムフック（Custom Hooks）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜカスタムフックを作るのか？（ロジックの分離と再利用）</h4>
+            <p>UIのコード（JSX）と、データの取得や計算のロジックが混ざり合うとコンポーネントはあっという間に肥大化します（ファットコンポーネント）。カスタムフックは、Reactの機能（useState等）を含んだ自分専用の関数を作る機能です。これにより、「見た目」と「機能」を完全に分離し、同じ機能を別のコンポーネントでも簡単に使い回せるようになります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>API取得ロジックの抽象化</h4>
+            <p>データフェッチの処理はどの画面でも似たような構成（ローディング、エラー、データ保持）になります。これをカスタムフックに切り出します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import { useState, useEffect } from 'react';
+
+// 【Senior Engineer's Note】
+// カスタムフックの関数名は必ず `use` から始める規約があります。
+// これにより、ReactのLinterがフックのルール（条件分岐の中で呼んではいけない等）を検査してくれます。
+export function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(url, { signal: abortController.signal });
+        if (!res.ok) throw new Error('API Error');
+        const json = await res.json();
+        setData(json);
+      } catch (err) {
+        if (err.name !== 'AbortError') setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    // マウント解除時にフェッチをキャンセル
+    return () => abortController.abort();
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+// 使う側（UIコンポーネント）は驚くほどシンプルになります！
+export default function UserProfile() {
+  const { data, loading, error } = useFetch('/api/user');
+  
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error!</div>;
+  return <div>{data.name}</div>;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務でデータフェッチを行う際、自分で `useFetch` のようなカスタムフックを一から書くことは現在では稀です。キャッシュ管理、重複リクエストの排除、リトライ処理など考慮すべきエッジケースが多すぎるためです。通常は `SWR` や `TanStack Query (React Query)` という強力なデータフェッチ専用ライブラリが提供するカスタムフックを利用します。自作カスタムフックは「ローカルストレージとの同期」や「複雑なフォーム制御」などに用いるのが一般的です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="react-11" id="react-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>上級編: パフォーマンス最適化（メモ化）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜメモ化が必要なのか？（不要な再レンダリングの抑止）</h4>
+            <p>Reactは「親コンポーネントが再描画されると、子コンポーネントも無条件で全て再描画される」という仕様があります。大抵のUI更新は非常に高速なので問題になりませんが、巨大なテーブルや複雑なグラフなどを描画する際、無関係なState（例えばタイピング中の検索バー）が更新されるたびに重いコンポーネントまで再描画されると、画面がカクつきます。「メモ化（Memoization）」は、結果をキャッシュして不要な再計算・再描画を防ぐテクニックです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>useMemo と useCallback</h4>
+            <p>計算結果を保存するのが `useMemo`、関数のインスタンスを保存するのが `useCallback`、コンポーネント自体の再描画を防ぐのが `React.memo` です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import React, { useState, useMemo, useCallback, memo } from 'react';
+
+// 【Senior Engineer's Note】
+// memo() で囲むと、渡されるPropsが「前回と完全に一致」する場合のみ再描画をスキップします。
+const ExpensiveChild = memo(({ onClick }) => {
+  console.log('Heavy Child Renders!');
+  return <button onClick={onClick}>Heavy UI Component</button>;
+});
+
+export default function App({ largeList }) {
+  const [count, setCount] = useState(0);
+
+  // useMemo: 重い計算結果をキャッシュする
+  // largeListが変わらない限り、countが変わって再レンダリングされてもここはスキップされる
+  const sortedList = useMemo(() => {
+    console.log('Heavy Sorting...');
+    return [...largeList].sort((a, b) => b.score - a.score);
+  }, [largeList]);
+
+  // useCallback: 関数のインスタンス（参照）をキャッシュする
+  // これがないとAppが再描画される度に関数が新しく生成され、
+  // ExpensiveChildは「新しいonClickが来た！」と勘違いして再描画されてしまう。
+  const handleClick = useCallback(() => {
+    console.log('Clicked!');
+  }, []); // 依存配列が空なので、この関数は最初に作られたものを使い回す
+
+  return (
+    <div>
+      {/* このボタンを押すとAppは再描画されるが、ExpensiveChildは再描画されない */}
+      <button onClick={() => setCount(prev => prev + 1)}>Count: {count}</button>
+      <ExpensiveChild onClick={handleClick} />
+    </div>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>「とりあえず全部にmemoとuseCallbackをつければ速くなる」と勘違いしているエンジニアが多いですが、これはアンチパターンです。メモ化自体にも「依存配列を比較する」というコストがかかるため、軽量なコンポーネントに乱用するとかえってパフォーマンスが悪化します。実務ではまず「状態（State）をコンポーネントのより下位に移動できないか」という設計の見直しを行い、それでも遅い場合にのみプロファイラ（React DevTools）で計測しながらピンポイントでメモ化を適用します。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 12: OSS コードリーディング -->
+      <article class="lesson-card" data-section="react-12" id="react-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>実践OSSコードリーディング — 人気Reactライブラリの中身を読む</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜOSSのコードを読むのか？（先人たちの設計思想をインストールする）</h4>
+            <p>文法を覚えただけでは「良いコード」は書けません。世界中の天才的なエンジニアたちが議論を重ねて生み出したオープンソース（Zustand, SWR, React Router等）のコードを読むことで、カプセル化の手法、TypeScriptの高度な型付け、メモリリークを防ぐ安全な設計パターンなど、教科書には載っていない「生の現場のノウハウ」を効率よく吸収できます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>📖 ① Zustand — たった40行で作れる状態管理ライブラリ</h4>
+            <p>Zustand は「Reactの状態管理を最もシンプルに」をコンセプトにしたライブラリです。Reduxのボイラープレートの多さを排除し、<strong>数十行のコードで状態管理の核心</strong>を実現しています。そのコア（<code>createStore</code>）を読み解きます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 出典: pmndrs/zustand — src/vanilla.ts (MIT)
+// 【Senior Engineer's Note】
+// Zustandの状態はグローバル変数ではなく、「クロージャ（関数スコープに閉じ込められた変数）」
+// として隠蔽（カプセル化）されています。外部からはgetState()でしか読めません。
+const createStoreImpl = (createState) => {
+  let state;                            // 状態の隠蔽（カプセル化）
+  const listeners = new Set();          // 購読者リスト（重複防止のためSetを利用）
+
+  const setState = (partial, replace) => {
+    // 関数が渡された場合は現在のstateを引数として実行
+    const nextState = typeof partial === 'function' ? partial(state) : partial;
+
+    // Reactの最適化: 状態が同一(参照が同じ)なら通知をスキップする
+    if (!Object.is(nextState, state)) {
+      const previousState = state;
+      // replaceフラグによる完全置換 or スプレッド構文によるマージ
+      state = replace ? nextState : Object.assign({}, state, nextState);
+      
+      // 状態変更を全てのコンポーネント（リスナー）にブロードキャスト
+      listeners.forEach((listener) => listener(state, previousState));
+    }
+  };
+
+  const getState = () => state;
+
+  const subscribe = (listener) => {
+    listeners.add(listener);
+    // useEffectのクリーンアップで呼ばれる「解除関数」を返す美しい設計
+    return () => listeners.delete(listener); 
+  };
+
+  // ストアの初期化とAPIの公開
+  const api = { setState, getState, subscribe };
+  state = createState(setState, getState, api);
+  return api;
+};</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>📖 ② React Router — 宣言的ルーティングの内部</h4>
+            <p>React Router は、URLが変わっても画面全体をリロードせず、JavaScriptの力でコンポーネントだけを入れ替える SPA（Single Page Application）の根幹を支えるライブラリです。その魔法の裏側は <code>Context API</code> とブラウザの <code>History API</code> の組み合わせです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 出典: remix-run/react-router (MIT) の概念実装
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const RouterContext = createContext(null);
+
+export function BrowserRouter({ children }) {
+  // ブラウザの現在のURLをReactのStateとして管理する
+  const [location, setLocation] = useState(window.location.pathname);
+
+  useEffect(() => {
+    // ブラウザの「戻る/進む」ボタンを検知してStateを同期
+    const handlePopState = () => setLocation(window.location.pathname);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigate = (to) => {
+    // History APIを使ってリロードせずにURLだけを書き換える
+    window.history.pushState({}, '', to);
+    setLocation(to); // URL変更をReactに教え、再レンダリングを発火させる
+  };
+
+  return (
+    <RouterContext.Provider value={{ location, navigate }}>
+      {children}
+    </RouterContext.Provider>
+  );
+}
+
+// 【Senior Engineer's Note】
+// aタグのデフォルト挙動（ページ全体リロード）を preventDefault() で殺し、
+// 代わりに navigate 関数を実行することで爆速の画面遷移を実現しています。
+export function Link({ to, children }) {
+  const { navigate } = useContext(RouterContext);
+  return (
+    <a href={to} onClick={(e) => { e.preventDefault(); navigate(to); }}>
+      {children}
+    </a>
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>OSSのコードを読む時は、全てを理解しようとせず「ディレクトリ構造」と「テストコード」から入るのが鉄則です。特にテストファイル（<code>*.test.ts</code>）は「そのライブラリが想定しているユースケースとエッジケース（異常系）」を開発者自身が解説している究極のドキュメントです。機能追加で行き詰まった時は、似た機能を持つOSSのテストコードを漁るのがシニアエンジニアの裏技です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 13: Excalidraw OSS コードリーディング -->
+      <article class="lesson-card" data-section="react-13" id="react-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">13</span>
+            <h3>実サービスのコードを読む① — Excalidraw（ホワイトボードツール）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-13')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜ大作アプリの設計を学ぶのか？（スケーラビリティの確保）</h4>
+            <p>小さなアプリでは適当な設計でも動きますが、Excalidrawのような数万行のコードベース、かつ「元に戻す/やり直す（Undo/Redo）」や「リアルタイム共同編集」が飛び交う複雑なアプリでは、データ構造とアクションの設計が命です。「全ての操作を統一化する設計」や「物理削除しないデータ管理（論理削除）」は、大規模アプリケーションを崩壊させないための防波堤となります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>アクションシステムと論理削除（Soft Delete）</h4>
+            <p>キャンバスの全消去機能の実装から、Excalidrawの「削除 ≠ データの破壊」という設計思想が明確に分かります。Undoを実現するためには絶対に物理削除してはいけません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 出典: excalidraw/excalidraw (MIT)
+// packages/excalidraw/actions/actionCanvas.tsx
+
+export const actionClearCanvas = register({
+  name: "clearCanvas",
+  label: "labels.clearCanvas",
+  trackEvent: { category: "canvas" }, // アナリティクス用のトラッキング
+
+  // predicate: このアクションが現在「実行可能か」を判定する述語関数
+  predicate: (elements, appState, props, app) => {
+    return (
+      !!app.props.UIOptions.canvasActions.clearCanvas
+      && !appState.viewModeEnabled // 閲覧モード中は消去ボタンを無効化
+    );
+  },
+
+  // perform: 実際の処理ロジック（純粋関数として新しい状態を返す）
+  perform: (elements, appState, _, app) => {
+    app.imageCache.clear();
+
+    return {
+      // 【Senior Engineer's Note】
+      // 要素を配列から消し去る（物理削除）のではなく、
+      // `isDeleted: true` というフラグを立てて隠す（論理削除）だけ。
+      // これにより「Ctrl+Z」を押した時に isDeleted: false にするだけで復活できる。
+      elements: elements.map((element) =>
+        newElementWith(element, { isDeleted: true })
+      ),
+      
+      // アプリの状態はリセットするが、ダークモードやペンの設定は「保持」する
+      appState: {
+        ...getDefaultAppState(),
+        theme: appState.theme,
+        penMode: appState.penMode,
+      },
+      captureUpdate: CaptureUpdateAction.IMMEDIATELY, // Undo履歴に即時追加
+    };
+  },
+});</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>ブランド型（Branded Types）による型安全の極致</h4>
+            <p>TypeScriptの限界を超えるテクニックとして、Excalidrawでは「エクスポート処理済みの要素」と「未処理の要素」を型レベルで厳密に区別しています。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 【Senior Engineer's Note】
+// 通常の配列に `_brand` という架空のプロパティを交差型（&）で付与します。
+// これにより、通常の要素配列を間違ってエクスポート関数に渡すと
+// 「_brand プロパティがありません」とコンパイルエラーになり、バグを未然に防ぎます。
+export type ExportedElements = readonly NonDeletedExcalidrawElement[] & {
+  _brand: "exportedElements";
+};
+
+export const prepareElementsForExport = (elements): ExportedElements => {
+  // 削除済みフラグが立っている要素を除外する
+  const cleanElements = getNonDeletedElements(elements);
+  
+  // 処理が終わった配列を「ブランド型」としてアサーション（キャスト）して返す
+  return cleanElements as unknown as ExportedElements;
+};</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>実務のデータベース設計でも「論理削除」は頻出します（ユーザーの退会処理など）。しかし、論理削除フラグ（`deleted_at` 等）を導入すると、全ての取得クエリで `WHERE deleted_at IS NULL` を付け忘れないよう常に気を配る必要があり、バグの温床になりがちです。Excalidrawが `getNonDeletedElements` のようなヘルパー関数を噛ませているように、論理削除されたデータを自動で除外するリポジトリ層の設計や、Prismaの中間ミドルウェアでの自動除外設定が実務では必須となります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 14: Cal.com OSS コードリーディング -->
+      <article class="lesson-card" data-section="react-14" id="react-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>実サービスのコードを読む② — Cal.com（スケジュール予約サービス）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜCal.comのスタックが「モダン」なのか？（型安全性の一気通貫）</h4>
+            <p>Cal.comは Next.js, tRPC, Prisma, Zod などを採用したフルスタックTypeScriptアプリの最高峰です。従来の開発では、フロントエンドとバックエンドのAPIスキーマがズレて「Cannot read property of undefined」でアプリが落ちるのが日常茶飯事でした。Cal.comのアーキテクチャでは、DBのスキーマからフロントエンドのUIコンポーネントまで、全てが「型（Type）」でシームレスに繋がっており、コンパイルが通れば動くという堅牢なDX（開発者体験）を実現しています。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>tRPCとZodによる End-to-End の型安全</h4>
+            <p>バックエンドのAPIハンドラの実装です。入力データの検証（バリデーション）からDBクエリまでが驚くほど綺麗に整理されています。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 出典: calcom/cal.com (AGPLv3 + Commercial)
+// packages/trpc/server/routers/viewer/bookings/get.handler.ts
+
+// 【Senior Engineer's Note】
+// 入力の型（TGetInputSchema）は Zod によってランタイム検証済みの安全なデータです。
+// もしリクエストに不正な文字列が混ざっていたら、この関数に到達する前に弾かれます。
+type GetOptions = {
+  ctx: {
+    user: NonNullable<TrpcSessionUser>; // 認証済みであることが型レベルで保証されている
+    prisma: PrismaClient;               // DBアクセスクライアント
+  };
+  input: TGetInputSchema;
+};
+
+export const getHandler = async ({ ctx, input }: GetOptions) => {
+  const { prisma, user } = ctx;
+  const take = input.limit;
+  let skip = input.offset;
+
+  // オフセット（skip=20）とカーソル（id=xyz）の両方のページネーションに対応する柔軟な設計
+  if (input.cursor) {
+    const parsedCursor = parseInt(input.cursor, 10);
+    if (!Number.isNaN(parsedCursor) && parsedCursor >= 0) skip = parsedCursor;
+  }
+
+  // ステータスフィルター（未指定の場合は 'upcoming' をデフォルトとする）
+  const statuses = input.filters.statuses?.length
+    ? input.filters.statuses
+    : [input.filters.status || "upcoming"];
+
+  // ビジネスロジックを別ファイルに分離（Fat Controllerを防ぐ）
+  const { bookings, totalCount } = await getAllUserBookings({
+    ctx: { user: { id: user.id }, prisma },
+    statuses, take, skip
+  });
+
+  const nextOffset = skip + take;
+  const hasMore = nextOffset < totalCount;
+
+  // 【Senior Engineer's Note】
+  // ここでreturnしたオブジェクトの型が、自動的にフロントエンドの
+  // useQuery().data の型として推論されます。型定義の二重管理が不要です。
+  return { 
+    bookings, 
+    totalCount, 
+    nextCursor: hasMore ? nextOffset.toString() : undefined 
+  };
+};</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>モノレポ（Monorepo）によるコードの組織化</h4>
+            <p>Cal.comは1つのリポジトリの中に複数のパッケージを持っています（Turborepoを使用）。UIコンポーネント（<code>@calcom/ui</code>）やデータベーススキーマ（<code>@calcom/prisma</code>）を独立したパッケージに切り出し、Webアプリ本体やAPIサーバーから再利用しています。大規模開発における「依存関係の整理」の最適解です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>tRPCは小〜中規模なTypeScriptフルスタックプロジェクトでは最強の生産性を誇りますが、「マイクロサービス化」や「モバイルアプリ（Swift/Kotlin）へのAPI提供」が必要になった瞬間に破綻しやすいという弱点があります（TypeScript以外の言語から型を参照しづらいため）。そのため、事業がスケールして多言語展開が見込まれるプロジェクトでは、tRPCではなく `GraphQL` や `OpenAPI + Swagger` によるスキーマ駆動開発を採用するのが技術選定のセオリーです。</p>
+          </div>
+        </div>
+      </article>
+
+    
+<div class="quiz-section" id="react-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">React の核心を理解できているか確認しましょう。</p>
+        <div id="react-quiz-container"></div>
+        <div class="quiz-result" id="react-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="react-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="react-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="react-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="react-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('react')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('react')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="react-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

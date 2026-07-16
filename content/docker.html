@@ -1,0 +1,301 @@
+
+      <article class="lesson-card" data-section="docker-1" id="docker-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">01</span><h3>コンテナとは何か — 仮想マシンとの違いを根本から理解する</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-1')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 コンテナは「軽量な隔離環境」— OSカーネルを共有するからこそ速い</h4></div>
+          <div class="explanation-box">
+            <h4>なぜコンテナが必要なのか？</h4>
+            <p>開発者なら誰もが経験する <strong>「自分の環境では動くのに、本番サーバーで動かない」</strong> 問題。原因はPythonのバージョン差異、ライブラリの依存関係、OS固有の設定など多岐にわたります。コンテナはこの問題を <strong>「アプリケーション + その実行に必要な全て」をパッケージ化</strong> することで解決します。</p>
+            <p>従来の仮想マシン（VM）も同じ問題を解決できますが、VMはゲストOS全体を起動するため <strong>数分かかり、数GBのリソースを消費</strong> します。コンテナはホストOSのカーネルを共有するため、<strong>数秒で起動し、数十MBで済む</strong> のです。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">アーキテクチャ比較</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>┌──── 仮想マシン（VM） ────┐    ┌──── コンテナ ────────────┐
+│ ┌─App─┐ ┌─App─┐ ┌─App─┐│    │ ┌─App─┐ ┌─App─┐ ┌─App─┐│
+│ ├─Lib─┤ ├─Lib─┤ ├─Lib─┤│    │ ├─Lib─┤ ├─Lib─┤ ├─Lib─┤│
+│ ├Guest┤ ├Guest┤ ├Guest┤│    │ └─────┘ └─────┘ └─────┘│
+│ │ OS  │ │ OS  │ │ OS  ││    │   Container Runtime     │
+│ └─────┘ └─────┘ └─────┘│    │     (Docker Engine)      │
+│    Hypervisor           │    ├─────────────────────────┤
+├─────────────────────────┤    │     ホスト OS カーネル    │  ← 共有！
+│     ホスト OS            │    ├─────────────────────────┤
+├─────────────────────────┤    │      ハードウェア         │
+│      ハードウェア         │    └─────────────────────────┘
+└─────────────────────────┘
+起動: 数分 / サイズ: 数GB        起動: 数秒 / サイズ: 数十MB</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 カーネル共有の仕組み — namespaces と cgroups</h4>
+            <p>コンテナの「隔離」は Linux カーネルの2つの機能で実現されます：</p>
+            <p><strong>namespaces（名前空間）:</strong> プロセス、ネットワーク、ファイルシステム等を隔離。コンテナAからコンテナBのプロセスは見えない。</p>
+            <p><strong>cgroups（コントロールグループ）:</strong> CPU、メモリ等のリソース使用量を制限。1つのコンテナが全リソースを占有しないように制御。</p>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Docker を使わない方が良い場面:</strong> GUI アプリケーション、低レイテンシが求められるリアルタイムシステム、Windows ネイティブの .NET Framework アプリ。また、チームに Docker の知見がない場合、学習コストが開発速度を上回ることもあります。<strong>「全てを Docker 化すべき」は誤り</strong>です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-2" id="docker-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">02</span><h3>Docker の基本概念 — イメージ・コンテナ・レジストリ</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-2')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 イメージ = レシピ（設計図）、コンテナ = 料理（実体）</h4></div>
+          <div class="explanation-box"><h4>Docker の3大要素</h4>
+            <p><strong>イメージ（Image）:</strong> コンテナの「設計図」。OS + ライブラリ + アプリが層（レイヤー）構造で積み重なったもの。読み取り専用。</p>
+            <p><strong>コンテナ（Container）:</strong> イメージから作られた「実行中のインスタンス」。書き込み可能なレイヤーが1層追加される。停止すると変更は消える（揮発性）。</p>
+            <p><strong>レジストリ（Registry）:</strong> イメージの保管・配布場所。Docker Hub（公開）、Amazon ECR / Google GCR（プライベート）。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SHELL — Docker 基本コマンド</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ── イメージの取得と管理 ──
+# Docker Hub から Python 3.12 の公式イメージを取得
+# "python" がイメージ名、"3.12-slim" がタグ（バージョン）
+# slim は不要なパッケージを省いた軽量版（推奨）
+docker pull python:3.12-slim
+
+# ローカルに保存されているイメージ一覧を表示
+docker images
+
+# ── コンテナの起動と操作 ──
+# イメージからコンテナを起動して中に入る（対話モード）
+# -it = 標準入力を開いてターミナルに接続
+# --rm = 終了時にコンテナを自動削除（ゴミが残らない）
+docker run -it --rm python:3.12-slim bash
+
+# バックグラウンドで Web サーバーを起動
+# -d = デタッチモード（バックグラウンド実行）
+# -p 8080:80 = ホストの8080番ポートをコンテナの80番に転送
+# --name = コンテナに名前を付ける（管理しやすい）
+docker run -d -p 8080:80 --name my-nginx nginx:alpine
+
+# ── コンテナの状態確認と停止 ──
+docker ps              # 実行中のコンテナ一覧
+docker ps -a           # 停止中も含めた全コンテナ一覧
+docker logs my-nginx   # コンテナのログを表示
+docker stop my-nginx   # コンテナを停止
+docker rm my-nginx     # コンテナを削除</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Docker Hub の「公式イメージ」の見分け方:</strong> 公式イメージは <code>python</code>, <code>nginx</code>, <code>postgres</code> のように<strong>ユーザー名なし</strong>で表示されます。<code>someone/python</code> のように / が入っているものは非公式です。セキュリティリスクを避けるため、<strong>本番では必ず公式イメージ（Official Image）のバッジを確認</strong>してください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-3" id="docker-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">03</span><h3>Dockerfile — イメージ設計の技術</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-3')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 Dockerfile は「再現可能な環境構築の手順書」</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Dockerfile — Python FastAPI アプリの例</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ── ステージ1: ビルド環境 ──
+# マルチステージビルド: 最終イメージにビルドツールを含めない
+FROM python:3.12-slim AS builder
+
+# 作業ディレクトリを設定（以降のコマンドはここで実行される）
+WORKDIR /app
+
+# まず依存関係ファイルだけをコピー → pip install
+# なぜ先にこれだけ？ → ソースコード変更時にpip installの
+# キャッシュが効くため。ビルド時間が大幅に短縮される。
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# ── ステージ2: 本番用の軽量イメージ ──
+FROM python:3.12-slim
+
+# セキュリティ: root ではなく一般ユーザーで実行
+RUN useradd --create-home appuser
+WORKDIR /app
+
+# ビルドステージからpipパッケージだけをコピー
+# ビルドツール(gcc等)は持ち込まない → イメージサイズ削減
+COPY --from=builder /root/.local /home/appuser/.local
+COPY . .
+
+# 一般ユーザーに切り替え（rootで実行しない = セキュリティの基本）
+USER appuser
+ENV PATH=/home/appuser/.local/bin:$PATH
+
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 レイヤーキャッシュの仕組み</h4><p>Dockerfile の各命令（FROM, COPY, RUN 等）は1つのレイヤーを生成します。Docker は<strong>変更がないレイヤーをキャッシュ</strong>して再利用します。そのため、<strong>変更頻度の低い命令（pip install 等）を上に、変更頻度の高い命令（COPY . .）を下に</strong>書くのが最適化の鉄則です。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>.dockerignore の作成を忘れない:</strong> <code>.git</code>, <code>node_modules</code>, <code>__pycache__</code>, <code>.env</code> 等をビルドコンテキストから除外しないと、<strong>機密情報がイメージに含まれたり、ビルドが遅くなったり</strong>します。<code>.gitignore</code> と同じ感覚で必ず作成してください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-4" id="docker-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">04</span><h3>docker compose — 複数コンテナの連携</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-4')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 現実のサービスは「Web + DB + キャッシュ」の組み合わせで動く</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">YAML — docker-compose.yml 実践構成</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># docker compose up -d で全サービスが一括起動する
+# docker compose down で全サービスを停止・削除
+
+services:
+  # ── Web アプリケーション ──
+  web:
+    build: .                        # カレントディレクトリの Dockerfile を使用
+    ports:
+      - "8000:8000"                 # ホスト:コンテナ のポートマッピング
+    volumes:
+      - .:/app                      # ソースコードをバインドマウント（ホットリロード用）
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/myapp
+      - REDIS_URL=redis://cache:6379
+    depends_on:                     # 起動順序の制御（注意点あり↓）
+      db:
+        condition: service_healthy  # ヘルスチェックが通るまで待つ
+    restart: unless-stopped         # クラッシュ時に自動再起動
+
+  # ── データベース ──
+  db:
+    image: postgres:16-alpine       # 公式の軽量版イメージ
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: myapp
+    volumes:
+      - db_data:/var/lib/postgresql/data  # データを永続化
+    healthcheck:                    # DB が「本当に準備完了」かチェック
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ── キャッシュサーバー ──
+  cache:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  db_data:                          # Named Volume（Docker が管理）</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong><code>depends_on</code> の罠:</strong> デフォルトの <code>depends_on</code> は「コンテナが起動した」だけを保証し、「アプリが準備完了した」ことは保証しません。PostgreSQL のコンテナは起動しても、接続を受け付けるまでに数秒かかります。<code>condition: service_healthy</code> + <code>healthcheck</code> の組み合わせで解決してください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-5" id="docker-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">05</span><h3>ボリュームとネットワーク — データ永続化と通信</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-5')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 コンテナは「使い捨て」— だからこそデータの置き場所が重要</h4></div>
+          <div class="explanation-box"><h4>なぜコンテナのデータは消えるのか？</h4><p>コンテナは<strong>イミュータブル（不変）なイメージ</strong>から起動し、変更は<strong>書き込み可能な一時レイヤー</strong>に記録されます。コンテナを削除するとこのレイヤーも消えます。DBのデータや、アップロードされたファイルを永続化するには <strong>ボリューム</strong> が必要です。</p></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SHELL — ボリュームの種類と使い分け</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ── Named Volume（Docker が管理。本番DB向き） ──
+docker volume create my_data
+docker run -v my_data:/var/lib/postgresql/data postgres:16
+
+# ── Bind Mount（ホストのディレクトリを直接マウント。開発向き） ──
+# ソースコードの変更がリアルタイムにコンテナに反映される
+docker run -v $(pwd):/app python:3.12
+
+# ── ネットワーク ──
+# 同じ docker compose 内のサービスは、サービス名でアクセスできる
+# 例: web コンテナから db コンテナへは "db:5432" でアクセス
+# これは Docker が自動的に DNS を設定しているため</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>最もよくある事故:</strong> <code>docker compose down -v</code> の <code>-v</code> フラグは <strong>Named Volume も削除</strong> します。開発中にデータベースを含むボリュームを消してしまい、データが全て消失する事故が頻発します。<strong><code>-v</code> は「何が削除されるか」を理解してから使ってください。</strong></p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-6" id="docker-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">06</span><h3>実務の Docker ワークフロー — 開発→テスト→本番</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-6')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「開発で docker compose、本番は別」が現実解</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SHELL — CI/CD パイプラインでの Docker 活用</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ── GitHub Actions での典型的なワークフロー ──
+# 1. コードがプッシュされる
+# 2. CI でテスト実行（Docker コンテナ内で）
+# 3. Docker イメージをビルド
+# 4. プライベートレジストリ（ECR/GCR）にプッシュ
+# 5. 本番環境（ECS/Cloud Run）がイメージを取得して起動
+
+# イメージのビルドとタグ付け
+docker build -t myapp:latest -t myapp:v1.2.3 .
+
+# プライベートレジストリにプッシュ
+docker tag myapp:latest 123456789.dkr.ecr.ap-northeast-1.amazonaws.com/myapp:latest
+docker push 123456789.dkr.ecr.ap-northeast-1.amazonaws.com/myapp:latest</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>docker-compose.yml を本番と開発で分ける:</strong> <code>docker-compose.yml</code>（共通）+ <code>docker-compose.override.yml</code>（開発用: バインドマウント、デバッグポート）+ <code>docker-compose.prod.yml</code>（本番用: ヘルスチェック、リソース制限）のように分離するのが定番パターンです。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-7" id="docker-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">07</span><h3>Docker セキュリティ — 本番運用の鉄則</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 コンテナは「デフォルトで安全」ではない</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Dockerfile — セキュリティのベストプラクティス</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># ❌ 悪い例: root で実行、フルOSイメージ
+FROM python:3.12
+COPY . /app
+CMD ["python", "app.py"]
+
+# ✅ 良い例: 非root、最小イメージ、脆弱性スキャン対応
+FROM python:3.12-slim AS builder
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+FROM gcr.io/distroless/python3-debian12
+COPY --from=builder /root/.local /root/.local
+COPY . /app
+WORKDIR /app
+# distroless: シェルすら含まない最小イメージ
+# → 攻撃者がコンテナに侵入しても操作手段がない
+CMD ["app.py"]</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 Secrets 管理の鉄則</h4><p><strong>環境変数にパスワードを直接書かない。</strong> <code>docker-compose.yml</code> に <code>POSTGRES_PASSWORD=mysecret</code> と書くと、<code>docker inspect</code> で誰でも見られます。本番では <strong>Docker Secrets</strong>、<strong>HashiCorp Vault</strong>、クラウドの <strong>Secrets Manager</strong>（AWS/GCP）を使ってください。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Alpine vs Distroless:</strong> Alpine は軽量（5MB）でシェルが使えるためデバッグしやすい一方、musl libc を使うため<strong>一部のPythonパッケージが動かない</strong>ことがあります。Distroless はシェルもパッケージマネージャもない究極の最小イメージで、<strong>攻撃面が最小</strong>ですがデバッグが困難です。開発は Alpine、本番は Distroless が現実的な使い分けです。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="docker-8" id="docker-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">08</span><h3>コンテナオーケストレーション概論 — Kubernetes への橋渡し</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 「コンテナ1個」から「コンテナ1000個」への道</h4></div>
+          <div class="explanation-box"><h4>なぜオーケストレーションが必要か</h4><p><code>docker compose</code> は1台のサーバーで複数コンテナを管理できますが、<strong>トラフィック増加で複数サーバーが必要</strong>になると対応できません。Kubernetes（K8s）は<strong>数百〜数千のコンテナを複数サーバーに分散配置し、自動スケーリング、自動復旧、ローリングアップデート</strong>を実現するプラットフォームです。</p></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">YAML — Kubernetes の基本リソース（概念理解用）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code># Pod: コンテナの最小単位（通常1Pod = 1コンテナ）
+# Deployment: Pod のレプリカ数やアップデート戦略を管理
+# Service: Pod へのネットワークアクセスを提供
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-api
+spec:
+  replicas: 3            # 同じコンテナを3つ起動
+  selector:
+    matchLabels:
+      app: my-api
+  template:
+    spec:
+      containers:
+      - name: api
+        image: myapp:v1.2.3
+        resources:
+          limits:          # リソース制限（重要！）
+            memory: "256Mi"
+            cpu: "500m"</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「Kubernetes は本当に必要か？」:</strong> K8s の学習・運用コストは非常に高いです。<strong>月間100万リクエスト以下、チーム5人以下</strong>なら、<strong>AWS ECS / Google Cloud Run / Fly.io</strong> のようなマネージドサービスの方が費用対効果が高いことが多いです。「K8s を使いこなすこと」を目的にしないでください。</p></div>
+        </div>
+      </article>
+
+      <!-- Docker Quiz -->
+            <div class="quiz-section" id="docker-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">Dockerの知識を確認しましょう。</p>
+        <div id="docker-quiz-container"></div>
+        <div class="quiz-result" id="docker-quiz-result"></div>
+      </div>
+
+<!-- Docker Puzzle -->
+      <div class="puzzle-section" id="docker-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 コード組み立てパズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="docker-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board"><div class="puzzle-source" id="docker-puzzle-source"></div><div class="puzzle-dropzone" id="docker-puzzle-dropzone"><div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div></div></div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('docker')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('docker')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="docker-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

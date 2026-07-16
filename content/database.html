@@ -1,0 +1,285 @@
+
+      <article class="lesson-card" data-section="database-1" id="database-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">01</span><h3>データベースとは何か — ファイル保存では不十分な理由</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-1')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 CSVやJSONでは「同時に2人がデータを変更する」と壊れる</h4></div>
+          <div class="explanation-box"><h4>なぜデータベースが必要なのか？</h4>
+            <p>プログラムのデータをファイル（CSV, JSON）に保存するのは手軽ですが、以下の問題が発生します：</p>
+            <p><strong>1. 同時アクセス:</strong> 2人のユーザーが同時にファイルを更新すると、片方の変更が消える<br>
+            <strong>2. 一貫性:</strong> 書き込み中にクラッシュすると、ファイルが壊れる（途中状態のまま）<br>
+            <strong>3. 検索速度:</strong> 100万行のCSVから1件を探すには全行をスキャンする必要がある（O(n)）<br>
+            <strong>4. 構造の強制:</strong> CSVでは「年齢に文字列が入る」ことを防げない</p>
+            <p>データベースはこれら全てを<strong>原理的に解決</strong>します。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">比較表</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>┌─────────────┬──────────────┬──────────────┬──────────────┐
+│             │  RDBMS       │  NoSQL       │ ファイル     │
+│             │ (PostgreSQL) │ (MongoDB)    │ (CSV/JSON)   │
+├─────────────┼──────────────┼──────────────┼──────────────┤
+│ 同時アクセス│ ✅ トランザ  │ ✅ 部分的    │ ❌ 壊れる    │
+│ 一貫性      │ ✅ ACID保証  │ △ 結果整合   │ ❌ 保証なし  │
+│ 検索速度    │ ✅ インデックス│ ✅ 高速     │ ❌ 全スキャン│
+│ スキーマ    │ ✅ 厳密      │ △ 柔軟      │ ❌ なし      │
+│ 学習コスト  │ ★★★☆☆     │ ★★☆☆☆    │ ★☆☆☆☆    │
+│ 適用場面    │ 業務系全般   │ ログ/SNS    │ 設定/一時    │
+└─────────────┴──────────────┴──────────────┴──────────────┘</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>個人開発では SQLite で十分な場面が多い:</strong> PostgreSQL や MySQL はサーバーの起動が必要ですが、SQLite はファイル1つで完結します。月間10万リクエスト以下のサービスなら SQLite で十分な性能が出ます。Django も FastAPI も SQLite をサポートしています。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-2" id="database-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">02</span><h3>テーブル設計の基礎 — リレーショナルモデルの考え方</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-2')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 テーブル設計は「現実世界のモデル化」</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — テーブル作成</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ユーザーテーブル
+-- 主キー(PRIMARY KEY): 各行を一意に識別する列
+-- NOT NULL: 空値を許さない（必須項目）
+CREATE TABLE users (
+    id         SERIAL PRIMARY KEY,        -- 自動採番の主キー
+    name       VARCHAR(100) NOT NULL,     -- 最大100文字の必須文字列
+    email      VARCHAR(255) NOT NULL UNIQUE, -- 重複不可
+    created_at TIMESTAMP DEFAULT NOW()    -- 作成日時（自動設定）
+);
+
+-- 注文テーブル
+-- 外部キー(FOREIGN KEY): 別テーブルの主キーを参照する列
+-- → 存在しないユーザーIDを指定するとエラーになる（参照整合性）
+CREATE TABLE orders (
+    id      SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),  -- 外部キー
+    amount  DECIMAL(10,2) NOT NULL,      -- 小数点以下2桁の金額
+    status  VARCHAR(20) DEFAULT 'pending'
+);
+
+-- ER図（テキスト表現）:
+-- [users] 1 ──── * [orders]
+-- 1人のユーザーが0個以上の注文を持つ（1対多の関係）</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 正規化の考え方</h4><p><strong>第1正規形:</strong> 1つのセルに1つの値だけ（配列を入れない）<br><strong>第2正規形:</strong> 主キーの一部だけに依存する列を別テーブルに分離<br><strong>第3正規形:</strong> 主キー以外の列に依存する列を別テーブルに分離</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「正規化しすぎ」の弊害:</strong> 理論上は全て正規化すべきですが、JOINが増えすぎるとクエリが複雑になりパフォーマンスも悪化します。実務では<strong>「読み取り頻度の高いデータは意図的に非正規化する」</strong>ことがあります（例: 注文テーブルにユーザー名を直接入れる）。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-3" id="database-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">03</span><h3>SQL基本① — データの取得（SELECT）</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-3')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 SQL の 80% は SELECT 文の習得で決まる</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — SELECT の基本パターン</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ① 基本の SELECT（全列取得）
+SELECT * FROM users;                    -- 全列・全行（開発専用！）
+
+-- ② 必要な列だけ取得（本番ではこちらを使う）
+SELECT id, name, email FROM users;
+
+-- ③ 条件付き取得（WHERE）
+SELECT name, email FROM users
+WHERE created_at &gt;= '2024-01-01'        -- 2024年以降に作成
+  AND name LIKE '田%';                   -- 名前が「田」で始まる
+
+-- ④ パターンマッチングの比較
+WHERE name = '田中'                      -- 完全一致
+WHERE name LIKE '田%'                    -- 前方一致（「田」で始まる）
+WHERE name LIKE '%中'                    -- 後方一致（「中」で終わる）
+WHERE name LIKE '%田中%'                 -- 部分一致（「田中」を含む）
+WHERE age IN (20, 25, 30)                -- リスト内の値と一致
+WHERE age BETWEEN 20 AND 30              -- 範囲指定
+WHERE phone IS NULL                      -- NULL（値が未設定）
+
+-- ⑤ ソートと件数制限
+SELECT name, created_at FROM users
+ORDER BY created_at DESC                 -- 新しい順にソート
+LIMIT 10                                 -- 上位10件だけ取得
+OFFSET 20;                               -- 21件目から（ページネーション）
+
+-- ⑥ 重複除去とエイリアス
+SELECT DISTINCT city AS "都市名" FROM users;  -- 重複除去 + 列の別名</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong><code>SELECT *</code> を本番で使ってはいけない理由:</strong> ① 不要な列も取得するため<strong>ネットワーク帯域を浪費</strong>する ② 将来テーブルに BLOB（画像データ等）列が追加されると<strong>クエリが劇的に遅くなる</strong> ③ カバリングインデックスが効かなくなり<strong>パフォーマンスが低下</strong>する。必要な列だけを明示的に指定してください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-4" id="database-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">04</span><h3>SQL基本② — データの追加・更新・削除</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-4')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 WHERE を忘れた UPDATE/DELETE は全行に影響する — 最も危険な操作</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — INSERT / UPDATE / DELETE</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ① INSERT（データの追加）
+INSERT INTO users (name, email) VALUES ('田中太郎', 'tanaka@example.com');
+
+-- 複数行を一度に追加（バルクインサート）
+INSERT INTO users (name, email) VALUES
+  ('佐藤花子', 'sato@example.com'),
+  ('鈴木一郎', 'suzuki@example.com');
+
+-- ② UPDATE（データの更新）— WHERE を必ず付ける！
+UPDATE users SET name = '田中次郎' WHERE id = 1;
+
+-- ⚠️ WHERE なし → 全ユーザーの名前が変わる！
+-- UPDATE users SET name = '田中次郎';  ← 絶対にやってはいけない
+
+-- ③ DELETE（データの削除）— WHERE を必ず付ける！
+DELETE FROM users WHERE id = 1;
+
+-- ⚠️ WHERE なし → 全データ削除！
+-- DELETE FROM users;  ← テーブルが空になる
+
+-- ④ UPSERT（あれば更新、なければ挿入）
+INSERT INTO users (email, name) VALUES ('tanaka@example.com', '田中太郎')
+ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name;
+-- email が重複したら name を更新、なければ新規挿入</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>本番での DELETE/UPDATE の鉄則:</strong> ① まず <code>SELECT * FROM users WHERE id = 1;</code> で対象を確認 ② 件数が想定通りか確認 ③ <code>BEGIN;</code> でトランザクションを開始 ④ DELETE/UPDATE を実行 ⑤ 結果を確認してから <code>COMMIT;</code>（間違えたら <code>ROLLBACK;</code>）。この手順を<strong>必ず</strong>守ってください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-5" id="database-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">05</span><h3>JOIN — テーブルの結合</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-5')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 正規化したテーブルを「元に戻す」のが JOIN</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — JOIN の種類</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ① INNER JOIN: 両方のテーブルに存在するデータだけ取得
+-- 「注文があるユーザー」の名前と注文金額
+SELECT u.name, o.amount
+FROM users u
+INNER JOIN orders o ON u.id = o.user_id;
+
+-- ② LEFT JOIN: 左テーブルの全行 + 右テーブルの一致する行
+-- 「注文がないユーザーも含めて」表示（注文がなければ NULL）
+SELECT u.name, o.amount
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id;
+
+-- ③ 複数テーブルの結合
+SELECT u.name, o.amount, p.product_name
+FROM users u
+JOIN orders o ON u.id = o.user_id
+JOIN order_items oi ON o.id = oi.order_id
+JOIN products p ON oi.product_id = p.id
+WHERE o.status = 'completed';
+
+-- ④ 注文がないユーザーを見つける（LEFT JOIN + IS NULL パターン）
+SELECT u.name FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+WHERE o.id IS NULL;  -- 注文テーブルに一致がない = 注文なし</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>N+1 問題:</strong> ORM（SQLAlchemy 等）で <code>for user in users: print(user.orders)</code> と書くと、ユーザー1件ごとに注文を別クエリで取得します（100ユーザーなら 1 + 100 = 101回のクエリ）。JOIN を使えば<strong>1回のクエリで全データを取得</strong>できます。ORM の <code>joinedload()</code> や <code>include</code> を使って解決してください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-6" id="database-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">06</span><h3>集約とグループ化 — データ分析の基礎</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-6')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 GROUP BY は「カテゴリごとの集計」を1行のSQLで実現する</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — 集約関数と GROUP BY</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ① 集約関数の基本
+SELECT COUNT(*) AS total_users FROM users;            -- 総ユーザー数
+SELECT AVG(amount) AS avg_order FROM orders;          -- 平均注文額
+SELECT SUM(amount) AS total_sales FROM orders;        -- 売上合計
+SELECT MAX(amount) AS max_order FROM orders;          -- 最高額の注文
+SELECT MIN(created_at) AS first_user FROM users;      -- 最初のユーザー
+
+-- ② GROUP BY（カテゴリごとの集計）
+-- ステータスごとの注文数と合計金額
+SELECT status, COUNT(*) AS cnt, SUM(amount) AS total
+FROM orders
+GROUP BY status;
+-- 結果: pending: 15件 ¥450,000 / completed: 82件 ¥2,460,000
+
+-- ③ HAVING（グループに対する条件）
+-- 注文が5件以上のユーザーだけ表示
+SELECT user_id, COUNT(*) AS order_count
+FROM orders
+GROUP BY user_id
+HAVING COUNT(*) &gt;= 5;       -- WHERE ではなく HAVING（集約後のフィルタ）
+
+-- ④ サブクエリ（クエリの中にクエリ）
+-- 平均注文額より高い注文を取得
+SELECT * FROM orders
+WHERE amount &gt; (SELECT AVG(amount) FROM orders);</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>SQL の実行順序を理解する:</strong> SQL は書いた順番ではなく <code>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT</code> の順で実行されます。だから WHERE は集約<strong>前</strong>、HAVING は集約<strong>後</strong>のフィルタなのです。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-7" id="database-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">07</span><h3>インデックスとパフォーマンス — 遅いクエリを速くする</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 インデックス = 「本の索引」— 全ページをめくらずに目的のページを開ける</h4></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — インデックスの作成と EXPLAIN</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ① インデックスなし: 100万行を全スキャン（数秒かかる）
+SELECT * FROM users WHERE email = 'tanaka@example.com';
+
+-- ② インデックスを作成（B-Tree構造で高速検索）
+CREATE INDEX idx_users_email ON users(email);
+-- → 同じクエリが数ミリ秒で完了するようになる
+
+-- ③ EXPLAIN で実行計画を確認
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'tanaka@example.com';
+-- Seq Scan = 全件スキャン（遅い）
+-- Index Scan = インデックス使用（速い）
+
+-- ④ 複合インデックス（複数列の組み合わせ）
+CREATE INDEX idx_orders_user_status ON orders(user_id, status);
+-- user_id AND status の両方で検索する場合に有効
+
+-- ⑤ WHERE句だけでなく ORDER BY にも効く
+CREATE INDEX idx_orders_created ON orders(created_at DESC);
+-- ORDER BY created_at DESC がインデックスだけで完了する</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>インデックスの副作用:</strong> INSERT/UPDATE/DELETE のたびにインデックスも更新されるため、<strong>書き込み性能が低下</strong>します。「とりあえず全列にインデックス」は逆効果です。<strong>実際に遅いクエリを EXPLAIN で分析してから、必要なインデックスだけを追加</strong>するのが正しいアプローチです。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-8" id="database-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">08</span><h3>トランザクションと実務パターン</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 トランザクション = 「全部成功するか、全部なかったことにするか」</h4></div>
+          <div class="explanation-box"><h4>ACID 特性 — データの信頼性を保証する4つの約束</h4>
+            <p><strong>A（Atomicity / 原子性）:</strong> トランザクション内の操作は全て成功するか、全て取り消される。「振込で引き落としだけ成功して入金が失敗」は起きない。<br>
+            <strong>C（Consistency / 一貫性）:</strong> トランザクション前後でデータの整合性が保たれる。残高がマイナスになるような操作は拒否される。<br>
+            <strong>I（Isolation / 分離性）:</strong> 同時実行されるトランザクションは互いに干渉しない。<br>
+            <strong>D（Durability / 永続性）:</strong> COMMIT されたデータはサーバーがクラッシュしても消えない。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — トランザクション</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- 銀行振込の例: AからBに1万円を送金
+BEGIN;  -- トランザクション開始
+
+-- Aの残高から1万円を引く
+UPDATE accounts SET balance = balance - 10000 WHERE user_id = 'A';
+
+-- Bの残高に1万円を足す
+UPDATE accounts SET balance = balance + 10000 WHERE user_id = 'B';
+
+-- 両方成功したら確定
+COMMIT;
+
+-- もし途中でエラーが起きたら:
+-- ROLLBACK;  ← Aの引き落としも取り消される（お金が消えない）</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>デッドロックの原因と対策:</strong> トランザクションAが「テーブル1 → テーブル2」の順でロックし、トランザクションBが「テーブル2 → テーブル1」の順でロックすると、互いに相手のロック解除を待ち続けます（デッドロック）。対策: <strong>常に同じ順序でテーブルにアクセスする</strong>、トランザクションを短く保つ。</p></div>
+        </div>
+      </article>
+
+      <!-- Database Quiz -->
+            <div class="quiz-section" id="database-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">Databaseの知識を確認しましょう。</p>
+        <div id="database-quiz-container"></div>
+        <div class="quiz-result" id="database-quiz-result"></div>
+      </div>
+
+<div class="puzzle-section" id="database-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 コード組み立てパズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="database-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board"><div class="puzzle-source" id="database-puzzle-source"></div><div class="puzzle-dropzone" id="database-puzzle-dropzone"><div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div></div></div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('database')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('database')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="database-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

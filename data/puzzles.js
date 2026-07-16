@@ -1,0 +1,160 @@
+// ============================================================
+// data/puzzles.js — コード組み立てパズルのデータ
+// app.js から分離。パズルの追加・修正はこのファイルのみで行う。
+// ============================================================
+const puzzleData = {
+
+  docker: {
+    question: "PythonアプリのDockerfileを正しい順番に並べてください。",
+    pieces: [
+      { id: "docker-p1", text: "FROM python:3.12-slim" },
+      { id: "docker-p2", text: "WORKDIR /app" },
+      { id: "docker-p3", text: "COPY requirements.txt ." },
+      { id: "docker-p4", text: "RUN pip install -r requirements.txt" },
+      { id: "docker-p5", text: "COPY . ." },
+      { id: "docker-p6", text: "CMD [\"python\", \"app.py\"]" }
+    ],
+    correctOrder: ["docker-p1", "docker-p2", "docker-p3", "docker-p4", "docker-p5", "docker-p6"],
+    explanation: "ベースイメージ指定→作業ディレクトリ設定→依存ファイルのコピー→パッケージインストール→ソースコードコピー→実行コマンド設定が、キャッシュを最も有効に活用できる正しい順番です。"
+  },
+  database: {
+    question: "売上が1万円以上のユーザーの総売上を計算するSQLを正しい順序に並べてください。",
+    pieces: [
+      { id: "db-p1", text: "SELECT user_id, SUM(amount) AS total_sales" },
+      { id: "db-p2", text: "FROM orders" },
+      { id: "db-p3", text: "GROUP BY user_id" },
+      { id: "db-p4", text: "HAVING SUM(amount) >= 10000" },
+      { id: "db-p5", text: "ORDER BY total_sales DESC;" }
+    ],
+    correctOrder: ["db-p1", "db-p2", "db-p3", "db-p4", "db-p5"],
+    explanation: "SELECT → FROM → GROUP BY(グループ化) → HAVING(グループ化後の条件) → ORDER BY(並び替え) の順序がSQLの正しい構文です。"
+  },
+  
+  
+  testing: {
+    question: "pytest の fixture を使ったテストコードを正しい順番に並べてください。",
+    pieces: [
+      { id: "test-p1", text: "import pytest" },
+      { id: "test-p2", text: "@pytest.fixture" },
+      { id: "test-p3", text: "def sample_data():" },
+      { id: "test-p4", text: "    return [\"Alice\", \"Bob\", \"Charlie\"]" },
+      { id: "test-p5", text: "def test_data_length(sample_data):" },
+      { id: "test-p6", text: "    assert len(sample_data) == 3" }
+    ],
+    correctOrder: ["test-p1", "test-p2", "test-p3", "test-p4", "test-p5", "test-p6"],
+    explanation: "import → @pytest.fixture デコレータ → fixture関数定義 → テストデータ返却 → テスト関数（fixture名を引数に指定）→ アサーション の順序です。"
+  },
+  "python-prac": {
+    question: "デコレータを使って関数の実行時間を計測するコードを正しい順番に並べてください。",
+    pieces: [
+      { id: "pp-p1", text: "import functools, time" },
+      { id: "pp-p2", text: "def timer(func):" },
+      { id: "pp-p3", text: "    @functools.wraps(func)" },
+      { id: "pp-p4", text: "    def wrapper(*args, **kwargs):" },
+      { id: "pp-p5", text: "        start = time.perf_counter()" },
+      { id: "pp-p6", text: "        result = func(*args, **kwargs)" },
+      { id: "pp-p7", text: "        print(f\"{func.__name__}: {time.perf_counter()-start:.4f}s\")" },
+      { id: "pp-p8", text: "        return result" },
+      { id: "pp-p9", text: "    return wrapper" }
+    ],
+    correctOrder: ["pp-p1", "pp-p2", "pp-p3", "pp-p4", "pp-p5", "pp-p6", "pp-p7", "pp-p8", "pp-p9"],
+    explanation: "import→デコレータ関数定義→@wrapsで元関数のメタ情報を保持→ラッパー関数→計測開始→元関数実行→結果出力→結果返却→ラッパー関数を返す、の順序です。"
+  },
+  genai: {
+    question: "安全なプロンプトの構成要素を、上から論理的な順序に並べてください。",
+    pieces: [
+      { id: "gen-p1", text: "# 役割定義：\nあなたはセキュリティの専門家です。" },
+      { id: "gen-p2", text: "# 目的：\n以下のコードの脆弱性を指摘してください。" },
+      { id: "gen-p3", text: "# 制約条件：\n- 専門用語は避ける\n- 箇条書きで出力する" },
+      { id: "gen-p4", text: "# 出力形式：\nJSON形式" },
+      { id: "gen-p5", text: "# 入力データ：\nconst pass = '12345';" }
+    ],
+    correctOrder: ["gen-p1", "gen-p2", "gen-p3", "gen-p4", "gen-p5"],
+    explanation: "「役割」で前提を共有し、「目的」を伝え、「制約」と「出力形式」でコントロールし、最後に「対象データ」を渡すのが、ハルシネーションを防ぐ構造化プロンプトの基本です。"
+  },
+
+  htmlcss: {
+    question: "HTMLの基本構造を正しい順番に組み立ててください",
+    pieces: [
+      { id: "h1", text: "<!DOCTYPE html>" },
+      { id: "h2", text: "<html lang=\"ja\">" },
+      { id: "h3", text: "<head><meta charset=\"UTF-8\"><title>My Page</title></head>" },
+      { id: "h4", text: "<body>" },
+      { id: "h5", text: "<h1>Hello, World!</h1></body></html>" }
+    ],
+    correctOrder: ["h1", "h2", "h3", "h4", "h5"],
+    explanation: "HTML文書は必ず <!DOCTYPE html> 宣言から始まり、<html>、<head>（メタ情報）、<body>（コンテンツ）の順に構成されます。"
+  },
+  algorithm: {
+    question: "二分探索（Binary Search）の関数を正しい順番に組み立ててください",
+    pieces: [
+      { id: "a1", text: "def binary_search(lst, target):" },
+      { id: "a2", text: "    left, right = 0, len(lst) - 1" },
+      { id: "a3", text: "    while left <= right:" },
+      { id: "a4", text: "        mid = (left + right) // 2" },
+      { id: "a5", text: "        if lst[mid] == target: return mid" }
+    ],
+    correctOrder: ["a1", "a2", "a3", "a4", "a5"],
+    explanation: "二分探索は左右の境界（left, right）を設定し、ループで中央値を計算して探索範囲を半分に絞っていきます。"
+  },
+  python: {
+    question: "以下のブロックを正しく並べ替えて、エラーが起きても処理を継続する「0除算の例外処理」を完成させてください。",
+    pieces: [
+      { id: "p1", text: "def divide(a, b):" },
+      { id: "p2", text: "    try:" },
+      { id: "p3", text: "        return a / b" },
+      { id: "p4", text: "    except ZeroDivisionError:" },
+      { id: "p5", text: "        return '0で割ることはできません'" }
+    ],
+    correctOrder: ["p1", "p2", "p3", "p4", "p5"],
+    explanation: "try-exceptブロックを使うことで、エラー時でもプログラムをクラッシュさせずに安全に処理を継続できます。"
+  },
+  "python-cert": {
+    question: "以下のブロックを正しく並べ替えて、リストのすべての要素を処理し、もしbreakされなかった場合のみメッセージを出す「for...else」構文を完成させてください。",
+    pieces: [
+      { id: "c1", text: "for item in [1, 2, 3]:" },
+      { id: "c2", text: "    if item == 5:" },
+      { id: "c3", text: "        break" },
+      { id: "c4", text: "else:" },
+      { id: "c5", text: "    print('5は見つかりませんでした')" }
+    ],
+    correctOrder: ["c1", "c2", "c3", "c4", "c5"],
+    explanation: "for...else 構文は、ループが break されずに自然に終了した場合のみ else ブロックが実行される、試験頻出の特殊構文です。"
+  },
+  react: {
+    question: "以下のブロックを正しく並べ替えて、APIからデータを取得する「useEffect」を用いたコンポーネントを完成させてください。",
+    pieces: [
+      { id: "r1", text: "function UserProfile() {" },
+      { id: "r2", text: "  const [data, setData] = useState(null);" },
+      { id: "r3", text: "  useEffect(() => {" },
+      { id: "r4", text: "    fetch('/api/user').then(res => res.json()).then(setData);" },
+      { id: "r5", text: "  }, []);" }
+    ],
+    correctOrder: ["r1", "r2", "r3", "r4", "r5"],
+    explanation: "コンポーネント関数内でまずStateを宣言し、次にuseEffectを呼び出します。useEffectの第二引数を空配列 [] にすることで初回マウント時のみ実行させます。"
+  },
+  typescript: {
+    question: "以下のブロックを並べ替えて、「User」の型定義を作り、それを引数に取る関数を完成させてください。",
+    pieces: [
+      { id: "t1", text: "interface User {" },
+      { id: "t2", text: "  id: number;" },
+      { id: "t3", text: "  name: string;" },
+      { id: "t4", text: "}" },
+      { id: "t5", text: "function printUser(user: User) {" }
+    ],
+    correctOrder: ["t1", "t2", "t3", "t4", "t5"],
+    explanation: "まず interface でオブジェクトの構造（型）を定義し、関数の引数に対してその Interface 名を指定することで、強力な型チェックを有効にします。"
+  },
+  webapi: {
+    question: "以下のブロックを並べ替えて、非同期処理（async/await）を使った安全なAPIリクエストを完成させてください。",
+    pieces: [
+      { id: "w1", text: "async function fetchData() {" },
+      { id: "w2", text: "  try {" },
+      { id: "w3", text: "    const response = await fetch('https://api.example.com/data');" },
+      { id: "w4", text: "    const data = await response.json();" },
+      { id: "w5", text: "  } catch (error) {" }
+    ],
+    correctOrder: ["w1", "w2", "w3", "w4", "w5"],
+    explanation: "async 関数内で、エラーハンドリングのために try-catch ブロックを配置し、その中で await を使って fetch と json() の非同期処理を待ち受けます。"
+  }
+};
