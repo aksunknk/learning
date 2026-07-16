@@ -23,9 +23,17 @@
   --react-cyan: #61DAFB;
   --typescript-blue: #3178C6;
   --webapi-green: #00bfa5;
+  --htmlcss-orange: #e34f26;
+  --docker-blue: #2496ed;
+  --database-teal: #009688;
+  --genai-purple: #9c27b0;
+  --testing-green: #4caf50;
 
-  --accent: var(--python-blue);
-  --accent-glow: rgba(55,118,171,0.35);
+  --accent: var(--htmlcss-orange);
+  --accent-glow: rgba(227,79,38,0.35);
+
+  /* 後方互換エイリアス（インラインスタイル参照用） */
+  --color-primary: var(--accent);
 
   --color-success: #34d399;
   --color-success-bg: rgba(52,211,153,0.12);
@@ -322,7 +330,7 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 
 .progress-cards {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1rem;
 }
 
@@ -368,7 +376,15 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 .python-card .mini-progress-fill { background: var(--python-blue); }
 .react-card .mini-progress-fill { background: var(--react-cyan); }
 .typescript-card .mini-progress-fill { background: var(--typescript-blue); }
+.cert-card .mini-progress-fill { background: var(--python-yellow); }
+.algorithm-card .mini-progress-fill { background: var(--color-warning); }
 .webapi-card .mini-progress-fill { background: var(--webapi-green); }
+.htmlcss-card .mini-progress-fill { background: var(--htmlcss-orange); }
+.docker-card .mini-progress-fill { background: var(--docker-blue); }
+.database-card .mini-progress-fill { background: var(--database-teal); }
+.genai-card .mini-progress-fill { background: var(--genai-purple); }
+.python-prac-card .mini-progress-fill { background: var(--python-blue); }
+.testing-card .mini-progress-fill { background: var(--testing-green); }
 
 .progress-percent {
   font-size: 0.75rem;
@@ -378,6 +394,8 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 
 /* ========================================
    TAB NAVIGATION
+   カテゴリグループ（基礎 / バックエンド / フロントエンド / 実践）で
+   12タブを絞り込み表示する。下線インジケーターは選択中タブに追従。
    ======================================== */
 .tab-navigation {
   position: sticky;
@@ -390,10 +408,43 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   padding-top: 0.5rem;
 }
 
+.tab-groups {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 0.25rem 0.75rem;
+  overflow-x: auto;
+}
+
+.tab-group-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-group-btn:hover {
+  color: var(--color-text-secondary);
+  border-color: var(--color-border-hover);
+}
+
+.tab-group-btn.active {
+  color: var(--color-text-primary);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
 .tab-list {
   display: flex;
   position: relative;
   gap: 0;
+  overflow-x: auto;
 }
 
 .tab-button {
@@ -412,6 +463,11 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  white-space: nowrap;
+}
+
+.tab-button[hidden] {
+  display: none !important;
 }
 
 .tab-button:hover {
@@ -436,6 +492,55 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   border-radius: 3px 3px 0 0;
   transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* 遅延読込プレースホルダ */
+.content-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 240px;
+  color: var(--color-text-secondary);
+  padding: 2rem;
+}
+
+.content-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.content-error {
+  color: var(--color-error);
+}
+
+.content-error-detail {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.retry-load-btn {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.retry-load-btn:hover {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 /* ========================================
