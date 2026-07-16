@@ -26,6 +26,8 @@ const TAB_IDS = [
   "genai",
   "python-prac",
   "testing",
+  "git",
+  "capstone",
 ];
 
 const TAB_ACCENTS = {
@@ -41,6 +43,8 @@ const TAB_ACCENTS = {
   genai: { accent: "var(--genai-purple)", glow: "rgba(156,39,176,0.35)" },
   "python-prac": { accent: "var(--python-blue)", glow: "rgba(55,118,171,0.35)" },
   testing: { accent: "var(--testing-green)", glow: "rgba(76,175,80,0.35)" },
+  git: { accent: "var(--git-orange)", glow: "rgba(240,80,51,0.35)" },
+  capstone: { accent: "var(--capstone-gold)", glow: "rgba(255,179,0,0.35)" },
 };
 
 const STORAGE_KEYS = {
@@ -122,6 +126,9 @@ async function loadTabContent(tabId) {
     observeScrollTargets(panel);
     restoreProgress();
     updateAllProgress();
+
+    // Database タブは SQL プレイグラウンドの起動UIを含む
+    // （sql.js 本体はユーザーが起動ボタンを押すまでダウンロードしない）
   } catch (err) {
     contentCache[tabId] = "error";
     panel.setAttribute("aria-busy", "false");
@@ -828,3 +835,179 @@ function checkPuzzle(lang) {
 
 window.checkPuzzle = checkPuzzle;
 window.loadPuzzle = loadPuzzle;
+
+// ==================================================
+// SQL プレイグラウンド（sql.js / WASM）
+// ==================================================
+// Database タブ内でブラウザ内SQLiteを起動し、SQLを実行できる。
+// sql.js（約1MB）はユーザーが起動ボタンを押したときに初めて
+// CDN からロードする（初期表示の速度に影響させない）。
+const SQLJS_CDN = "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2";
+
+let sqlDb = null; // 起動後の SQLite インスタンス
+let sqlModule = null; // initSqlJs の戻り値（DB再作成に使う）
+
+// プレイグラウンドの初期データ。レッスン12のECスキーマと対応させ、
+// 学んだ直後のクエリをそのまま試せるようにしている。
+const SQL_SEED = `
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE
+);
+CREATE TABLE products (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  price INTEGER NOT NULL
+);
+CREATE TABLE orders (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  status TEXT NOT NULL DEFAULT 'paid'
+);
+CREATE TABLE order_items (
+  order_id INTEGER NOT NULL REFERENCES orders(id),
+  product_id INTEGER NOT NULL REFERENCES products(id),
+  quantity INTEGER NOT NULL,
+  unit_price INTEGER NOT NULL,
+  PRIMARY KEY (order_id, product_id)
+);
+INSERT INTO users VALUES
+  (1,'佐藤','sato@example.com'),
+  (2,'鈴木','suzuki@example.com'),
+  (3,'田中','tanaka@example.com');
+INSERT INTO products VALUES
+  (1,'キーボード',8000),(2,'マウス',3000),(3,'モニター',25000);
+INSERT INTO orders VALUES
+  (1,1,'paid'),(2,1,'shipped'),(3,2,'paid'),(4,3,'pending');
+INSERT INTO order_items VALUES
+  (1,1,1,8000),(1,2,2,3000),(2,3,1,25000),(3,2,1,3000),(4,1,1,8000);
+`;
+
+const SQL_SAMPLES = [
+  "SELECT * FROM users;",
+  "-- ユーザーごとの注文を JOIN で結合\nSELECT u.name, o.id AS order_id, o.status\nFROM users u\nJOIN orders o ON o.user_id = u.id;",
+  "-- ユーザーごとの購入合計を集計\nSELECT u.name, SUM(i.quantity * i.unit_price) AS total\nFROM users u\nJOIN orders o ON o.user_id = u.id\nJOIN order_items i ON i.order_id = o.id\nGROUP BY u.name\nORDER BY total DESC;",
+  "-- CTE: 平均より高額な注文を探す\nWITH order_totals AS (\n  SELECT order_id, SUM(quantity * unit_price) AS total\n  FROM order_items GROUP BY order_id\n)\nSELECT * FROM order_totals\nWHERE total > (SELECT AVG(total) FROM order_totals);",
+];
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error(`failed to load ${src}`));
+    document.head.appendChild(s);
+  });
+}
+
+async function bootSqlPlayground() {
+  const root = document.getElementById("sql-playground");
+  if (!root) return;
+  const bootArea = root.querySelector(".sql-playground-boot");
+  const ui = root.querySelector(".sql-playground-ui");
+  const bootBtn = root.querySelector(".sql-boot-btn");
+
+  if (bootBtn) {
+    bootBtn.disabled = true;
+    bootBtn.textContent = "読み込み中…";
+  }
+
+  try {
+    if (typeof initSqlJs === "undefined") {
+      await loadScript(`${SQLJS_CDN}/sql-wasm.js`);
+    }
+    sqlModule = await initSqlJs({
+      locateFile: (file) => `${SQLJS_CDN}/${file}`,
+    });
+    sqlDb = new sqlModule.Database();
+    sqlDb.run(SQL_SEED);
+
+    if (bootArea) bootArea.hidden = true;
+    if (ui) ui.hidden = false;
+
+    const input = document.getElementById("sql-input");
+    input?.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        runSql();
+      }
+    });
+  } catch (err) {
+    if (bootBtn) {
+      bootBtn.disabled = false;
+      bootBtn.textContent = "▶ 読み込みに失敗しました — 再試行";
+    }
+    renderSqlMessage(
+      `sql.js の読み込みに失敗しました（ネットワークを確認してください）: ${err.message}`,
+      "error"
+    );
+  }
+}
+
+function runSql() {
+  if (!sqlDb) return;
+  const input = document.getElementById("sql-input");
+  const sql = input?.value.trim();
+  if (!sql) return;
+
+  try {
+    const results = sqlDb.exec(sql); // [{columns, values}] を返す
+    if (results.length === 0) {
+      // INSERT/UPDATE/DDL など結果セットの無い文
+      renderSqlMessage(
+        `OK — 実行しました（${sqlDb.getRowsModified()} 行に影響）`,
+        "ok"
+      );
+      return;
+    }
+    renderSqlResults(results);
+  } catch (err) {
+    renderSqlMessage(`SQLエラー: ${err.message}`, "error");
+  }
+}
+
+function resetSqlDb() {
+  if (!sqlDb || !sqlModule) return;
+  sqlDb.close();
+  sqlDb = new sqlModule.Database(); // initSqlJs の再ロードは不要
+  sqlDb.run(SQL_SEED);
+  renderSqlMessage("DBを初期状態に戻しました。", "ok");
+}
+
+function setSqlSample(idx) {
+  const input = document.getElementById("sql-input");
+  if (input && SQL_SAMPLES[idx]) input.value = SQL_SAMPLES[idx];
+}
+
+function renderSqlMessage(text, kind) {
+  const out = document.getElementById("sql-output");
+  if (!out) return;
+  out.innerHTML = `<p class="sql-message ${kind}">${escapeHtml(text)}</p>`;
+}
+
+function renderSqlResults(results) {
+  const out = document.getElementById("sql-output");
+  if (!out) return;
+  out.innerHTML = results
+    .map(({ columns, values }) => {
+      const head = columns.map((c) => `<th>${escapeHtml(c)}</th>`).join("");
+      const rows = values
+        .map(
+          (row) =>
+            `<tr>${row
+              .map((v) => `<td>${escapeHtml(v === null ? "NULL" : String(v))}</td>`)
+              .join("")}</tr>`
+        )
+        .join("");
+      return `<div class="sql-table-wrap"><table class="sql-result-table">
+        <thead><tr>${head}</tr></thead><tbody>${rows}</tbody>
+      </table><p class="sql-rowcount">${values.length} 行</p></div>`;
+    })
+    .join("");
+}
+
+window.bootSqlPlayground = bootSqlPlayground;
+window.runSql = runSql;
+window.resetSqlDb = resetSqlDb;
+window.setSqlSample = setSqlSample;

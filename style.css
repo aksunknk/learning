@@ -28,6 +28,8 @@
   --database-teal: #009688;
   --genai-purple: #9c27b0;
   --testing-green: #4caf50;
+  --git-orange: #f05033;
+  --capstone-gold: #ffb300;
 
   --accent: var(--htmlcss-orange);
   --accent-glow: rgba(227,79,38,0.35);
@@ -385,6 +387,8 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 .genai-card .mini-progress-fill { background: var(--genai-purple); }
 .python-prac-card .mini-progress-fill { background: var(--python-blue); }
 .testing-card .mini-progress-fill { background: var(--testing-green); }
+.git-card .mini-progress-fill { background: var(--git-orange); }
+.capstone-card .mini-progress-fill { background: var(--capstone-gold); }
 
 .progress-percent {
   font-size: 0.75rem;
@@ -1287,4 +1291,156 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   0% { transform: scale(1); }
   50% { transform: scale(1.02); background: rgba(46, 204, 113, 0.1); }
   100% { transform: scale(1); }
+}
+
+/* --- SQL Playground ---
+   ブラウザ内SQLite（sql.js）の実行UI。Databaseタブに配置。 */
+.sql-playground-boot {
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+.sql-boot-btn {
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sql-boot-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.sql-boot-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.sql-samples {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.sql-samples button {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sql-samples button:hover {
+  border-color: var(--accent);
+  color: var(--color-text-primary);
+}
+
+#sql-input {
+  width: 100%;
+  background: #0d1117;
+  color: #e6edf3;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  font-family: var(--font-code);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+#sql-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.sql-controls {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.sql-run-btn {
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+.sql-reset-btn {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+.sql-message {
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+.sql-message.ok {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.sql-message.error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  font-family: var(--font-code);
+}
+
+.sql-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.sql-result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-family: var(--font-code);
+}
+
+.sql-result-table th,
+.sql-result-table td {
+  padding: 0.5rem 0.9rem;
+  text-align: left;
+  border: 1px solid var(--color-border);
+}
+
+.sql-result-table th {
+  background: var(--color-surface-overlay);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.sql-result-table tr:nth-child(even) td {
+  background: rgba(255,255,255,0.02);
+}
+
+.sql-rowcount {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.3rem;
 }

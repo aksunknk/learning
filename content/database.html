@@ -262,6 +262,196 @@ COMMIT;
         </div>
       </article>
 
+      <article class="lesson-card" data-section="database-9" id="database-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">09</span><h3>サブクエリとCTE — 複雑な質問をSQLで表現する</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-9')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 CTE（WITH句）は「クエリに名前を付ける」機能 — 複雑なSQLの可読性が劇的に上がる</h4></div>
+          <div class="explanation-box"><h4>なぜサブクエリだけでは辛くなるのか？</h4>
+            <p>「平均購入額より多く買っているユーザー」のような質問は、1つのSELECTでは書けません。クエリの中に別のクエリ（サブクエリ）を埋め込む必要があります。しかしサブクエリを3段以上ネストすると、人間には読めないSQLになります。そこで登場するのが <strong>CTE（Common Table Expression / WITH句）</strong>です。中間結果に名前を付けて、上から下へ読める構造にします。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — サブクエリとCTEの比較</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>-- ① サブクエリ版: 「平均より高額な注文」を探す
+SELECT id, user_id, amount
+FROM orders
+WHERE amount &gt; (SELECT AVG(amount) FROM orders);  -- ← ここがサブクエリ
+
+-- ② CTE版: 同じことを「名前付きの中間テーブル」で表現
+WITH avg_order AS (                  -- avg_order という名前を付ける
+    SELECT AVG(amount) AS avg_amount FROM orders
+)
+SELECT o.id, o.user_id, o.amount
+FROM orders o, avg_order
+WHERE o.amount &gt; avg_order.avg_amount;
+
+-- ③ CTEの真価: 複数の中間結果を段階的に組み立てる
+WITH monthly_sales AS (              -- 月ごとの売上を集計
+    SELECT user_id, SUM(amount) AS total
+    FROM orders
+    GROUP BY user_id
+),
+vip_users AS (                       -- 売上上位のユーザーを抽出
+    SELECT user_id FROM monthly_sales WHERE total &gt;= 50000
+)
+SELECT u.name, m.total               -- 最後に名前を付けて表示
+FROM vip_users v
+JOIN users u ON u.id = v.user_id
+JOIN monthly_sales m ON m.user_id = v.user_id;</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「とりあえずCTEで書く」が現代の主流:</strong> パフォーマンスはほとんどの場合サブクエリと同等です（オプティマイザが同じ実行計画に変換します）。レビューする側の読みやすさが段違いなので、2段以上ネストしそうなら迷わず WITH 句に切り出してください。なお、SQLite・PostgreSQL・MySQL 8.0以降のすべてでCTEは使えます。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-10" id="database-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">10</span><h3>ORMとN+1問題 — SQLAlchemyでPythonからDBを操作する</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-10')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 ORMは「SQLを書かなくて済む」道具ではなく「SQLを生成する」道具 — 裏で何が発行されるかを常に意識する</h4></div>
+          <div class="explanation-box"><h4>ORM（Object-Relational Mapping）とは？</h4>
+            <p>DBの行をPythonのオブジェクトとして扱える仕組みです。FastAPI では <strong>SQLAlchemy</strong>、Django では Django ORM が定番です。SQLを文字列で組み立てる代わりに、クラスとメソッドでクエリを表現します。型安全でリファクタリングに強い一方、<strong>意図しない大量のSQLを発行してしまう罠</strong>があります。その代表が N+1 問題です。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Python — SQLAlchemy の基本と N+1 問題</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>from sqlalchemy import create_engine, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, selectinload
+
+class Base(DeclarativeBase): pass
+
+class User(Base):
+    __tablename__ = "users"
+    id:   Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    orders: Mapped[list["Order"]] = relationship(back_populates="user")
+
+class Order(Base):
+    __tablename__ = "orders"
+    id:      Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    amount:  Mapped[int]
+    user: Mapped[User] = relationship(back_populates="orders")
+
+engine = create_engine("sqlite:///app.db")
+
+# ❌ N+1 問題: ユーザー100人なら 1 + 100 = 101回のSQLが飛ぶ
+with Session(engine) as session:
+    users = session.query(User).all()          # SELECT * FROM users (1回)
+    for u in users:
+        print(u.name, len(u.orders))           # ユーザーごとに SELECT ... (N回!)
+
+# ✅ 解決: selectinload で関連データを一括読み込み（合計2回のSQL）
+with Session(engine) as session:
+    users = session.query(User).options(selectinload(User.orders)).all()
+    for u in users:
+        print(u.name, len(u.orders))           # 追加のSQLは発行されない</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「ローカルでは速いのに本番で遅い」の8割はN+1:</strong> 開発中はデータが10件しかないため気づけません。SQLAlchemy なら <code>engine = create_engine(url, echo=True)</code> で発行SQLを全部ログに出せます。ループの中で毎回SQLが流れていたらN+1です。対策は <code>selectinload</code>（別クエリで一括取得）か <code>joinedload</code>（JOINで1クエリ化）です。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-11" id="database-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">11</span><h3>SQLインジェクション — 絶対にやってはいけない文字列連結</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-11')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 ユーザー入力をSQLに文字列連結した瞬間、あなたのDBは全世界に公開されたのと同じ</h4></div>
+          <div class="explanation-box"><h4>攻撃の仕組み — たった1行の入力でテーブルが消える</h4>
+            <p>ログインフォームの入力値をそのままSQLに埋め込むと、攻撃者は「入力値」ではなく「SQL構文」を送り込めます。これが <strong>SQLインジェクション</strong>で、OWASP Top 10 に常に入る最重要脆弱性です。生成AIが出力するコードにも文字列連結のSQLが混ざることがあるため、<strong>見抜く目</strong>が必要です。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Python — 脆弱なコードと安全なコード</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>import sqlite3
+conn = sqlite3.connect("app.db")
+
+# ❌ 絶対NG: f-string / format / + でSQLを組み立てる
+name = input("ユーザー名: ")   # 攻撃者の入力: ' OR '1'='1
+sql = f"SELECT * FROM users WHERE name = '{name}'"
+# → SELECT * FROM users WHERE name = '' OR '1'='1'
+#   条件が常に真になり全ユーザーの情報が漏洩する。
+#   入力が「'; DROP TABLE users; --」ならテーブルごと消える。
+
+# ✅ 正解: プレースホルダ（パラメータ化クエリ）
+cur = conn.execute(
+    "SELECT * FROM users WHERE name = ?",   # ? が置き場所
+    (name,)                                  # 値は別引数で渡す
+)
+# DBドライバが「値」として安全にエスケープするため、
+# どんな入力が来てもSQL構文としては解釈されない。
+
+# ✅ SQLAlchemy などのORMも内部でプレースホルダを使う
+# session.query(User).filter(User.name == name)  ← 安全</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>コードレビューでの検出パターン:</strong> <code>execute(f"...")</code>、<code>execute("..." + 変数)</code>、<code>execute("...".format(...))</code> を見たら即座に指摘してください。例外は「テーブル名や列名の動的切替」で、これはプレースホルダにできないため、<strong>許可リスト（ホワイトリスト）との照合</strong>で守ります。生成AIにコードを書かせた場合も、この観点でのセルフレビューを習慣化してください。</p></div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="database-12" id="database-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">12</span><h3>実践演習 — ECサイトのスキーマを設計してみる</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-12')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-body">
+          <div class="concept-box"><h4>💡 設計の手順は「エンティティ抽出 → 関係の整理 → 制約の付与」— いきなりCREATE TABLEを書かない</h4></div>
+          <div class="explanation-box"><h4>要件からテーブルを導く</h4>
+            <p>要件:「ユーザーが商品をカートに入れ、注文する。商品は複数のカテゴリに属する」。ここから名詞を抜き出すと <strong>ユーザー・商品・カテゴリ・注文</strong> がエンティティ候補です。次に関係を整理します。「注文と商品」は多対多（1つの注文に複数の商品、1つの商品は複数の注文に含まれる）なので、<strong>中間テーブル</strong>が必要になります。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">SQL — EC サイトの実践スキーマ</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>CREATE TABLE users (
+    id         INTEGER PRIMARY KEY,
+    email      TEXT NOT NULL UNIQUE,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE products (
+    id    INTEGER PRIMARY KEY,
+    name  TEXT NOT NULL,
+    price INTEGER NOT NULL CHECK (price &gt;= 0)  -- 負の価格を禁止
+);
+
+CREATE TABLE orders (
+    id       INTEGER PRIMARY KEY,
+    user_id  INTEGER NOT NULL REFERENCES users(id),
+    status   TEXT NOT NULL DEFAULT 'pending'
+             CHECK (status IN ('pending','paid','shipped')),
+    ordered_at TEXT DEFAULT (datetime('now'))
+);
+
+-- 多対多を解決する中間テーブル（注文明細）
+CREATE TABLE order_items (
+    order_id   INTEGER NOT NULL REFERENCES orders(id),
+    product_id INTEGER NOT NULL REFERENCES products(id),
+    quantity   INTEGER NOT NULL CHECK (quantity &gt; 0),
+    unit_price INTEGER NOT NULL,   -- 注文時点の価格を保存（非正規化の実例）
+    PRIMARY KEY (order_id, product_id)  -- 複合主キー
+);
+
+-- よく使う検索のためのインデックス
+CREATE INDEX idx_orders_user   ON orders(user_id);
+CREATE INDEX idx_items_product ON order_items(product_id);</code></pre>
+          </div>
+          <div class="explanation-box"><h4>🔍 設計判断のポイント</h4><p><strong>unit_price をあえて重複保存する理由:</strong> 商品の価格は改定されます。products.price だけを参照していると、値上げ後に過去の注文金額まで変わってしまいます。「注文時点の価格」は注文の事実の一部なので、order_items に複製するのが正解です。これが「意図的な非正規化」の典型例です。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>迷ったら「事実の記録」と「現在の状態」を分ける:</strong> 注文（事実、不変）とカート（状態、可変）は性質がまったく違うテーブルです。事実テーブルはINSERTのみ・UPDATE禁止に寄せると、監査・集計・デバッグのすべてが楽になります。下の<strong>SQLプレイグラウンド</strong>で、このスキーマに対して実際にクエリを書いて試してみてください。</p></div>
+        </div>
+      </article>
+
+      <!-- SQL Playground（sql.js / WASM でブラウザ内実行） -->
+      <div class="quiz-section" id="sql-playground-section">
+        <div class="quiz-header">
+          <h3>🧪 SQLプレイグラウンド</h3>
+        </div>
+        <p class="quiz-intro">ブラウザ内のSQLite（sql.js/WASM）で実際にSQLを実行できます。サンプルの users / products / orders / order_items テーブルが用意されています。データはページ再読み込みでリセットされます。</p>
+        <div id="sql-playground">
+          <div class="sql-playground-boot">
+            <button type="button" class="sql-boot-btn" onclick="bootSqlPlayground()">▶ プレイグラウンドを起動（約1MBをダウンロード）</button>
+          </div>
+          <div class="sql-playground-ui" hidden>
+            <div class="sql-samples">
+              <span>サンプル:</span>
+              <button type="button" onclick="setSqlSample(0)">全ユーザー</button>
+              <button type="button" onclick="setSqlSample(1)">JOIN</button>
+              <button type="button" onclick="setSqlSample(2)">集計</button>
+              <button type="button" onclick="setSqlSample(3)">CTE</button>
+            </div>
+            <textarea id="sql-input" rows="6" spellcheck="false" aria-label="SQL入力">SELECT * FROM users;</textarea>
+            <div class="sql-controls">
+              <button type="button" class="sql-run-btn" onclick="runSql()">実行 (Ctrl+Enter)</button>
+              <button type="button" class="sql-reset-btn" onclick="resetSqlDb()">DBを初期化</button>
+            </div>
+            <div id="sql-output" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Database Quiz -->
             <div class="quiz-section" id="database-quiz">
         <div class="quiz-header">
