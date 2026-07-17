@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-total-lessons="166">
+<body>
 
   <!-- ===== HERO SECTION ===== -->
   <header class="hero" id="hero">
@@ -28,21 +28,22 @@
         生成AIでアプリを作った経験はあるけど、コードの中身がよくわからない——<br>
         そんなあなたのための、<strong>「なぜそう書くのか」</strong>を理解するための学習ガイドです。
       </p>
+      <!-- 統計値は app.js が TABS / quizData / puzzleData から算出して埋める -->
       <div class="hero-stats">
         <div class="stat-item">
-          <span class="stat-number">15</span>
+          <span class="stat-number" data-stat="topics">15</span>
           <span class="stat-label">学習トピック</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">166</span>
+          <span class="stat-number" data-stat="lessons">166</span>
           <span class="stat-label">レッスン</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">121</span>
+          <span class="stat-number" data-stat="quizzes">121</span>
           <span class="stat-label">クイズ</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">15</span>
+          <span class="stat-number" data-stat="puzzles">15</span>
           <span class="stat-label">パズル</span>
         </div>
       </div>
@@ -72,158 +73,7 @@
       <div class="progress-bar-container">
         <div class="progress-bar" id="overall-progress-bar"></div>
       </div>
-      <div class="progress-cards">
-        <div class="progress-card python-card" data-lang="python">
-          <div class="progress-card-icon">🐍</div>
-          <div class="progress-card-info">
-            <h3>Python</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="python-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="python-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card rust-card" data-lang="rust">
-          <div class="progress-card-icon">🦀</div>
-          <div class="progress-card-info">
-            <h3>Rust</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="rust-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="rust-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card react-card" data-lang="react">
-          <div class="progress-card-icon">⚛️</div>
-          <div class="progress-card-info">
-            <h3>React</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="react-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="react-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card typescript-card" data-lang="typescript">
-          <div class="progress-card-icon">🔷</div>
-          <div class="progress-card-info">
-            <h3>TypeScript</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="typescript-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="typescript-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card cert-card" data-lang="python-cert">
-          <div class="progress-card-icon">📜</div>
-          <div class="progress-card-info">
-            <h3>Python認定基礎</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="python-cert-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="python-cert-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card algorithm-card" data-lang="algorithm">
-          <div class="progress-card-icon">🧮</div>
-          <div class="progress-card-info">
-            <h3>アルゴリズム</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="algorithm-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="algorithm-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card webapi-card" data-lang="webapi">
-          <div class="progress-card-icon">🌐</div>
-          <div class="progress-card-info">
-            <h3>Web/API</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="webapi-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="webapi-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card htmlcss-card" data-lang="htmlcss">
-          <div class="progress-card-icon">🎨</div>
-          <div class="progress-card-info">
-            <h3>HTML/CSS</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="htmlcss-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="htmlcss-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card docker-card" data-lang="docker">
-          <div class="progress-card-icon">🐳</div>
-          <div class="progress-card-info">
-            <h3>Docker</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="docker-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="docker-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card database-card" data-lang="database">
-          <div class="progress-card-icon">🗄️</div>
-          <div class="progress-card-info">
-            <h3>データベース</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="database-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="database-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card genai-card" data-lang="genai">
-          <div class="progress-card-icon">🤖</div>
-          <div class="progress-card-info">
-            <h3>生成AIパスポート</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="genai-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="genai-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card python-prac-card" data-lang="python-prac">
-          <div class="progress-card-icon">🏆</div>
-          <div class="progress-card-info">
-            <h3>Python実践試験</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="python-prac-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="python-prac-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card testing-card" data-lang="testing">
-          <div class="progress-card-icon">🧪</div>
-          <div class="progress-card-info">
-            <h3>テスト設計</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="testing-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="testing-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card git-card" data-lang="git">
-          <div class="progress-card-icon">🌿</div>
-          <div class="progress-card-info">
-            <h3>Git / GitHub</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="git-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="git-progress-text">0%</span>
-          </div>
-        </div>
-        <div class="progress-card capstone-card" data-lang="capstone">
-          <div class="progress-card-icon">🏗️</div>
-          <div class="progress-card-info">
-            <h3>キャップストーン</h3>
-            <div class="mini-progress-bar">
-              <div class="mini-progress-fill" id="capstone-progress-bar"></div>
-            </div>
-            <span class="progress-percent" id="capstone-progress-text">0%</span>
-          </div>
-        </div>
-      </div>
+      <div class="progress-cards"><!-- app.js が TABS レジストリから生成 --></div>
     </section>
 
     <!-- Learning Roadmap（推奨学習経路） -->
@@ -248,178 +98,11 @@
         <button type="button" class="tab-group-btn" data-group="frontend">フロントエンド</button>
         <button type="button" class="tab-group-btn" data-group="practice">実践・試験</button>
       </div>
-      <div class="tab-list" role="tablist">
-        <button class="tab-button active" data-tab="htmlcss" data-group="basics" role="tab" aria-selected="true" id="tab-htmlcss">
-          <span class="tab-icon">🎨</span>
-          <span class="tab-label">HTML/CSS</span>
-        </button>
-        <button class="tab-button" data-tab="python" data-group="basics" role="tab" aria-selected="false" id="tab-python">
-          <span class="tab-icon">🐍</span>
-          <span class="tab-label">Python</span>
-        </button>
-        <button class="tab-button" data-tab="algorithm" data-group="basics" role="tab" aria-selected="false" id="tab-algorithm">
-          <span class="tab-icon">🧮</span>
-          <span class="tab-label">アルゴリズム</span>
-        </button>
-        <button class="tab-button" data-tab="rust" data-group="basics" role="tab" aria-selected="false" id="tab-rust" hidden>
-          <span class="tab-icon">🦀</span>
-          <span class="tab-label">Rust</span>
-        </button>
-        <button class="tab-button" data-tab="typescript" data-group="basics" role="tab" aria-selected="false" id="tab-typescript">
-          <span class="tab-icon">🔷</span>
-          <span class="tab-label">TypeScript</span>
-        </button>
-        <button class="tab-button" data-tab="git" data-group="basics" role="tab" aria-selected="false" id="tab-git">
-          <span class="tab-icon">🌿</span>
-          <span class="tab-label">Git / GitHub</span>
-        </button>
-
-        <button class="tab-button" data-tab="database" data-group="backend" role="tab" aria-selected="false" id="tab-database" hidden>
-          <span class="tab-icon">🗄️</span>
-          <span class="tab-label">データベース</span>
-        </button>
-        <button class="tab-button" data-tab="webapi" data-group="backend" role="tab" aria-selected="false" id="tab-webapi" hidden>
-          <span class="tab-icon">🌐</span>
-          <span class="tab-label">Web/API</span>
-        </button>
-        <button class="tab-button" data-tab="docker" data-group="backend" role="tab" aria-selected="false" id="tab-docker" hidden>
-          <span class="tab-icon">🐳</span>
-          <span class="tab-label">Docker</span>
-        </button>
-
-        <button class="tab-button" data-tab="react" data-group="frontend" role="tab" aria-selected="false" id="tab-react" hidden>
-          <span class="tab-icon">⚛️</span>
-          <span class="tab-label">React</span>
-        </button>
-
-        <button class="tab-button" data-tab="python-cert" data-group="practice" role="tab" aria-selected="false" id="tab-python-cert" hidden>
-          <span class="tab-icon">📜</span>
-          <span class="tab-label">Python認定基礎</span>
-        </button>
-        <button class="tab-button" data-tab="python-prac" data-group="practice" role="tab" aria-selected="false" id="tab-python-prac" hidden>
-          <span class="tab-icon">🏆</span>
-          <span class="tab-label">Python実践試験</span>
-        </button>
-        <button class="tab-button" data-tab="testing" data-group="practice" role="tab" aria-selected="false" id="tab-testing" hidden>
-          <span class="tab-icon">🧪</span>
-          <span class="tab-label">テスト設計</span>
-        </button>
-        <button class="tab-button" data-tab="genai" data-group="practice" role="tab" aria-selected="false" id="tab-genai" hidden>
-          <span class="tab-icon">🤖</span>
-          <span class="tab-label">生成AIパスポート</span>
-        </button>
-        <button class="tab-button" data-tab="capstone" data-group="practice" role="tab" aria-selected="false" id="tab-capstone" hidden>
-          <span class="tab-icon">🏗️</span>
-          <span class="tab-label">キャップストーン</span>
-        </button>
-      </div>
+      <div class="tab-list" role="tablist"><!-- app.js が TABS レジストリから生成 --></div>
       <div class="tab-indicator" id="tab-indicator"></div>
     </nav>
 
-    <div class="tab-content" id="content-python" role="tabpanel" data-content-src="content/python.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-rust" role="tabpanel" data-content-src="content/rust.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-react" role="tabpanel" data-content-src="content/react.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-typescript" role="tabpanel" data-content-src="content/typescript.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-python-cert" role="tabpanel" data-content-src="content/python-cert.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-algorithm" role="tabpanel" data-content-src="content/algorithm.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-webapi" role="tabpanel" data-content-src="content/webapi.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content active" id="content-htmlcss" role="tabpanel" data-content-src="content/htmlcss.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-docker" role="tabpanel" data-content-src="content/docker.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-database" role="tabpanel" data-content-src="content/database.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-genai" role="tabpanel" data-content-src="content/genai.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-python-prac" role="tabpanel" data-content-src="content/python-prac.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-testing" role="tabpanel" data-content-src="content/testing.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-git" role="tabpanel" data-content-src="content/git.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
-
-    <div class="tab-content" id="content-capstone" role="tabpanel" data-content-src="content/capstone.html" aria-busy="true">
-      <div class="content-placeholder">
-        <div class="content-spinner" aria-hidden="true"></div>
-        <p>コンテンツを読み込み中…</p>
-      </div>
-    </div>
+    <div id="tab-panels"><!-- app.js が TABS レジストリから生成 --></div>
 
   </main>
 

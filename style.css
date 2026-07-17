@@ -375,20 +375,7 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.python-card .mini-progress-fill { background: var(--python-blue); }
-.react-card .mini-progress-fill { background: var(--react-cyan); }
-.typescript-card .mini-progress-fill { background: var(--typescript-blue); }
-.cert-card .mini-progress-fill { background: var(--python-yellow); }
-.algorithm-card .mini-progress-fill { background: var(--color-warning); }
-.webapi-card .mini-progress-fill { background: var(--webapi-green); }
-.htmlcss-card .mini-progress-fill { background: var(--htmlcss-orange); }
-.docker-card .mini-progress-fill { background: var(--docker-blue); }
-.database-card .mini-progress-fill { background: var(--database-teal); }
-.genai-card .mini-progress-fill { background: var(--genai-purple); }
-.python-prac-card .mini-progress-fill { background: var(--python-blue); }
-.testing-card .mini-progress-fill { background: var(--testing-green); }
-.git-card .mini-progress-fill { background: var(--git-orange); }
-.capstone-card .mini-progress-fill { background: var(--capstone-gold); }
+/* mini-progress-fill の色は app.js が TABS レジストリの accent をインラインで適用する */
 
 .progress-percent {
   font-size: 0.75rem;

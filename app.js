@@ -11,80 +11,48 @@
 // --------------------------------------------------
 // サイト定数
 // --------------------------------------------------
-// 新しいタブを追加するときは、ここと content/{id}.html・
-// data 側のキー・index.html のナビ／進捗カードを揃える。
-const TAB_IDS = [
-  "python",
-  "rust",
-  "react",
-  "typescript",
-  "python-cert",
-  "algorithm",
-  "webapi",
-  "htmlcss",
-  "docker",
-  "database",
-  "genai",
-  "python-prac",
-  "testing",
-  "git",
-  "capstone",
-];
-
-const TAB_ACCENTS = {
-  python: { accent: "var(--python-blue)", glow: "rgba(55,118,171,0.35)" },
-  rust: { accent: "#ce422b", glow: "rgba(206,66,43,0.35)" },
-  react: { accent: "var(--react-cyan)", glow: "rgba(97,218,251,0.35)" },
-  typescript: { accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
-  "python-cert": { accent: "var(--python-yellow)", glow: "rgba(255,212,59,0.35)" },
-  algorithm: { accent: "var(--color-warning)", glow: "rgba(251,191,36,0.35)" },
-  webapi: { accent: "var(--webapi-green)", glow: "rgba(0,191,165,0.35)" },
-  htmlcss: { accent: "var(--htmlcss-orange)", glow: "rgba(227,79,38,0.35)" },
-  docker: { accent: "var(--docker-blue)", glow: "rgba(36,150,237,0.35)" },
-  database: { accent: "var(--database-teal)", glow: "rgba(0,150,136,0.35)" },
-  genai: { accent: "var(--genai-purple)", glow: "rgba(156,39,176,0.35)" },
-  "python-prac": { accent: "var(--python-blue)", glow: "rgba(55,118,171,0.35)" },
-  testing: { accent: "var(--testing-green)", glow: "rgba(76,175,80,0.35)" },
-  git: { accent: "var(--git-orange)", glow: "rgba(240,80,51,0.35)" },
-  capstone: { accent: "var(--capstone-gold)", glow: "rgba(255,179,0,0.35)" },
+// タブの単一レジストリ（表示順 = ナビ・進捗カードの並び順）。
+// 新しいタブの追加は (1) content/{id}.html、(2) data/quizzes.js と
+// data/puzzles.js のキー、(3) この TABS へのエントリ追加、の3点で完結する。
+// 進捗カード・タブボタン・コンテンツ枠・ヒーロー統計は起動時に自動生成される。
+// lessons は content/{id}.html の lesson-card 数と同期させる（CIが検証する）。
+const TABS = {
+  htmlcss:       { label: "HTML/CSS",         icon: "🎨", group: "basics",   lessons: 28, accent: "var(--htmlcss-orange)",  glow: "rgba(227,79,38,0.35)" },
+  python:        { label: "Python",           icon: "🐍", group: "basics",   lessons: 14, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
+  algorithm:     { label: "アルゴリズム",     icon: "🧮", group: "basics",   lessons: 8,  accent: "var(--color-warning)",   glow: "rgba(251,191,36,0.35)" },
+  rust:          { label: "Rust",             icon: "🦀", group: "basics",   lessons: 10, accent: "#ce422b",                glow: "rgba(206,66,43,0.35)" },
+  typescript:    { label: "TypeScript",       icon: "🔷", group: "basics",   lessons: 11, accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
+  git:           { label: "Git / GitHub",     icon: "🌿", group: "basics",   lessons: 8,  accent: "var(--git-orange)",      glow: "rgba(240,80,51,0.35)" },
+  database:      { label: "データベース",     icon: "🗄️", group: "backend",  lessons: 12, accent: "var(--database-teal)",   glow: "rgba(0,150,136,0.35)" },
+  webapi:        { label: "Web/API",          icon: "🌐", group: "backend",  lessons: 5,  accent: "var(--webapi-green)",    glow: "rgba(0,191,165,0.35)" },
+  docker:        { label: "Docker",           icon: "🐳", group: "backend",  lessons: 8,  accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
+  react:         { label: "React",            icon: "⚛️", group: "frontend", lessons: 14, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
+  "python-cert": { label: "Python認定基礎",   icon: "📜", group: "practice", lessons: 10, accent: "var(--python-yellow)",   glow: "rgba(255,212,59,0.35)" },
+  "python-prac": { label: "Python実践試験",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
+  testing:       { label: "テスト設計",       icon: "🧪", group: "practice", lessons: 10, accent: "var(--testing-green)",   glow: "rgba(76,175,80,0.35)" },
+  genai:         { label: "生成AIパスポート", icon: "🤖", group: "practice", lessons: 8,  accent: "var(--genai-purple)",    glow: "rgba(156,39,176,0.35)" },
+  capstone:      { label: "キャップストーン", icon: "🏗️", group: "practice", lessons: 10, accent: "var(--capstone-gold)",   glow: "rgba(255,179,0,0.35)" },
 };
 
-// タブごとのレッスン数（静的コンテンツと同期させる）。
-// 遅延読込のため未読込タブはDOMから数えられない。進捗率の分母は
-// この定数を使う。コンテンツ追加時はここも更新する（CIが検証する）。
-const TAB_LESSON_COUNTS = {
-  python: 14,
-  rust: 10,
-  react: 14,
-  typescript: 11,
-  "python-cert": 10,
-  algorithm: 8,
-  webapi: 5,
-  htmlcss: 28,
-  docker: 8,
-  database: 12,
-  genai: 8,
-  "python-prac": 10,
-  testing: 10,
-  git: 8,
-  capstone: 10,
-};
+const TAB_IDS = Object.keys(TABS);
+const DEFAULT_TAB = "htmlcss";
 
 // 学習ロードマップ（推奨順）。フルスタックエンジニアへの最短経路。
-// ここに無いタブ（資格・知識系）は補強コンテンツとして別枠表示する。
+// ラベル・アイコンは TABS から導出する。
+// ここに無いタブ（資格・知識系・Rust など）は補強コンテンツとして別枠表示する。
 const ROADMAP = [
-  { tab: "htmlcss", label: "HTML/CSS", icon: "🎨" },
-  { tab: "python", label: "Python", icon: "🐍" },
-  { tab: "git", label: "Git", icon: "🌿" },
-  { tab: "algorithm", label: "アルゴリズム", icon: "🧮" },
-  { tab: "database", label: "データベース", icon: "🗄️" },
-  { tab: "webapi", label: "Web/API", icon: "🌐" },
-  { tab: "docker", label: "Docker", icon: "🐳" },
-  { tab: "react", label: "React", icon: "⚛️" },
-  { tab: "typescript", label: "TypeScript", icon: "🔷" },
-  { tab: "testing", label: "テスト設計", icon: "🧪" },
-  { tab: "capstone", label: "キャップストーン", icon: "🏗️" },
-];
+  "htmlcss",
+  "python",
+  "git",
+  "algorithm",
+  "database",
+  "webapi",
+  "docker",
+  "react",
+  "typescript",
+  "testing",
+  "capstone",
+].map((tab) => ({ tab, ...TABS[tab] }));
 
 const STORAGE_KEYS = {
   completed: "cf_completed",
@@ -114,6 +82,7 @@ const state = {
 // 初期化（単一エントリーポイント）
 // --------------------------------------------------
 document.addEventListener("DOMContentLoaded", async () => {
+  renderShell();
   initTabs();
   setActiveTabGroup("basics");
   initParticles();
@@ -131,6 +100,82 @@ document.addEventListener("DOMContentLoaded", async () => {
   restoreProgress();
   updateAllProgress();
 });
+
+// --------------------------------------------------
+// シェル生成
+// --------------------------------------------------
+// index.html にはコンテナのみを置き、タブ由来の反復DOM
+// （進捗カード・タブボタン・コンテンツ枠）とヒーロー統計は
+// TABS レジストリから起動時に生成する。
+// これによりタブ追加時の index.html 編集が不要になる。
+function renderShell() {
+  const cards = document.querySelector(".progress-cards");
+  if (cards) {
+    cards.innerHTML = TAB_IDS.map((id) => {
+      const t = TABS[id];
+      return `
+        <div class="progress-card" data-lang="${id}">
+          <div class="progress-card-icon">${t.icon}</div>
+          <div class="progress-card-info">
+            <h3>${escapeHtml(t.label)}</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="${id}-progress-bar" style="background:${t.accent}"></div>
+            </div>
+            <span class="progress-percent" id="${id}-progress-text">0%</span>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  const tabList = document.querySelector(".tab-list");
+  if (tabList) {
+    tabList.innerHTML = TAB_IDS.map((id) => {
+      const t = TABS[id];
+      const active = id === DEFAULT_TAB;
+      return `
+        <button class="tab-button${active ? " active" : ""}" data-tab="${id}"
+                data-group="${t.group}" role="tab" aria-selected="${active}"
+                id="tab-${id}"${active ? "" : " hidden"}>
+          <span class="tab-icon">${t.icon}</span>
+          <span class="tab-label">${escapeHtml(t.label)}</span>
+        </button>`;
+    }).join("");
+  }
+
+  const panels = document.getElementById("tab-panels");
+  if (panels) {
+    panels.innerHTML = TAB_IDS.map(
+      (id) => `
+        <div class="tab-content${id === DEFAULT_TAB ? " active" : ""}" id="content-${id}"
+             role="tabpanel" data-content-src="content/${id}.html" aria-busy="true">
+          <div class="content-placeholder">
+            <div class="content-spinner" aria-hidden="true"></div>
+            <p>コンテンツを読み込み中…</p>
+          </div>
+        </div>`
+    ).join("");
+  }
+
+  renderHeroStats();
+}
+
+// ヒーロー統計は TABS / quizData / puzzleData から算出する
+// （手動更新による実数との乖離を防ぐ）。
+function renderHeroStats() {
+  const stats = {
+    topics: TAB_IDS.length,
+    lessons: TAB_IDS.reduce((n, id) => n + TABS[id].lessons, 0),
+    quizzes:
+      typeof quizData !== "undefined"
+        ? Object.values(quizData).reduce((n, qs) => n + qs.length, 0)
+        : 0,
+    puzzles: typeof puzzleData !== "undefined" ? Object.keys(puzzleData).length : 0,
+  };
+  document.querySelectorAll("[data-stat]").forEach((el) => {
+    const v = stats[el.dataset.stat];
+    if (v !== undefined) el.textContent = String(v);
+  });
+}
 
 // --------------------------------------------------
 // コンテンツ遅延読込
@@ -279,7 +324,7 @@ async function switchTab(tabName) {
   if (targetContent) targetContent.classList.add("active");
 
   const root = document.documentElement;
-  const theme = TAB_ACCENTS[tabName] || TAB_ACCENTS.python;
+  const theme = TABS[tabName] || TABS[DEFAULT_TAB];
   root.style.setProperty("--accent", theme.accent);
   root.style.setProperty("--accent-glow", theme.glow);
 
@@ -400,7 +445,7 @@ function saveProgress() {
 // タブごとの完了数を state から直接数える。
 // 完了IDは「タブID-連番」形式なので、^lang-\d+$ の完全一致で照合する
 // （startsWith だと python-cert が python に二重計上される）。
-// 分母は TAB_LESSON_COUNTS（静的定数）を使うため、
+// 分母は TABS[].lessons（静的定数）を使うため、
 // 未読込のタブでも正しい進捗率が出る。
 function countCompleted(lang) {
   const re = new RegExp(`^${lang}-\\d+$`);
@@ -413,7 +458,7 @@ function updateAllProgress() {
 
   TAB_IDS.forEach((lang) => {
     const total =
-      TAB_LESSON_COUNTS[lang] ??
+      TABS[lang]?.lessons ??
       document.querySelectorAll(`#content-${lang} .lesson-card`).length;
     const completed = countCompleted(lang);
 
@@ -478,7 +523,7 @@ function updateRoadmapProgress() {
     const label = document.querySelector(`[data-roadmap-percent="${tab}"]`);
     if (!node || !label) return;
 
-    const total = TAB_LESSON_COUNTS[tab] || 0;
+    const total = TABS[tab]?.lessons || 0;
     const completed = countCompleted(tab);
     const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
@@ -1183,15 +1228,6 @@ function searchLessons(query, limit = 10) {
   return scored.sort((a, b) => b.score - a.score).slice(0, limit);
 }
 
-const TAB_LABELS = {
-  python: "Python", rust: "Rust", react: "React", typescript: "TypeScript",
-  "python-cert": "Python認定基礎", algorithm: "アルゴリズム",
-  webapi: "Web/API", htmlcss: "HTML/CSS", docker: "Docker",
-  database: "データベース", genai: "生成AIパスポート",
-  "python-prac": "Python実践試験", testing: "テスト設計",
-  git: "Git / GitHub", capstone: "キャップストーン",
-};
-
 function initSearch() {
   const input = document.getElementById("site-search-input");
   const resultsEl = document.getElementById("search-results");
@@ -1246,7 +1282,7 @@ function renderSearchResults(results, query) {
       (r) => `
     <button type="button" class="search-result-item"
             data-result-tab="${r.tab}" data-result-section="${r.section}">
-      <span class="search-result-tab">${escapeHtml(TAB_LABELS[r.tab] || r.tab)}</span>
+      <span class="search-result-tab">${escapeHtml(TABS[r.tab]?.label || r.tab)}</span>
       <span class="search-result-title">${escapeHtml(r.title)}</span>
       ${r.snippet ? `<span class="search-result-snippet">${escapeHtml(r.snippet)}</span>` : ""}
     </button>`

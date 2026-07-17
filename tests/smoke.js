@@ -69,23 +69,28 @@ function findChrome() {
   throw new Error("Chrome/Chromium executable not found");
 }
 
-// app.js の TAB_LESSON_COUNTS と content/*.html の実レッスン数の
+// app.js の TABS レジストリ（lessons）と content/*.html の実レッスン数の
 // 同期を静的に検証する（進捗率の分母が狂うのを CI で防ぐ）。
 function verifyLessonCounts() {
   const appSrc = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
-  const match = appSrc.match(/const TAB_LESSON_COUNTS = \{([\s\S]*?)\};/);
-  if (!match) return ["TAB_LESSON_COUNTS not found in app.js"];
+  const match = appSrc.match(/const TABS = \{([\s\S]*?)\r?\n\};/);
+  if (!match) return ["TABS registry not found in app.js"];
 
   const declared = {};
-  for (const m of match[1].matchAll(/["']?([\w-]+)["']?\s*:\s*(\d+)/g)) {
+  for (const m of match[1].matchAll(
+    /["']?([\w-]+)["']?\s*:\s*\{[^\n]*?lessons:\s*(\d+)/g
+  )) {
     declared[m[1]] = Number(m[2]);
+  }
+  if (Object.keys(declared).length === 0) {
+    return ["no lesson counts parsed from TABS registry"];
   }
 
   const failures = [];
   for (const [tab, count] of Object.entries(declared)) {
     const file = path.join(ROOT, "content", `${tab}.html`);
     if (!fs.existsSync(file)) {
-      failures.push(`content/${tab}.html missing for TAB_LESSON_COUNTS`);
+      failures.push(`content/${tab}.html missing for TABS registry entry`);
       continue;
     }
     const actual = (
@@ -93,7 +98,7 @@ function verifyLessonCounts() {
     ).length;
     if (actual !== count) {
       failures.push(
-        `TAB_LESSON_COUNTS.${tab} = ${count} but content has ${actual} lessons`
+        `TABS.${tab}.lessons = ${count} but content has ${actual} lessons`
       );
     }
   }
@@ -285,6 +290,18 @@ async function main() {
     importBtn: !!document.getElementById("import-progress-btn"),
   }));
 
+  // ヒーロー統計（renderShell が TABS / quizData / puzzleData から算出）
+  results.heroStats = await page.evaluate(() => {
+    const read = (k) =>
+      document.querySelector(`[data-stat="${k}"]`)?.textContent;
+    return {
+      topics: read("topics"),
+      lessons: read("lessons"),
+      quizzes: read("quizzes"),
+      puzzles: read("puzzles"),
+    };
+  });
+
   // 進捗二重計上チェック（python-cert 完了が python に混入しない）
   await page.evaluate(() => window.switchTab("python-cert"));
   await page.waitForFunction(
@@ -332,6 +349,14 @@ async function main() {
     failures.push(`pyodide expected "45", got ${JSON.stringify(results.pyodideOutput)}`);
   if (!results.progressIO.exportBtn || !results.progressIO.importBtn)
     failures.push("progress export/import buttons missing");
+  if (results.heroStats.topics !== String(tabs.length))
+    failures.push(
+      `hero stat topics should be ${tabs.length}, got ${results.heroStats.topics}`
+    );
+  if (!(Number(results.heroStats.lessons) > 0))
+    failures.push(`hero stat lessons not computed: ${results.heroStats.lessons}`);
+  if (!(Number(results.heroStats.quizzes) > 0))
+    failures.push(`hero stat quizzes not computed: ${results.heroStats.quizzes}`);
 
   for (const [tab, info] of Object.entries(results.tabs)) {
     if (info.lessons < 1) failures.push(`${tab}: no lessons`);
