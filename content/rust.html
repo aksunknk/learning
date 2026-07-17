@@ -1,6 +1,12 @@
       <div class="tab-intro rust-intro">
         <h2>🦀 Rust 入門</h2>
-        <p>所有権による安全性と C 並みの性能を両立する言語を、初学者向けに一歩ずつ学びます。</p>
+        <p>所有権による安全性と C 並みの性能を両立する言語を、初級（文法）・中級（所有権）・上級（トレイト / ライフタイム / テスト）の 3 段階で学びます。</p>
+      </div>
+
+      <!-- ===== 初級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — Rust の文法に慣れる</h4>
+        <p>Cargo によるプロジェクト管理、変数と可変性、データ型、式指向の制御フローまで。所有権に入る前の「読み書きの基礎体力」を作ります。</p>
       </div>
 
       <!-- Lesson 1 -->
@@ -257,6 +263,12 @@ fn main() {
           </div>
         </div>
       </article>
+
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — 所有権システムを制する</h4>
+        <p>Rust 最大の関門である所有権・借用・スライスと、構造体によるデータ設計、コレクションの実践的な使い方を学びます。ここを越えれば Rust の景色が変わります。</p>
+      </div>
 
       <!-- Lesson 5 -->
       <article class="lesson-card" data-section="rust-5" id="rust-lesson-5">
@@ -533,11 +545,99 @@ fn main() {
         </div>
       </article>
 
+      <!-- Lesson: コレクションとイテレータ（中級 追加） -->
+      <article class="lesson-card" data-section="rust-11" id="rust-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>コレクションとイテレータ — Vec・HashMap を実務レベルで使う</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 for ループより「イテレータチェーン」が Rust の母国語</h4>
+            <p><strong>Rust のコレクション処理は、イテレータのメソッドチェーンで書くのが慣用です。</strong> <code>map</code> や <code>filter</code> は「怠惰（lazy）」で、<code>collect</code> などの消費メソッドが呼ばれるまで一切実行されません。しかも驚くべきことに、チェーンはコンパイル時に単純なループへ展開（ゼロコスト抽象化）されるため、手書きの for ループと同速です。「高級な書き方をしても遅くならない」のが Rust の設計哲学です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>Vec：伸縮する配列</h4>
+            <p><code>Vec&lt;T&gt;</code> は最も使うコレクションです。<code>vec!</code> マクロで生成し、<code>push</code> で追加します。所有権のルールはそのまま適用される——たとえば要素を借用している間は <code>push</code> できません（拡張時のメモリ再配置で参照が無効になるのを防ぐため）。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn main() {
+    let scores = vec![55, 82, 91, 68, 77];
+
+    // filter → map → collect のチェーン：合格者の得点を10点加算して収集
+    let passed: Vec&lt;i32&gt; = scores
+        .iter()                      // 借用のイテレータ（&amp;i32 を返す）
+        .filter(|&amp;&amp;s| s &gt;= 70)       // 条件を満たすものだけ通す
+        .map(|&amp;s| s + 10)            // 変換する
+        .collect();                  // Vec に集める（ここで初めて実行）
+
+    println!("{:?}", passed);        // [92, 101, 87]
+
+    // sum / max / count などの集約も一級市民
+    let total: i32 = scores.iter().sum();
+    let best = scores.iter().max(); // Option&lt;&amp;i32&gt;（空かもしれないので）
+    println!("合計 {total}, 最高 {best:?}");
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>HashMap：キーと値の対応表</h4>
+            <p><code>HashMap&lt;K, V&gt;</code> は <code>use std::collections::HashMap;</code> で導入します。頻出パターンは <code>entry</code> API——「キーがあれば更新、なければ初期値を挿入」を 1 行で表現でき、単語カウントのようなロジックが簡潔に書けます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>use std::collections::HashMap;
+
+fn main() {
+    let text = "apple banana apple cherry banana apple";
+
+    let mut counts: HashMap&lt;&amp;str, i32&gt; = HashMap::new();
+    for word in text.split_whitespace() {
+        // entry: キーが無ければ 0 を挿入し、可変参照を返す
+        *counts.entry(word).or_insert(0) += 1;
+    }
+
+    // get は Option を返す：存在しないキーでもパニックしない
+    println!("apple = {:?}", counts.get("apple"));   // Some(3)
+    println!("grape = {:?}", counts.get("grape"));   // None
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>iter / iter_mut / into_iter の使い分け</h4>
+            <p>イテレータの作り方は 3 種類あり、所有権の扱いが異なります。<code>iter()</code> は不変借用（読むだけ）、<code>iter_mut()</code> は可変借用（その場で書き換え）、<code>into_iter()</code> は所有権ごと消費（元のコレクションは使えなくなる）。「読むだけなら iter、変換して新しい Vec を作るなら into_iter」が基本の選び方です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：インデックスアクセスは避ける</h4>
+            <p><code>v[10]</code> は範囲外で即パニックします。安全に取り出すなら <code>v.get(10)</code>（Option が返る）を使い、そもそも添字が不要になるようイテレータで書くのが Rust 流です。「添字ループを書きたくなったら、イテレータのメソッドで表現できないか考える」を習慣にしてください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 型システムで設計する</h4>
+        <p>列挙型とパターンマッチング、Result によるエラー処理、トレイトとジェネリクス、ライフタイム、そしてテストまで。Rust の型システムを「設計の道具」として使いこなします。</p>
+      </div>
+
       <!-- Lesson 9 -->
       <article class="lesson-card" data-section="rust-9" id="rust-lesson-9">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">09</span>
+            <span class="lesson-number">10</span>
             <h3>列挙型・Option・パターンマッチング</h3>
           </div>
           <div class="lesson-controls">
@@ -612,7 +712,7 @@ fn main() {
       <article class="lesson-card" data-section="rust-10" id="rust-lesson-10">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">10</span>
+            <span class="lesson-number">11</span>
             <h3>エラー処理：panic と Result</h3>
           </div>
           <div class="lesson-controls">
@@ -673,6 +773,235 @@ fn main() {
           <div class="explanation-box">
             <h4>💼 Tips：panic と Result の使い分け</h4>
             <p><code>panic!</code> は「バグや続行不能な想定外」に限定し、ユーザー入力エラーやファイル不在のような「起こりうる失敗」は <code>Result</code> で扱うのが原則です。ライブラリでは基本 <code>Result</code> を返し、呼び出し側に判断を委ねます。実務では <code>anyhow</code> や <code>thiserror</code> といったクレートでエラー処理をさらに簡潔にできます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson: トレイトとジェネリクス（上級 追加） -->
+      <article class="lesson-card" data-section="rust-12" id="rust-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>トレイトとジェネリクス — 共有される振る舞いを定義する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 トレイトは「継承なきインターフェース」</h4>
+            <p><strong>Rust にはクラス継承がありません。</strong> 代わりに「この型は◯◯できる」という能力（振る舞い）をトレイトとして定義し、任意の型に実装します。Java の interface や TypeScript の interface に似ていますが、決定的な違いは<strong>既存の型（他人が作った型でも）に後からトレイトを実装できる</strong>こと。「データ（struct）と振る舞い（trait）を分離し、必要な組み合わせを合成する」——これが Rust の設計スタイルです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>トレイトの定義と実装</h4>
+            <p><code>trait</code> ブロックでメソッドのシグネチャ（と必要ならデフォルト実装）を定義し、<code>impl トレイト名 for 型名</code> で実装します。デフォルト実装があるメソッドは実装を省略できます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>trait Summary {
+    fn title(&amp;self) -&gt; String;
+
+    // デフォルト実装：実装側で上書きしなければこれが使われる
+    fn summarize(&amp;self) -&gt; String {
+        format!("【{}】を読む", self.title())
+    }
+}
+
+struct Article { headline: String }
+struct Tweet { user: String, text: String }
+
+impl Summary for Article {
+    fn title(&amp;self) -&gt; String { self.headline.clone() }
+}
+
+impl Summary for Tweet {
+    fn title(&amp;self) -&gt; String { format!("@{} のツイート", self.user) }
+    fn summarize(&amp;self) -&gt; String { self.text.clone() }  // 上書き
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>ジェネリクスとトレイト境界：「Summary を実装した型なら何でも」</h4>
+            <p>ジェネリック関数の型パラメータに「このトレイトを実装していること」という条件（トレイト境界）を付けられます。C++ のテンプレートと違い、境界に書いた能力しか使えないため、エラーは呼び出し側ではなく定義側で明快に出ます。しかもコンパイル時に型ごとの専用コードが生成される（単相化）ため、実行時コストはゼロです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// impl Trait 構文：Summary を実装した型なら何でも受け取れる
+fn notify(item: &amp;impl Summary) {
+    println!("新着: {}", item.summarize());
+}
+
+// ジェネリクス + トレイト境界の明示形（複数条件は + で連結）
+fn largest&lt;T: PartialOrd + Copy&gt;(list: &amp;[T]) -&gt; T {
+    let mut max = list[0];
+    for &amp;item in list {
+        if item &gt; max { max = item; }
+    }
+    max
+}
+
+fn main() {
+    let tweet = Tweet { user: "rustlang".into(), text: "1.80 リリース".into() };
+    notify(&amp;tweet);
+    println!("{}", largest(&amp;[3, 7, 2]));      // i32 でも
+    println!("{}", largest(&amp;[1.5, 0.2]));     // f64 でも動く
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：derive はトレイト自動実装の糖衣</h4>
+            <p>構造体に付けてきた <code>#[derive(Debug, Clone, PartialEq)]</code> は、実は Debug・Clone・PartialEq という標準トレイトの実装をコンパイラに自動生成させる指示です。「Rust の機能の多くはトレイトでできている」——<code>println!("{}")</code> は Display トレイト、<code>+</code> 演算子は Add トレイト、for ループは Iterator トレイト。この見方ができると標準ライブラリのドキュメントが一気に読めるようになります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson: ライフタイム入門（上級 追加） -->
+      <article class="lesson-card" data-section="rust-13" id="rust-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">13</span>
+            <h3>ライフタイム入門 — 参照の「寿命」を明示する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-13')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ライフタイムは新概念ではなく「既に守ってきたルールの名前」</h4>
+            <p><strong>参照は、指している値より長生きしてはならない</strong>——借用のレッスンで学んだこのルールを、コンパイラは全ての参照の「寿命（ライフタイム）」を追跡して検査しています。ほとんどの場合は自動推論されますが、「複数の参照を受け取って参照を返す関数」では、戻り値の寿命がどの引数由来なのか判断できず、人間がヒントを書く必要があります。それが <code>'a</code> という注釈です。<strong>注釈は寿命を変えるのではなく、引数と戻り値の寿命の「関係」をコンパイラに伝えるだけ</strong>です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>なぜ注釈が必要になるのか</h4>
+            <p>次の関数はコンパイルできません。戻り値の <code>&amp;str</code> が <code>x</code> 由来か <code>y</code> 由来か、コンパイラには分からないためです。<code>&lt;'a&gt;</code> を付けて「戻り値は両引数のうち短い方の寿命に縛られる」と宣言すれば解決します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ❌ コンパイルエラー：戻り値の寿命が特定できない
+// fn longest(x: &amp;str, y: &amp;str) -&gt; &amp;str { ... }
+
+// ✅ 'a：「x と y の寿命が重なる範囲でだけ、戻り値も有効」という契約
+fn longest&lt;'a&gt;(x: &amp;'a str, y: &amp;'a str) -&gt; &amp;'a str {
+    if x.len() &gt; y.len() { x } else { y }
+}
+
+fn main() {
+    let s1 = String::from("こんにちは、世界");
+    let result;
+    {
+        let s2 = String::from("やあ");
+        result = longest(s1.as_str(), s2.as_str());
+        println!("長い方: {result}");   // ✅ s2 が生きている間は使える
+    }
+    // println!("{result}");  // ❌ s2 が破棄された後は使えない
+    //                            —— コンパイラが契約違反を検出する
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>省略規則：だから今まで書かずに済んだ</h4>
+            <p>「引数の参照が 1 つだけなら、戻り値はその寿命を引き継ぐ」「<code>&amp;self</code> があればそれを引き継ぐ」という省略規則（lifetime elision）があるため、単純な関数では注釈が不要でした。つまり <code>fn first_word(s: &amp;str) -&gt; &amp;str</code> は暗黙に <code>fn first_word&lt;'a&gt;(s: &amp;'a str) -&gt; &amp;'a str</code> と解釈されています。構造体が参照を保持する場合も <code>struct Excerpt&lt;'a&gt; { part: &amp;'a str }</code> のように注釈が必要です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：初学者は「注釈を書かない設計」に逃げてよい</h4>
+            <p>ライフタイム注釈が複雑になってきたら、参照ではなく所有権ごと渡す（<code>String</code> を返す・<code>clone()</code> する）設計に切り替えるのは、恥ではなく実践的な判断です。クローンのコストが問題になることは稀で、まず動くコードを書き、プロファイリングで必要になってから参照に最適化すれば十分です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson: テスト（上級 追加） -->
+      <article class="lesson-card" data-section="rust-14" id="rust-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>テストを書く — cargo test で品質を守る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 テストが言語に標準装備されている</h4>
+            <p><strong>Rust では、テストフレームワークの選定も導入も不要です。</strong> <code>#[test]</code> 属性を付けた関数を書いて <code>cargo test</code> を叩くだけ。テストは製品コードと同じファイルに書ける（モジュールの非公開関数も検証できる）ため、「実装とテストを往復するリズム」が非常に軽い。コンパイラが型とメモリ安全を保証し、テストがロジックの正しさを保証する——2 段構えで品質を守るのが Rust の開発スタイルです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>基本形：#[cfg(test)] モジュールと assert 系マクロ</h4>
+            <p>慣例として、ファイル末尾に <code>#[cfg(test)]</code> を付けた <code>tests</code> モジュールを置きます。この属性により、テストコードは通常ビルドから完全に除外されます。検証には <code>assert!</code>（真偽）、<code>assert_eq!</code>（等値）、<code>assert_ne!</code>（非等値）を使います。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn calc_bmi(weight_kg: f64, height_m: f64) -&gt; Result&lt;f64, String&gt; {
+    if height_m &lt;= 0.0 {
+        return Err("身長は正の値である必要があります".to_string());
+    }
+    Ok(weight_kg / (height_m * height_m))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;   // 親モジュールの関数を取り込む
+
+    #[test]
+    fn 正常な入力でbmiを計算できる() {
+        let bmi = calc_bmi(60.0, 1.7).unwrap();
+        assert!((bmi - 20.76).abs() &lt; 0.01);  // 浮動小数は誤差込みで比較
+    }
+
+    #[test]
+    fn 身長ゼロはエラーになる() {
+        let result = calc_bmi(60.0, 0.0);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    #[should_panic(expected = "index out of bounds")]
+    fn 範囲外アクセスはパニックする() {
+        let v = vec![1, 2, 3];
+        let _ = v[99];
+    }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>cargo test の使い方と結合テスト</h4>
+            <p><code>cargo test</code> は全テストを並列実行します。名前の部分一致で絞り込みもできます（<code>cargo test bmi</code>）。また、プロジェクト直下の <code>tests/</code> ディレクトリに置いたファイルは「結合テスト」として扱われ、外部ユーザーと同じ視点で公開 API だけを検証します。さらにドキュメンテーションコメント内のコード例も <code>cargo test</code> が自動実行する（doctest）ため、「ドキュメントのサンプルが古くて動かない」問題が構造的に起きません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 全テストを実行
+cargo test
+
+# 名前に "bmi" を含むテストだけ実行
+cargo test bmi
+
+# println! の出力を表示しながら実行（デバッグに便利）
+cargo test -- --nocapture</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：Result を返すテストで ? を使う</h4>
+            <p>テスト関数は <code>fn test() -&gt; Result&lt;(), String&gt;</code> のように Result を返すこともできます。すると <code>unwrap()</code> の連打ではなく <code>?</code> 演算子でエラーを伝播でき、本編で学んだエラー処理の作法がテストでもそのまま活きます。「テストも普通の Rust コード」——この一貫性が Rust のテスト文化の強さです。</p>
           </div>
         </div>
       </article>

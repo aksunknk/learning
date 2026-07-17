@@ -10,7 +10,9 @@ const quizData = {
     {"question": "let s1 = String::from(\"a\"); let s2 = s1; の後で s1 を使うとどうなりますか？", "options": ["s1もs2も独立して使える", "所有権がs2へムーブされs1は無効", "s1がs2の別名になる", "値がディープコピーされる"], "correct": 1, "explanation": "String はムーブされます。代入後 s1 は無効化され、使用はコンパイルエラーになります。"},
     {"question": "借用チェッカが強制する規則として正しいものはどれですか？", "options": ["可変参照と不変参照はいくつでも共存できる", "複数の不変参照か、ただ1つの可変参照のどちらか一方のみ", "参照は1プログラムに1つだけ", "参照は所有権を必ず奪う"], "correct": 1, "explanation": "共有（複数の不変参照）と排他（単一の可変参照）は同時に成立しません。これがデータ競合を防ぎます。"},
     {"question": "Rust が null の代わりに用意している仕組みはどれですか？", "options": ["特別な数値 -1 を使う", "Option<T>（Some か None）で値の有無を型で表す", "空文字列をnull扱いする", "例外を投げる"], "correct": 1, "explanation": "Rust に null はなく、Option<T> の Some / None で値の有無を表現し、コンパイル時に扱いを強制します。"},
-    {"question": "式 a.parse::<i32>()? が Err だった場合、? 演算子は何をしますか？", "options": ["エラーを無視して0を返す", "その場で関数からErrを早期リターンする", "プログラムをpanicさせる", "Okに変換する"], "correct": 1, "explanation": "? は Ok なら値を取り出し、Err なら現在の関数から即座にその Err を返して伝播させます。"}
+    {"question": "式 a.parse::<i32>()? が Err だった場合、? 演算子は何をしますか？", "options": ["エラーを無視して0を返す", "その場で関数からErrを早期リターンする", "プログラムをpanicさせる", "Okに変換する"], "correct": 1, "explanation": "? は Ok なら値を取り出し、Err なら現在の関数から即座にその Err を返して伝播させます。"},
+    {"question": "イテレータの map や filter を呼んだだけでは処理が実行されない性質を何と呼びますか？", "options": ["ゼロコスト抽象化", "怠惰（lazy）評価", "単相化", "借用"], "correct": 1, "explanation": "map / filter は怠惰で、collect や sum などの消費メソッドが呼ばれて初めて実行されます。しかもコンパイル時にループへ展開されるため手書きループと同速です。"},
+    {"question": "fn longest<'a>(x: &'a str, y: &'a str) -> &'a str の 'a 注釈の役割はどれですか？", "options": ["参照の寿命を延長する", "引数と戻り値の寿命の関係をコンパイラに伝える", "実行時にメモリを自動解放する", "文字列をヒープに確保する"], "correct": 1, "explanation": "ライフタイム注釈は寿命を変えるのではなく、「戻り値は両引数の寿命が重なる範囲でのみ有効」という関係を宣言するだけです。"}
   ],
 
   "docker": [
@@ -208,7 +210,9 @@ const quizData = {
 {"question": "リストの要素をループ処理で削除する際の問題を防ぐ最も一般的な方法は？", "options": ["新しいリストを作成する（リスト内包表記など）", "remove()を複数回呼ぶ", "del文を使う", "ループのインデックスを-1ずつ減らす"], "correct": 0, "explanation": "ループ中にリスト自身を変更（破壊的変更）するとインデックスがずれ、バグの原因になります。新しいリストを生成するのが安全です。"},
 {"question": "FastAPIでAPIの期待するデータ構造（型）を定義するために使われるライブラリは？", "options": ["SQLAlchemy", "Requests", "Pydantic", "Jinja2"], "correct": 2, "explanation": "Pydantic の BaseModel を継承したクラスを定義することで、FastAPIは自動的にデータのバリデーションと型変換を行います。"},
 {"question": "Pythonのデコレータ（@app.get など）の主な役割は何ですか？", "options": ["関数の中身を自動で暗号化する", "関数を呼び出す前後に、既存のコードを変えずに別の処理を追加する", "関数の実行速度を2倍にする", "エラーを完全に握りつぶす"], "correct": 1, "explanation": "デコレータは、既存の関数に後から機能（ログ出力や権限チェックなど）を「トッピング」するための仕組みです。"},
-{"question": "yield キーワードを使った「ジェネレータ」の最大のメリットは？", "options": ["コードが1行で書ける", "メモリを大量に消費して高速化する", "必要な分だけデータを生成するため、メモリを節約できる", "自動的にバックアップを取る"], "correct": 2, "explanation": "何万行もあるファイルを読む際など、一度にすべてリストに入れるとメモリがパンクしますが、yield を使えば1行ずつ処理できて安全です。"}
+{"question": "yield キーワードを使った「ジェネレータ」の最大のメリットは？", "options": ["コードが1行で書ける", "メモリを大量に消費して高速化する", "必要な分だけデータを生成するため、メモリを節約できる", "自動的にバックアップを取る"], "correct": 2, "explanation": "何万行もあるファイルを読む際など、一度にすべてリストに入れるとメモリがパンクしますが、yield を使えば1行ずつ処理できて安全です。"},
+{"question": "ファイルを開く際に with open(...) as f: を使う最大の理由は？", "options": ["読み込みが高速になる", "途中で例外が発生しても必ずファイルが閉じられる", "文字コードが自動判定される", "ファイルが自動でバックアップされる"], "correct": 1, "explanation": "with 文（コンテキストマネージャ）は、ブロックを抜ける際に正常終了・例外発生を問わず後始末（close）を実行することを言語レベルで保証します。"},
+{"question": "@dataclass デコレータがクラスに自動生成しないものはどれ？", "options": ["__init__", "__repr__", "__eq__", "データベースへの保存機能"], "correct": 3, "explanation": "@dataclass は型ヒントから __init__・__repr__・__eq__ などの定型メソッドを自動生成します。永続化などの機能は含まれません。"}
 ],
   react: [
     {
@@ -267,7 +271,9 @@ const quizData = {
 {"question": "Reactで無限レンダリングを引き起こす最もよくある原因は？", "options": ["不要なdivタグを使う", "レンダリング中に状態（State）を更新してしまう", "classNameを間違える", "アロー関数を使わない"], "correct": 1, "explanation": "コンポーネントの本体で setState などを直接呼ぶと、状態が更新される→再レンダリングされる→またsetStateが呼ばれる、というループに陥ります。"},
 {"question": "Reactの状態（State）として配列を更新する際の正しい書き方は？", "options": ["array.push(newItem)", "array.append(newItem)", "setArray([...array, newItem])", "setArray(array.push(newItem))"], "correct": 2, "explanation": "Reactは「新しい配列/オブジェクトになったか」で変更を検知します。スプレッド構文（...）を使って新しい配列を作る必要があります。"},
 {"question": "Reactでカスタムフックを作る際のルールとして正しいものは？", "options": ["関数名を必ず 'use' から始める", "必ず 'function' キーワードを使わないといけない", "中で useEffect を使ってはいけない", "ファイル名を必ず大文字から始める"], "correct": 0, "explanation": "Reactのルールとして、フックは必ず「use」から始まる名前にする必要があります（useFetchなど）。これによりReactがフックとして認識します。"},
-{"question": "重い計算処理の結果をキャッシュして、不要な再計算を防ぐReactのフックは？", "options": ["useContext", "useMemo", "useReducer", "useRef"], "correct": 1, "explanation": "useMemoは「計算結果（値）」をメモ化（キャッシュ）します。関数の再生成を防ぐには useCallback を使います。"}
+{"question": "重い計算処理の結果をキャッシュして、不要な再計算を防ぐReactのフックは？", "options": ["useContext", "useMemo", "useReducer", "useRef"], "correct": 1, "explanation": "useMemoは「計算結果（値）」をメモ化（キャッシュ）します。関数の再生成を防ぐには useCallback を使います。"},
+{"question": "リスト表示で key に配列の index を使うと問題になるのはどんな場合？", "options": ["要素が10個を超える場合", "並び替えや先頭への挿入がある場合", "文字列を表示する場合", "keyは常にindexを使うべき"], "correct": 1, "explanation": "並び替えや挿入で index がずれると React が要素を取り違え、入力欄の状態が別の行に移るバグが起きます。データ固有の ID を使うべきです。"},
+{"question": "useRef と useState の決定的な違いはどれ？", "options": ["useRefは数値しか保持できない", "useRefの値を変更しても再レンダリングが起きない", "useStateはDOM参照専用", "useRefはコンポーネント外でも使える"], "correct": 1, "explanation": "ref の .current は変更しても再レンダリングを起こしません。「表示に使う値は state、使わない値は ref」が使い分けの基準です。"}
 ],
   typescript: [
     {
@@ -331,7 +337,9 @@ const quizData = {
 {"question": "TypeScriptで値が null や undefined かもしれない場合に安全にプロパティにアクセスする記号は？", "options": ["!!", "??", "?.", "!"], "correct": 2, "explanation": "オプショナルチェーン（?.）を使うと、値が null/undefined の場合でもエラーにならず undefined を返して安全に処理を続けます。"},
 {"question": "TypeScriptで any 型を避けるべき最大の理由は？", "options": ["コンパイルが遅くなるから", "型チェックが完全に無効になりバグに気づけなくなるから", "コードが長くなるから", "他の言語と互換性がなくなるから"], "correct": 1, "explanation": "anyを使うとTypeScriptの最大のメリットである「事前エラー検知」が働かなくなり、単なるJavaScriptと同じになってしまいます。"},
 {"question": "TypeScriptの Utility Types のうち、型 T のすべてのプロパティを「任意（省略可能）」にするのはどれ？", "options": ["Omit<T>", "Pick<T>", "Partial<T>", "Record<T>"], "correct": 2, "explanation": "Partial（パーシャル）を使うと、指定した型のすべてのプロパティに ? がつき、部分的な更新APIなどに便利です。"},
-{"question": "「obj is Bird」のように、戻り値の型として記述し、TypeScriptに型を教え込む仕組みを何と呼ぶ？", "options": ["Type Casting", "Type Assertion", "Type Guard（ユーザー定義型ガード）", "Type Inference"], "correct": 2, "explanation": "ユーザー定義型ガードを使うと、実行時のバリデーション結果をもとに、コンパイル時にも安全な型付けを強制できます。"}
+{"question": "「obj is Bird」のように、戻り値の型として記述し、TypeScriptに型を教え込む仕組みを何と呼ぶ？", "options": ["Type Casting", "Type Assertion", "Type Guard（ユーザー定義型ガード）", "Type Inference"], "correct": 2, "explanation": "ユーザー定義型ガードを使うと、実行時のバリデーション結果をもとに、コンパイル時にも安全な型付けを強制できます。"},
+{"question": "satisfies 演算子（TS 4.9+）が型注釈（: Type）と異なる点は？", "options": ["実行時にも型検査を行う", "型に適合するか検査しつつ、推論された詳細な型を保つ", "any を自動で排除する", "コンパイルを高速化する"], "correct": 1, "explanation": "型注釈は値の型を注釈した型に丸めますが、satisfies は適合検査だけ行い、リテラルレベルの詳細な推論結果をそのまま残します。"},
+{"question": "fetch で受け取った JSON を「as User」でキャストする方法の問題点は？", "options": ["コンパイルエラーになる", "実行時には何も検証されず、想定外のデータで静かに壊れる", "パフォーマンスが大幅に低下する", "JSONのパースに失敗する"], "correct": 1, "explanation": "TypeScript の型はコンパイル時にしか存在しません。外部データは Zod などで実行時に parse（検証）して初めて型を信頼できます。"}
 ],
   webapi: [
     {

@@ -1,4 +1,10 @@
 
+      <!-- ===== 初級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — コンポーネントと状態の基本</h4>
+        <p>JSX・Props・useState・イベント処理という React の 4 大基礎を学びます。「UI は状態の写像である」という考え方を掴むことがこの編のゴールです。</p>
+      </div>
+
       <!-- Lesson 1 -->
       <article class="lesson-card" data-section="react-1" id="react-lesson-1">
         <div class="lesson-header" onclick="toggleSection(this)">
@@ -472,11 +478,99 @@ export default function Form() {
         </div>
       </article>
 
+      <!-- Lesson: 条件付きレンダリングとリスト（初級 追加） -->
+      <article class="lesson-card" data-section="react-15" id="react-lesson-15">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>条件付きレンダリングとリスト表示 — key の本質</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-15')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「UI を分岐させる」のではなく「値を分岐させる」</h4>
+            <p><strong>React には if ディレクティブがありません。</strong> Vue の <code>v-if</code> や Angular の <code>*ngIf</code> のような専用構文は存在せず、JSX は「ただの JavaScript の式」なので、条件分岐もループも素の JavaScript（三項演算子・<code>&amp;&amp;</code>・<code>map</code>）で書きます。これは学習コストを下げる設計判断であり、「JavaScript ができれば React の制御構文は追加で覚えることがない」ということです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>条件付きレンダリングの 3 パターン</h4>
+            <p>①「A か B か」は三項演算子、②「表示するかしないか」は <code>&amp;&amp;</code>、③ 分岐が複雑なら早期 return。この 3 つで実務のほぼ全ケースをカバーできます。<code>null</code> を返すと「何も描画しない」という意味になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JSX</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>function Dashboard({ user, notifications }) {
+  // ③ 分岐が大きいなら早期 return が読みやすい
+  if (!user) {
+    return &lt;LoginForm /&gt;;
+  }
+
+  return (
+    &lt;div&gt;
+      {/* ① A か B か：三項演算子 */}
+      {user.isPremium ? &lt;GoldBadge /&gt; : &lt;FreeBadge /&gt;}
+
+      {/* ② 表示する / しない：&amp;&amp; 演算子 */}
+      {notifications.length &gt; 0 &amp;&amp; (
+        &lt;p&gt;{notifications.length} 件の通知があります&lt;/p&gt;
+      )}
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>⚠️ && の落とし穴：0 が表示される</h4>
+            <p><code>{count &amp;&amp; &lt;p&gt;...&lt;/p&gt;}</code> と書くと、<code>count</code> が <code>0</code> のとき「何も表示しない」ではなく<strong>画面に 0 がそのまま描画されます</strong>。JavaScript の <code>&amp;&amp;</code> は左辺が falsy ならその値自体を返すためです。数値を条件にするときは <code>{count &gt; 0 &amp;&amp; ...}</code> と明示的に真偽値へ変換してください。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>リスト表示と key — 「並び替えても正しく追跡する」ための ID</h4>
+            <p>配列の描画は <code>map</code> で JSX の配列を作るだけです。このとき各要素に必要な <code>key</code> は、React が再レンダリング時に「どの要素が追加・削除・移動したか」を特定するための識別子です。<strong>配列の index を key にすると、並び替えや先頭挿入のときに React が要素を取り違え</strong>、入力欄の中身が別の行に「引っ越す」バグが起きます。データが持つ一意な ID を使ってください。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JSX</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>function TodoList({ todos }) {
+  return (
+    &lt;ul&gt;
+      {todos.map((todo) =&gt; (
+        // ✅ データ固有の ID を key にする
+        &lt;li key={todo.id}&gt;{todo.title}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+// ❌ アンチパターン：index を key にする
+// {todos.map((todo, i) =&gt; &lt;li key={i}&gt;...&lt;/li&gt;)}
+// → 先頭に要素を追加すると全行の key がずれ、状態が取り違えられる</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：key は「兄弟の中で一意」であればよい</h4>
+            <p>key はアプリ全体でユニークである必要はなく、同じ配列（兄弟要素）の中で一意なら十分です。また、key を変えると React はその要素を「別物」とみなして作り直すため、逆にこの性質を使って「key を変えてコンポーネントの状態を意図的にリセットする」テクニックも実務で使われます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — 副作用と状態設計を制する</h4>
+        <p>useEffect の正しい使い方、Context による状態共有、useRef、アンチパターン回避を学び、仕上げにフルスタック Todo アプリのフロントエンドを構築します。</p>
+      </div>
+
       <!-- Lesson 6 -->
       <article class="lesson-card" data-section="react-6" id="react-lesson-6">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">06</span>
+            <span class="lesson-number">07</span>
             <h3>副作用の統制（useEffectと依存配列の正しい使い方）</h3>
           </div>
           <div class="lesson-controls">
@@ -538,7 +632,7 @@ export default function SearchResults({ query }) {
       <article class="lesson-card" data-section="react-7" id="react-lesson-7">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">07</span>
+            <span class="lesson-number">08</span>
             <h3>状態のバケツリレー回避（PropsとContext）</h3>
           </div>
           <div class="lesson-controls">
@@ -611,11 +705,97 @@ function DeepComponent() {
         </div>
       </article>
 
+      <!-- Lesson: useRef（中級 追加） -->
+      <article class="lesson-card" data-section="react-16" id="react-lesson-16">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>useRef — DOM 参照と「再レンダリングを起こさない値」</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-16')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 useRef は「React に監視されない箱」</h4>
+            <p><strong>useState との決定的な違いは「変更しても再レンダリングが起きない」ことです。</strong> <code>useRef</code> が返すオブジェクトの <code>.current</code> プロパティは自由に読み書きでき、コンポーネントが再レンダリングされても値が保持されます。つまり「画面表示には使わないが、レンダリングを跨いで覚えておきたい値」の置き場所です。用途は大きく 2 つ——① DOM 要素への直接アクセス、② タイマー ID や前回値などのインスタンス変数の代替です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>用途①：DOM 要素を直接操作する</h4>
+            <p>「マウント時に入力欄へフォーカスする」「動画を再生する」など、宣言的な JSX では表現できない命令的操作には DOM への参照が必要です。JSX の <code>ref</code> 属性に渡すと、マウント後に <code>.current</code> へ DOM 要素が入ります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JSX</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import { useRef, useEffect } from "react";
+
+function SearchBox() {
+  const inputRef = useRef(null);
+
+  useEffect(() =&gt; {
+    // マウント直後に検索欄へ自動フォーカス
+    inputRef.current.focus();
+  }, []);
+
+  return &lt;input ref={inputRef} placeholder="検索..." /&gt;;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>用途②：レンダリングを跨ぐ「ただの変数」</h4>
+            <p>タイマー ID を state に入れると、セットするたびに無意味な再レンダリングが走ります。「値が変わっても画面は変わらない」ものは ref に入れるのが正解です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JSX</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>function Stopwatch() {
+  const [seconds, setSeconds] = useState(0);
+  const timerRef = useRef(null);   // タイマー ID は表示に関係ない → ref
+
+  const start = () =&gt; {
+    if (timerRef.current !== null) return;  // 二重起動を防止
+    timerRef.current = setInterval(() =&gt; {
+      setSeconds((s) =&gt; s + 1);
+    }, 1000);
+  };
+
+  const stop = () =&gt; {
+    clearInterval(timerRef.current);
+    timerRef.current = null;
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{seconds} 秒&lt;/p&gt;
+      &lt;button onClick={start}&gt;開始&lt;/button&gt;
+      &lt;button onClick={stop}&gt;停止&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>⚠️ レンダリング中に ref を読み書きしない</h4>
+            <p>ref の読み書きはイベントハンドラか useEffect の中で行うのが原則です。レンダリング中（JSX を返す本体部分）で <code>.current</code> を書き換えると、React の並行レンダリング機能と相性が悪く、予測不能な挙動の原因になります。「表示に使う値は state、使わない値は ref」という線引きを崩さないでください。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：state か ref か迷ったら</h4>
+            <p>判断基準は 1 つだけ——<strong>「その値が変わったとき、画面を描き直す必要があるか？」</strong> Yes なら useState、No なら useRef。フォームの入力値は表示に反映するので state、スクロール位置の記録や WebSocket インスタンスの保持は ref、と機械的に判定できます。</p>
+          </div>
+        </div>
+      </article>
+
       <!-- Lesson 8 -->
       <article class="lesson-card" data-section="react-8" id="react-lesson-8">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">08</span>
+            <span class="lesson-number">10</span>
             <h3>よくあるエラーとアンチパターン</h3>
           </div>
           <div class="lesson-controls">
@@ -700,7 +880,7 @@ export default function UserList() {
       <article class="lesson-card" data-section="react-9" id="react-lesson-9">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">09</span>
+            <span class="lesson-number">11</span>
             <h3>Final Mission: フルスタックTodoアプリ構築・フロントエンド編</h3>
           </div>
           <div class="lesson-controls">
@@ -858,12 +1038,18 @@ export default function TodoApp() {
         </div>
       </article>
 
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 抽象化・最適化・実プロダクトのコードリーディング</h4>
+        <p>カスタムフックによるロジックの再利用、メモ化によるパフォーマンス最適化、React 19 の新機能を学び、Excalidraw や Cal.com など実サービスのコードを読み解きます。</p>
+      </div>
+
       <!-- Lesson 10 -->
       <article class="lesson-card" data-section="react-10" id="react-lesson-10">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">10</span>
-            <h3>上級編: カスタムフック（Custom Hooks）</h3>
+            <span class="lesson-number">12</span>
+            <h3>カスタムフック（Custom Hooks）</h3>
           </div>
           <div class="lesson-controls">
             <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-10')" title="完了にする">
@@ -944,8 +1130,8 @@ export default function UserProfile() {
       <article class="lesson-card" data-section="react-11" id="react-lesson-11">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">11</span>
-            <h3>上級編: パフォーマンス最適化（メモ化）</h3>
+            <span class="lesson-number">13</span>
+            <h3>パフォーマンス最適化（メモ化）</h3>
           </div>
           <div class="lesson-controls">
             <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-11')" title="完了にする">
@@ -1012,11 +1198,100 @@ export default function App({ largeList }) {
         </div>
       </article>
 
+      <!-- Lesson: React 19 の新機能（上級 追加） -->
+      <article class="lesson-card" data-section="react-17" id="react-lesson-17">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>React 19 の新機能 — Server Components と use / Actions</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-17')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 React は「クライアントだけのライブラリ」をやめた</h4>
+            <p><strong>React 19 最大の変化は、サーバーとクライアントの役割分担が言語レベルで表現できるようになったことです。</strong> 従来の React はすべての JS をブラウザに送り、ブラウザで描画していました。React Server Components（RSC）では、データ取得だけが目的のコンポーネントはサーバーで実行して HTML 相当の結果だけを送り、インタラクションが必要な部分だけをクライアント JS として送ります。バンドルサイズと初期表示速度が構造的に改善される仕組みです。Next.js（App Router）はこのモデルを最初に採用した代表的フレームワークです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>Server Components と "use client" の境界</h4>
+            <p>デフォルトはサーバーコンポーネントで、<code>async/await</code> で直接 DB や API を呼べます（useEffect でのフェッチが不要になる）。useState などブラウザ側の機能を使うファイルの先頭には <code>"use client"</code> を宣言します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JSX</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// app/posts/page.jsx — Server Component（デフォルト）
+// コンポーネント自体を async にでき、await で直接データ取得できる
+export default async function PostsPage() {
+  const posts = await db.query("SELECT * FROM posts");  // サーバーで実行
+  return (
+    &lt;ul&gt;
+      {posts.map((p) =&gt; &lt;PostItem key={p.id} post={p} /&gt;)}
+    &lt;/ul&gt;
+  );
+}
+
+// LikeButton.jsx — Client Component（インタラクションが必要）
+"use client";
+import { useState } from "react";
+
+export function LikeButton({ initial }) {
+  const [likes, setLikes] = useState(initial);
+  return &lt;button onClick={() =&gt; setLikes(likes + 1)}&gt;👍 {likes}&lt;/button&gt;;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>use フックと Actions — 非同期処理の新しい書き方</h4>
+            <p>React 19 では <code>use(promise)</code> で Promise の結果を Suspense と連携しながら読み取れます。またフォーム送信は「Action」として関数を <code>&lt;form action={fn}&gt;</code> に渡す方式になり、送信中状態は <code>useActionState</code> が自動管理します。「loading フラグを useState で手動管理する」定型コードが不要になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JSX</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>"use client";
+import { useActionState } from "react";
+
+function SignupForm() {
+  // action 関数の戻り値が state に、実行中は pending が true になる
+  const [result, submitAction, pending] = useActionState(
+    async (prev, formData) =&gt; {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        body: formData,
+      });
+      return res.ok ? { ok: true } : { error: "登録に失敗しました" };
+    },
+    null
+  );
+
+  return (
+    &lt;form action={submitAction}&gt;
+      &lt;input name="email" type="email" required /&gt;
+      &lt;button disabled={pending}&gt;{pending ? "送信中..." : "登録"}&lt;/button&gt;
+      {result?.error &amp;&amp; &lt;p&gt;{result.error}&lt;/p&gt;}
+    &lt;/form&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：forwardRef の廃止と学習の優先順位</h4>
+            <p>React 19 では <code>ref</code> がただの props として渡せるようになり、<code>forwardRef</code> は不要になりました。新機能は多いですが、RSC はフレームワーク（Next.js 等）とセットで初めて使えるものです。素の React（Vite 構成）で開発する場合は従来どおりの書き方が現役なので、「概念を理解した上で、必要になったら使う」姿勢で十分です。</p>
+          </div>
+        </div>
+      </article>
+
       <!-- Lesson 12: OSS コードリーディング -->
       <article class="lesson-card" data-section="react-12" id="react-lesson-12">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">12</span>
+            <span class="lesson-number">15</span>
             <h3>実践OSSコードリーディング — 人気Reactライブラリの中身を読む</h3>
           </div>
           <div class="lesson-controls">
@@ -1140,7 +1415,7 @@ export function Link({ to, children }) {
       <article class="lesson-card" data-section="react-13" id="react-lesson-13">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">13</span>
+            <span class="lesson-number">16</span>
             <h3>実サービスのコードを読む① — Excalidraw（ホワイトボードツール）</h3>
           </div>
           <div class="lesson-controls">
@@ -1242,7 +1517,7 @@ export const prepareElementsForExport = (elements): ExportedElements => {
       <article class="lesson-card" data-section="react-14" id="react-lesson-14">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">14</span>
+            <span class="lesson-number">17</span>
             <h3>実サービスのコードを読む② — Cal.com（スケジュール予約サービス）</h3>
           </div>
           <div class="lesson-controls">

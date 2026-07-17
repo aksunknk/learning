@@ -1,4 +1,10 @@
 
+      <!-- ===== 初級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — 型システムの基礎を身につける</h4>
+        <p>TypeScript を導入する理由、基本の型と型推論、Interface / Type Alias、Union 型、関数の型付けまで。「型はドキュメントであり、実行前のテストである」という感覚を掴みます。</p>
+      </div>
+
       <!-- Lesson 1 -->
       <article class="lesson-card" data-section="typescript-1" id="typescript-lesson-1">
         <div class="lesson-header" onclick="toggleSection(this)">
@@ -345,11 +351,98 @@ type SubmitButtonProps = ButtonBaseProps & { onSubmit: () => void };</code></pre
         </div>
       </article>
 
+      <!-- Lesson: 関数の型（初級 追加） -->
+      <article class="lesson-card" data-section="typescript-12" id="typescript-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>関数の型 — void / never / オプション引数を使いこなす</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 関数の型は「契約書」である</h4>
+            <p><strong>なぜ関数にこそ型を書くべきなのか？</strong> 関数はコードの「境界」です。呼び出す側は中身を読まずに「何を渡せば・何が返るか」だけを知りたい。引数と戻り値の型はその契約書であり、契約さえ守れば中身を自由にリファクタリングできる、という安心を生みます。TypeScript の型エラーの大半は関数の境界で検出されるため、ここを丁寧に書くことが型システムの恩恵を最大化します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>基本形：引数・戻り値・関数型の宣言</h4>
+            <p>戻り値の型は推論に任せることもできますが、公開する関数には明示するのが実務の定石です。「実装を変えたら意図せず戻り値の型が変わっていた」という事故をコンパイルエラーで検出できるようになります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 引数と戻り値に型を付ける
+function calcTax(price: number, rate: number = 0.1): number {
+  return Math.floor(price * (1 + rate));
+}
+
+// オプション引数は ? を付ける（number | undefined として扱われる）
+function greet(name: string, title?: string): string {
+  return title ? `${title} ${name}様` : `${name}様`;
+}
+
+// 「関数を受け取る関数」：コールバックの型はアロー記法で書く
+function retry(task: () =&gt; Promise&lt;void&gt;, times: number): Promise&lt;void&gt; {
+  // ...
+  return task();
+}
+
+// 関数型そのものに名前を付けると再利用できる
+type Validator = (input: string) =&gt; boolean;
+const notEmpty: Validator = (s) =&gt; s.trim().length &gt; 0;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>void と never — 「返さない」の 2 つの意味</h4>
+            <p><code>void</code> は「戻り値を使わない」という宣言で、return しない関数の戻り値型です。一方 <code>never</code> は「正常に戻ってくることが絶対にない」型——例外を必ず投げる関数や無限ループがこれに当たります。never は「網羅性チェック」という強力なテクニックの土台になります。switch 文で全ケースを処理し忘れると、default 節での never 代入がコンパイルエラーになるのです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>type Status = "loading" | "success" | "error";
+
+function statusLabel(status: Status): string {
+  switch (status) {
+    case "loading": return "読み込み中";
+    case "success": return "完了";
+    case "error":   return "失敗";
+    default: {
+      // 全ケースを網羅していれば status はここで never 型になる。
+      // 将来 Status に "idle" を追加すると、ここがコンパイルエラーになり
+      // 「処理し忘れ」を実行前に検出できる
+      const exhaustive: never = status;
+      throw new Error(`未知のステータス: ${exhaustive}`);
+    }
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：コールバック引数の型は「省略できる」</h4>
+            <p><code>array.map((item) =&gt; ...)</code> のようにコールバックを渡すとき、<code>item</code> に型注釈は不要です。配列の型から自動で推論されます（文脈的型付け）。「型を書くのは関数の境界、中身は推論に任せる」——このバランス感覚が読みやすい TypeScript の鍵です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — React 連携とジェネリクスで実戦投入</h4>
+        <p>React コンポーネントの型定義、ジェネリクスによる抽象化、DOM イベントの型、リテラル型と satisfies、アンチパターン回避を学び、Todo アプリの API 結合まで実装します。</p>
+      </div>
+
       <!-- Lesson 5 -->
       <article class="lesson-card" data-section="typescript-5" id="typescript-lesson-5">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">05</span>
+            <span class="lesson-number">06</span>
             <h3>ReactでTypeScriptを使う（Propsの型定義）</h3>
           </div>
           <div class="lesson-controls">
@@ -437,7 +530,7 @@ function App() {
       <article class="lesson-card" data-section="typescript-6" id="typescript-lesson-6">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">06</span>
+            <span class="lesson-number">07</span>
             <h3>型の柔軟性（ジェネリクス/Generics）</h3>
           </div>
           <div class="lesson-controls">
@@ -527,7 +620,7 @@ let myProductResponse: ApiResponse&lt;ProductData&gt;;
       <article class="lesson-card" data-section="typescript-7" id="typescript-lesson-7">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">07</span>
+            <span class="lesson-number">08</span>
             <h3>TypeScriptとDOM操作（イベントの型）</h3>
           </div>
           <div class="lesson-controls">
@@ -600,11 +693,80 @@ function MyForm() {
         </div>
       </article>
 
+      <!-- Lesson: リテラル型と const assertion / satisfies（中級 追加） -->
+      <article class="lesson-card" data-section="typescript-13" id="typescript-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>リテラル型と as const / satisfies — 定数に「意味」を持たせる</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-13')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「string より "success"」— 型は狭いほど安全</h4>
+            <p><strong>リテラル型とは「値そのものを型にする」機能です。</strong> <code>type Status = "success"</code> と書くと、この型には文字列 "success" しか代入できません。一見不便に思えますが、Union と組み合わせた <code>"success" | "error"</code> のような型は、「タイポした瞬間にコンパイルエラー」「switch の網羅性チェックが効く」「エディタが候補を補完してくれる」と、文字列定数を扱う際の事故を根こそぎ防ぎます。他言語の enum に相当する役割を、TypeScript ではリテラル Union で表現するのが主流です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>as const：オブジェクトを「読み取り専用のリテラル」に固定する</h4>
+            <p>通常、<code>const obj = { mode: "dark" }</code> の <code>mode</code> は <code>string</code> と広く推論されます（プロパティは書き換え可能なため）。<code>as const</code> を付けると、すべてのプロパティが readonly なリテラル型に固定され、「設定オブジェクトから型を導出する」パターンが可能になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// as const なし：mode は string、THEMES は string[] と広く推論される
+const THEMES = ["light", "dark", "system"] as const;
+// as const あり：readonly ["light", "dark", "system"] というタプル型に
+
+// 配列の要素から Union 型を導出する頻出イディオム
+type Theme = (typeof THEMES)[number];   // "light" | "dark" | "system"
+
+function applyTheme(theme: Theme) { /* ... */ }
+
+applyTheme("dark");     // ✅ OK
+applyTheme("drak");     // ❌ コンパイルエラー：タイポを即検出</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>satisfies：型チェックと推論の「いいとこ取り」</h4>
+            <p><code>const config: Config = {...}</code> と注釈すると、値の詳細な型情報が Config に丸められてしまいます。かといって注釈を外すと型チェックが効きません。TypeScript 4.9 で導入された <code>satisfies</code> は「Config に適合するか検査しつつ、推論された詳細な型はそのまま保つ」という第三の選択肢です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>type RouteConfig = Record&lt;string, { path: string; auth?: boolean }&gt;;
+
+const routes = {
+  home:  { path: "/" },
+  admin: { path: "/admin", auth: true },
+} satisfies RouteConfig;
+// ✅ RouteConfig に違反すればエラー（例: path のタイポ）
+// ✅ かつ routes.admin.auth の型は boolean のまま保たれる
+
+// 型注釈方式（const routes: RouteConfig = ...）だと
+// routes.home の型が {path: string; auth?: boolean} に丸められ、
+// 「home に auth は無い」という情報が失われる</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：enum より as const を選ぶ</h4>
+            <p>TypeScript には <code>enum</code> 構文もありますが、コンパイル後に実体の JS オブジェクトを生成する・Tree-shaking と相性が悪いなどの理由で、現代では <code>as const</code> オブジェクト + リテラル Union が推奨されます。公式ドキュメントも「モダンな TypeScript では enum は不要かもしれない」と明言しています。</p>
+          </div>
+        </div>
+      </article>
+
       <!-- Lesson 8 -->
       <article class="lesson-card" data-section="typescript-8" id="typescript-lesson-8">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">08</span>
+            <span class="lesson-number">10</span>
             <h3>よくあるエラーとアンチパターン</h3>
           </div>
           <div class="lesson-controls">
@@ -694,7 +856,7 @@ const userBio = currentUser.profile?.bio ?? 'No bio available';</code></pre>
       <article class="lesson-card" data-section="typescript-9" id="typescript-lesson-9">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">09</span>
+            <span class="lesson-number">11</span>
             <h3>Final Mission: Todoアプリ構築（結合・API通信編）</h3>
           </div>
           <div class="lesson-controls">
@@ -768,12 +930,18 @@ async function renderTodos() {
         </div>
       </article>
 
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 型プログラミングと実行時安全性</h4>
+        <p>Utility Types、型ガード、Mapped Types / Template Literal Types による型レベルプログラミング、そして Zod による実行時バリデーションまで。「型で設計する」領域に踏み込みます。</p>
+      </div>
+
       <!-- Lesson 10 -->
       <article class="lesson-card" data-section="typescript-10" id="typescript-lesson-10">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">10</span>
-            <h3>上級編: ユーティリティ型（Utility Types）</h3>
+            <span class="lesson-number">12</span>
+            <h3>ユーティリティ型（Utility Types）</h3>
           </div>
           <div class="lesson-controls">
             <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-10')" title="完了にする">
@@ -850,8 +1018,8 @@ type ImmutableUser = Readonly&lt;UserEntity&gt;;</code></pre>
       <article class="lesson-card" data-section="typescript-11" id="typescript-lesson-11">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">11</span>
-            <h3>上級編: 型ガードと絞り込み（Type Narrowing）</h3>
+            <span class="lesson-number">13</span>
+            <h3>型ガードと絞り込み（Type Narrowing）</h3>
           </div>
           <div class="lesson-controls">
             <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-11')" title="完了にする">
@@ -909,6 +1077,154 @@ function processAnimal(animal: unknown) {
           <div class="explanation-box">
             <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
             <p>ユーザー定義型ガード（<code>obj is T</code>）は非常に強力ですが、「開発者が書いたバリデーションロジックが間違っていたら、間違った型をTSに信じ込ませてしまう」というリスク（asの危険性に近い）をはらんでいます。例えば、ロジック内で <code>return true</code> とだけ書けば、どんなデータでもその型だと判定されてしまいます。そのため、実務では複雑な型ガードを自作する代わりに、前述の <strong>Zod</strong> などのスキーマ検証ライブラリの <code>.safeParse()</code> メソッドを使って、検証と型ガードを同時に行うのが現在のモダンフロントエンド開発のデファクトスタンダードです。自作する場合は、ロジックに抜け穴がないか厳重なテストが必要です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson: Mapped Types と Template Literal Types（上級 追加） -->
+      <article class="lesson-card" data-section="typescript-14" id="typescript-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>Mapped Types と Template Literal Types — 型を「計算」する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 型の世界にも for 文と文字列結合がある</h4>
+            <p><strong>Mapped Types は「型のループ処理」です。</strong> 既存の型のプロパティを 1 つずつ巡回して、新しい型を機械的に生成します。前レッスンで学んだ <code>Partial&lt;T&gt;</code> や <code>Readonly&lt;T&gt;</code> は、実はこの仕組みで実装されたただの型エイリアスです。つまり Utility Types を「使う側」から「作れる側」になるのがこのレッスンのゴールです。手で二重管理していた型定義を計算で導出できるようになると、「元の型を直せば派生型が全部追従する」保守性が手に入ります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>Mapped Types の基本構文</h4>
+            <p><code>[K in keyof T]</code> が「T の全プロパティ名 K についてループ」を意味します。<code>?</code> や <code>readonly</code> の付与・除去（<code>-?</code>）、<code>as</code> によるキー名の変換もできます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>type User = { id: number; name: string; email: string };
+
+// Partial の自作：全プロパティに ? を付ける
+type MyPartial&lt;T&gt; = { [K in keyof T]?: T[K] };
+
+// 全プロパティを boolean に変換した「バリデーション結果型」
+type Validation&lt;T&gt; = { [K in keyof T]: boolean };
+const check: Validation&lt;User&gt; = { id: true, name: false, email: true };
+
+// -? で「全プロパティを必須化」（Required の自作）
+type MyRequired&lt;T&gt; = { [K in keyof T]-?: T[K] };</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Template Literal Types：文字列を型レベルで組み立てる</h4>
+            <p>テンプレートリテラル構文 <code>`${...}`</code> を型の世界で使えます。Union 型を埋め込むと全組み合わせが自動展開されるため、「イベント名」「CSS プロパティ」のような命名規則を型で強制できます。Mapped Types の <code>as</code> と組み合わせると「プロパティ名から getter 名を生成」のようなコード生成的な型も書けます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>type Size = "sm" | "md" | "lg";
+type Color = "primary" | "danger";
+
+// Union の全組み合わせが自動展開される
+type ButtonClass = `btn-${Color}-${Size}`;
+// "btn-primary-sm" | "btn-primary-md" | ... | "btn-danger-lg" の6通り
+
+// Mapped Types + as：User から onXxxChange ハンドラ群の型を導出
+type User = { id: number; name: string };
+type Handlers = {
+  [K in keyof User as `on${Capitalize&lt;string &amp; K&gt;}Change`]:
+    (value: User[K]) =&gt; void;
+};
+// { onIdChange: (value: number) =&gt; void;
+//   onNameChange: (value: string) =&gt; void }</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：型パズルに深入りしすぎない</h4>
+            <p>Mapped Types は強力ですが、読めない型は負債です。実務での使いどころは「フォームの状態型をモデルから導出」「API ルート名の型安全化」など、<strong>二重管理の排除に効く場面</strong>に限定しましょう。3 段以上ネストした条件型を書き始めたら、素直にコードジェネレータや Zod（次レッスン）を検討するサインです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson: Zod による実行時バリデーション（上級 追加） -->
+      <article class="lesson-card" data-section="typescript-15" id="typescript-lesson-15">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">15</span>
+            <h3>Zod で実行時バリデーション — 型の「嘘」を境界で見抜く</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-15')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 TypeScript の型は実行時には存在しない</h4>
+            <p><strong>ここまで学んだ型チェックには重大な限界があります——コンパイル時にしか働かないことです。</strong> <code>fetch</code> で受け取った JSON に <code>as User</code> と書いても、それは「User だと信じる」という宣言に過ぎず、サーバーが想定外の形のデータを返せば実行時に静かに壊れます。外部から来るデータ（API レスポンス・フォーム入力・環境変数・localStorage）は、<strong>実行時に検証して初めて型を信頼できる</strong>——この検証を型定義と一体で行えるのが Zod です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>スキーマを 1 つ書けば「検証」と「型」が両方手に入る</h4>
+            <p>Zod ではスキーマ（データの形の定義）を値として書き、<code>z.infer</code> で TypeScript の型を導出します。型定義とバリデーションロジックの二重管理が消えるのが最大の利点です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import { z } from "zod";
+
+// スキーマ＝実行時に検証可能な「型の実体」
+const UserSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(1),
+  email: z.string().email(),
+  role: z.enum(["admin", "member"]).default("member"),
+});
+
+// スキーマから TypeScript の型を導出（二重管理が不要）
+type User = z.infer&lt;typeof UserSchema&gt;;
+
+async function fetchUser(id: number): Promise&lt;User&gt; {
+  const res = await fetch(`/api/users/${id}`);
+  const json: unknown = await res.json();   // まず unknown として受ける
+
+  // parse は検証に失敗すると ZodError を投げる。
+  // 成功すれば戻り値は User 型として完全に信頼できる
+  return UserSchema.parse(json);
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>safeParse：例外を投げずに Result 型で受ける</h4>
+            <p>フォーム入力のように「失敗が正常系」の場面では <code>safeParse</code> を使います。戻り値は <code>{ success: true, data }</code> か <code>{ success: false, error }</code> の判別可能 Union で、これまで学んだ型の絞り込みがそのまま活きます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const result = UserSchema.safeParse(formValues);
+
+if (result.success) {
+  saveUser(result.data);          // ここでは User 型
+} else {
+  // フィールドごとのエラーメッセージを取得できる
+  const errors = result.error.flatten().fieldErrors;
+  console.log(errors.email);      // ["Invalid email"] など
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：「Parse, don't validate」</h4>
+            <p>Zod の設計思想は「検証（validate）して bool を返す」のではなく「解析（parse）して<strong>型の付いた値を返す</strong>」ことです。検証済みかどうかを型そのもので表現するため、「チェックし忘れたデータがシステムの奥まで侵入する」ことが構造的に不可能になります。バリデーションはシステムの境界（API・フォーム・環境変数）で一度だけ行い、内側は型を信頼する——これがモダン TypeScript アプリの設計原則です。</p>
           </div>
         </div>
       </article>
