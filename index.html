@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-total-lessons="156">
+<body data-total-lessons="166">
 
   <!-- ===== HERO SECTION ===== -->
   <header class="hero" id="hero">
@@ -30,19 +30,19 @@
       </p>
       <div class="hero-stats">
         <div class="stat-item">
-          <span class="stat-number">14</span>
+          <span class="stat-number">15</span>
           <span class="stat-label">学習トピック</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">156</span>
+          <span class="stat-number">166</span>
           <span class="stat-label">レッスン</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">115</span>
+          <span class="stat-number">121</span>
           <span class="stat-label">クイズ</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">14</span>
+          <span class="stat-number">15</span>
           <span class="stat-label">パズル</span>
         </div>
       </div>
@@ -81,6 +81,16 @@
               <div class="mini-progress-fill" id="python-progress-bar"></div>
             </div>
             <span class="progress-percent" id="python-progress-text">0%</span>
+          </div>
+        </div>
+        <div class="progress-card rust-card" data-lang="rust">
+          <div class="progress-card-icon">🦀</div>
+          <div class="progress-card-info">
+            <h3>Rust</h3>
+            <div class="mini-progress-bar">
+              <div class="mini-progress-fill" id="rust-progress-bar"></div>
+            </div>
+            <span class="progress-percent" id="rust-progress-text">0%</span>
           </div>
         </div>
         <div class="progress-card react-card" data-lang="react">
@@ -251,6 +261,10 @@
           <span class="tab-icon">🧮</span>
           <span class="tab-label">アルゴリズム</span>
         </button>
+        <button class="tab-button" data-tab="rust" data-group="basics" role="tab" aria-selected="false" id="tab-rust" hidden>
+          <span class="tab-icon">🦀</span>
+          <span class="tab-label">Rust</span>
+        </button>
         <button class="tab-button" data-tab="typescript" data-group="basics" role="tab" aria-selected="false" id="tab-typescript">
           <span class="tab-icon">🔷</span>
           <span class="tab-label">TypeScript</span>
@@ -303,6 +317,13 @@
     </nav>
 
     <div class="tab-content" id="content-python" role="tabpanel" data-content-src="content/python.html" aria-busy="true">
+      <div class="content-placeholder">
+        <div class="content-spinner" aria-hidden="true"></div>
+        <p>コンテンツを読み込み中…</p>
+      </div>
+    </div>
+
+    <div class="tab-content" id="content-rust" role="tabpanel" data-content-src="content/rust.html" aria-busy="true">
       <div class="content-placeholder">
         <div class="content-spinner" aria-hidden="true"></div>
         <p>コンテンツを読み込み中…</p>

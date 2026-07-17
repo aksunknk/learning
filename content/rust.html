@@ -1,0 +1,708 @@
+      <div class="tab-intro rust-intro">
+        <h2>🦀 Rust 入門</h2>
+        <p>所有権による安全性と C 並みの性能を両立する言語を、初学者向けに一歩ずつ学びます。</p>
+      </div>
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="rust-1" id="rust-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>はじめに：Rust の位置づけと Cargo</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜ今 Rust を学ぶ価値があるのか</h4>
+            <p><strong>「速さ」と「安全」は普通トレードオフの関係にあります。</strong><br>
+            C / C++ は高速ですが、メモリ管理を人間が担うため、解放済み領域への参照（use-after-free）や二重解放といった深刻なバグを生みます。一方 Python や Java はガベージコレクタ（GC）で安全性を確保しますが、実行時にコストを払います。Rust は「GC を持たない」のに「コンパイル時にメモリ安全を保証する」という第三の道を選びました。所有権という仕組みで、危険なコードをそもそもコンパイルエラーとして弾くのです。だから実行速度は C++ 級のまま、安全性は言語仕様で守られます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>最初のプログラムと println!</h4>
+            <p>Rust のエントリポイントは <code>main</code> 関数です。画面出力には <code>println!</code> を使います。末尾の <code>!</code> は「これは関数ではなくマクロ」という印で、Rust では出力系の多くがマクロとして提供されます。文字列中の <code>{}</code> はプレースホルダで、変数名を直接埋め込むこともできます。C の <code>printf</code> と違い、型ごとに書式指定子（%d など）を変える必要はありません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn main() {
+    let name = "世界";
+    let count = 3;
+    // {name} のように変数名を直接埋め込める
+    println!("{name} に {count} 回こんにちは");
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Cargo：ビルドとパッケージ管理の中心</h4>
+            <p>Rust の開発は <strong>Cargo</strong> を中心に回ります。Python の pip + venv、Node の npm をまとめたような存在です。<code>cargo new</code> で雛形を作り、<code>cargo run</code> でビルドと実行を同時に行えます。依存ライブラリ（Rust では「クレート crate」と呼ぶ）は <code>Cargo.toml</code> に書くだけで自動取得・コンパイルされます。初学者はまず <code>cargo run</code> と <code>cargo build</code> の 2 つを覚えれば十分です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 新規プロジェクトを作成
+cargo new hello
+cd hello
+
+# ビルドして実行（デバッグビルド）
+cargo run
+
+# 最適化した本番ビルド
+cargo build --release</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：エラーメッセージは「先生」である</h4>
+            <p>Rust のコンパイラ（rustc）のエラーメッセージは、他言語と比べて群を抜いて親切です。「どこが」「なぜ」ダメで、「どう直せばよいか」まで提案してくれます。初学者は借用や所有権のエラーで何度もつまずきますが、その都度メッセージを丁寧に読むのが最短の上達法です。エラーを敵ではなく先生として扱いましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="rust-2" id="rust-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>変数・可変性・シャドーイング</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「変わらないのが普通」という思想</h4>
+            <p><strong>なぜ Rust の変数はデフォルトで書き換え不可なのか？</strong><br>
+            多くの言語では変数は自由に再代入できますが、それは「いつどこで値が変わるか分からない」という読みにくさとバグの温床でもあります。Rust は逆に「不変（immutable）が既定、可変は例外」という立場を取ります。変更したいときだけ <code>mut</code> を明示することで、コードを読む人は「mut が無い変数は最後まで値が変わらない」と信頼できます。これは大規模開発で効いてくる設計思想です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>let と mut と const</h4>
+            <p><code>let</code> で束縛した変数は不変で、再代入するとコンパイルエラーになります。変更するには <code>let mut</code> とします。<code>const</code> は定数で、<code>mut</code> を付けられず、型注釈が必須、かつコンパイル時に値が確定している必要があります。定数名は慣習的に大文字スネークケースで書きます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const MAX_POINTS: u32 = 100_000; // 定数は型必須・不変
+
+fn main() {
+    let x = 5;
+    // x = 6;      // ❌ 不変なのでコンパイルエラー
+    let mut y = 5;
+    y = 6;         // ✅ mut があるので再代入できる
+    println!("x={x}, y={y}, max={MAX_POINTS}");
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>シャドーイング：同じ名前で作り直す</h4>
+            <p>Rust では同じ名前を <code>let</code> で再宣言でき、後の宣言が前を覆い隠します。これをシャドーイングと呼びます。<code>mut</code> の再代入と似て非なるもので、シャドーイングは新しい変数を作り直すため<strong>型を変えられます</strong>。文字列で受け取った入力を数値へ変換し、同じ名前で束縛し直す、といった用途が典型です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn main() {
+    let spaces = "   ";        // &amp;str 型（文字列）
+    let spaces = spaces.len(); // usize 型（数値）に変わる
+    // mut では型を変えられないが、シャドーイングなら可能
+    println!("空白は {spaces} 文字");
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：mut を付けるのは「必要になってから」</h4>
+            <p>最初はすべて <code>let</code>（不変）で書き、コンパイラに「ここは可変にしないと駄目」と言われてから <code>mut</code> を足すのが良い習慣です。使わない <code>mut</code> があると警告が出るのも Rust の親切な点で、「本当に変更が必要な箇所」だけが可視化されます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="rust-3" id="rust-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>データ型：スカラ型と複合型</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 型を意識することがバグを減らす</h4>
+            <p><strong>Rust は静的型付け言語で、すべての値の型がコンパイル時に決まります。</strong><br>
+            多くの場面では型推論が効くため注釈を省けますが、「どんな型が流れているか」を意識することが安全なコードの前提です。特に整数は「符号の有無」と「ビット幅」で複数の型に分かれており、範囲を超えるとどうなるかを知っておく必要があります。ここを曖昧にすると、他言語では気づきにくい桁あふれ（オーバーフロー）バグを生みます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>スカラ型：整数・浮動小数点・論理・文字</h4>
+            <p>基本の型は 4 種類です。整数型（<code>i32</code>, <code>u32</code>, <code>usize</code> など。i は符号付き、u は符号なし、数字はビット幅）、浮動小数点型（<code>f32</code>, <code>f64</code>）、論理型（<code>bool</code>）、文字型（<code>char</code>。Unicode 1 文字でシングルクォート）。既定は整数が <code>i32</code>、浮動小数点が <code>f64</code> です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn main() {
+    let a: i32 = -42;      // 符号付き整数
+    let b: f64 = 3.14;     // 浮動小数点
+    let flag: bool = true; // 論理値
+    let letter: char = 'あ'; // Unicode 1 文字
+    println!("{a} {b} {flag} {letter}");
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>複合型：タプルと配列</h4>
+            <p>複数の値をまとめる基本型が 2 つあります。<strong>タプル</strong>は異なる型を固定個数まとめ、分解（destructuring）で取り出せます。<strong>配列</strong>は同じ型を固定個数並べたもので、<code>[i32; 3]</code> のように「型と長さ」が型の一部になります。長さが実行時に変わるデータには、後の章で学ぶ可変長の <code>Vec</code> を使います。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn main() {
+    let tup: (i32, f64, char) = (500, 6.4, 'r');
+    let (x, y, z) = tup;    // 分解して取り出す
+    let arr = [10, 20, 30]; // [i32; 3]
+    println!("{x} {y} {z} 先頭={}", arr[0]);
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：オーバーフローは黙って起きない</h4>
+            <p>整数には表現範囲があり（<code>u8</code> は 0〜255）、超える演算をオーバーフローと呼びます。デバッグビルドでは実行時に <strong>panic</strong> してバグを気づかせ、リリースビルドでは性能優先でラップアラウンド（255+1 が 0）します。この挙動に頼らず意図を明示したいときは <code>checked_add</code>（あふれたら <code>None</code>）や <code>wrapping_add</code>（明示的にラップ）を使いましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="rust-4" id="rust-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>関数と制御フロー：式指向の言語</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「文」と「式」の区別が Rust 理解の鍵</h4>
+            <p><strong>Rust は式指向（expression-oriented）言語です。</strong><br>
+            文（statement）は値を返さず、式（expression）は値を返します。関数の最後に書いた式を「セミコロンなし」にすると、それが戻り値になります。ここで初学者が最も引っかかるのが、うっかりセミコロンを付けて式を文に変えてしまい「値が返らない」エラーを出すケースです。逆にこの性質を活かすと、<code>if</code> やブロックが値を返せるため、簡潔で安全なコードが書けます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>関数定義と末尾式による戻り値</h4>
+            <p>関数は <code>fn</code> で定義し、引数には型注釈が必須、戻り値の型は <code>-&gt;</code> の後ろに書きます。<code>return</code> も使えますが、慣習では末尾式（セミコロンなし）で返します。セミコロンを付けると文になり値を返さなくなる点に注意してください。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn add(a: i32, b: i32) -&gt; i32 {
+    a + b // セミコロンなし = これが戻り値
+}
+
+fn main() {
+    println!("{}", add(2, 3)); // 5
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>if 式とループ（loop / while / for）</h4>
+            <p><code>if</code> は式なので値を返して代入できます（三項演算子が無いのはこのため）。条件は必ず <code>bool</code> 型で、整数を真偽扱いする暗黙変換はありません。繰り返しは <code>loop</code>（無限。<code>break</code> に値を添えて返せる）、<code>while</code>、<code>for</code> の 3 種。範囲外アクセスの危険がない <code>for 要素 in コレクション</code> が最も推奨されます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn main() {
+    let cond = true;
+    let number = if cond { 5 } else { 6 }; // if が値を返す
+    println!("number = {number}");
+
+    for i in 1..4 { // 1, 2, 3（終端は含まない）
+        println!("i = {i}");
+    }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：早期 return より式で表現する</h4>
+            <p>Rust では「分岐の結果を変数に束縛する」書き方が自然です。<code>match</code> 式（後の章）と組み合わせると、状態ごとの値を漏れなく 1 つの式で表現でき、可読性と安全性が上がります。まずは「ブロックや if が値を返す」感覚に慣れましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="rust-5" id="rust-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>所有権：Rust の核心概念</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ここが Rust 最大の山場（そして価値）</h4>
+            <p><strong>所有権（ownership）は Rust を Rust たらしめる中心概念です。</strong><br>
+            他言語出身者が最初に戸惑うのがここですが、乗り越えれば「なぜ Rust が GC なしで安全なのか」が腑に落ちます。ルールはたった 3 つ。(1) すべての値は所有者と呼ばれる 1 つの変数を持つ。(2) 所有者は同時に 1 つだけ。(3) 所有者がスコープを抜けると値は自動破棄（drop）される。この規則により、メモリの解放タイミングがコンパイル時に一意に決まり、解放漏れも二重解放も原理的に起きません。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>スコープと自動解放（drop）</h4>
+            <p>ヒープに確保される <code>String</code> のような値は、所有者がスコープを抜ける瞬間に自動的に <code>drop</code> され、メモリが解放されます。C の <code>free</code> を手で呼ぶ必要も、GC の回収を待つ必要もありません。「解放を書き忘れる」というバグのクラス全体が消滅します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn main() {
+    {
+        let s = String::from("hello"); // s が所有者
+        println!("{s}");
+    } // ここで s がスコープを抜け、自動で drop（解放）される
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>ムーブ：所有権の移動</h4>
+            <p><code>String</code> のようなヒープデータを別の変数へ代入すると、コピーではなく<strong>所有権の移動（move）</strong>が起きます。移動後、元の変数は無効になり、使うとコンパイルエラーです。これは C++ の浅いコピーで二重解放が起きる問題を言語仕様で封じたものです。整数など単純でスタックに載る型は <code>Copy</code> なので、代入しても元が有効なままです。関数に値を渡すときも同様に所有権が移動します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn main() {
+    let s1 = String::from("hi");
+    let s2 = s1;        // 所有権が s2 へ移動
+    // println!("{s1}"); // ❌ s1 はもう無効
+
+    let x = 5;
+    let y = x;          // i32 は Copy。x も有効なまま
+    println!("{s2} / {x} {y}");
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：借用チェッカと戦わず、対話する</h4>
+            <p>所有権エラーが出たら、「コンパイラが将来のクラッシュを先回りで防いでいる」と捉えましょう。多くの場合、次章で学ぶ「参照（借用）」を使えば所有権を移さずに解決できます。ムーブか借用か——この判断が Rust コーディングの日常です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="rust-6" id="rust-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>参照と借用：所有権を移さず値を使う</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 データ競合を「コンパイル時に」根絶する</h4>
+            <p><strong>所有権を毎回やり取りするのは煩雑です。そこで「借用（borrow）」があります。</strong><br>
+            参照（<code>&amp;</code>）を使うと、所有権を移さずに値を貸し出せます。しかも Rust は借用に厳格なルールを課します——「複数の読み取り専用参照はOK、書き換え可能な参照はただ 1 つだけ」。これは並行処理でデータ競合が起きる条件そのものを排除する設計で、マルチスレッドのバグをコンパイル時に潰せる理由です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>不変参照 &amp; による借用</h4>
+            <p><code>&amp;</code> を付けると値を借用でき、所有権は元の変数に残ります。関数に <code>&amp;String</code> を渡せば、関数は値を読めますが所有権は奪わないため、呼び出し元は引き続き使えます。参照は借り物なので、参照がスコープを抜けても元の値は drop されません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn length(s: &amp;String) -&gt; usize {
+    s.len()
+} // s は参照なので、ここで元の値は drop されない
+
+fn main() {
+    let s = String::from("hello");
+    let n = length(&amp;s);   // 借用して渡す
+    println!("{s} の長さは {n}"); // s はまだ有効
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>可変参照 &amp;mut と借用規則</h4>
+            <p>借用先を変更するには可変参照 <code>&amp;mut</code> を使い、元の変数も <code>mut</code> である必要があります。中心的な規則はこうです：<strong>ある時点で「複数の不変参照」か「ただ 1 つの可変参照」のどちらか一方だけ</strong>が許されます。読むだけなら何人でも、書く人がいるなら他は誰もアクセスできない、という直感に対応します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn push_world(s: &amp;mut String) {
+    s.push_str(", world");
+}
+
+fn main() {
+    let mut s = String::from("hello");
+    push_world(&amp;mut s); // 可変参照で貸し出す
+    println!("{s}");    // hello, world
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：ライフタイムは「参照が生きる期間」</h4>
+            <p>参照は元データより長生きできません。これを保証するのがライフタイムで、多くは推論され明示不要です。初学段階では「借用した参照を、元データが消えた後に使わない」とだけ意識すれば十分です。複雑なライフタイム注釈が必要になるのは、もっと後の話です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="rust-7" id="rust-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>スライスと文字列：String と &amp;str</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 2 種類の文字列に混乱しないために</h4>
+            <p><strong>Rust の文字列には <code>String</code> と <code>&amp;str</code> の 2 つがあり、初学者を最初に悩ませます。</strong><br>
+            違いは「所有するか、借用するか」です。<code>String</code> はヒープに確保される所有権付きの可変文字列。<code>&amp;str</code>（文字列スライス）は既存の文字列の一部を所有せずに参照するビューです。ソースコード中のリテラル <code>"abc"</code> の型は <code>&amp;str</code> です。この区別は所有権・借用の応用そのものなので、前章までの理解がそのまま活きます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>スライス：所有せずに一部を参照する</h4>
+            <p>スライスはコレクションの一部を「所有せずに参照する」ビューで、開始位置と長さを持ちコピーを伴いません。文字列スライスは範囲構文 <code>[開始..終了]</code> で切り出します（開始は含み終了は含まない、バイト単位）。スライスは借用なので、生きている間は元データを可変で書き換えられません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn main() {
+    let s = String::from("hello world");
+    let hello = &amp;s[0..5];  // "hello"
+    let world = &amp;s[6..11]; // "world"
+    println!("{hello} / {world}");
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>関数引数は &amp;str で受けるのが定石</h4>
+            <p>実用上の指針は明快です。<strong>関数の文字列引数は原則 <code>&amp;str</code> で受け取る</strong>と、<code>String</code> からもリテラルからも借用して渡せて柔軟です。所有して保持・変更したいときだけ <code>String</code> を使います。「借りるだけなら &amp;str、持つなら String」と覚えましょう。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// &amp;str で受けると String もリテラルも渡せる
+fn greet(name: &amp;str) -&gt; String {
+    format!("こんにちは、{name}")
+}
+
+fn main() {
+    let owned = String::from("太郎");
+    println!("{}", greet(&amp;owned)); // String を借用
+    println!("{}", greet("花子"));  // リテラル(&amp;str)
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：UTF-8 とバイト境界</h4>
+            <p>Rust の文字列は UTF-8 です。日本語のようなマルチバイト文字を含む文字列を <code>[0..1]</code> のように文字の途中で切ると、実行時に panic します。バイト単位で切っている点を忘れないでください。文字単位で扱うなら <code>chars()</code> を使います。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="rust-8" id="rust-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>構造体とメソッド</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 データと振る舞いをまとめる</h4>
+            <p><strong>構造体（struct）は、関連する複数の値に名前を付けて 1 つの型にまとめる仕組みです。</strong><br>
+            Rust にはクラスがありませんが、構造体と <code>impl</code> ブロックの組み合わせが、他言語のクラスに近い役割を果たします。データ（フィールド）と振る舞い（メソッド）を分けて定義するのが特徴で、これにより「データ構造」と「操作」の関心が自然に分離されます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>構造体の定義とインスタンス生成</h4>
+            <p>各フィールドに名前と型を与えます。生成時はフィールド名を指定して値を入れ、アクセスはドット記法で行います。インスタンス全体を可変にするには <code>let mut</code> で束縛します（Rust では特定フィールドだけを可変にはできず、インスタンス単位です）。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>struct User {
+    name: String,
+    age: u32,
+    active: bool,
+}
+
+fn main() {
+    let user = User {
+        name: String::from("Alice"),
+        age: 30,
+        active: true,
+    };
+    println!("{} ({}) active={}", user.name, user.age, user.active);
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>メソッドと関連関数</h4>
+            <p><code>impl</code> ブロックに振る舞いを定義します。第一引数が <code>&amp;self</code>（自身への参照）のものをメソッドと呼び、<code>インスタンス.メソッド()</code> で呼びます。<code>self</code> を取らないものは<strong>関連関数</strong>と呼ばれ、<code>型名::関数()</code> で呼びます。コンストラクタ相当の <code>new</code> を関連関数として定義するのが慣習です。デバッグ表示は <code>#[derive(Debug)]</code> を付けると <code>{:?}</code> で中身を確認できます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>#[derive(Debug)]
+struct Rectangle { width: u32, height: u32 }
+
+impl Rectangle {
+    fn new(w: u32, h: u32) -&gt; Self { // 関連関数
+        Self { width: w, height: h }
+    }
+    fn area(&amp;self) -&gt; u32 {           // メソッド
+        self.width * self.height
+    }
+}
+
+fn main() {
+    let rect = Rectangle::new(3, 4);
+    println!("{:?} 面積={}", rect, rect.area());
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：まず #[derive(Debug)] を付ける</h4>
+            <p>構造体を作ったら反射的に <code>#[derive(Debug)]</code> を付けておくと、<code>println!("{:?}", val)</code> や <code>{:#?}</code>（整形表示）で中身を即確認でき、デバッグが劇的に楽になります。比較や複製が必要なら <code>Clone</code>, <code>PartialEq</code> も derive で自動生成できます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="rust-9" id="rust-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>列挙型・Option・パターンマッチング</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「値が無いかもしれない」を型で表す</h4>
+            <p><strong>Rust には null がありません。</strong><br>
+            null は「10 億ドルの過ち」と呼ばれ、多くの言語で null 参照エラーを生み続けてきました。Rust は代わりに列挙型 <code>Option&lt;T&gt;</code> を使い、「値がないかもしれない」ことを型システムに強制的に明示させます。中の値を使うには必ず場合分けが必要なため、「無い値をうっかり触る」ことがコンパイル時に不可能になります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>列挙型 enum と Option</h4>
+            <p>列挙型（<code>enum</code>）は「取りうる値がいくつかの種類のいずれか」を表し、各バリアントが異なるデータを保持できます。標準の <code>Option&lt;T&gt;</code> は <code>Some(値)</code> か <code>None</code> のどちらかで、値の有無を表現します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>enum Shape {
+    Circle(f64),          // 半径
+    Rectangle(f64, f64),  // 幅・高さ
+}
+
+fn main() {
+    let some_number: Option&lt;i32&gt; = Some(5);
+    let no_number: Option&lt;i32&gt; = None;
+    println!("{:?} {:?}", some_number, no_number);
+    let s = Shape::Circle(2.0);
+    if let Shape::Circle(r) = s {
+        println!("半径 {r} の円");
+    }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>match による網羅的な分岐</h4>
+            <p><code>match</code> は値をパターンに照合して分岐します。最大の特徴は<strong>網羅性チェック</strong>で、enum の全バリアントを扱わないとコンパイルエラーになり、case の書き漏らしを原理的に防ぎます。1 つのパターンだけ扱うなら <code>if let</code>、残りをまとめるなら <code>_</code>（ワイルドカード）を使います。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn describe(n: Option&lt;i32&gt;) -&gt; String {
+    match n {
+        Some(x) if x &gt; 0 =&gt; format!("正の数 {x}"),
+        Some(x) =&gt; format!("0 以下の数 {x}"),
+        None =&gt; String::from("値なし"),
+    }
+}
+
+fn main() {
+    println!("{}", describe(Some(7)));
+    println!("{}", describe(None));
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：unwrap の乱用に注意</h4>
+            <p><code>Option</code> の中身は <code>unwrap()</code> で取り出せますが、<code>None</code> のとき panic します。学習中は便利でも、実務では <code>match</code> や <code>if let</code>、<code>unwrap_or(既定値)</code> で安全に扱うのが基本です。「とりあえず unwrap」は本番クラッシュの温床です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="rust-10" id="rust-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>エラー処理：panic と Result</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 エラーを「握りつぶせない」設計</h4>
+            <p><strong>Rust はエラーを 2 種類に分け、どちらも無視できないようにしています。</strong><br>
+            1 つは回復不能なエラー（<code>panic!</code>）でプログラムを止めます。もう 1 つは回復可能なエラーで、戻り値 <code>Result&lt;T, E&gt;</code> として表現します。例外を投げっぱなしにできる言語と違い、Rust では失敗しうる関数の戻り値が型に現れるため、呼び出し側は必ずエラーの扱いを書くことになります。これが堅牢さの源です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>回復可能なエラー：Result&lt;T, E&gt;</h4>
+            <p><code>Result</code> は成功なら <code>Ok(値)</code>、失敗なら <code>Err(エラー)</code> を返す列挙型です。ファイルが開けない、数値変換に失敗した、といった「起こりうる失敗」を表現します。<code>match</code> で場合分けして扱うため、エラー処理が呼び出し側に強制されます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn parse(s: &amp;str) -&gt; Result&lt;i32, std::num::ParseIntError&gt; {
+    s.parse::&lt;i32&gt;()
+}
+
+fn main() {
+    match parse("42") {
+        Ok(n) =&gt; println!("成功: {n}"),
+        Err(e) =&gt; println!("失敗: {e}"),
+    }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>? 演算子でエラーを伝播する</h4>
+            <p>毎回 <code>match</code> を書くのは冗長です。<code>?</code> 演算子は、式が <code>Ok</code> なら中の値を取り出して続行し、<code>Err</code> ならその場で関数から <code>Err</code> を早期リターンします。「成功なら値を取り出し、失敗なら呼び出し元へ委譲」を 1 文字で表せます。<code>?</code> を使う関数自身の戻り値も <code>Result</code> である必要があります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Rust</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>fn sum_two(a: &amp;str, b: &amp;str) -&gt; Result&lt;i32, std::num::ParseIntError&gt; {
+    let x = a.parse::&lt;i32&gt;()?; // 失敗なら即 Err を返す
+    let y = b.parse::&lt;i32&gt;()?;
+    Ok(x + y)
+}
+
+fn main() {
+    println!("{:?}", sum_two("10", "20")); // Ok(30)
+    println!("{:?}", sum_two("10", "x"));  // Err(...)
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：panic と Result の使い分け</h4>
+            <p><code>panic!</code> は「バグや続行不能な想定外」に限定し、ユーザー入力エラーやファイル不在のような「起こりうる失敗」は <code>Result</code> で扱うのが原則です。ライブラリでは基本 <code>Result</code> を返し、呼び出し側に判断を委ねます。実務では <code>anyhow</code> や <code>thiserror</code> といったクレートでエラー処理をさらに簡潔にできます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Rust Quiz -->
+      <div class="quiz-section" id="rust-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">Rust の所有権・借用・型の基礎を確認しましょう。</p>
+        <div id="rust-quiz-container"></div>
+        <div class="quiz-result" id="rust-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="rust-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="rust-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="rust-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="rust-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('rust')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('rust')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="rust-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

@@ -15,6 +15,7 @@
 // data 側のキー・index.html のナビ／進捗カードを揃える。
 const TAB_IDS = [
   "python",
+  "rust",
   "react",
   "typescript",
   "python-cert",
@@ -32,6 +33,7 @@ const TAB_IDS = [
 
 const TAB_ACCENTS = {
   python: { accent: "var(--python-blue)", glow: "rgba(55,118,171,0.35)" },
+  rust: { accent: "#ce422b", glow: "rgba(206,66,43,0.35)" },
   react: { accent: "var(--react-cyan)", glow: "rgba(97,218,251,0.35)" },
   typescript: { accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
   "python-cert": { accent: "var(--python-yellow)", glow: "rgba(255,212,59,0.35)" },
@@ -52,6 +54,7 @@ const TAB_ACCENTS = {
 // この定数を使う。コンテンツ追加時はここも更新する（CIが検証する）。
 const TAB_LESSON_COUNTS = {
   python: 14,
+  rust: 10,
   react: 14,
   typescript: 11,
   "python-cert": 10,
@@ -1181,7 +1184,7 @@ function searchLessons(query, limit = 10) {
 }
 
 const TAB_LABELS = {
-  python: "Python", react: "React", typescript: "TypeScript",
+  python: "Python", rust: "Rust", react: "React", typescript: "TypeScript",
   "python-cert": "Python認定基礎", algorithm: "アルゴリズム",
   webapi: "Web/API", htmlcss: "HTML/CSS", docker: "Docker",
   database: "データベース", genai: "生成AIパスポート",

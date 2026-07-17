@@ -4,6 +4,18 @@
 // ============================================================
 const puzzleData = {
 
+  rust: {
+    question: "2つの文字列を整数に変換して合計する、? 演算子を使った関数を正しい順番に並べてください。",
+    pieces: [
+      { id: "rust-p1", text: "fn sum_two(a: &str, b: &str) -> Result<i32, std::num::ParseIntError> {" },
+      { id: "rust-p2", text: "    let x = a.parse::<i32>()?;" },
+      { id: "rust-p3", text: "    let y = b.parse::<i32>()?;" },
+      { id: "rust-p4", text: "    Ok(x + y)" },
+      { id: "rust-p5", text: "}" }
+    ],
+    correctOrder: ["rust-p1", "rust-p2", "rust-p3", "rust-p4", "rust-p5"],
+    explanation: "関数シグネチャで戻り値を Result にし、? で各変換の失敗を早期リターンで伝播、最後に Ok(x + y) を末尾式として返します。? を使う関数自身の戻り値も Result である必要があります。"
+  },
   docker: {
     question: "PythonアプリのDockerfileを正しい順番に並べてください。",
     pieces: [
