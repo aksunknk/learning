@@ -484,6 +484,50 @@ const quizData = {
       ],
       correct: 0,
       explanation: "SSE（Server-Sent Events）は `data:` で始まる行の後に空行（\\n\\n）を送ることで1つのイベントを構成します。"
+    },
+    {
+      question: "REST 設計として最も適切なのはどれですか。",
+      options: [
+        "GET /deleteUser?id=1 で削除する",
+        "DELETE /users/{id} で削除し、URL はリソース名で切る",
+        "すべての操作を POST /api/doSomething に集約する",
+        "副作用のある処理をキャッシュしやすい GET に載せる"
+      ],
+      correct: 1,
+      explanation: "URL は名詞（リソース）、操作は HTTP メソッドに載せます。削除は DELETE、副作用のある処理を GET に載せるとキャッシュや中間機器の想定と衝突します。"
+    },
+    {
+      question: "認証付きのユーザー固有 JSON API に適した Cache-Control はどれですか。",
+      options: [
+        "public, max-age=31536000, immutable",
+        "private, no-store",
+        "指定しない（ブラウザに任せる）",
+        "public, max-age=86400"
+      ],
+      correct: 1,
+      explanation: "ユーザー固有データは共有キャッシュに載せないのが基本です。private / no-store で誤配信と保存を抑えます。"
+    },
+    {
+      question: "決済など副作用のある POST をクライアントがリトライしても二重実行しにくくする仕組みはどれですか。",
+      options: [
+        "CORS を * にする",
+        "Idempotency-Key（冪等キー）でサーバーが重複を排除する",
+        "常に HTTP 500 を返す",
+        "クエリパラメータをなくす"
+      ],
+      correct: 1,
+      explanation: "同じ冪等キーの再送には同じ結果を返し、処理を再実行しない設計が典型です。"
+    },
+    {
+      question: "OpenAPI（Swagger）を単一の真実源にする主目的はどれですか。",
+      options: [
+        "CDN の料金を下げる",
+        "エンドポイントと型の契約を機械可読にし、実装とドキュメントのズレを減らす",
+        "SQL を自動で書き換える",
+        "ブラウザの Cookie を無効化する"
+      ],
+      correct: 1,
+      explanation: "OpenAPI は API 契約の共有形式です。FastAPI の自動生成やクライアント生成と組み合わせると結合の安全性が上がります。"
     }
   ]
 };
