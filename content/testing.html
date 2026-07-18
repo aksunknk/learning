@@ -1,4 +1,16 @@
 
+      
+      <div class="tab-intro testing-intro">
+        <h2>🧪 テスト設計</h2>
+        <p>技法とピラミッドから、API 結合・契約・Required Checks まで。初級・中級・上級の 3 段階で、CI に載せる品質を身につけます。</p>
+      </div>
+
+      <!-- ===== 初級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — テスト設計の地図を持つ</h4>
+        <p>ピラミッド、同値分割・境界値、状態遷移、カバレッジ。何を・どこまで測るかを言語化する。</p>
+      </div>
+
       <!-- Lesson 1 -->
       <article class="lesson-card" data-section="testing-1" id="testing-lesson-1">
         <div class="lesson-header" onclick="toggleSection(this)">
@@ -484,6 +496,13 @@ def test_check_eligibility(age, income, expected):
         </div>
       </article>
 
+      
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — 単体テストを武器にする</h4>
+        <p>ペアワイズ、TDD、pytest、モック。ロジックを速く・安定して押さえる。</p>
+      </div>
+
       <!-- Lesson 5 -->
       <article class="lesson-card" data-section="testing-5" id="testing-lesson-5">
         <div class="lesson-header" onclick="toggleSection(this)">
@@ -906,6 +925,13 @@ class TestFetchWeather:
         </div>
       </article>
 
+      
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 結合・契約・CI で本番品質にする</h4>
+        <p>API/E2E、契約テスト、Required Checks、Flaky 対策。Web/API・CI/CD・通しプロジェクトと接続する。</p>
+      </div>
+
       <!-- Lesson 9 -->
       <article class="lesson-card" data-section="testing-9" id="testing-lesson-9">
         <div class="lesson-header" onclick="toggleSection(this)">
@@ -1172,6 +1198,224 @@ jobs:
           </div>
         </div>
       </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="testing-11" id="testing-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>API 結合テスト深化 ── 認可・隔離・エラー契約</h3>
+          </div>
+          <span class="completion-check" id="check-testing-11">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「200 が返る」だけでは結合テストにならないのか？</h4>
+            <p>Lesson 9 の TestClient は入口です。実務の API 結合テストは<strong>認可（誰が何を見られるか）</strong>、<strong>DB 隔離</strong>、<strong>エラー JSON の形</strong>まで固定します。ここが薄いと、IDOR や「フィールド名のズレ」が本番まで残ります。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>認可付き結合テスト（FastAPI TestClient）</span></div>
+            <pre><code># ============================================================
+# API 結合テスト ── 認可とエラー契約を固定する
+# ============================================================
+from fastapi.testclient import TestClient
+from myapp.main import app
+
+client = TestClient(app)
+
+def auth_header(token: str) -> dict:
+    return {"Authorization": f"Bearer {token}"}
+
+def test_owner_can_read_own_task(owner_token, other_token, seeded_task_id):
+    """所有者は自分のタスクを読める"""
+    r = client.get(f"/tasks/{seeded_task_id}", headers=auth_header(owner_token))
+    assert r.status_code == 200
+    assert r.json()["id"] == seeded_task_id
+
+def test_other_user_gets_403_or_404(other_token, seeded_task_id):
+    """他人のタスクは 403/404（方針をチームで固定）"""
+    r = client.get(f"/tasks/{seeded_task_id}", headers=auth_header(other_token))
+    assert r.status_code in (403, 404)
+    body = r.json()
+    assert "detail" in body  # エラー契約: 秘密を晒さない短いメッセージ
+
+def test_unauthenticated_gets_401(seeded_task_id):
+    r = client.get(f"/tasks/{seeded_task_id}")
+    assert r.status_code == 401
+
+# ⚠️ 各テスト前にトランザクション rollback かテスト DB 再作成で隔離する
+# ⚠️ 本番 DB への接続文字列を絶対に使わない</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>結合テストのシードは「ハッピーパス用ユーザー」「権限なしユーザー」「期限切れトークン」の最低 3 ロールを用意します。アサーションは status だけでなく、<code>detail</code> / <code>code</code> など<strong>フロントが分岐に使うキー</strong>まで含めると、Web/API 章のエラー契約と一本になります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 12 -->
+      <article class="lesson-card" data-section="testing-12" id="testing-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>契約テストとフロント結合 ── OpenAPI と UI のつなぎ目</h3>
+          </div>
+          <span class="completion-check" id="check-testing-12">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「API は緑・フロントも緑」なのに結合で壊れるのか？</h4>
+            <p>フィールド名や null 許容のズレは単体では見えません。<strong>契約テスト</strong>は OpenAPI（またはスキーマ）を真実の源にし、実装とクライアントが同じ形を話すことを保証します。フロント側は重い E2E の前に、コンポーネント＋モックレスポンスで結合の薄い層を持ちます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>契約の考え方（OpenAPI をゲートにする）</span></div>
+            <pre><code># ============================================================
+# 契約テストの最小フロー
+# ============================================================
+# 1. FastAPI が生成する OpenAPI ( /openapi.json ) を CI で保存
+# 2. レスポンスをスキーマ検証（例: schemathesis / openapi-schema-validator）
+# 3. フロントの型（Zod / TypeScript）を同じスキーマから生成 or 手で同期
+#
+# 例: 必須フィールドが消えたら CI で落とす
+# schemathesis run http://localhost:8000/openapi.json \
+#   --checks all --hypothesis-max-examples=50
+#
+# フロント（概念）:
+# const TaskSchema = z.object({
+#   id: z.string().uuid(),
+#   title: z.string().min(1),
+#   done: z.boolean(),
+# });
+# TaskSchema.parse(await res.json());  // 実行時に契約違反を検知</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>フロント結合の薄い層（RTL 概念）</span></div>
+            <pre><code>// ============================================================
+// コンポーネント結合 ── fetch をモックし UI 契約を検証
+// ============================================================
+// render(<TaskList />);
+// mockFetch([{ id: "1", title: "ship", done: false }]);
+// expect(screen.getByTestId("task-1")).toHaveTextContent("ship");
+//
+// ⚠️ E2E に全部寄せない。リスト表示・空状態・401 時の導線は
+//    この層で十分。ログイン〜決済だけ Playwright に残す。</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>契約の更新は PR で見える化します。「スキーマ差分なし・実装だけ変えた」変更はレビューで疑います。TypeScript 章の Zod と Web/API 章の OpenAPI は、同じエラーを別レイヤで潰すペアです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 13 -->
+      <article class="lesson-card" data-section="testing-13" id="testing-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">13</span>
+            <h3>Required Checks 実践 ── テストをマージの扉にする</h3>
+          </div>
+          <span class="completion-check" id="check-testing-13">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「CI がある」と「マージを止められる」は別物なのか？</h4>
+            <p>Workflow を置いただけでは、失敗してもマージできます。<strong>Branch protection の Required Checks</strong>で、緑のジョブ名を必須にすると初めて品質ゲートになります。テスト章の戦略と CI/CD 章の PR チェックはここで接続します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>ジョブ分割と必須チェックの設計</span></div>
+            <pre><code># ============================================================
+# .github/workflows/ci.yml ── 速く落とす / 厚く見る
+# ============================================================
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt pytest
+      - run: pytest -m "not integration and not e2e" --cov-fail-under=70
+
+  api-integration:
+    runs-on: ubuntu-latest
+    needs: unit
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+        ports: ["5432:5432"]
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -r requirements.txt pytest
+      - run: pytest -m integration
+
+# GitHub Settings → Branches → Require status checks:
+#   ✅ unit
+#   ✅ api-integration
+# （ジョブ名と Checks 名を一致させる）</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>PR では unit を 2 分以内、結合は needs で後段に置くとフィードバックが死にません。カバレッジ閾値は最初から 90% にせず、<strong>下げない方向だけルール化</strong>します。Secrets はテスト用 DB パスワードのみ——本番鍵を CI に載せない（security-8 / cicd-5）。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 14 -->
+      <article class="lesson-card" data-section="testing-14" id="testing-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>Flaky 対策とデプロイ後スモーク ── 信頼されるテストスイート</h3>
+          </div>
+          <span class="completion-check" id="check-testing-14">✓</span>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>🎯 なぜ「たまに赤」は緑より危険なのか？</h4>
+            <p>Flaky（再現しない失敗）はチームが CI を無視する最大要因です。原因は待機不足・共有状態・時刻依存・外部 API です。<strong>隔離・決定論・リトライは最後の手段</strong>。デプロイ後はクリティカルパスのスモークで「生きている」ことを確認します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header"><span>Flaky を潰すチェックリストとスモーク</span></div>
+            <pre><code># ============================================================
+# Flaky 対策（優先順）
+# ============================================================
+# 1. 共有 DB / 共有ファイルをやめる（各テストで隔離）
+# 2. sleep(3) をやめ、明示的待機（wait_for_selector / 条件）
+# 3. 時刻は freezegun / 固定クロック
+# 4. 外部 API はモック（結合で本物を叩く範囲を限定）
+# 5. それでも揺れる E2E だけリトライ（pytest-rerunfailures 等）
+#
+# デプロイ後スモーク（概念）:
+# curl -fsS "$BASE_URL/health" | jq -e '.status == "ok"'
+# curl -fsS -H "Authorization: Bearer $SMOKE_TOKEN" \
+#   "$BASE_URL/api/tasks" | jq -e 'type == "array"'
+#
+# CI/CD 章のヘルスチェック・ロールバックと同じ信号を使う</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>「再実行したら通った」をマージ理由にしない。Issue に Flaky ラベルを付け、再現手順か quarantine（一時 skip + 期限）をセットにします。通しプロジェクトの CI デプロイ後も、同じスモーク 2〜3 本を必須にすると本番事故が激減します。</p>
+          </div>
+        </div>
+      </article>
+
 
       <!-- Quiz Section -->
             <div class="quiz-section" id="testing-quiz">

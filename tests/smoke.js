@@ -183,6 +183,7 @@ async function main() {
         ).length,
         miniMissions: panel.querySelectorAll(".mini-mission").length,
         rubric: panel.querySelectorAll(".chapter-rubric").length,
+        crossRefs: panel.querySelectorAll(".cross-refs").length,
         expectsPractice: hasMissionData,
       };
     }, tab);
@@ -377,6 +378,26 @@ async function main() {
   if ((results.tabs.javascript?.miniMissions || 0) < 3) {
     failures.push(
       `javascript should inject 3 tier missions, got ${results.tabs.javascript?.miniMissions}`
+    );
+  }
+  if ((results.tabs.testing?.miniMissions || 0) < 3) {
+    failures.push(
+      `testing should inject 3 tier missions, got ${results.tabs.testing?.miniMissions}`
+    );
+  }
+  if ((results.tabs.testing?.lessons || 0) < 14) {
+    failures.push(
+      `testing should have 14 lessons, got ${results.tabs.testing?.lessons}`
+    );
+  }
+  if ((results.tabs.security?.crossRefs || 0) < 1) {
+    failures.push(
+      `security should inject cross-refs, got ${results.tabs.security?.crossRefs}`
+    );
+  }
+  if ((results.tabs.webapi?.crossRefs || 0) < 1) {
+    failures.push(
+      `webapi should inject cross-refs, got ${results.tabs.webapi?.crossRefs}`
     );
   }
 

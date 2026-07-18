@@ -548,8 +548,18 @@ except OSError as e:
   },
 
   testing: {
-    mission: {
-      title: "章末ミニミッション",
+    beginner: {
+      title: "初級編ミニミッション",
+      minutes: 20,
+      goal: "境界値と同値クラスを表に落とす",
+      tasks: [
+        "入力1つについて有効/無効の同値クラスを書く",
+        "境界とその前後の値を3つ以上挙げる",
+        "どのレベル（単体/結合/E2E）で見るか1行で決める",
+      ],
+    },
+    intermediate: {
+      title: "中級編ミニミッション",
       minutes: 25,
       goal: "失敗するテストを先に書いてから通す",
       tasks: [
@@ -558,11 +568,22 @@ except OSError as e:
         "実装して緑にする",
       ],
     },
+    advanced: {
+      title: "上級編ミニミッション",
+      minutes: 30,
+      goal: "API 結合テストを CI の必須チェックに載せる設計をする",
+      tasks: [
+        "認可の成功/拒否を含む結合テスト方針を書く",
+        "unit と integration のジョブ分割を YAML 骨格で書く",
+        "Required Checks に載せるジョブ名を決める",
+      ],
+    },
     rubric: [
       { id: "pyramid", label: "テストピラミッドを説明できる" },
       { id: "unit", label: "単体テストを書ける" },
       { id: "design", label: "同値分割/境界値を使える" },
-      { id: "ci", label: "CI でテストを回せると理解している" },
+      { id: "api", label: "API 結合・契約テストの役割を説明できる" },
+      { id: "ci", label: "Required Checks で品質ゲートにできる" },
     ],
   },
 

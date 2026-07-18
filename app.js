@@ -32,7 +32,7 @@ const TABS = {
   react:         { label: "React",            icon: "⚛️", group: "frontend", lessons: 17, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
   "python-cert": { label: "Python認定基礎",   icon: "📜", group: "practice", lessons: 10, accent: "var(--python-yellow)",   glow: "rgba(255,212,59,0.35)" },
   "python-prac": { label: "Python実践試験",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
-  testing:       { label: "テスト設計",       icon: "🧪", group: "practice", lessons: 10, accent: "var(--testing-green)",   glow: "rgba(76,175,80,0.35)" },
+  testing:       { label: "テスト設計",       icon: "🧪", group: "practice", lessons: 14, accent: "var(--testing-green)",   glow: "rgba(76,175,80,0.35)" },
   security:      { label: "セキュリティ",     icon: "🔒", group: "practice", lessons: 12, accent: "#e11d48",                glow: "rgba(225,29,72,0.35)" },
   pathway:       { label: "通しプロジェクト", icon: "🧵", group: "practice", lessons: 12, accent: "#0f766e",                glow: "rgba(15,118,110,0.35)" },
   genai:         { label: "生成AIパスポート", icon: "🤖", group: "practice", lessons: 8,  accent: "var(--genai-purple)",    glow: "rgba(156,39,176,0.35)" },
@@ -221,6 +221,7 @@ async function loadTabContent(tabId) {
 
     // 編末 Mini Mission / 章末ルーブリックを注入してから実行ボタンを付与する
     injectPracticeLayer(tabId, panel);
+    injectCrossRefs(panel);
 
     // 注入後にタブ固有のインタラクションを初期化
     initQuizForTab(tabId);
@@ -416,6 +417,42 @@ function injectPracticeLayer(tabId, panel) {
 }
 
 window.injectPracticeLayer = injectPracticeLayer;
+
+function injectCrossRefs(panel) {
+  if (!panel || typeof crossRefData === "undefined") return;
+  if (panel.dataset.crossRefsInjected === "1") return;
+
+  panel.querySelectorAll(".lesson-card[data-section]").forEach((card) => {
+    const id = card.dataset.section;
+    const links = crossRefData[id];
+    if (!links?.length || card.querySelector(".cross-refs")) return;
+
+    const body = card.querySelector(".lesson-body") || card;
+    const nav = document.createElement("nav");
+    nav.className = "cross-refs";
+    nav.setAttribute("aria-label", "関連レッスン");
+    nav.innerHTML = `
+      <span class="cross-refs-label">関連</span>
+      <ul class="cross-refs-list">
+        ${links
+          .map(
+            (l) => `<li>
+          <button type="button" class="cross-ref-link"
+            onclick="jumpToLesson('${escapeHtml(l.tab)}','${escapeHtml(l.section)}')">
+            ${escapeHtml(l.label)}
+            <span class="cross-ref-id">${escapeHtml(l.section)}</span>
+          </button>
+        </li>`
+          )
+          .join("")}
+      </ul>`;
+    body.appendChild(nav);
+  });
+
+  panel.dataset.crossRefsInjected = "1";
+}
+
+window.injectCrossRefs = injectCrossRefs;
 
 function waitUntil(predicate, intervalMs = 50) {
   return new Promise((resolve) => {
@@ -1485,6 +1522,8 @@ async function jumpToLesson(tab, sectionId) {
   card.classList.add("search-highlight");
   setTimeout(() => card.classList.remove("search-highlight"), 2400);
 }
+
+window.jumpToLesson = jumpToLesson;
 
 // ==================================================
 // コード実行（WBS 3.3.1 JS / 3.3.3 Python）
