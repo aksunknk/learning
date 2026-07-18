@@ -5,7 +5,8 @@
 #   content/{tab}.html  各タブのレッスン本文（遅延読込）
 #   data/quizzes.js     クイズデータ
 #   data/puzzles.js     パズルデータ
-#   app.js              UIロジック（TABS レジストリ・シェル生成・読込・進捗・クイズ・パズル）
+#   data/missions.js    編末 Mini Mission / 章末ルーブリック（読込後に注入）
+#   app.js              UIロジック（TABS レジストリ・シェル生成・読込・進捗・クイズ・パズル・演習層）
 #   style.css           スタイル
 #   tests/smoke.js      ヘッドレススモークテスト
 #

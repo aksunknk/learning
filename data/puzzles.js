@@ -110,6 +110,18 @@ const puzzleData = {
     explanation: "「役割」で前提を共有し、「目的」を伝え、「制約」と「出力形式」でコントロールし、最後に「対象データ」を渡すのが、ハルシネーションを防ぐ構造化プロンプトの基本です。"
   },
 
+  pathway: {
+    question: "TaskBoard 縦糸の進め方を正しい順番に並べてください。",
+    pieces: [
+      { id: "path-p1", text: "HTML/CSS で画面骨格を作る" },
+      { id: "path-p2", text: "JS + localStorage で CRUD を動かす" },
+      { id: "path-p3", text: "REST 契約を書いて API + DB を実装する" },
+      { id: "path-p4", text: "React/TS クライアントへ置換しテストで固定する" },
+      { id: "path-p5", text: "Docker → CI/CD → セキュリティ点検 → 公開" }
+    ],
+    correctOrder: ["path-p1", "path-p2", "path-p3", "path-p4", "path-p5"],
+    explanation: "静的骨格 → 手元で動く状態 → 契約とサーバー永続化 → モダンフロントとテスト → 梱包・自動化・点検・公開、の順が縦糸の基本型です。いきなり全部を同時に始めません。"
+  },
   security: {
     question: "パスワード検証付きログイン処理を正しい順番に並べてください。",
     pieces: [

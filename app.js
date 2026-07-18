@@ -1,9 +1,9 @@
 // ============================================================
 // app.js — Code Foundations 学習サイト（ロジック層）
 //
-// データは data/quizzes.js / data/puzzles.js、
+// データは data/quizzes.js / data/puzzles.js / data/missions.js、
 // レッスン本文は content/*.html に分離済み。
-// このファイルは UI 操作・進捗・遅延読込のみを担当する。
+// このファイルは UI 操作・進捗・遅延読込・演習層注入のみを担当する。
 // ============================================================
 
 "use strict";
@@ -25,15 +25,16 @@ const TABS = {
   typescript:    { label: "TypeScript",       icon: "🔷", group: "basics",   lessons: 15, accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
   git:           { label: "Git / GitHub",     icon: "🌿", group: "basics",   lessons: 8,  accent: "var(--git-orange)",      glow: "rgba(240,80,51,0.35)" },
   linux:         { label: "Linux / CLI",      icon: "🐧", group: "basics",   lessons: 14, accent: "#fcc624",                glow: "rgba(252,198,36,0.35)" },
-  database:      { label: "データベース",     icon: "🗄️", group: "backend",  lessons: 12, accent: "var(--database-teal)",   glow: "rgba(0,150,136,0.35)" },
+  database:      { label: "データベース",     icon: "🗄️", group: "backend",  lessons: 16, accent: "var(--database-teal)",   glow: "rgba(0,150,136,0.35)" },
   webapi:        { label: "Web/API",          icon: "🌐", group: "backend",  lessons: 14, accent: "var(--webapi-green)",    glow: "rgba(0,191,165,0.35)" },
-  docker:        { label: "Docker",           icon: "🐳", group: "backend",  lessons: 8,  accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
+  docker:        { label: "Docker",           icon: "🐳", group: "backend",  lessons: 14, accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
   cicd:          { label: "CI/CD・デプロイ",  icon: "🚀", group: "backend",  lessons: 12, accent: "#2088ff",                glow: "rgba(32,136,255,0.35)" },
   react:         { label: "React",            icon: "⚛️", group: "frontend", lessons: 17, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
   "python-cert": { label: "Python認定基礎",   icon: "📜", group: "practice", lessons: 10, accent: "var(--python-yellow)",   glow: "rgba(255,212,59,0.35)" },
   "python-prac": { label: "Python実践試験",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
   testing:       { label: "テスト設計",       icon: "🧪", group: "practice", lessons: 10, accent: "var(--testing-green)",   glow: "rgba(76,175,80,0.35)" },
   security:      { label: "セキュリティ",     icon: "🔒", group: "practice", lessons: 12, accent: "#e11d48",                glow: "rgba(225,29,72,0.35)" },
+  pathway:       { label: "通しプロジェクト", icon: "🧵", group: "practice", lessons: 12, accent: "#0f766e",                glow: "rgba(15,118,110,0.35)" },
   genai:         { label: "生成AIパスポート", icon: "🤖", group: "practice", lessons: 8,  accent: "var(--genai-purple)",    glow: "rgba(156,39,176,0.35)" },
   capstone:      { label: "キャップストーン", icon: "🏗️", group: "practice", lessons: 10, accent: "var(--capstone-gold)",   glow: "rgba(255,179,0,0.35)" },
 };
@@ -59,12 +60,15 @@ const ROADMAP = [
   "typescript",
   "testing",
   "security",
+  "pathway",
   "capstone",
 ].map((tab) => ({ tab, ...TABS[tab] }));
 
 const STORAGE_KEYS = {
   completed: "cf_completed",
   quizAnswered: "cf_quizAnswered",
+  missions: "cf_missions",
+  rubrics: "cf_rubrics",
 };
 
 // タブ別コンテンツの読込状態（未読込 / 読込中 / 完了）
@@ -215,6 +219,9 @@ async function loadTabContent(tabId) {
     panel.setAttribute("aria-busy", "false");
     contentCache[tabId] = "loaded";
 
+    // 編末 Mini Mission / 章末ルーブリックを注入してから実行ボタンを付与する
+    injectPracticeLayer(tabId, panel);
+
     // 注入後にタブ固有のインタラクションを初期化
     initQuizForTab(tabId);
     loadPuzzle(tabId);
@@ -241,6 +248,174 @@ function retryLoadTab(tabId) {
   contentCache[tabId] = null;
   return loadTabContent(tabId);
 }
+
+// --------------------------------------------------
+// Mini Mission / 章末ルーブリック（data/missions.js）
+// --------------------------------------------------
+function findTierSeparator(panel, label) {
+  return [...panel.querySelectorAll(".explanation-box h4")].find((h) =>
+    h.textContent.includes(label)
+  )?.closest(".explanation-box");
+}
+
+function buildMissionElement(tabId, tierKey, mission) {
+  const section = document.createElement("section");
+  section.className = "mini-mission";
+  section.dataset.missionTier = tierKey;
+  section.setAttribute("aria-label", mission.title);
+
+  const tasksHtml = (mission.tasks || [])
+    .map((task, i) => {
+      const id = `${tabId}:${tierKey}:${i}`;
+      return `<li>
+        <label class="mini-mission-task">
+          <input type="checkbox" data-mission-id="${escapeHtml(id)}" />
+          <span>${escapeHtml(task)}</span>
+        </label>
+      </li>`;
+    })
+    .join("");
+
+  let starterHtml = "";
+  if (mission.starter?.code) {
+    starterHtml = `
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">${escapeHtml(mission.starter.lang || "Code")}</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+        </div>
+        <pre><code>${escapeHtml(mission.starter.code)}</code></pre>
+      </div>`;
+  }
+
+  section.innerHTML = `
+    <div class="mini-mission-header">
+      <h4>🎯 ${escapeHtml(mission.title)}</h4>
+      <span class="mini-mission-meta">目安 ${Number(mission.minutes) || 20} 分</span>
+    </div>
+    <p class="mini-mission-goal"><strong>ゴール:</strong> ${escapeHtml(mission.goal || "")}</p>
+    <ul class="mini-mission-tasks">${tasksHtml}</ul>
+    ${starterHtml}
+    <p class="mini-mission-hint">チェックは端末に保存されます。全部付けてから次の編へ進むのが推奨ルートです。</p>
+  `;
+  return section;
+}
+
+function buildRubricElement(tabId, rubric) {
+  const section = document.createElement("section");
+  section.className = "chapter-rubric";
+  section.setAttribute("aria-label", "章末ルーブリック");
+
+  const rows = rubric
+    .map((item) => {
+      const id = `${tabId}:${item.id}`;
+      return `<tr>
+        <th scope="row">${escapeHtml(item.label)}</th>
+        <td>
+          <select data-rubric-id="${escapeHtml(id)}" aria-label="${escapeHtml(item.label)}">
+            <option value="todo">未着手</option>
+            <option value="partial">曖昧</option>
+            <option value="done">できた</option>
+          </select>
+        </td>
+      </tr>`;
+    })
+    .join("");
+
+  section.innerHTML = `
+    <div class="chapter-rubric-header">
+      <h4>📋 章末ルーブリック（自己採点）</h4>
+    </div>
+    <p class="chapter-rubric-intro">「読んだ」ではなく「できる」を3段階で記録します。曖昧が残る項目は関連レッスンへ戻ってください。</p>
+    <table class="chapter-rubric-table">
+      <thead><tr><th>観点</th><th>自己評価</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+  return section;
+}
+
+function restorePracticeState(panel) {
+  const missions = safeParse(STORAGE_KEYS.missions, {});
+  panel.querySelectorAll("input[data-mission-id]").forEach((input) => {
+    input.checked = !!missions[input.dataset.missionId];
+  });
+  const rubrics = safeParse(STORAGE_KEYS.rubrics, {});
+  panel.querySelectorAll("select[data-rubric-id]").forEach((select) => {
+    const v = rubrics[select.dataset.rubricId];
+    if (v) select.value = v;
+  });
+}
+
+function bindPracticeLayer(panel) {
+  panel.querySelectorAll("input[data-mission-id]").forEach((input) => {
+    input.addEventListener("change", () => {
+      const all = safeParse(STORAGE_KEYS.missions, {});
+      if (input.checked) all[input.dataset.missionId] = true;
+      else delete all[input.dataset.missionId];
+      localStorage.setItem(STORAGE_KEYS.missions, JSON.stringify(all));
+    });
+  });
+  panel.querySelectorAll("select[data-rubric-id]").forEach((select) => {
+    select.addEventListener("change", () => {
+      const all = safeParse(STORAGE_KEYS.rubrics, {});
+      all[select.dataset.rubricId] = select.value;
+      localStorage.setItem(STORAGE_KEYS.rubrics, JSON.stringify(all));
+    });
+  });
+}
+
+function injectPracticeLayer(tabId, panel) {
+  if (!panel || panel.dataset.missionsInjected === "1") return;
+  if (typeof missionData === "undefined" || !missionData[tabId]) return;
+
+  const data = missionData[tabId];
+  const midSep = findTierSeparator(panel, "中級編");
+  const advSep = findTierSeparator(panel, "上級編");
+  const frameworkSep = findTierSeparator(panel, "フレームワーク編");
+  const quizEl =
+    panel.querySelector(`#${tabId}-quiz`) ||
+    panel.querySelector(".quiz-section");
+
+  if (data.beginner && midSep) {
+    midSep.parentNode.insertBefore(
+      buildMissionElement(tabId, "beginner", data.beginner),
+      midSep
+    );
+  }
+  if (data.intermediate && advSep) {
+    advSep.parentNode.insertBefore(
+      buildMissionElement(tabId, "intermediate", data.intermediate),
+      advSep
+    );
+  }
+
+  const advancedAnchor = frameworkSep || quizEl;
+  if (data.advanced && advancedAnchor) {
+    advancedAnchor.parentNode.insertBefore(
+      buildMissionElement(tabId, "advanced", data.advanced),
+      advancedAnchor
+    );
+  } else if (data.mission && quizEl) {
+    quizEl.parentNode.insertBefore(
+      buildMissionElement(tabId, "chapter", data.mission),
+      quizEl
+    );
+  }
+
+  if (data.rubric?.length && quizEl) {
+    quizEl.parentNode.insertBefore(buildRubricElement(tabId, data.rubric), quizEl);
+  }
+
+  // ティア区切りが無い章で beginner だけ定義されている場合のフォールバックは不要
+  // （git/testing 等は mission + rubric のみ）
+
+  panel.dataset.missionsInjected = "1";
+  restorePracticeState(panel);
+  bindPracticeLayer(panel);
+}
+
+window.injectPracticeLayer = injectPracticeLayer;
 
 function waitUntil(predicate, intervalMs = 50) {
   return new Promise((resolve) => {

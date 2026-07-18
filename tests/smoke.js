@@ -173,12 +173,17 @@ async function main() {
 
     results.tabs[tab] = await page.evaluate((name) => {
       const panel = document.getElementById(`content-${name}`);
+      const hasMissionData =
+        typeof missionData !== "undefined" && !!missionData[name];
       return {
         lessons: panel.querySelectorAll(".lesson-card").length,
         quizQuestions: panel.querySelectorAll(".quiz-question").length,
         puzzlePieces: panel.querySelectorAll(
           `#${name}-puzzle-source .puzzle-piece`
         ).length,
+        miniMissions: panel.querySelectorAll(".mini-mission").length,
+        rubric: panel.querySelectorAll(".chapter-rubric").length,
+        expectsPractice: hasMissionData,
       };
     }, tab);
 
@@ -330,11 +335,11 @@ async function main() {
 
   // Assertions
   const failures = [...staticFailures];
-  if (tabs.length !== 19) failures.push(`expected 19 tabs, got ${tabs.length}`);
+  if (tabs.length !== 20) failures.push(`expected 20 tabs, got ${tabs.length}`);
 
   // Phase 3
-  if (results.roadmap.nodes !== 15)
-    failures.push(`expected 15 roadmap nodes, got ${results.roadmap.nodes}`);
+  if (results.roadmap.nodes !== 16)
+    failures.push(`expected 16 roadmap nodes, got ${results.roadmap.nodes}`);
   if (results.roadmap.firstTab !== "htmlcss")
     failures.push(`roadmap should start with htmlcss, got ${results.roadmap.firstTab}`);
   if (!results.search || results.search.count < 1)
@@ -362,6 +367,17 @@ async function main() {
     if (info.lessons < 1) failures.push(`${tab}: no lessons`);
     if (info.quizQuestions < 1) failures.push(`${tab}: no quiz questions`);
     if (info.puzzlePieces < 1) failures.push(`${tab}: no puzzle pieces`);
+    if (info.expectsPractice) {
+      if (info.miniMissions < 1)
+        failures.push(`${tab}: missionData defined but no .mini-mission injected`);
+      if (info.rubric < 1)
+        failures.push(`${tab}: missionData defined but no .chapter-rubric injected`);
+    }
+  }
+  if ((results.tabs.javascript?.miniMissions || 0) < 3) {
+    failures.push(
+      `javascript should inject 3 tier missions, got ${results.tabs.javascript?.miniMissions}`
+    );
   }
 
   if ((results.groups.basics || []).length < 2)

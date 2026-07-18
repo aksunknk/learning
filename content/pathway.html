@@ -1,0 +1,818 @@
+      <div class="tab-intro pathway-intro">
+        <h2>🧵 通しプロジェクト</h2>
+        <p>同一アプリ TaskBoard を、HTML → JS → API/DB → React → Docker → CI/CD → セキュリティ点検まで一本で繋ぐ縦糸演習です。他チャプターは辞書、この章は組み立て図として使います。</p>
+      </div>
+
+      <!-- ===== 初級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — 1 つの画面を、手元だけで動かす</h4>
+        <p>成果物 TaskBoard を定義し、HTML/CSS → JavaScript → Git まで。サーバー無しで「使える UI」を先に作ります。</p>
+      </div>
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="pathway-1" id="pathway-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>縦糸プロジェクトとは — TaskBoard を一本の糸にする</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 章は「部品」、この章は「組み立て図」</h4>
+            <p><strong>他チャプターで学んだ技術を、同一アプリ TaskBoard（タスク管理）に順に接続します。</strong> ゴールはフレームワーク全部を同時に覚えることではなく、「今どの層を触っているか」を常に説明できることです。キャップストーンの直前に、結合の地図を頭に入れるための章です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>成果物の定義（スコープを狭く固定する）</h4>
+            <p>機能を増やしすぎると縦糸が切れます。v1 は次の 4 つだけに限定します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>TaskBoard v1:
+  - タスクの作成 / 一覧 / 完了トグル / 削除
+  - タイトルは必須、空文字は拒否
+  - ユーザー認証は「後で足す」（最初は単一ユーザー想定）
+  - UI はシンプル（リスト + 入力 + ボタン）
+
+Non-goals（今はやらない）:
+  - リアルタイム共同編集
+  - 複雑なラベル体系
+  - モバイルアプリ</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>完成までの段階マップ</h4>
+            <p>各ステップ終了時に「動くデモ」がある状態を維持します。これが縦糸の核心です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>Step A  HTML/CSS 静的画面
+Step B  JS + localStorage（オフラインで完結）
+Step C  REST API + DB（永続化をサーバーへ）
+Step D  React/TS クライアントへ置換
+Step E  Docker → CI/CD → セキュリティ点検 → 公開</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] TaskBoard v1 の機能境界を自分の言葉で言える<br>[ ] Non-goals を 3 つ書き出した<br>[ ] 今の自分の到達ステップ（A〜E）を選んだ</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：他章は辞書、この章は物語</h4>
+            <p>詳細文法で詰まったら関連チャプターへ飛び、戻ってきたら必ず TaskBoard に適用してください。「読んだだけ」で次へ進まないのがこの章のルールです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="pathway-2" id="pathway-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>Step A — HTML/CSS で骨格を作る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 見た目より「構造と名前」を先に決める</h4>
+            <p><strong>最初の成果は、まだ動かないが意味のある HTML です。</strong> フォーム・リスト・空状態の置き場をセマンティックに切り、CSS で最低限の読みやすさを確保します。ここでの <code>id</code> / <code>data-*</code> 設計が、次の JS と React の両方を楽にします。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
+            <h4>🔗 関連チャプター</h4>
+            <p>このステップの詳細学習: <code>htmlcss</code>（HTML/CSS）</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>必須 DOM 構造</h4>
+            <p>入力・追加ボタン・一覧・空メッセージ。完了済みの見た目差はクラスで表現できる余地を残します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;main class="board"&gt;
+  &lt;h1&gt;TaskBoard&lt;/h1&gt;
+  &lt;form id="task-form"&gt;
+    &lt;label for="task-title"&gt;タスク&lt;/label&gt;
+    &lt;input id="task-title" name="title" required maxlength="100" /&gt;
+    &lt;button type="submit"&gt;追加&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;p id="empty" hidden&gt;タスクはまだありません&lt;/p&gt;
+  &lt;ul id="task-list" aria-live="polite"&gt;&lt;/ul&gt;
+&lt;/main&gt;</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">CSS</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>.board { max-width: 40rem; margin: 2rem auto; font-family: system-ui, sans-serif; }
+#task-list { list-style: none; padding: 0; }
+#task-list li { display: flex; gap: .75rem; align-items: center; padding: .5rem 0; border-bottom: 1px solid #ddd; }
+#task-list li.done span { text-decoration: line-through; opacity: .6; }</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] ブラウザで骨格が表示される<br>[ ] 入力欄と追加ボタンにフォーカス順が通る<br>[ ] 空状態用の要素を用意した</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="pathway-3" id="pathway-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>Step B — JavaScript で操作し localStorage に残す</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 サーバー前に「状態」の形を確定する</h4>
+            <p><strong>タスク配列を唯一の状態源にし、描画関数で DOM を更新します。</strong> 永続化はとりあえず <code>localStorage</code>。このデータ形（id / title / done）を後で API・DB・React まで引きずります。形を途中で大きく変えないことが、縦糸を切らないコツです。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
+            <h4>🔗 関連チャプター</h4>
+            <p>このステップの詳細学習: <code>javascript</code>（JavaScript）</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>状態と描画の分離</h4>
+            <p>イベントハンドラは状態を変え、最後に <code>render()</code> を呼ぶ——React に進んでも同じ発想です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const KEY = "taskboard.v1";
+/** @type {{id:string,title:string,done:boolean}[]} */
+let tasks = JSON.parse(localStorage.getItem(KEY) || "[]");
+
+const form = document.querySelector("#task-form");
+const input = document.querySelector("#task-title");
+const list = document.querySelector("#task-list");
+const empty = document.querySelector("#empty");
+
+function save() {
+  localStorage.setItem(KEY, JSON.stringify(tasks));
+}
+
+function render() {
+  list.innerHTML = "";
+  empty.hidden = tasks.length &gt; 0;
+  for (const t of tasks) {
+    const li = document.createElement("li");
+    if (t.done) li.classList.add("done");
+    li.innerHTML = ""; // XSS 回避のため textContent で組み立て
+    const check = document.createElement("input");
+    check.type = "checkbox";
+    check.checked = t.done;
+    check.addEventListener("change", () =&gt; {
+      t.done = check.checked;
+      save();
+      render();
+    });
+    const span = document.createElement("span");
+    span.textContent = t.title;
+    const del = document.createElement("button");
+    del.type = "button";
+    del.textContent = "削除";
+    del.addEventListener("click", () =&gt; {
+      tasks = tasks.filter((x) =&gt; x.id !== t.id);
+      save();
+      render();
+    });
+    li.append(check, span, del);
+    list.append(li);
+  }
+}
+
+form.addEventListener("submit", (e) =&gt; {
+  e.preventDefault();
+  const title = input.value.trim();
+  if (!title) return;
+  tasks.push({ id: crypto.randomUUID(), title, done: false });
+  input.value = "";
+  save();
+  render();
+});
+
+render();</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] 追加・完了・削除が動く<br>[ ] リロード後もタスクが残る<br>[ ] innerHTML にユーザー入力を直接入れてない</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：この時点でデモ動画を撮る</h4>
+            <p>ポートフォリオでは「進化の記録」が強いです。localStorage 版の短い録画を残しておくと、後の API 版との対比になります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="pathway-4" id="pathway-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>リポジトリを整える — 縦糸を Git に載せる</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 再現できない進捗は進捗ではない</h4>
+            <p><strong>Step B が動いた瞬間にリポジトリを初期化し、意味のあるコミット単位で積みます。</strong> <code>.gitignore</code> に秘密と生成物を入れ、<code>README</code> に「今どこまで動くか」を 5 行で書きます。以降の API 化も PR 単位で進めます。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
+            <h4>🔗 関連チャプター</h4>
+            <p>このステップの詳細学習: <code>git</code>（Git / GitHub） / <code>linux</code>（Linux / CLI）</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>git init
+echo -e "node_modules/\n.env\n.DS_Store\ndist/" &gt; .gitignore
+git add .
+git commit -m "Add TaskBoard static UI with localStorage"
+
+# README 最小例
+# ## TaskBoard
+# 現状: ブラウザ単体で CRUD（localStorage）
+# 次: FastAPI で /tasks を生やす</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] 初回コミットがある<br>[ ] .env が追跡されていない<br>[ ] README に現状と次の一手が書いてある</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — サーバー・DB・モダンフロントへ接続する</h4>
+        <p>localStorage の状態形を REST + DB に移し、React/TypeScript クライアントとテストで固めます。</p>
+      </div>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="pathway-5" id="pathway-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>Step C-1 — REST 契約を先に書く</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 実装より前に「パスと JSON」を固定する</h4>
+            <p><strong>フロントとバックを同時に書くと契約が揺れます。</strong> 先にエンドポイントとステータス、エラー形を決め、OpenAPI か短い仕様メモに残します。Step B のタスク形をほぼそのまま JSON にします。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
+            <h4>🔗 関連チャプター</h4>
+            <p>このステップの詳細学習: <code>webapi</code>（Web/API）</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>GET    /api/tasks          -&gt; 200 { "items": Task[] }
+POST   /api/tasks          -&gt; 201 Task
+       body: { "title": string }
+PATCH  /api/tasks/{id}     -&gt; 200 Task
+       body: { "title"?: string, "done"?: boolean }
+DELETE /api/tasks/{id}     -&gt; 204
+
+Task = { "id": string, "title": string, "done": boolean }
+
+Errors:
+  422 validation / 404 not found
+  { "error": { "code": "...", "message": "..." } }</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] 4 メソッドの契約をノートまたは README に書いた<br>[ ] Task 型が Step B と互換<br>[ ] エラー JSON の形を 1 つに決めた</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="pathway-6" id="pathway-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>Step C-2 — FastAPI + DB で永続化する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ブラウザの外に「真実」を移す</h4>
+            <p><strong>localStorage をやめるのではなく、サーバーを真実源にします。</strong> テーブル <code>tasks</code> を作り、契約どおりの CRUD を実装します。最初は SQLite で十分です。マイグレーションの習慣だけ先に付けます。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
+            <h4>🔗 関連チャプター</h4>
+            <p>このステップの詳細学習: <code>python</code>（Python） / <code>database</code>（データベース） / <code>webapi</code>（Web/API）</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 概念実装（詳細は python / database / webapi 章へ）
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+
+app = FastAPI()
+
+class TaskIn(BaseModel):
+    title: str = Field(min_length=1, max_length=100)
+
+class TaskPatch(BaseModel):
+    title: str | None = Field(default=None, min_length=1, max_length=100)
+    done: bool | None = None
+
+@app.get("/api/tasks")
+def list_tasks():
+    return {"items": db_list()}
+
+@app.post("/api/tasks", status_code=201)
+def create_task(body: TaskIn):
+    return db_create(body.title)
+
+@app.patch("/api/tasks/{task_id}")
+def patch_task(task_id: str, body: TaskPatch):
+    task = db_update(task_id, body)
+    if not task:
+        raise HTTPException(404, detail={"error": {"code": "NOT_FOUND", "message": "task not found"}})
+    return task
+
+@app.delete("/api/tasks/{task_id}", status_code=204)
+def delete_task(task_id: str):
+    if not db_delete(task_id):
+        raise HTTPException(404)
+    return None</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>接続確認</h4>
+            <p>curl で契約を手動検証してからフロントを繋ぎます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>curl -s localhost:8000/api/tasks
+curl -s -X POST localhost:8000/api/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title":"縦糸を繋ぐ"}'</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] GET/POST/PATCH/DELETE が curl で通る<br>[ ] 空 title が 422 になる<br>[ ] サーバー再起動後もデータが残る（DB）</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="pathway-7" id="pathway-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>Step D — React + TypeScript クライアントへ置換する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 同じ契約のまま UI 技術だけ替える</h4>
+            <p><strong>素の JS 版を捨てるのではなく、状態と API 呼び出しを React に移します。</strong> 型 <code>Task</code> を共有し、loading / error / data を分けます。CORS が必要なら API 側で開発オリジンだけ許可します（本番はリバースプロキシで同一オリジンが理想）。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
+            <h4>🔗 関連チャプター</h4>
+            <p>このステップの詳細学習: <code>react</code>（React） / <code>typescript</code>（TypeScript） / <code>webapi</code>（Web/API）</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>type Task = { id: string; title: string; done: boolean };
+
+async function fetchTasks(): Promise&lt;Task[]&gt; {
+  const res = await fetch("/api/tasks");
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  return data.items;
+}
+
+// コンポーネント側の状態イメージ
+// const [tasks, setTasks] = useState&lt;Task[]&gt;([]);
+// const [status, setStatus] = useState&lt;"idle"|"loading"|"error"&gt;("idle");</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] 一覧取得が表示できる<br>[ ] 追加・完了・削除が API 経由で動く<br>[ ] 通信中とエラー時の UI がある</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：素の JS 版は samples/ に残す</h4>
+            <p>学習ログとして Step B を残すと、面接で「なぜ React に移したか」を実物で語れます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="pathway-8" id="pathway-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>回帰を止める — API テストを先に赤くする</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 縦糸の結び目をテストで固定する</h4>
+            <p><strong>結合が進むほど、手動確認だけでは守れません。</strong> 最低でも「作成→一覧に出る」「削除→404」「空 title→422」を自動テストにします。CI に載せる前に、ローカルで緑にしてください。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
+            <h4>🔗 関連チャプター</h4>
+            <p>このステップの詳細学習: <code>testing</code>（テスト設計） / <code>python</code>（Python）</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi.testclient import TestClient
+# client = TestClient(app)
+
+def test_create_and_list():
+    r = client.post("/api/tasks", json={"title": "test"})
+    assert r.status_code == 201
+    task_id = r.json()["id"]
+    items = client.get("/api/tasks").json()["items"]
+    assert any(t["id"] == task_id for t in items)
+
+def test_empty_title_rejected():
+    r = client.post("/api/tasks", json={"title": ""})
+    assert r.status_code == 422</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] API テストが 3 本以上ある<br>[ ] npm test または pytest がローカルで緑<br>[ ] 意図的に壊すとテストが赤くなることを確認した</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 公開できる形に梱包し、守り、届ける</h4>
+        <p>Docker で環境差を消し、CI/CD で検証し、セキュリティ点検の後に公開。キャップストーンへの助走です。</p>
+      </div>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="pathway-9" id="pathway-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>Step E-1 — Docker Compose で一式起動する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「自分のマシンだけ動く」を終わらせる</h4>
+            <p><strong>API・（必要なら）DB・フロントを Compose で並べ、README の起動手順を 2〜3 コマンドに短縮します。</strong> ボリュームで DB を永続化し、環境変数で設定を外に出します。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
+            <h4>🔗 関連チャプター</h4>
+            <p>このステップの詳細学習: <code>docker</code>（Docker） / <code>linux</code>（Linux / CLI）</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>services:
+  api:
+    build: ./api
+    ports: ["8000:8000"]
+    environment:
+      DATABASE_URL: sqlite:////data/app.db
+    volumes:
+      - api-data:/data
+  web:
+    build: ./web
+    ports: ["5173:80"]
+    depends_on: [api]
+volumes:
+  api-data:</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>docker compose up --build
+curl -s localhost:8000/api/tasks
+# ブラウザで localhost:5173</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] compose up で API と UI が起動する<br>[ ] コンテナ再作成後もタスクが残る<br>[ ] 秘密がイメージに焼き込まれていない</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="pathway-10" id="pathway-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>Step E-2 — CI でテストし、main でデプロイする</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 PR が緑であること自体を品質にする</h4>
+            <p><strong>GitHub Actions で lint/test を必須化し、main へのマージで staging か本番相当へ出します。</strong> まずはテストだけでも縦糸の強度が上がります。デプロイ先は Pages + API（Fly.io 等）のどちらでも構いません。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
+            <h4>🔗 関連チャプター</h4>
+            <p>このステップの詳細学習: <code>cicd</code>（CI/CD・デプロイ） / <code>git</code>（Git / GitHub）</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>name: taskboard-ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r api/requirements.txt &amp;&amp; pytest api
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci &amp;&amp; npm test
+        working-directory: web</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] PR で Actions が走る<br>[ ] Required Checks を設定した（または設定手順を理解した）<br>[ ] デプロイ手段（手動でも可）を README に書いた</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="pathway-11" id="pathway-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>公開前セキュリティ点検 — TaskBoard 版チェックリスト</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 機能完了と公開可能は別ゲート</h4>
+            <p><strong>縦糸の最後の結び目はセキュリティです。</strong> 認証を後回しにしていた場合は、少なくとも「本番 URL を晒してよいか」を点検します。入力検証・XSS・シークレット・CORS・HTTPS を TaskBoard 文脈で確認します。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
+            <h4>🔗 関連チャプター</h4>
+            <p>このステップの詳細学習: <code>security</code>（セキュリティ） / <code>webapi</code>（Web/API）</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>TaskBoard 公開前:
+  [ ] title はサーバー側でも length 検証
+  [ ] ユーザー入力を dangerouslySetInnerHTML / innerHTML していない
+  [ ] .env / 鍵が Git に無い
+  [ ] CORS が * + credentials になっていない
+  [ ] 本番は HTTPS
+  [ ] 管理用デバッグエンドポイントが無い
+  [ ] （認証導入後）他人の task id を当てても 404/403</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>認証を足すなら（任意の次ステップ）</h4>
+            <p>登録/ログイン → タスクに user_id → すべての CRUD で所有者チェック。ここまでやるとキャップストーン級です。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] チェックリストを TaskBoard に適用した<br>[ ] 未実施項目を「既知の制限」として README に書いた<br>[ ] 既知の制限を次スプリントの Backlog にした</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 12 -->
+      <article class="lesson-card" data-section="pathway-12" id="pathway-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>公開・振り返り — キャップストーンへ渡す</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 一本通った経験を、次の大型課題の型にする</h4>
+            <p><strong>動く URL（またはローカル Compose 手順）と、学習ログがあればこの章は完了です。</strong> 振り返りでは「どの層で最も詰まったか」を書き、キャップストーンでは認証・認可・テスト・デプロイを最初から設計に含めます。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
+            <h4>🔗 関連チャプター</h4>
+            <p>このステップの詳細学習: <code>capstone</code>（キャップストーン） / <code>cicd</code>（CI/CD・デプロイ）</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>提出物テンプレ</h4>
+            <p>ポートフォリオに載せるなら、次の 4 点セットが強いです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>1. ライブ URL または docker compose 手順
+2. アーキテクチャ図（ブラウザ / API / DB）
+3. 進化の記録（Step B → C → D の差分説明）
+4. 既知の制限と次にやるセキュリティ項目</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>自己レビュー質問</h4>
+            <p>面接想定で、声に出して答えてください。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>- なぜ最初に localStorage 版を作ったのか？
+- API の契約を先に決めて何が楽になったか？
+- 本番障害が起きたら、まずどのログを見るか？
+- 他人のタスクが読めないことをどう保証するか？</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>🎯 Mini Mission（自己採点）</h4>
+            <p>[ ] README の「現状」が事実と一致している<br>[ ] 上記 4 質問に 1 分以内で答えられる<br>[ ] キャップストーンの題材に TaskBoard を拡張するか、新規にするか決めた</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：縦糸は何度でも再利用できる</h4>
+            <p>次のアプリでも Step A→E の順番は同じです。技術が変わっても「契約 → 実装 → テスト → 梱包 → 点検 → 公開」の型が、フルスタックの本体技能です。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- pathway Quiz -->
+      <div class="quiz-section" id="pathway-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">縦糸プロジェクトの進め方と層の役割を確認しましょう。</p>
+        <div id="pathway-quiz-container"></div>
+        <div class="quiz-result" id="pathway-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="pathway-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 手順組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番に組み立ててください。</p>
+        <div class="puzzle-question" id="pathway-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="pathway-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="pathway-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('pathway')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('pathway')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="pathway-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
