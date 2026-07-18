@@ -28,10 +28,12 @@ const TABS = {
   database:      { label: "データベース",     icon: "🗄️", group: "backend",  lessons: 12, accent: "var(--database-teal)",   glow: "rgba(0,150,136,0.35)" },
   webapi:        { label: "Web/API",          icon: "🌐", group: "backend",  lessons: 5,  accent: "var(--webapi-green)",    glow: "rgba(0,191,165,0.35)" },
   docker:        { label: "Docker",           icon: "🐳", group: "backend",  lessons: 8,  accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
+  cicd:          { label: "CI/CD・デプロイ",  icon: "🚀", group: "backend",  lessons: 12, accent: "#2088ff",                glow: "rgba(32,136,255,0.35)" },
   react:         { label: "React",            icon: "⚛️", group: "frontend", lessons: 17, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
   "python-cert": { label: "Python認定基礎",   icon: "📜", group: "practice", lessons: 10, accent: "var(--python-yellow)",   glow: "rgba(255,212,59,0.35)" },
   "python-prac": { label: "Python実践試験",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
   testing:       { label: "テスト設計",       icon: "🧪", group: "practice", lessons: 10, accent: "var(--testing-green)",   glow: "rgba(76,175,80,0.35)" },
+  security:      { label: "セキュリティ",     icon: "🔒", group: "practice", lessons: 12, accent: "#e11d48",                glow: "rgba(225,29,72,0.35)" },
   genai:         { label: "生成AIパスポート", icon: "🤖", group: "practice", lessons: 8,  accent: "var(--genai-purple)",    glow: "rgba(156,39,176,0.35)" },
   capstone:      { label: "キャップストーン", icon: "🏗️", group: "practice", lessons: 10, accent: "var(--capstone-gold)",   glow: "rgba(255,179,0,0.35)" },
 };
@@ -52,9 +54,11 @@ const ROADMAP = [
   "database",
   "webapi",
   "docker",
+  "cicd",
   "react",
   "typescript",
   "testing",
+  "security",
   "capstone",
 ].map((tab) => ({ tab, ...TABS[tab] }));
 

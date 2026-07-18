@@ -1,0 +1,715 @@
+      <div class="tab-intro security-intro">
+        <h2>🔒 セキュリティ</h2>
+        <p>実務必須・面接頻出の Web セキュリティを、初級（攻撃の型）・中級（認可・トークン・ブラウザ境界）・上級（ヘッダ・依存・チェックリスト）の 3 段階で学びます。</p>
+      </div>
+
+      <!-- ===== 初級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — 攻撃の型を知り、防御の型を覚える</h4>
+        <p>脅威モデルの考え方から、XSS・CSRF・SQL インジェクション・認証の基礎まで。面接で聞かれる「典型攻撃」を実装者の視点で理解します。</p>
+      </div>
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="security-1" id="security-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>なぜセキュリティを学ぶのか — 脅威モデルの入口</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 セキュリティは機能ではなく「前提条件」</h4>
+            <p><strong>動くアプリと、安心して公開できるアプリは別物です。</strong> フルスタック志望者に求められるのは暗号学者になることではなく、「誰が・何を・どう壊しうるか」を想像し、開発の各段階で安い対策を積む習慣です。この章では OWASP 系の定番攻撃を軸に、コードと運用の両面で防御を学びます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>脅威モデルを 30 秒でやる</h4>
+            <p>完璧な図表は不要です。「資産（ユーザーデータ・セッション）」「入口（フォーム・API・ファイルアップロード）」「攻撃者（匿名・他ユーザー・内部）」の 3 点を書き出すだけで、対策の優先順位が見えます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>資産: パスワードハッシュ, 個人情報, 管理者権限
+入口: ログイン, コメント投稿, /api/users/{id}, 画像アップロード
+攻撃者:
+  - 匿名（スキャナ・ボット）
+  - ログイン済みの他ユーザー（権限昇格・IDOR）
+  - 誤って秘密をコミットした開発者（自分たち）</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>防衛の階層</h4>
+            <p>入力検証・出力エスケープ・最小権限・暗号化・監視は互いに補完します。どれか一つに頼ると、その層が破られた瞬間に全滅します。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：「自分のアプリは狙われない」は誤り</h4>
+            <p>攻撃の多くは自動化されたスキャナです。知名度ゼロの個人アプリでも、露出した瞬間に総当たりや脆弱性スキャンの対象になります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="security-2" id="security-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>XSS — 悪意あるスクリプトをページに埋め込まれない</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ユーザー入力を HTML として解釈させない</h4>
+            <p><strong>Cross-Site Scripting（XSS）は、攻撃者の JavaScript を被害者のブラウザで実行させる攻撃です。</strong> セッションCookieの窃取、偽フォーム表示、改ざん——いずれも「入力をそのまま HTML に出した」ことから始まります。React はデフォルトでエスケープしますが、<code>dangerouslySetInnerHTML</code> や素の DOM API では自分で守る必要があります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>反射型・格納型のイメージ</h4>
+            <p>反射型は URL やフォームの値がすぐレスポンスに混入するタイプ、格納型は DB に保存されたコメントなどが他ユーザーに表示されるタイプです。どちらも「出力時の扱い」が最後の砦になります。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ❌ 危険: ユーザー入力を HTML として挿入
+el.innerHTML = commentText;
+
+// ✅ テキストとして扱う
+el.textContent = commentText;
+
+// どうしても HTML が必要ならサニタイズライブラリを使い、
+// 許可タグを明示する（安易な正規表現置換は破られる）</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>Cookie の HttpOnly</h4>
+            <p>セッション Cookie に <code>HttpOnly</code> を付けると、JS から読めなくなり XSS でトークンを盗む難易度が上がります。XSS 自体を無くせるわけではない点に注意してください。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTTP</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>Set-Cookie: session=...; HttpOnly; Secure; SameSite=Lax</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：エスケープは「出力コンテキスト」で変える</h4>
+            <p>HTML 本文・属性・JS 文字列・URL では危険な文字が違います。フレームワークのテンプレート機能に任せ、自前で文字列連結しないのが最短の安全策です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="security-3" id="security-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>CSRF — ログイン済みユーザーに意図しない操作をさせる</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「なりすましリクエスト」を断つ</h4>
+            <p><strong>Cross-Site Request Forgery（CSRF）は、被害者がログインしたままの状態で、別サイトから勝手にリクエストを飛ばさせる攻撃です。</strong> 「削除」「送金」「メール変更」など副作用のある操作が標的になります。対策の本丸は SameSite Cookie と CSRF トークンです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>なぜブラウザが送ってしまうのか</h4>
+            <p>Cookie は対象ドメインへのリクエストに自動添付されます。攻撃サイトの <code>&lt;form&gt;</code> や画像リクエストでも、条件が揃えば認証付きリクエストが飛びます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- 攻撃サイトに埋め込まれたイメージ --&gt;
+&lt;form action="https://bank.example/transfer" method="POST"&gt;
+  &lt;input name="to" value="attacker" /&gt;
+  &lt;input name="amount" value="100000" /&gt;
+&lt;/form&gt;
+&lt;script&gt;document.forms[0].submit();&lt;/script&gt;</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>対策: SameSite と CSRF トークン</h4>
+            <p><code>SameSite=Lax</code>（または <code>Strict</code>）でクロスサイト送信を制限し、変更系リクエストにはサーバー発行のトークンを要求します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># FastAPI + セッション Cookie のイメージ
+# 1) フォーム表示時に csrf_token を埋め込む
+# 2) POST 時にセッション内の値と照合し、不一致なら 403
+
+@app.post("/settings/email")
+def update_email(email: str, csrf_token: str, request: Request):
+    if csrf_token != request.session.get("csrf"):
+        raise HTTPException(403, "CSRF token mismatch")
+    # ...更新処理</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：JWT を Authorization ヘッダで送る API は CSRF 耐性が高い</h4>
+            <p>Cookie 自動送信が無いため、典型的 CSRF の土俵に乗りにくいです。逆に JWT を Cookie に入れる設計では、再び CSRF 対策が必要になります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="security-4" id="security-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>SQL インジェクション — 入力を「コード」として実行させない</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 文字列連結で SQL を作らない</h4>
+            <p><strong>SQL インジェクションは、入力値が SQL の構文として解釈されてしまう脆弱性です。</strong> 認証バイパスやデータ全件漏洩につながります。防御は単純で、プレースホルダ（パラメータバインディング）を使い、ユーザー入力をクエリ構造に混ぜないことです。ORM を使っていても、生 SQL を書く瞬間に同じ規律が必要です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>危険な書き方と安全な書き方</h4>
+            <p>文字列連結は論外です。プレースホルダなら入力は「値」として扱われ、構文を変えられません。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ❌ 危険
+sql = f"SELECT * FROM users WHERE email = '{email}'"
+db.execute(sql)
+
+# ✅ 安全（プレースホルダ）
+db.execute(
+    "SELECT * FROM users WHERE email = :email",
+    {"email": email},
+)</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>ORM でも油断しない</h4>
+            <p><code>text("... " + user_input)</code> のような逃げ道を作ると同じ穴が開きます。動的に列名や ORDER BY を組み立てる場合は、許可リスト方式にします。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>ALLOWED_SORT = {"created_at", "name"}
+sort = sort if sort in ALLOWED_SORT else "created_at"
+db.execute(f"SELECT * FROM items ORDER BY {sort}")  # 列名は許可リスト済み</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：エラーメッセージをそのまま出さない</h4>
+            <p>DB の詳細エラーをユーザーに返すと、攻撃者の手がかりになります。ログには残し、レスポンスは汎用メッセージにします。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="security-5" id="security-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>認証の基礎 — パスワードを「保存」せず「照合」する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 平文パスワードは設計ミスである</h4>
+            <p><strong>パスワードは暗号化ではなく、意図的に遅いハッシュ（bcrypt / argon2 等）で保存します。</strong> 漏洩時にすぐ復元できないようにするためです。面接では「なぜ MD5/SHA256 単体ではダメか」「ソルトとは何か」が頻出です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>ハッシュとソルト</h4>
+            <p>ソルトはパスワードごとに付与するランダム値で、虹彩表（よくあるパスワードの事前計算）を無効化します。bcrypt 系はソルトとコスト（計算量）をハッシュ文字列に含めます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from passlib.context import CryptContext
+pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+hashed = pwd.hash("correct horse battery staple")
+assert pwd.verify("correct horse battery staple", hashed)
+assert not pwd.verify("wrong-password", hashed)</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>ログイン処理の作法</h4>
+            <p>ユーザーが存在しない場合とパスワード不一致の場合で、レスポンス時間やメッセージを揃えます（ユーザー列挙の抑制）。失敗回数の制限や CAPTCHA は総当たり対策です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># どちらでも同じメッセージ
+if not user or not pwd.verify(password, user.hashed_password):
+    raise HTTPException(401, "メールアドレスまたはパスワードが違います")</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：秘密はコードと Git に置かない</h4>
+            <p>DB 接続文字列や JWT 署名鍵は環境変数へ。誤コミットしたら「履歴から消した」だけでは不十分で、鍵のローテーションが必要です（セキュリティ章と CI/CD 章の接続点）。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — 認可・トークン・ブラウザの境界を設計する</h4>
+        <p>「ログインできた」の先——誰が何に触れるか、トークンの置き場、Cookie と CORS の契約を実務レベルで固めます。</p>
+      </div>
+
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="security-6" id="security-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>認可と IDOR — ログイン後の権限を疑う</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 認証と認可は別問題</h4>
+            <p><strong>認証は「誰か」、認可は「何をしてよいか」です。</strong> IDOR（Insecure Direct Object Reference）は、<code>/api/orders/123</code> の ID を書き換えるだけで他人の注文が見えてしまう典型バグです。面接でも「オブジェクト ID を隠す」ではなく「所有権チェックをする」が正解になります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>すべての変更・取得で所有者を検証する</h4>
+            <p>「ログイン済みか」だけでは不十分です。「そのリソースの所有者か／ロールが許すか」をサーバー側で毎回確認します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>@app.get("/api/orders/{order_id}")
+def get_order(order_id: int, user = Depends(current_user)):
+    order = db.get(Order, order_id)
+    if not order or order.user_id != user.id:
+        raise HTTPException(404)  # 存在有無を漏らさないなら 404 で統一も可
+    return order</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>ロールと権限の分離</h4>
+            <p>admin / member のような粗いロールに加え、将来は「権限（permission）」単位の方が拡張しやすいです。フロントのボタン非表示は UX であって、認可の代替にはなりません。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：テストに「他人の ID」ケースを入れる</h4>
+            <p>正常系だけでなく、<code>user_a</code> のトークンで <code>user_b</code> のリソースへアクセスするテストを必ず書きましょう。認可バグは手動確認では見落としやすいです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="security-7" id="security-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>セッションと JWT — トークン設計の選択肢</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 状態をサーバーに持つか、トークンに持たせるか</h4>
+            <p><strong>セッション Cookie はサーバー側に状態を置き、JWT はトークン自体に主張（claims）を載せます。</strong> どちらが絶対正解ではなく、失効のしやすさ・スケール・XSS 耐性のトレードオフです。capstone や Web/API 章と接続する重要テーマです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>比較の軸</h4>
+            <p>ログアウト即無効化しやすいのはサーバーセッション。水平スケールやマイクロサービス間で渡しやすいのは JWT。JWT を長く生きるアクセストークンにするのは危険で、短い寿命＋リフレッシュの設計が一般的です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>セッション Cookie:
+  + 失効が簡単（サーバーで消す）
+  - サーバー／Redis 等の状態管理が必要
+
+JWT (Authorization ヘッダ):
+  + ステートレスに検証できる
+  - 失効リストや短い有効期限の設計が必要
+  - ペイロードは読める（機密を入れない）</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>署名鍵の扱い</h4>
+            <p>JWT の秘密鍵が漏れると、攻撃者が任意ユーザーを偽造できます。鍵は環境変数で渡し、漏洩時は即ローテーションします。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import jwt, datetime, os
+secret = os.environ["JWT_SECRET"]
+token = jwt.encode(
+    {"sub": str(user_id), "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=15)},
+    secret,
+    algorithm="HS256",
+)</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：localStorage に JWT を置くリスク</h4>
+            <p>XSS が一件でもあればトークンを読めます。HttpOnly Cookie か、短命トークン＋厳格な CSP、など総合対策が必要です。「フロントが扱いやすい」だけで localStorage を選ばないでください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="security-8" id="security-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>シークレット管理 — 鍵とパスワードをコードから追い出す</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 漏洩経路を設計段階で塞ぐ</h4>
+            <p><strong>API キー、DB パスワード、JWT 秘密鍵は「ソースコードの一部」ではありません。</strong> <code>.env</code> を Git に入れない、CI ではシークレット機能を使う、ログに出さない——基本動作を固定します。詳細なパイプライン実装は CI/CD 章、ここでは「何が秘密か」の感覚を作ります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>やってはいけないこと</h4>
+            <p>リポジトリ直置き、Slack への貼り付け、スクリーンショット、コンテナイメージへの焼き込み（<code>ENV PASSWORD=...</code> の直書き）は典型事故です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># .gitignore 必須
+echo ".env" &gt;&gt; .gitignore
+
+# 誤って載っていないか確認
+git log -p --all -S 'API_KEY' -- . | head
+
+# 環境変数で渡す（ローカル例）
+export DATABASE_URL="postgres://..."
+export JWT_SECRET="..."</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>漏れたあとの手順</h4>
+            <p>履歴から消すだけでは不十分です。鍵を無効化し、新しい鍵を発行し、利用箇所を更新します。GitHub の secret scanning や pre-commit フックは予防策として有効です。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：本番と開発で鍵を分ける</h4>
+            <p>開発用キーが漏れても本番被害を限定できます。CI/CD 章の environment（staging / production）と同じ発想です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="security-9" id="security-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>Cookie・CORS・SameSite — ブラウザの境界線</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 フロントと API が別オリジンになるときの契約</h4>
+            <p><strong>モダンな構成ではフロント（例: localhost:5173）と API（localhost:8000）が別オリジンになります。</strong> CORS は「ブラウザに許可するクロスオリジン通信」の仕組みであり、サーバー側セキュリティの魔法ではありません。<code>Access-Control-Allow-Origin: *</code> と Cookie 認証の併用はできません。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>CORS の要点</h4>
+            <p>許可オリジンを明示し、認証付きなら <code>Allow-Credentials: true</code> と具体的な Origin が必要です。プリフライト（OPTIONS）も理解しておきましょう。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># FastAPI 例（許可オリジンは環境ごとに固定）
+from fastapi.middleware.cors import CORSMiddleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://app.example.com"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PATCH", "DELETE"],
+    allow_headers=["Authorization", "Content-Type"],
+)</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>SameSite の役割</h4>
+            <p><code>Lax</code> は通常リンク遷移の GET では送り、クロスサイト POST では送らない、という実務的な既定です。CSRF 対策の第一層になります。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：CORS エラーの本質はブラウザの拒否</h4>
+            <p>curl では成功するのにブラウザだけ失敗する——それは CORS です。サーバーは応答していても、ブラウザが JS に結果を渡しません。デバッグは DevTools の Network を見てください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 防衛を「仕組み」に落とす</h4>
+        <p>HTTPS・セキュリティヘッダ・依存関係の脆弱性・OWASP チェックリストまで。公開後も守り続ける運用視点です。</p>
+      </div>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="security-10" id="security-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>HTTPS とセキュリティヘッダ — 通信とブラウザを固める</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 平文 HTTP は盗聴・改ざんの余地を残す</h4>
+            <p><strong>TLS（HTTPS）は通信路の機密性と完全性を守ります。</strong> それに加え、ブラウザに「どう振る舞うか」を指示するセキュリティヘッダ（CSP, HSTS, X-Content-Type-Options 等）で XSS や Mixed Content の被害を抑えます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>最低限入れるヘッダ</h4>
+            <p>HSTS で HTTPS を強制、CSP でスクリプトの出どころを制限、<code>X-Content-Type-Options: nosniff</code> で MIME スニッフィングを抑止、が定番セットです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTTP</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; img-src 'self' data:; object-src 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=()</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>CSP は段階導入</h4>
+            <p>いきなり厳しくするとサイトが壊れます。<code>Content-Security-Policy-Report-Only</code> で監視してから enforce するのが実務的です。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：証明書は Let's Encrypt / プラットフォーム任せで十分</h4>
+            <p>自前で openssl を極めるより、Cloudflare / Fly.io / Vercel 等の自動証明書を使い、アプリ側は HTTPS 前提（Secure Cookie）で設計する方が成果が大きいです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="security-11" id="security-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>依存関係の脆弱性 — サプライチェーンを意識する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 自分のコードだけが攻撃面ではない</h4>
+            <p><strong>npm / pip の依存ライブラリに既知の脆弱性があるケースは日常茶飯事です。</strong> <code>npm audit</code> や GitHub Dependabot、OSV などをパイプラインに載せ、「知っている穴を放置しない」状態を作ります。詳細な自動化は CI/CD 章で実装します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>検出の基本コマンド</h4>
+            <p>ロックファイルをコミットし、監査を定期実行します。無差別な major アップデートは破壊変更の元なので、セキュリティパッチを優先します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>npm audit
+npm audit fix          # 互換範囲での修正を試行
+pip install pip-audit
+pip-audit
+
+# ロックファイルは必ずバージョン管理する
+# package-lock.json / poetry.lock / uv.lock</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>更新できないときの判断</h4>
+            <p>壊れるアップデートをすぐ入れられない場合は、影響範囲を評価し、WAF・入力制限・機能オフで緩和し、期限付きで追う——「無視」との差は記録があるかどうかです。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：依存を増やすコストを意識する</h4>
+            <p>左パッド事件や悪意あるパッケージ問題は、「便利だから追加」の積み重ねで起きます。標準ライブラリや既に入っている枠で足りないか、一度考えてから install してください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 12 -->
+      <article class="lesson-card" data-section="security-12" id="security-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>OWASP チェックリスト — 公開前の最終確認</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('security-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 思い出し作業をチェックリストに外部化する</h4>
+            <p><strong>公開前・面接前に同じ質問を自分に投げられるようにします。</strong> OWASP Top 10 を暗記する必要はありませんが、「注入」「認証失敗」「機密漏洩」「アクセス制御」「セキュリティ設定ミス」に自分のアプリが該当しないか確認する習慣は必須です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>公開前 10 項目（抜粋）</h4>
+            <p>すべてを一度に満点にする必要はありません。ただし「未確認」を「大丈夫」と誤認しないでください。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>[ ] パスワードは bcrypt/argon2 等で保存している
+[ ] 認可（所有者チェック）を全 API で行っている
+[ ] SQL/コマンドはプレースホルダ or 許可リスト
+[ ] XSS: 出力エスケープ / 危険な innerHTML が無い
+[ ] CSRF: SameSite + トークン（Cookie 認証時）
+[ ] シークレットが Git に無い / 環境変数化
+[ ] HTTPS + Secure/HttpOnly Cookie
+[ ] エラー詳細をユーザーに晒していない
+[ ] 依存の audit を実行した
+[ ] 管理画面・デバッグエンドポイントを閉じた</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>面接での答え方</h4>
+            <p>「XSS は出力エスケープと CSP」「SQLi はバインディング」「IDOR はサーバー側の所有権検証」——対策を具体的なレイヤで答えられると評価されます。この章の用語で説明できる状態がゴールです。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：次は CI/CD で「検査を自動化」する</h4>
+            <p>チェックリストを人の記憶に頼ると忘れます。lint / test / audit を PR 必須チェックに載せると、セキュリティと品質が仕組みになります。次章へ進んでください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- security Quiz -->
+      <div class="quiz-section" id="security-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">脅威・対策・運用の要点を確認しましょう。</p>
+        <div id="security-quiz-container"></div>
+        <div class="quiz-result" id="security-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="security-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 対策手順パズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番に組み立ててください。</p>
+        <div class="puzzle-question" id="security-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="security-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="security-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('security')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('security')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="security-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

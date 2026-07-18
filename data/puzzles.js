@@ -110,6 +110,31 @@ const puzzleData = {
     explanation: "「役割」で前提を共有し、「目的」を伝え、「制約」と「出力形式」でコントロールし、最後に「対象データ」を渡すのが、ハルシネーションを防ぐ構造化プロンプトの基本です。"
   },
 
+  security: {
+    question: "パスワード検証付きログイン処理を正しい順番に並べてください。",
+    pieces: [
+      { id: "sec-p1", text: "user = db.query(User).filter(User.email == email).first()" },
+      { id: "sec-p2", text: "if not user or not pwd.verify(password, user.hashed_password):" },
+      { id: "sec-p3", text: "    raise HTTPException(401, \"invalid credentials\")" },
+      { id: "sec-p4", text: "token = issue_token(user.id)" },
+      { id: "sec-p5", text: "return {\"access_token\": token}" }
+    ],
+    correctOrder: ["sec-p1", "sec-p2", "sec-p3", "sec-p4", "sec-p5"],
+    explanation: "ユーザー検索 → 存在有無とパスワード検証を同じ失敗メッセージで処理 → 成功時のみトークン発行、が認証エンドポイントの基本形です。検証前にトークンを発行してはいけません。"
+  },
+  cicd: {
+    question: "GitHub Actions でテストする最小ジョブを正しい順番に並べてください。",
+    pieces: [
+      { id: "cicd-p1", text: "jobs:" },
+      { id: "cicd-p2", text: "  test:" },
+      { id: "cicd-p3", text: "    runs-on: ubuntu-latest" },
+      { id: "cicd-p4", text: "    steps:" },
+      { id: "cicd-p5", text: "      - uses: actions/checkout@v4" },
+      { id: "cicd-p6", text: "      - run: npm ci && npm test" }
+    ],
+    correctOrder: ["cicd-p1", "cicd-p2", "cicd-p3", "cicd-p4", "cicd-p5", "cicd-p6"],
+    explanation: "job を定義し、ランナーを選び、steps で checkout してから依存インストールとテストを実行します。checkout を忘れるとリポジトリが無い空 VM でコマンドが失敗します。"
+  },
   linux: {
     question: "ログを検索して件数を数えるコマンド列を正しい順番に並べてください。",
     pieces: [

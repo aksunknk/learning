@@ -1,0 +1,719 @@
+      <div class="tab-intro cicd-intro">
+        <h2>🚀 CI/CD・デプロイ</h2>
+        <p>「公開して運用する」までを、初級（GitHub Actions）・中級（デプロイと環境分離）・上級（高速化と観測）の 3 段階で学びます。</p>
+      </div>
+
+      <!-- ===== 初級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — 手動デプロイからパイプラインへ</h4>
+        <p>「動いたら本番にコピー」を卒業し、GitHub Actions でテストとビルドを自動実行する土台を作ります。</p>
+      </div>
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="cicd-1" id="cicd-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>なぜ CI/CD が必要か — 公開して運用する視点</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 デプロイはイベントではなくプロセスである</h4>
+            <p><strong>フルスタックのゴールは「動くコード」ではなく「ユーザーに届き続けるサービス」です。</strong> CI（Continuous Integration）は変更のたびに検証を自動実行し、CD（Continuous Delivery/Deployment）はリリースを再現可能にします。手動 FTP や「本番で直接編集」は、再現性と監査可能性を失うため避けます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>CI と CD の違い</h4>
+            <p>CI は「統合のたびにビルド・テスト」。CD は「リリース可能な状態を常に保つ／自動で本番へ出す」。まずは CI（PR でテスト）から始め、慣れたらデプロイ自動化へ進むのが挫折しにくい順序です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>手動の問題:
+  - 手順が人の頭の中にしかない
+  - 「先週の本番」と差が分からない
+  - テストし忘れがそのまま公開される
+
+パイプライン後:
+  - main への変更 = 検証済み
+  - 同じ手順で staging / production へ
+  - 失敗したら自動で止まる</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：最初の成功体験は「PR でテストが走る」</h4>
+            <p>いきなり本番自動デプロイを目指すと秘密鍵や権限で詰みます。Week 1 の目標は GitHub Actions で <code>npm test</code> / <code>pytest</code> が緑になることです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="cicd-2" id="cicd-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>GitHub Actions 入門 — リポジトリに付くワーカー</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 YAML 一つでクラウド上の Linux が借りられる</h4>
+            <p><strong>GitHub Actions は、リポジトリのイベント（push / pull_request）をきっかけに仮想マシンでコマンドを走らせる仕組みです。</strong> 無料枠でも学習と個人プロジェクトには十分です。ランナーは実質 Linux/CLI 章の延長戦です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>最小のワークフロー</h4>
+            <p><code>.github/workflows/*.yml</code> に置くと GitHub が認識します。<code>on</code> がきっかけ、<code>jobs</code> が実行単位、<code>steps</code> が手順です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm test</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>画面での確認</h4>
+            <p>GitHub の Actions タブでログを見ます。失敗したら赤くなった step を開き、ローカルと同じコマンドで再現するのが定石です。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：actions/checkout を忘れない</h4>
+            <p>ランナーは空の VM です。リポジトリを取ってこないとファイルがありません。最初の step はほぼ必ず checkout です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="cicd-3" id="cicd-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>ワークフロー構文 — job・step・needs</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 パイプラインをグラフとして設計する</h4>
+            <p><strong>複数 job は並列実行が既定で、<code>needs</code> で依存を書けます。</strong> 「まずテスト、成功したらビルド、成功したらデプロイ」という段階を YAML で表現します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>job を分ける利点</h4>
+            <p>失敗箇所が明確になり、権限（後述の environment）をデプロイ job だけに絞れます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci &amp;&amp; npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci &amp;&amp; npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>条件実行</h4>
+            <p><code>if:</code> でブランチやイベント種別を制限できます。本番デプロイは <code>main</code> の push だけ、などに使います。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>deploy:
+  needs: build
+  if: github.ref == 'refs/heads/main' &amp;&amp; github.event_name == 'push'
+  runs-on: ubuntu-latest
+  steps:
+    - run: echo "deploy here"</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：ローカル再現を優先する</h4>
+            <p>CI にしか通じない魔法を増やさないでください。<code>npm test</code> がローカルで通ることが、デバッグ速度を決めます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="cicd-4" id="cicd-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>PR チェックを必須にする — 品質ゲート</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 レビュー前に機械が一次審査する</h4>
+            <p><strong>ブランチ保護と Required Checks を使うと、テスト失敗の PR はマージできません。</strong> 人のレビューは設計と意図に集中させ、整形・型・テストは CI に任せます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>入れると効くチェック</h4>
+            <p>テスト、lint、型チェック、<code>npm audit</code>（または同等）の順で費用対効果が良いです。本リポジトリの <code>npm test</code>（スモーク）も同じ思想です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>- run: npm ci
+- run: npm run lint
+- run: npm test
+# Python なら:
+# - run: pip install -r requirements.txt
+# - run: pytest
+# - run: pip-audit</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>ブランチ保護（概念）</h4>
+            <p>GitHub の Settings → Branches で <code>main</code> を保護し、指定 workflow の成功を必須にします。管理者でもバイパスできない設定にするとチームの規律が保たれます。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：flaky テストは敵</h4>
+            <p>たまに落ちるテストは Required Checks を形骸化させます。揺れるなら直すか隔離し、「赤い = 本当に悪い」状態を守ってください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="cicd-5" id="cicd-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>CI のシークレット — 鍵をログに出さず渡す</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 GitHub Secrets と環境変数の接続</h4>
+            <p><strong>デプロイ用トークンや SSH 鍵は、ワークフローに直書きしません。</strong> Repository secrets / Environment secrets に登録し、<code>${{ secrets.NAME }}</code> で渡します。セキュリティ章の「シークレット管理」の実装編です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>使い方</h4>
+            <p>GitHub → Settings → Secrets and variables → Actions。ログに echo しない、PR から fork 経由で秘密が読まれない設計に注意します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./scripts/deploy.sh
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>environment で保護を厚くする</h4>
+            <p>GitHub Environments に production を作り、必須レビュアーや待機時間を設定できます。本番デプロイだけ追加承認、が少人数チームでも効きます。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：マスクされても安心しすぎない</h4>
+            <p>Actions は secret をログでマスクしますが、加工して出力すると漏れることがあります。デバッグ時の <code>env</code> 全吐き出しは禁止です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — 実際に公開し、止め方・戻し方まで持つ</h4>
+        <p>静的サイトとコンテナアプリのデプロイ、staging/production、ヘルスチェックとロールバックまで。</p>
+      </div>
+
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="cicd-6" id="cicd-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>静的サイトのデプロイ — Cloudflare Pages / GitHub Pages</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 フロントを「世界に出す」最短経路</h4>
+            <p><strong>ビルド成果物（HTML/CSS/JS）を CDN 付きホスティングへ載せるのが静的デプロイです。</strong> React / Vite アプリの学習成果を公開する最短ルートで、カスタムドメインと HTTPS もプラットフォーム側が面倒を見ます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>一般的な流れ</h4>
+            <p>push → CI で <code>npm run build</code> → <code>dist/</code> を Pages へ。GitHub 連携なら YAML なしの GUI 設定でも始められますが、学習目的では Actions 経由が再現性を理解しやすいです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 概念例: ビルド成果を artifact にする
+- run: npm ci &amp;&amp; npm run build
+- uses: actions/upload-artifact@v4
+  with:
+    name: site
+    path: dist/
+
+# 実際の Pages への publish は公式 action か
+# ホスティング側の Git 連携に任せる</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>環境変数と公開サイト</h4>
+            <p>フロントに埋め込まれる変数（<code>VITE_*</code> 等）はユーザーから見える前提です。秘密は入れず、API キーはサーバー側へ。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：プレビューデプロイを使う</h4>
+            <p>PR ごとにプレビュー URL が出るサービスを選ぶと、本番前に関係者と画面確認できます。CD の本質は「早く安全に見せる」ことです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="cicd-7" id="cicd-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>コンテナのデプロイ — イメージをレジストリへ、そして起動</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Docker 章の成果を本番相当へ運ぶ</h4>
+            <p><strong>アプリをイメージに固め、レジストリ（GHCR 等）へ push し、サーバーや PaaS で pull して起動します。</strong> Fly.io / Railway / 自前 VPS + Docker Compose はどれもこの型です。Linux の SSH と Docker 章の知識がここで合流します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>CI でのビルド＆プッシュ</h4>
+            <p>タグは Git SHA か semver を使い、<code>latest</code> だけに依存しないとロールバックが楽です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>- uses: docker/setup-buildx-action@v3
+- uses: docker/login-action@v3
+  with:
+    registry: ghcr.io
+    username: ${{ github.actor }}
+    password: ${{ secrets.GITHUB_TOKEN }}
+- uses: docker/build-push-action@v6
+  with:
+    push: true
+    tags: ghcr.io/${{ github.repository }}/api:${{ github.sha }}</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>ホスト側の更新（概念）</h4>
+            <p>VPS なら SSH して <code>docker compose pull && docker compose up -d</code>。PaaS なら CLI（<code>fly deploy</code>）を CI から呼びます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># VPS 上での更新イメージ
+docker compose pull
+docker compose up -d
+docker compose ps
+curl -fsS http://127.0.0.1:8000/health</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：イメージに秘密を焼かない</h4>
+            <p><code>ENV JWT_SECRET=...</code> を Dockerfile に書かず、実行時に環境変数で渡します。レイヤキャッシュに秘密が残る事故を防げます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="cicd-8" id="cicd-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>staging と production — 環境を分ける</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 本番で初めて動かすのを禁止する</h4>
+            <p><strong>設定・データ・秘密鍵を環境ごとに分離します。</strong> staging でマイグレーションやスモークを試し、production へ進む。同じコンテナイメージを使い、違うのは環境変数だけ、が理想です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>分けるもの / 分けないもの</h4>
+            <p>分ける: DB、API キー、ドメイン、ログレベル。分けない（揃える）: アプリのビルド成果、依存バージョン。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>image: ghcr.io/org/api:abc123f  # 同じ成果物
+
+staging:
+  DATABASE_URL=postgres://staging...
+  APP_URL=https://staging.example.com
+
+production:
+  DATABASE_URL=postgres://prod...
+  APP_URL=https://example.com</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>GitHub Environment と紐付け</h4>
+            <p>job の <code>environment: staging</code> / <code>production</code> で、参照できる secrets を切り替えます。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：本番データを staging に安易にコピーしない</h4>
+            <p>個人情報が入る場合、マスキング無しのダンプは事故です。シードデータか匿名化データで十分揃うことが多いです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="cicd-9" id="cicd-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>ヘルスチェックとロールバック — 壊れたら戻す</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 デプロイ成功 ≠ サービス正常</h4>
+            <p><strong>プロセスが起動しても、依存 DB が落ちていればユーザーには障害です。</strong> <code>/health</code> で生存確認し、失敗時は前イメージへ戻す手順を事前に書きます。「戻し方を知らない自動デプロイ」は危険です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>ヘルスエンドポイント</h4>
+            <p>軽量な GET を用意し、CI やオーケストレータが叩きます。内部依存（DB）まで見るかはトレードオフですが、少なくともプロセス生存は確認します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>@app.get("/health")
+def health():
+    return {"status": "ok"}</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># デプロイ後スモーク
+curl -fsS https://api.example.com/health
+
+# イメージタグが分かっていればロールバックは再デプロイ
+# docker compose up -d で前のタグを指定する、など</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>失敗時の自動停止</h4>
+            <p>ヘルスチェック失敗で job を fail させ、後続の DNS 切替や告知を止める——これが CD の安全弁です。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：データベース移行は特に慎重に</h4>
+            <p>後方互換のマイグレーション（expand → migrate → contract）を心がけると、ロールバック可能な時間帯が作れます。破壊的変更を一発でやらないのがコツです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 速く・観察できるパイプラインへ</h4>
+        <p>キャッシュと行列で CI を速くし、ログ・アラートで運用し、一連の流れをケーススタディで固定します。</p>
+      </div>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="cicd-10" id="cicd-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>高速化 — cache と matrix</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 待ち時間はフィードバックを殺す</h4>
+            <p><strong>CI が 15 分かかると、人はローカルだけで押し切り始めます。</strong> 依存キャッシュと、バージョン行列（matrix）の使い分けで、必要な検証だけを並列に回します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>依存キャッシュ</h4>
+            <p><code>actions/setup-node</code> の <code>cache: npm</code> や <code>actions/cache</code> で <code>~/.npm</code> 等を再利用します。ロックファイルをキーに含めます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>- uses: actions/setup-node@v4
+  with:
+    node-version: "22"
+    cache: npm
+- run: npm ci</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>matrix で行列テスト</h4>
+            <p>Node 20/22 や Python 3.11/3.12 を並べて互換性を確認できます。増やしすぎると課金と待ち時間が増えるので、方針を決めてから使います。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>strategy:
+  matrix:
+    node: [20, 22]
+steps:
+  - uses: actions/setup-node@v4
+    with:
+      node-version: ${{ matrix.node }}</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：キャッシュは正しさより再現性を優先</h4>
+            <p>キャッシュが原因で「自分の環境だけ通る」なら、キー設計を見直すか <code>npm ci</code> を徹底します。速さのために汚染された状態を残さないでください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="cicd-11" id="cicd-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>観測の入口 — ログ・メトリクス・アラート</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 デプロイ後に「見えない」をなくす</h4>
+            <p><strong>CD のゴールはリリースボタンではなく、異常に気づけることです。</strong> まずはプラットフォームのログ（Actions, <code>docker compose logs</code>, ホスティングのダッシュボード）を見る習慣を付け、次に uptime 監視（無料枠の外形監視）を足します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>最小構成</h4>
+            <p>① アプリログを集約 ② <code>/health</code> の外形監視 ③ エラー率や 5xx の通知——この 3 点で個人サービスの運用はかなり安定します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>デプロイ直後チェックリスト:
+  [ ] Actions が緑
+  [ ] /health が 200
+  [ ] ログインなど代表導線を手動で1回
+  [ ] エラーログに新規スタックが無いか確認
+  [ ] 戻し手順（前タグ）をメモした</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：アラートは「起きる頻度 × 対応可否」で設計</h4>
+            <p>夜中に鳴るが無視するアラートは無いのと同じです。最初は「本番 5xx が N 分継続」だけでも十分価値があります。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 12 -->
+      <article class="lesson-card" data-section="cicd-12" id="cicd-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>総合ケース — PR から本番までの一本道</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('cicd-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 学習した部品を一つの物語にする</h4>
+            <p><strong>変更がユーザーに届くまでの経路を、自分の言葉で説明できることがゴールです。</strong> 以下の流れを、自分のポートフォリオプロジェクトに適用してください。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>推奨フロー</h4>
+            <p>機能ブランチ → PR → Actions（lint/test/audit）→ レビュー → main マージ → イメージ build/push → staging デプロイ＆スモーク → production デプロイ → 監視。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>1. git switch -c feature/xxx
+2. 実装 + テスト
+3. PR 作成 → CI 必須チェック
+4. main マージ
+5. CI が image:git-sha を GHCR へ
+6. staging に自動デプロイ → /health
+7. production は environment 承認後
+8. 問題時は前 sha のイメージで再デプロイ</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>セキュリティ章との接続</h4>
+            <p>シークレットは Environments に、依存監査は CI に、認可テストは test job に載せます。公開はゴールではなく、運用のスタートです。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：ポートフォリオに Actions のバッジを貼る</h4>
+            <p>README に CI バッジがあると、採用側に「テストと公開プロセスを持っている」ことが一目で伝わります。技術力アピールとして費用対効果が非常に高いです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- cicd Quiz -->
+      <div class="quiz-section" id="cicd-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">パイプラインとデプロイ運用の理解度を確認しましょう。</p>
+        <div id="cicd-quiz-container"></div>
+        <div class="quiz-result" id="cicd-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="cicd-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 ワークフロー組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番に組み立ててください。</p>
+        <div class="puzzle-question" id="cicd-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="cicd-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="cicd-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('cicd')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('cicd')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="cicd-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

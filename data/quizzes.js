@@ -4,6 +4,28 @@
 // ============================================================
 const quizData = {
 
+  "security": [
+    {"question": "XSS 対策として最も基本的なのはどれですか？", "options": ["パスワードを bcrypt で保存する", "ユーザー入力を HTML として挿入せず textContent 等でエスケープする", "CORS を * にする", "JWT の有効期限を延ばす"], "correct": 1, "explanation": "XSS は入力が HTML/JS として解釈されることで起きます。出力時にテキストとして扱う（または適切なエスケープ／サニタイズ）のが基本です。"},
+    {"question": "SQL インジェクションを防ぐ最も確実な方法はどれですか？", "options": ["入力を大文字に変換する", "プレースホルダ（パラメータバインディング）を使う", "エラーメッセージを詳細に返す", "テーブル名を推測しにくくする"], "correct": 1, "explanation": "ユーザー入力を SQL の構文に連結せず、値としてバインドすれば注入で構文を変えられません。"},
+    {"question": "認証と認可の違いとして正しいのはどれですか？", "options": ["同じ意味である", "認証は誰か、認可は何をしてよいか", "認証はフロント、認可は DB だけの話", "認可はパスワードハッシュのこと"], "correct": 1, "explanation": "認証（Authentication）は身分確認、認可（Authorization）は権限・所有者チェックです。IDOR は認可の欠如が典型原因です。"},
+    {"question": "CSRF が成立しやすい条件に近いのはどれですか？", "options": ["Cookie がクロスサイトリクエストに自動添付される", "HTTPS を使っている", "JWT を Authorization ヘッダだけで送っている", "データベースが PostgreSQL である"], "correct": 0, "explanation": "Cookie セッションではブラウザが認証情報を自動送信するため、別サイトからのフォーム送信等で意図しない操作が起き得ます。SameSite や CSRF トークンで防ぎます。"},
+    {"question": "パスワード保存について正しいのはどれですか？", "options": ["平文で DB に保存し、漏洩したらユーザーに再登録させる", "MD5 で十分", "bcrypt や argon2 など意図的に遅いハッシュを使う", "AES で暗号化して同じ鍵でいつでも復号できるようにする"], "correct": 2, "explanation": "パスワードは復号目的ではなく照合目的なので、遅い一方向ハッシュ（bcrypt/argon2 等）が適切です。"},
+    {"question": "シークレット管理の基本として正しいのはどれですか？", "options": ["API キーをリポジトリにコミットして共有する", "環境変数やシークレットマネージャで渡し、Git に置かない", "Dockerfile の ENV に本番パスワードを書く", "ログに全部出力してデバッグしやすくする"], "correct": 1, "explanation": "秘密はソースに含めず実行時に注入します。漏れたらローテーションが必要です。"},
+    {"question": "IDOR を防ぐためにサーバーが必ず行うべきことはどれですか？", "options": ["オブジェクト ID を連番にしないだけでよい", "リソースへのアクセス時に所有者・権限を検証する", "フロントでボタンを消す", "CORS を無効化する"], "correct": 1, "explanation": "ID を隠しても推測や漏洩で届きます。サーバー側で「そのユーザーが触ってよいか」を毎回検証します。"},
+    {"question": "セキュリティヘッダ Content-Security-Policy（CSP）の主な目的はどれですか？", "options": ["DB 接続を暗号化する", "読み込んでよいスクリプト等の出どころを制限し XSS 被害を抑える", "JWT を自動更新する", "SQL を高速化する"], "correct": 1, "explanation": "CSP はブラウザに許可するリソースの出所を指示し、 XSS で挿入された不正スクリプトの実行を阻害します。"}
+  ],
+
+  "cicd": [
+    {"question": "CI（Continuous Integration）の主目的として最も近いのはどれですか？", "options": ["本番サーバーを安く借りる", "変更のたびにビルド・テストなどを自動実行し問題を早く見つける", "デザインを統一する", "データベースを自動バックアップするだけ"], "correct": 1, "explanation": "CI は統合のたびに検証を自動化し、壊れた変更を早く検出するのが目的です。"},
+    {"question": "GitHub Actions のワークフローファイルを置く場所はどれですか？", "options": ["src/workflows/", ".github/workflows/", "node_modules/actions/", "/etc/actions/"], "correct": 1, "explanation": ".github/workflows/*.yml に置くと GitHub が自動認識します。"},
+    {"question": "CI でデプロイ用 API トークンを扱う正しい方法はどれですか？", "options": ["YAML に平文で書く", "GitHub Secrets に登録し secrets 経由で環境変数へ渡す", "README に書いておく", "git commit のメッセージに含める"], "correct": 1, "explanation": "Repository/Environment secrets に保存し、ワークフローから参照します。ログへの出力も避けます。"},
+    {"question": "staging と production を分ける主目的はどれですか？", "options": ["コードを二回書くため", "本番相当の設定で検証し、本番事故を減らすため", "Git の履歴を増やすため", "Docker を使わないため"], "correct": 1, "explanation": "同じ成果物を異なる設定・データで試し、本番で初めて動かすリスクを下げます。"},
+    {"question": "デプロイ後のヘルスチェックが必要な理由はどれですか？", "options": ["プロセス起動だけでは依存障害を見逃すから", "HTTPS を無効にするため", "テストを書かなくてよくなるから", "イメージサイズを減らすため"], "correct": 0, "explanation": "起動成功とサービス正常は別です。/health 等で外部から確認し、失敗時はロールバック判断に使います。"},
+    {"question": "コンテナイメージのタグ運用として望ましいのはどれですか？", "options": ["常に latest だけを使う", "Git SHA やバージョンなど追跡可能なタグを使う", "タグを付けない", "毎回手動でランダム文字列を付けるだけ"], "correct": 1, "explanation": "SHA 等ならどのコミットの成果か追跡でき、前タグへのロールバックも容易です。"},
+    {"question": "Required Checks（必須ステータスチェック）の効果はどれですか？", "options": ["PR のタイトルを自動生成する", "指定の CI が成功しないと main へマージできないようにする", "サーバーの CPU を増やす", "Docker Hub の料金を下げる"], "correct": 1, "explanation": "ブランチ保護と組み合わせ、品質ゲートを強制できます。"},
+    {"question": "Dockerfile に本番の JWT_SECRET を ENV で書くことの問題はどれですか？", "options": ["ビルドが速くなる", "イメージや履歴に秘密が残り漏洩リスクが高まる", "Actions が使えなくなる", "HTTPS が強制される"], "correct": 1, "explanation": "秘密はイメージに焼き込まず、実行時の環境変数やシークレット機構で渡します。"}
+  ],
+
   "linux": [
     {"question": "本番サーバーや Docker コンテナの操作が主に CLI である理由に最も近いのはどれですか？", "options": ["GUI の方が遅いから禁止されている", "多くのサーバー環境にデスクトップ GUI が無く、操作手段がシェルだから", "Linux ではマウスが使えないから", "クラウド事業者が CLI 以外を契約で禁じているから"], "correct": 1, "explanation": "クラウド上の Linux サーバーやコンテナは GUI を持たないことが一般的で、操作の共通言語がシェル（CLI）になります。"},
     {"question": "今いるディレクトリの絶対パスを表示するコマンドはどれですか？", "options": ["ls", "cd", "pwd", "whoami"], "correct": 2, "explanation": "pwd（Print Working Directory）が現在地の絶対パスを表示します。CLI 操作の起点です。"},
