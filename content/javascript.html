@@ -1,0 +1,1158 @@
+      <div class="tab-intro javascript-intro">
+        <h2>🟨 JavaScript 基礎</h2>
+        <p>TypeScript / React の前提となる素の JavaScript を、初級（文法）・中級（クロージャ・DOM・非同期）・上級（イベントループ・モジュール）の 3 段階で学びます。</p>
+      </div>
+
+      <!-- ===== 初級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — 文法とデータの扱いを体に染み込ませる</h4>
+        <p>変数・型・制御構文・関数・配列という、あらゆる JS プログラムの土台を学びます。TypeScript や React に進む前に、素の JavaScript で「動くコード」を書ける状態を作ります。</p>
+      </div>
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="javascript-1" id="javascript-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>JavaScript とは何か — ブラウザと Node の二面性</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Web の「唯一の標準言語」としての立ち位置</h4>
+            <p><strong>なぜ今でも JavaScript を学ぶ必要があるのか？</strong> ブラウザがネイティブに実行できる言語は、事実上 JavaScript だけです。TypeScript も React も最終的には JS に変換されて動きます。つまり TS / React のエラーメッセージ・実行時挙動・デバッグのすべてが「素の JS の理解」に依存します。土台を飛ばしてフレームワークに入ると、「なぜこう動くのか」が永遠にブラックボックスのままになります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>2 つの実行環境：ブラウザと Node.js</h4>
+            <p>同じ言語でも API が違います。ブラウザには <code>document</code> や <code>window</code> があり、Node.js には <code>fs</code> や <code>process</code> があります。共通部分（ECMAScript 本体）と環境固有 API を区別できると、「このコードはどこで動くか」を設計段階で判断できます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ブラウザ：script タグで読み込む --&gt;
+&lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  // インラインでも書けるが、実務では外部ファイルが基本
+  console.log("Hello from browser");
+&lt;/script&gt;</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>開発の入り口：console と開発者ツール</h4>
+            <p>学習中の最強の味方はブラウザの DevTools（F12）です。<code>console.log</code> で値を確認し、Sources タブでブレークポイントを張り、Network タブで通信を見る——この 3 つが使えるだけで学習速度が桁違いに上がります。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// Node.js：ターミナルで node app.js と実行
+console.log("Hello from Node");
+console.log(typeof document); // → "undefined"（ブラウザ専用）
+
+// ブラウザの Console では document が使える
+// console.log(document.title);</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：strict mode はデフォルトだと思え</h4>
+            <p>モダンな JS（モジュール・バンドラ経由）は実質 strict mode です。未宣言変数への代入はエラーになり、<code>this</code> の挙動も変わります。「ゆるい昔の JS」を前提にした古い記事には注意してください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="javascript-2" id="javascript-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>変数とデータ型 — let / const とプリミティブ</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「再代入できるか」で宣言を選ぶ</h4>
+            <p><strong>var は使わない。</strong> 現代の JavaScript では <code>const</code> を既定にし、再代入が必要なときだけ <code>let</code> を使います。<code>var</code> は関数スコープと巻き上げ（hoisting）という罠が多く、新規コードで選ぶ理由はありません。型は動的ですが、「どんな値が入っているか」を常に意識するのがバグを減らす鍵です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>const がデフォルト、let は例外</h4>
+            <p><code>const</code> は「再代入不可」であり、「中身が不変」ではありません。オブジェクトや配列のプロパティ変更は可能です。再代入しない変数を const にすると、意図しない上書きをコンパイル相当（実行時）で防げます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const name = "佐藤";
+let score = 80;
+score = 90;              // OK：let は再代入できる
+// name = "田中";        // TypeError：const は再代入不可
+
+const tags = ["js", "web"];
+tags.push("node");       // OK：配列の中身の変更は許可される
+// tags = [];            // TypeError：変数そのものの付け替えは不可</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>プリミティブ 7 種と typeof</h4>
+            <p>number / string / boolean / null / undefined / bigint / symbol。注意点は <code>typeof null === "object"</code>（歴史的バグ）と、<code>typeof [] === "object"</code>（配列判定には <code>Array.isArray</code>）です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>console.log(typeof 42);          // "number"
+console.log(typeof "hi");        // "string"
+console.log(typeof true);        // "boolean"
+console.log(typeof undefined);   // "undefined"
+console.log(typeof null);        // "object" ← 罠
+console.log(typeof 10n);         // "bigint"
+console.log(Array.isArray([1])); // true</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：undefined と null を使い分ける</h4>
+            <p><code>undefined</code> は「未設定」、<code>null</code> は「意図的に空」。API 設計では「値が無い」を明示したいときだけ null を返し、未初期化のまま放置しないのが実務の作法です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="javascript-3" id="javascript-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>演算子と型変換 — == を捨て === を選ぶ</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 暗黙の型変換はバグの温床</h4>
+            <p><strong>JavaScript 最大の落とし穴は「ゆるい等価（==）」です。</strong> <code>0 == ""</code> が true、<code>null == undefined</code> が true など、直感に反する結果が山ほどあります。実務では常に <code>===</code>（厳密等価）を使い、型変換は <code>Number()</code> / <code>String()</code> / <code>Boolean()</code> で明示します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>厳密等価と Truthy / Falsy</h4>
+            <p>条件式で「偽」とみなされる値（Falsy）は <code>false / 0 / "" / null / undefined / NaN</code> の 6 つだけ。それ以外（空配列 <code>[]</code> や空オブジェクト <code>{}</code> を含む）はすべて Truthy です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>console.log(0 === "0");     // false（型が違う）
+console.log(0 == "0");      // true  ← 使わない
+console.log(null == undefined); // true ← これも罠
+
+// Falsy の判定は Boolean() か !! で明示できる
+console.log(Boolean(""));   // false
+console.log(Boolean([]));   // true（空配列も Truthy！）
+
+// 数値変換
+console.log(Number("42"));  // 42
+console.log(Number(""));    // 0
+console.log(Number("abc")); // NaN</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>テンプレートリテラルと null 合体</h4>
+            <p>文字列連結は <code>+</code> よりテンプレートリテラル（バッククォート）が読みやすいです。また「null / undefined のときだけデフォルト」は <code>??</code>（Nullish coalescing）、短絡評価のデフォルトは <code>||</code> ですが、<code>0</code> や <code>""</code> を正当な値として残したいなら <code>??</code> 一択です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const user = "田中";
+const msg = `こんにちは、${user}さん`;
+
+const count = 0;
+console.log(count || 10);  // 10 ← 0 が Falsy なので上書きされる
+console.log(count ?? 10);  // 0  ← null/undefined だけ置換</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：NaN は自分自身とも等しくない</h4>
+            <p><code>NaN === NaN</code> は false です。数値変換の成否判定には <code>Number.isNaN(value)</code> を使ってください。<code>isNaN()</code>（グローバル）は型変換してから判定するため、文字列でも true になり得ます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="javascript-4" id="javascript-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>条件分岐とループ — 制御の流れを書く</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 分岐と繰り返しはプログラムの骨格</h4>
+            <p><strong>if / else・switch・for / while・for...of</strong> は全言語共通の骨格です。JS では配列の走査に <code>for...of</code> を、オブジェクトのキー走査に <code>Object.keys</code> + ループ（または後述のメソッド）を使うのが現代的です。インデックスが必要なときだけ古典的な <code>for (let i = 0; ...)</code> を残します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>if / else と switch</h4>
+            <p>条件が 2〜3 分岐なら if、文字列や数値の多岐分岐なら switch。switch は <code>break</code> 忘れで次の case に落ちる（fall-through）ので注意してください。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const status = "loading";
+
+if (status === "loading") {
+  console.log("読み込み中");
+} else if (status === "error") {
+  console.log("失敗");
+} else {
+  console.log("完了");
+}
+
+switch (status) {
+  case "loading":
+    console.log("⏳");
+    break;
+  case "error":
+    console.log("❌");
+    break;
+  default:
+    console.log("✅");
+}</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>for...of を第一選択にする</h4>
+            <p><code>for...in</code> はプロトタイプ連鎖上の列挙可能プロパティも拾うため、配列走査には向きません。配列・文字列・Map など Iterable は <code>for...of</code> が安全で読みやすいです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const fruits = ["apple", "banana", "cherry"];
+
+for (const fruit of fruits) {
+  console.log(fruit);
+}
+
+// インデックスも欲しければ entries()
+for (const [i, fruit] of fruits.entries()) {
+  console.log(i, fruit);
+}
+
+let n = 3;
+while (n &gt; 0) {
+  console.log(n);
+  n -= 1;
+}</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：早期 return でネストを減らす</h4>
+            <p>深い if-else の代わりに、異常系を先に <code>return</code> するガード節を書くと可読性が上がります。関数の本線（ハッピーパス）が左端に揃うのが理想です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="javascript-5" id="javascript-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>関数 — 宣言・式・アロー関数</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 関数は「値」として扱える</h4>
+            <p><strong>JavaScript では関数もオブジェクト（第一級オブジェクト）です。</strong> 変数に入れ、引数に渡し、戻り値にできます。書き方は 3 系統——関数宣言、<code>function</code> 式、アロー関数——があり、現代のコールバックや配列メソッドではアロー関数が主流です。ただし <code>this</code> の扱いが違うため、次の中級編で詳しく扱います。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>3 つの書き方</h4>
+            <p>関数宣言は巻き上げられる（定義より前で呼べる）のに対し、関数式・アローは変数と同じルールです。実務ではモジュール内のトップレベルは宣言か <code>const fn = () =&gt;</code>、短いコールバックはアロー、が定石です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 1. 関数宣言
+function add(a, b) {
+  return a + b;
+}
+
+// 2. 関数式
+const mul = function (a, b) {
+  return a * b;
+};
+
+// 3. アロー関数（本体が式なら return と {} を省略可）
+const double = (n) =&gt; n * 2;
+const greet = (name) =&gt; {
+  const msg = `Hello, ${name}`;
+  return msg;
+};
+
+console.log(add(2, 3), mul(2, 3), double(5));</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>デフォルト引数・残余引数・即時実行</h4>
+            <p>引数の省略にはデフォルト値、<code>...args</code> で可変長引数を配列として受け取れます。即時実行関数（IIFE）はモジュール以前のスコープ隔離手段でしたが、ES Modules 普及後は出番が激減しています。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>function createUser(name, role = "member") {
+  return { name, role };
+}
+
+function sum(...nums) {
+  let total = 0;
+  for (const n of nums) total += n;
+  return total;
+}
+
+console.log(createUser("佐藤"));     // { name: "佐藤", role: "member" }
+console.log(sum(1, 2, 3, 4));        // 10</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：副作用のある関数と純粋関数を意識する</h4>
+            <p>同じ引数なら同じ結果を返し、外部状態を変えない関数を「純粋関数」と呼びます。テストしやすく、バグの追跡も容易です。DOM 操作や API 呼び出しは意図的な副作用として関数の境界に閉じ込めるのが設計のコツです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="javascript-6" id="javascript-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>配列の基本とメソッド — map / filter / reduce</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ループを「宣言的」に書き換える</h4>
+            <p><strong>実務の JS コードの大半は配列変換です。</strong> <code>for</code> で回して <code>push</code> する代わりに、<code>map</code>（変換）・<code>filter</code>（絞り込み）・<code>find</code>（1 件取得）・<code>reduce</code>（集約）を使うと、意図がメソッド名で読めるようになります。React のリスト描画もこの延長線上にあります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>不変っぽく扱う：元配列を壊さない</h4>
+            <p><code>push / splice / sort</code> は元配列を変更（破壊的）します。<code>map / filter / toSorted</code>（またはスプレッドしてから sort）は新しい配列を返します。状態管理（特に React）では破壊的変更がバグの原因になるため、非破壊を習慣にしてください。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const scores = [55, 82, 91, 68];
+
+const passed = scores.filter((s) =&gt; s &gt;= 70);
+const boosted = passed.map((s) =&gt; s + 10);
+const total = boosted.reduce((acc, s) =&gt; acc + s, 0);
+
+console.log(passed);   // [82, 91]
+console.log(boosted);  // [92, 101]
+console.log(total);    // 193
+console.log(scores);   // 元配列は無傷</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>find / some / every / includes</h4>
+            <p>「最初の 1 件」は <code>find</code>、「存在する？」は <code>some</code> または <code>includes</code>、「全部満たす？」は <code>every</code>。インデックスが欲しければ <code>findIndex</code> です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const users = [
+  { id: 1, name: "田中", active: true },
+  { id: 2, name: "佐藤", active: false },
+];
+
+const tanaka = users.find((u) =&gt; u.name === "田中");
+const hasInactive = users.some((u) =&gt; !u.active);
+const allActive = users.every((u) =&gt; u.active);
+
+console.log(tanaka, hasInactive, allActive);</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：チェーンは 2〜3 段まで</h4>
+            <p><code>filter().map().reduce()</code> までは読みやすいですが、それ以上は途中結果に名前を付けるか、1 回のループにまとめた方がデバッグしやすくなります。「宣言的であること」より「追跡可能であること」を優先してください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — スコープ・DOM・非同期で「動く UI」を作る</h4>
+        <p>クロージャ、this、DOM イベント、Promise / async-await など、ブラウザで実際に動くコードに必要な中核概念を学びます。ここを越えると React の「なぜそう書くか」が理解できるようになります。</p>
+      </div>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="javascript-7" id="javascript-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>オブジェクトと分割代入 — データの設計図</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 キーと値の集まりが JS のデータ中心</h4>
+            <p><strong>オブジェクトは JS で最も使うデータ構造です。</strong> API レスポンス、設定、コンポーネントの props——ほぼすべてがオブジェクトです。分割代入（destructuring）とスプレッド構文を使いこなすと、読み取り・コピー・マージが簡潔になり、React / TypeScript への接続もスムーズになります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>作成・アクセス・省略記法</h4>
+            <p>プロパティ名と変数名が同じなら省略記法が使えます。存在しないキーへのアクセスは <code>undefined</code> を返し、例外にはなりません（ここで Optional Chaining <code>?.</code> が活躍します）。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const name = "佐藤";
+const user = {
+  name,                    // name: name の省略
+  age: 28,
+  greet() {                // メソッド省略記法
+    return `Hi, ${this.name}`;
+  },
+};
+
+console.log(user.name);
+console.log(user["age"]);
+console.log(user.address?.city); // undefined（エラーにならない）</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>分割代入とスプレッド</h4>
+            <p>分割代入で必要なプロパティだけ取り出し、スプレッドで浅いコピーやマージができます。ネストしたオブジェクトの「深いコピー」には <code>structuredClone</code> や専用ライブラリが必要です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const product = { id: 1, title: "本", price: 1200, stock: 3 };
+const { title, price, ...rest } = product;
+console.log(title, price, rest); // "本" 1200 { id: 1, stock: 3 }
+
+const updated = { ...product, price: 980 }; // 非破壊更新
+console.log(updated.price, product.price);  // 980 1200</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：Object.keys / values / entries</h4>
+            <p>オブジェクトを配列として扱いたいときはこの 3 兄弟です。特に <code>Object.entries(obj).map(([k, v]) =&gt; ...)</code> はフォームや設定オブジェクトの変換で頻出です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="javascript-8" id="javascript-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>スコープとクロージャ — 関数が「覚えている」環境</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 JS の関数は定義時の変数環境を閉じ込める</h4>
+            <p><strong>クロージャは「関数＋その関数が作られたときの外側スコープ」の組み合わせです。</strong> コールバック、イベントハンドラ、モジュールパターン、React のフック——現代 JS のほぼすべてがクロージャの上に成り立っています。「なぜこの変数が見えるのか／見えないのか」を説明できれば、中級者の門をくぐったと言えます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>ブロックスコープ（let / const）</h4>
+            <p><code>{}</code> で囲まれた範囲がブロックです。<code>let</code> / <code>const</code> はこのブロックの外からは見えません。<code>var</code> は関数スコープなのでブロックを無視します（だから使わない）。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>function demo() {
+  if (true) {
+    const secret = 42;
+    var leaked = 99;
+  }
+  // console.log(secret); // ReferenceError
+  console.log(leaked);    // 99（var の罠）
+}
+demo();</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>クロージャの実例：プライベート変数とファクトリ</h4>
+            <p>外側の関数が終わっても、内側の関数が外側の変数を参照し続けます。これが「状態を閉じ込めた関数」を作る仕組みです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>function createCounter(start = 0) {
+  let count = start; // 外からは触れない
+  return {
+    inc() { count += 1; return count; },
+    value() { return count; },
+  };
+}
+
+const c = createCounter(10);
+console.log(c.inc());   // 11
+console.log(c.inc());   // 12
+console.log(c.value()); // 12
+// console.log(count);  // 参照不可</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：ループ内のクロージャに注意</h4>
+            <p>昔は <code>var</code> + ループで「全部最後の値になる」バグが頻発しました。<code>let</code> は反復ごとに別バインディングを作るため、現代ではこの罠はほぼ消えています。それでも非同期コールバック内でループ変数を使うときは、意図した値が閉じ込まれているか一度確認してください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="javascript-9" id="javascript-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>this と実行コンテキスト — 呼び出し方で決まる</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 this は「定義場所」ではなく「呼び出し方」で決まる</h4>
+            <p><strong>他言語の this（自己参照）感覚で JS の this を理解すると必ず詰みます。</strong> JS の <code>this</code> は関数が<strong>どう呼ばれたか</strong>で決まります。メソッド呼び出し、通常呼び出し、new、call/apply/bind、アロー関数——この 5 パターンを整理すれば、React クラスや DOM イベントでの謎挙動が消えます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>呼び出しパターンで this が変わる</h4>
+            <p>オブジェクトのメソッドとして呼べばそのオブジェクトが this。単独で呼べば strict mode では undefined。アロー関数は自分の this を持たず、外側のスコープの this をそのまま使います（語彙的 this）。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>"use strict";
+
+const user = {
+  name: "佐藤",
+  greet() {
+    console.log(this.name);
+  },
+};
+
+user.greet();              // "佐藤"（メソッド呼び出し）
+const fn = user.greet;
+// fn();                   // TypeError：this が undefined
+
+// アローは外側の this を引き継ぐ（ここではモジュール/グローバル）
+const obj = {
+  name: "田中",
+  greet: () =&gt; console.log(obj.name), // 明示参照の方が安全なことも多い
+};</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>bind で固定する</h4>
+            <p>コールバックにメソッドを渡すとき、this が剥がれる問題は <code>bind</code> かアローで解決します。クラスコンポーネント時代の定番でしたが、フック中心の現代でもイベントやタイマーで同じ発想が必要です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const button = {
+  label: "保存",
+  onClick() {
+    console.log(`${this.label} が押されました`);
+  },
+};
+
+// コールバックとして渡す想定
+setTimeout(button.onClick.bind(button), 0);
+
+// アローで包む同等のパターン
+setTimeout(() =&gt; button.onClick(), 0);</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：迷ったらアロー＋明示的な引数</h4>
+            <p>this パズルに時間を使うより、必要な値を引数やクロージャで渡す設計の方が堅牢です。モダンコードでは「this に依存するオブジェクト指向」より「データを引数で渡す関数型寄り」が主流です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="javascript-10" id="javascript-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>DOM 操作とイベント — ブラウザを動かす</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 HTML を JS から読み書きする</h4>
+            <p><strong>DOM（Document Object Model）は、HTML を木構造のオブジェクトとして扱うブラウザ API です。</strong> React は仮想 DOM でこの操作を抽象化しますが、「素の DOM で何が起きているか」を知らないと、イベントの伝播・フォーム制御・アクセシビリティで必ず詰みます。最低限のクエリ・作成・イベント登録を手で書いてください。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>要素の取得と書き換え</h4>
+            <p><code>querySelector</code> / <code>querySelectorAll</code> が現代の標準です。<code>innerHTML</code> は XSS のリスクがあるため、テキストなら <code>textContent</code>、構造が必要なら <code>createElement</code> を優先します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const title = document.querySelector("#title");
+title.textContent = "更新後のタイトル";
+
+const list = document.querySelector("#todo-list");
+const li = document.createElement("li");
+li.textContent = "新しいタスク";
+list.appendChild(li);
+
+// 危険：ユーザー入力をそのまま入れない
+// el.innerHTML = userInput;  // XSS</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>イベントとイベント委譲</h4>
+            <p><code>addEventListener</code> で登録し、不要になったら <code>removeEventListener</code> で外します。リストの各項目に個別リスナーを付けるより、親に 1 つ付けて <code>event.target</code> で判別する「イベント委譲」が効率的です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const form = document.querySelector("#signup");
+form.addEventListener("submit", (event) =&gt; {
+  event.preventDefault(); // ページ遷移を止める
+  const data = new FormData(form);
+  console.log(Object.fromEntries(data.entries()));
+});
+
+// イベント委譲：動的に増えるボタンにも対応
+document.querySelector("#list").addEventListener("click", (e) =&gt; {
+  if (e.target.matches("[data-delete]")) {
+    e.target.closest("li").remove();
+  }
+});</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：DOMContentLoaded を待つ</h4>
+            <p>スクリプトが <code>&lt;head&gt;</code> にあると、HTML 解析前に実行されて要素が取れません。<code>defer</code> 属性を付けるか、<code>DOMContentLoaded</code> イベント内で初期化してください。モジュール（<code>type="module"</code>）はデフォルトで defer 相当です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="javascript-11" id="javascript-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>Promise と async/await — 非同期を直線的に書く</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 コールバック地獄からの脱出</h4>
+            <p><strong>ネットワーク通信やタイマーは「今すぐ終わらない」処理です。</strong> 昔はコールバックの入れ子（コールバック地獄）が常態でしたが、Promise と async/await により、非同期コードを同期コードに近い見た目で書けるようになりました。fetch・ファイル読み込み・React のデータ取得——すべてこの上に載っています。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>Promise の 3 状態と then / catch</h4>
+            <p>Promise は pending → fulfilled または rejected へ遷移します。<code>then</code> で成功、<code>catch</code> で失敗を扱います。チェーンすると前の戻り値が次に渡ります。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>function wait(ms) {
+  return new Promise((resolve) =&gt; {
+    setTimeout(() =&gt; resolve(`${ms}ms 経過`), ms);
+  });
+}
+
+wait(300)
+  .then((msg) =&gt; {
+    console.log(msg);
+    return wait(200);
+  })
+  .then((msg) =&gt; console.log(msg))
+  .catch((err) =&gt; console.error(err));</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>async/await：then チェーンを同期風に</h4>
+            <p><code>async</code> 関数は常に Promise を返します。<code>await</code> はその解決を待ち、値を取り出します。エラーは try/catch で受けます。実務ではほぼこちらの書き方が標準です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>async function loadUser(id) {
+  try {
+    const res = await fetch(`/api/users/${id}`);
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+    const user = await res.json();
+    return user;
+  } catch (err) {
+    console.error("取得失敗", err);
+    throw err;
+  }
+}
+
+// 並列実行は Promise.all
+async function loadDashboard() {
+  const [user, posts] = await Promise.all([
+    fetch("/api/me").then((r) =&gt; r.json()),
+    fetch("/api/posts").then((r) =&gt; r.json()),
+  ]);
+  return { user, posts };
+}</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：for ループ内の await は直列になる</h4>
+            <p>配列を <code>for...of</code> で await すると 1 件ずつ待ちます。独立したリクエストなら <code>Promise.all(items.map(...))</code> で並列化してください。逆にレート制限がある API では意図的に直列にします。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 12 -->
+      <article class="lesson-card" data-section="javascript-12" id="javascript-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>よくあるエラーとアンチパターン — 現場で踏む穴</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「動いた」と「正しい」は別物</h4>
+            <p><strong>初学者が量産しがちなバグパターンを先に潰します。</strong> 変異の共有、非同期の取りこぼし、<code>==</code>、グローバル汚染、innerHTML へのユーザー入力——これらを認識しているだけで、レビュー指摘の大半を自己チェックできます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>参照の共有と浅いコピー</h4>
+            <p>オブジェクトや配列は参照渡しです。<code>const b = a</code> はコピーではなく別名です。意図せず両方変わるバグの温床なので、コピーが必要ならスプレッドや <code>structuredClone</code> を使います。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const original = { tags: ["a"] };
+const alias = original;          // 同じオブジェクト
+alias.tags.push("b");
+console.log(original.tags);      // ["a", "b"] ← 巻き込み事故
+
+const copy = { ...original, tags: [...original.tags] };
+copy.tags.push("c");
+console.log(original.tags);      // ["a", "b"] ← 無傷</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>async 関数のエラーを握りつぶさない</h4>
+            <p><code>async</code> 関数内の例外は rejected Promise になります。呼び出し側で await + try/catch、または <code>.catch()</code> を付けないと、未処理の Rejection として実行環境に怒られます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>async function risky() {
+  throw new Error("失敗");
+}
+
+// ❌ 呼び捨て：エラーが消える/警告になる
+// risky();
+
+// ✅ 必ず待つ or catch する
+risky().catch((err) =&gt; console.error(err.message));</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：デバッグは「値を疑う」から</h4>
+            <p><code>console.log</code> にオブジェクトを渡すと後から中身が変わって見えることがあります。確定したスナップショットが欲しければ <code>console.log(JSON.stringify(obj))</code> や DevTools のブレークポイントを使ってください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 実行モデルとモジュールで「なぜ動くか」を説明できる</h4>
+        <p>イベントループ、プロトタイプ、ES Modules、モダンなツールチェーンまで。フレームワークの裏側を言葉で説明できるレベルを目指します。</p>
+      </div>
+
+      <!-- Lesson 13 -->
+      <article class="lesson-card" data-section="javascript-13" id="javascript-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">13</span>
+            <h3>イベントループ — 非同期が「後回し」になる理由</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-13')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 単一スレッドでも止まらない仕組み</h4>
+            <p><strong>JavaScript は基本的に単一スレッドです。</strong> それでも UI が固まらずに非同期処理ができるのは、呼び出しスタック・Web API・タスクキュー・（マイクロタスクキュー）をイベントループが回しているからです。<code>setTimeout(fn, 0)</code> が「すぐ」ではなく「今の同期処理の後」に走る理由がここで解けます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>同期 → マイクロタスク → マクロタスクの順</h4>
+            <p>Promise の <code>then</code> コールバックはマイクロタスク、setTimeout はマクロタスク（タスク）です。同じ「非同期」でも、Promise の方が先に消化されます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>console.log("1: sync");
+
+setTimeout(() =&gt; console.log("2: timeout"), 0);
+
+Promise.resolve().then(() =&gt; console.log("3: promise"));
+
+console.log("4: sync end");
+
+// 出力順:
+// 1: sync
+// 4: sync end
+// 3: promise
+// 2: timeout</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>重い同期処理は UI を殺す</h4>
+            <p>イベントループは「今のスタックが空になるまで」次のタスクを取れません。数千万回の計算をメインスレッドで回すと画面が固まります。重い処理は Web Worker へ逃がすか、チャンクに分割してください（本サイトの JS 実行も Worker を使っています）。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 悪い例：メインスレッドを長時間占有
+function block(ms) {
+  const end = Date.now() + ms;
+  while (Date.now() &lt; end) {}
+}
+// block(3000); // 画面が 3 秒固まる
+
+// 良い方向性：小さな単位に分けて間を空ける
+async function chunkedWork(items, fn) {
+  for (const item of items) {
+    fn(item);
+    await new Promise((r) =&gt; setTimeout(r, 0)); // 描画や入力の隙間を作る
+  }
+}</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：async/await もイベントループの上</h4>
+            <p><code>await</code> の続きはマイクロタスクとして再開されます。「await した瞬間に別スレッドに移る」わけではありません。ブロッキングな同期コードは await しても軽くなりません。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 14 -->
+      <article class="lesson-card" data-section="javascript-14" id="javascript-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>プロトタイプとクラス — 継承の仕組み</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 クラス構文の裏にあるプロトタイプ連鎖</h4>
+            <p><strong>ES2015 の <code>class</code> は糖衣構文です。</strong> 実体はプロトタイプベースの継承です。<code>new</code>、<code>extends</code>、<code>super</code> を使う現代コードでも、「インスタンス → プロトタイプ → Object.prototype」という探索のイメージを持っていると、メソッド解決や <code>instanceof</code> の挙動が腹落ちします。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>class 構文での基本</h4>
+            <p>コンストラクタで初期化し、メソッドはプロトタイプに定義されます（インスタンスごとに関数を複製しない）。プライベートフィールドは <code>#</code> 接頭辞です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>class Animal {
+  #energy = 100;
+
+  constructor(name) {
+    this.name = name;
+  }
+
+  speak() {
+    return `${this.name} makes a sound`;
+  }
+
+  get energy() {
+    return this.#energy;
+  }
+}
+
+class Dog extends Animal {
+  speak() {
+    return `${this.name}: ワン!`;
+  }
+}
+
+const d = new Dog("ポチ");
+console.log(d.speak());
+console.log(d instanceof Dog);    // true
+console.log(d instanceof Animal); // true</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>プロトタイプ連鎖を覗く</h4>
+            <p><code>Object.getPrototypeOf</code> で一段上へ、<code>obj.__proto__</code>（非推奨だが DevTools では目にする）でも連鎖が見えます。「プロパティが見つからない → プロトタイプを見る」がメソッド呼び出しの正体です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const d = new Dog("ポチ");
+console.log(Object.getPrototypeOf(d) === Dog.prototype); // true
+console.log(Dog.prototype.speak); // 親ではなく Dog の speak
+
+// オブジェクトの「辞書」用途とクラス用途は分ける
+const dict = Object.create(null); // プロトタイプ汚染を避ける空辞書
+dict.safe = true;</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：継承よりコンポジション</h4>
+            <p>深いクラス階層は変更に弱いです。共通処理は関数や小さなオブジェクトに切り出し、必要なら委譲する方が JS らしい設計です。React も「継承よりコンポジション」を公式に推奨しています。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 15 -->
+      <article class="lesson-card" data-section="javascript-15" id="javascript-lesson-15">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">15</span>
+            <h3>ES Modules とモダン JS — import / バンドラの地図</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-15')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ファイルを分割し、ツールチェーンにつなぐ</h4>
+            <p><strong>1 ファイルに全部書く時代は終わりました。</strong> ES Modules（<code>import</code> / <code>export</code>）が言語標準のモジュールシステムです。ブラウザの <code>type="module"</code>、Node の <code>"type": "module"</code>、Vite / webpack などのバンドラ——いずれもこの構文が中心です。TypeScript や React プロジェクトのエントリポイントが何をしているか、ここで地図が読めます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>named export と default export</h4>
+            <p>1 ファイルから複数を名前付きで出すのが基本、そのファイルの「主役」が 1 つなら default も使えます。チームでは named に統一する方がリネーム・自動補完に強い、という流派が有力です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// math.js
+export function add(a, b) {
+  return a + b;
+}
+export const PI = 3.14159;
+
+// main.js
+import { add, PI } from "./math.js";
+console.log(add(2, PI));
+
+// default の例
+// export default function App() { ... }
+// import App from "./App.js";</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>ブラウザとビルドツール</h4>
+            <p>素のブラウザでもモジュールは動きますが、JSX・TypeScript・大量の npm パッケージを扱う実務では Vite などのバンドラが前提です。開発時はネイティブ ESM に近い体験、本番では結合・圧縮されたファイルを配信します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">HTML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>&lt;!-- ブラウザで ESM を直接読む --&gt;
+&lt;script type="module" src="./main.js"&gt;&lt;/script&gt;
+
+&lt;!-- package.json（Node） --&gt;
+&lt;!-- { "type": "module" } --&gt;</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：次の一歩は TypeScript と React</h4>
+            <p>この章まで理解できていれば、TypeScript は「型注釈が付いた JavaScript」、React は「状態に応じて DOM を宣言的に描画するライブラリ」として読めます。ロードマップ上は HTML/CSS → JavaScript → TypeScript / React の順が最短です。</p>
+          </div>
+        </div>
+      </article>
+
+
+      
+      <!-- JavaScript Quiz -->
+      <div class="quiz-section" id="javascript-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">JavaScript の文法・非同期・DOM の理解度を確認しましょう。</p>
+        <div id="javascript-quiz-container"></div>
+        <div class="quiz-result" id="javascript-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="javascript-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コード組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="javascript-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="javascript-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="javascript-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('javascript')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('javascript')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="javascript-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

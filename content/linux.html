@@ -1,0 +1,976 @@
+      <div class="tab-intro linux-intro">
+        <h2>🐧 Linux / CLI</h2>
+        <p>Docker・デプロイ・障害対応の前提となるシェル操作を、初級（操作）・中級（パイプ / プロセス / SSH）・上級（スクリプト / systemd）の 3 段階で学びます。</p>
+      </div>
+
+      <!-- ===== 初級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — シェルで「どこに何があるか」を操る</h4>
+        <p>ターミナルの基本操作、パス、ファイル操作、権限、検索まで。Docker やサーバー作業の土台となる「手元の Linux を怖がらない」状態を作ります。</p>
+      </div>
+
+      <!-- Lesson 1 -->
+      <article class="lesson-card" data-section="linux-1" id="linux-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>なぜ Linux / CLI なのか — サーバーは GUI がない</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 本番環境の共通言語はシェルである</h4>
+            <p><strong>クラウド上のサーバー、Docker コンテナ、CI の実行環境はほぼ Linux です。</strong> しかも GUI は無く、操作はすべてコマンドライン（CLI）です。GUI クリックで覚えた操作は本番に持ち込めません。フルスタック志望者にとってシェルは「趣味の上級技」ではなく、デプロイ・ログ確認・障害対応の最低条件です。Windows でも WSL2 を入れれば同じコマンドが使えます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>シェルとは何か</h4>
+            <p>シェル（bash / zsh など）は、あなたが打った文字を OS への命令に翻訳するプログラムです。ファイル操作もプロセス起動も、最終的にはシェル経由で行われます。プロンプト（<code>$</code>）が表示されている行にコマンドを打ち、<code>Enter</code> で実行します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 今のユーザー名とホスト名を確認
+whoami
+hostname
+
+# OS のざっくり情報（ディストリビューション名など）
+uname -a
+cat /etc/os-release 2&gt;/dev/null || true
+
+# ホームディレクトリへ移動して確認
+cd ~
+pwd</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>学習環境の選び方</h4>
+            <p>macOS は標準で Unix 系シェルが使えます。Windows は <strong>WSL2（Ubuntu）</strong> を入れるのが最短です。Git Bash だけでも初歩は学べますが、権限やパッケージ管理までやるなら WSL か Linux VM / クラウドインスタンスが本番に近いです。</p>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：怖いコマンドの前に man / --help</h4>
+            <p><code>man ls</code> または <code>ls --help</code> で使い方が出ます。全部読む必要はなく、「よく使うオプション」を拾う習慣が大事です。破壊的な操作（<code>rm -rf</code> など）は、まずパスを <code>echo</code> や <code>ls</code> で確認してから実行してください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 2 -->
+      <article class="lesson-card" data-section="linux-2" id="linux-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>ディレクトリとパス — pwd / ls / cd</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 迷子にならないための「現在地」感覚</h4>
+            <p><strong>CLI で最も多い初歩ミスは「今どのディレクトリにいるか分からない」ことです。</strong> <code>pwd</code>（Print Working Directory）で現在地を出し、<code>ls</code> で中身を見、<code>cd</code> で移動する——この 3 つが全操作の起点です。絶対パス（<code>/home/...</code>）と相対パス（<code>./src</code>）の違いを体で覚えると、Docker の <code>WORKDIR</code> や設定ファイルのパス指定が一気に読みやすくなります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>現在地と一覧</h4>
+            <p><code>ls -la</code> は詳細表示（隠しファイル含む）の定番です。<code>.</code> はカレント、<code>..</code> は親ディレクトリを表します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>pwd                    # 今いる場所の絶対パス
+ls                     # 名前だけ
+ls -la                 # 権限・所有者・日時つき + 隠しファイル
+ls -lh /var/log        # 人間が読めるサイズ表示
+
+cd /tmp                # 絶対パスで移動
+cd ..                  # 一つ上へ
+cd ~                   # ホームへ
+cd -                   # 直前のディレクトリへ戻る</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>絶対パスと相対パス</h4>
+            <p>絶対パスはルート <code>/</code> から始まる住所、相対パスは「今いる場所から見た道順」です。スクリプトや Docker では絶対パスの方が誤解が少なく、対話作業では相対パスが速い、という使い分けが一般的です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 例: ホームが /home/dev のとき
+cd /home/dev/projects/app   # 絶対
+cd ~/projects/app           # ~ はホームの省略形（絶対相当）
+cd projects/app             # ホームにいる前提の相対
+
+# パス結合の確認
+realpath ./projects/app     # 絶対パスに正規化（使える環境なら）</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：Tab 補完を使え</h4>
+            <p>パスやコマンド名は Tab キーで補完できます。曖昧なら二度押しで候補一覧が出ます。手打ちのタイプミスによる <code>rm</code> 事故を減らす、最もコストの低い防衛策です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 3 -->
+      <article class="lesson-card" data-section="linux-3" id="linux-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>ファイル操作 — mkdir / cp / mv / rm</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 作る・移す・消すを安全に行う</h4>
+            <p><strong>ファイル操作コマンドは「元に戻せない」ものが多いです。</strong> 特に <code>rm</code> にゴミ箱はありません。まずは <code>mkdir</code> / <code>touch</code> / <code>cp</code> / <code>mv</code> で作業し、<code>rm</code> は対象を <code>ls</code> で確認してから、可能なら <code>-i</code>（確認）付きで実行する癖を付けてください。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>作成とコピー・移動</h4>
+            <p><code>mkdir -p</code> は途中のディレクトリもまとめて作ります。<code>cp -r</code> はディレクトリごとコピー、<code>mv</code> は移動兼リネームです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>mkdir -p ~/work/demo/src
+touch ~/work/demo/README.md
+echo "hello" &gt; ~/work/demo/README.md
+
+cp ~/work/demo/README.md ~/work/demo/README.bak
+cp -r ~/work/demo ~/work/demo-copy
+
+mv ~/work/demo/src ~/work/demo/app
+mv ~/work/demo/README.md ~/work/demo/readme.md   # リネーム</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>削除は段階的に</h4>
+            <p>ファイル削除は <code>rm</code>、空ディレクトリは <code>rmdir</code>、中身ごと消すのは <code>rm -r</code>。本番では <code>rm -rf /</code> のような命令は論外で、変数展開ミス（<code>rm -rf $DIR/</code> で DIR が空）も実在する事故です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># まず確認
+ls -la ~/work/demo-copy
+
+# 対話確認付きで削除（推奨）
+rm -i ~/work/demo-copy/readme.md
+
+# ディレクトリごと（実行前にパスを再確認）
+rm -ri ~/work/demo-copy
+
+# 危険パターン（やってはいけない例）
+# rm -rf $EMPTY_VAR/   # EMPTY_VAR が空だと / 配下を消そうとする</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：消す前に tar か cp で退避</h4>
+            <p>自信が無い削除の前に <code>cp -r target target.bak</code> や <code>tar czf backup.tgz target</code> で退避すると精神衛生が保たれます。クラウドのスナップショットと同じ発想をローカルでも使ってください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 4 -->
+      <article class="lesson-card" data-section="linux-4" id="linux-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>ファイルの中身を見る — cat / less / head / tail</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ログ調査の第一歩は「読む」こと</h4>
+            <p><strong>サーバー障害対応の大半はログを読む作業です。</strong> 短いファイルは <code>cat</code>、長いファイルは <code>less</code>、先頭だけ <code>head</code>、末尾（最新ログ）は <code>tail</code>。<code>tail -f</code> でリアルタイム追従できると、起動中のアプリや Docker コンテナの様子が手に取るように分かります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>基本の読み方</h4>
+            <p><code>less</code> では <code>Space</code> で次ページ、<code>/</code> で検索、<code>q</code> で終了です。<code>cat</code> で巨大ファイルを流すとターミナルが埋まるので、ログには <code>less</code> / <code>tail</code> を優先してください。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>cat ~/work/demo/readme.md
+less /etc/hosts          # q で抜ける
+head -n 20 /etc/passwd   # 先頭20行
+tail -n 50 /var/log/syslog 2&gt;/dev/null || tail -n 20 ~/.bashrc
+
+# 追従（Ctrl+C で停止）
+# tail -f /var/log/nginx/access.log</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>行番号と差分の入口</h4>
+            <p><code>nl</code> や <code>cat -n</code> で行番号付き表示、設定ファイルの比較には後で <code>diff</code> を使います。まずは「末尾を見る」「キーワード周辺を見る」ができれば十分です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>cat -n ~/.bashrc | head
+wc -l ~/.bashrc          # 行数・単語数・バイト数
+diff -u file_a file_b    # 統一フォーマットの差分（あれば）</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：sudo が必要なログがある</h4>
+            <p><code>/var/log</code> 配下は権限で読めないことがあります。<code>sudo less /var/log/...</code> や <code>sudo journalctl</code>（後述）を使います。パスワードを聞かれたら、今のユーザーのログインパスワードです（root パスワードとは限りません）。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 5 -->
+      <article class="lesson-card" data-section="linux-5" id="linux-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>権限の基礎 — ls -l / chmod / sudo</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 誰が読めて、誰が実行できるか</h4>
+            <p><strong>Linux のセキュリティモデルの中心は「ユーザー・グループ・その他」への読み書き実行権限です。</strong> Docker イメージ内で「Permission denied」が出る、デプロイ先でスクリプトが動かない——原因の大半はここに帰着します。<code>ls -l</code> の左端 10 文字が読めるようになれば、権限トラブルの切り分けが格段に速くなります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>ls -l の読み方</h4>
+            <p><code>-rwxr-xr--</code> のような表記は、ファイル種別 1 文字＋所有者 rwx＋グループ rwx＋その他 rwx です。r=4, w=2, x=1 の合計が数値モード（例: 755）になります。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>ls -l ~/work/demo/readme.md
+# 例: -rw-r--r-- 1 dev dev 6 Apr 1 12:00 readme.md
+#     │└所有者┘└グループ┘└その他┘
+#     └ 通常ファイル
+
+# よく使う数値モード
+# 644: 所有者 rw、他は r（設定・文書）
+# 755: 所有者 rwx、他は rx（ディレクトリや実行スクリプト）
+# 600: 所有者だけ rw（秘密鍵・.env）</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>chmod と sudo</h4>
+            <p><code>chmod</code> で権限変更、<code>chown</code> で所有者変更（多くは sudo 必須）。<code>sudo</code> は「一時的に管理者権限で実行」です。常用ユーザーで作業し、必要なときだけ sudo するのが原則です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>chmod 644 ~/work/demo/readme.md
+chmod 755 ~/work/demo/run.sh
+chmod u+x ~/work/demo/run.sh     # 所有者に実行権を追加（記号モード）
+
+# 秘密情報は他者に読ませない
+chmod 600 ~/.ssh/id_ed25519 2&gt;/dev/null || true
+
+# 管理者権限が必要な例（環境による）
+# sudo chown -R $USER:$USER /var/www/app</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：ディレクトリの x は「進入権」</h4>
+            <p>ディレクトリに実行権（x）が無いと、中に <code>cd</code> できません。ファイルの x は「実行できる」、ディレクトリの x は「通れる」——意味が違う点に注意してください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="linux-6" id="linux-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>検索する — find / grep / which</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「どこにある？」を数秒で終わらせる</h4>
+            <p><strong>巨大なリポジトリやサーバー上でファイルを目視で探すのは非現実的です。</strong> 名前なら <code>find</code>、中身の文字列なら <code>grep</code>、コマンドの実体パスなら <code>which</code> / <code>command -v</code>。この 3 つが使えれば、日常の調査速度が桁変わりします。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>find と grep</h4>
+            <p><code>find</code> はディレクトリ木を歩き、<code>grep -R</code> はファイル内容を再帰検索します。巨大な <code>node_modules</code> は除外するのが実務の作法です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 名前で探す
+find ~ -name "*.log" 2&gt;/dev/null | head
+find . -type f -name "Dockerfile"
+
+# 中身で探す（-n 行番号, -I バイナリ除外）
+grep -Rn "DATABASE_URL" . --exclude-dir=node_modules --exclude-dir=.git
+
+# コマンドの場所
+which node
+command -v docker
+type python3</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>パイプでつなぐ予習</h4>
+            <p>検索結果をさらに絞り込むとき、<code>find ... | head</code> のようにパイプ（<code>|</code>）を使います。次の中級編で本格的に扱いますが、出力が多すぎるときの応急処置として今すぐ使えます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>ls -la /usr/bin | grep python | head
+dmesg 2&gt;/dev/null | tail -n 5 || true</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：ripgrep (rg) を知っておく</h4>
+            <p>開発マシンでは <code>rg</code>（ripgrep）が <code>grep -R</code> より速くて使いやすいことが多いです。サーバーに入っていないこともあるので、標準の <code>grep</code> / <code>find</code> は必ず残してください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — パイプ・環境変数・プロセス・SSH で実務の作業をする</h4>
+        <p>コマンドを組み合わせ、環境を渡し、プロセスを制御し、リモートサーバーへ入る——Docker やデプロイで毎日使う中核スキルです。</p>
+      </div>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="linux-7" id="linux-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>パイプとリダイレクト — コマンドを組み立てる</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 小さな命令を繋いで大きな仕事にする</h4>
+            <p><strong>Unix 哲学の中心は「一つのことをうまくやるプログラムをパイプで繋ぐ」ことです。</strong> <code>|</code> で標準出力を次の標準入力へ、<code>&gt;</code> / <code>&gt;&gt;</code> でファイルへ保存、<code>2&gt;</code> でエラー出力を分けます。ログ解析もデプロイスクリプトも、この組み合わせで書かれています。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>パイプとフィルタ</h4>
+            <p><code>sort</code> / <code>uniq</code> / <code>wc</code> / <code>head</code> はパイプ先の定番です。長いチェーンでも、途中で一度ファイルに落とすとデバッグしやすくなります。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 行数を数える
+ls -1 | wc -l
+
+# 重複を除いて数える
+cut -d: -f1 /etc/passwd | sort | uniq | wc -l
+
+# エラー出力だけ捨てる
+find /etc -name "*.conf" 2&gt;/dev/null | head</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>リダイレクトの使い分け</h4>
+            <p><code>&gt;</code> は上書き、<code>&gt;&gt;</code> は追記。<code>2&gt;&amp;1</code> は標準エラーを標準出力に合流（ログをまとめて保存するとき頻出）です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>echo "first" &gt; /tmp/demo.txt      # 上書き作成
+echo "second" &gt;&gt; /tmp/demo.txt    # 追記
+cat /tmp/demo.txt
+
+# 成功も失敗も同じログへ
+# ./deploy.sh &gt; /tmp/deploy.log 2&gt;&amp;1
+
+# 入力をファイルから
+sort &lt; /tmp/demo.txt</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：誤って > で消さない</h4>
+            <p>重要なファイルへの <code>&gt;</code> は中身を即座に消します。上書き前に <code>cp file file.bak</code>、または <code>set -o noclobber</code> で上書き防止する習慣が有効です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="linux-8" id="linux-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>環境変数と PATH — プログラムが見る「設定」</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 同じコマンドでも環境で挙動が変わる理由</h4>
+            <p><strong>アプリの接続先 DB や秘密鍵は、コードに直書きせず環境変数で渡すのが現代の標準です。</strong> Docker の <code>-e</code>、<code>docker-compose</code> の <code>environment</code>、クラウドのシークレットマネージャ——すべて同じ発想です。あわせて <code>PATH</code> を理解すると、「コマンドが見つからない」エラーを自分で解決できます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>表示・設定・エクスポート</h4>
+            <p>シェル変数と環境変数は違います。<code>export</code> した変数が子プロセス（起動するプログラム）に引き継がれます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>echo $HOME
+echo $PATH
+env | head                  # 環境変数一覧（冒頭）
+
+# 現在のシェルだけ
+MSG="hello"
+echo $MSG
+
+# 子プロセスにも渡す
+export DATABASE_URL="postgres://localhost:5432/app"
+export NODE_ENV=development
+printenv DATABASE_URL</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>PATH と .env の作法</h4>
+            <p><code>PATH</code> はコマンド検索パスのリスト（<code>:</code> 区切り）です。プロジェクトの秘密情報は <code>.env</code> に書き、<strong>Git にコミットしない</strong>（<code>.gitignore</code>）のが鉄則です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># PATH の先頭に個人用 bin を足す例（~/.bashrc などに書く）
+export PATH="$HOME/.local/bin:$PATH"
+
+# .env を読んで export（簡易・本番では専用ツール推奨）
+# set -a; source ./.env; set +a
+
+# 秘密が履歴に残らないよう注意
+# export API_KEY=... を素のシェルに直打ちすると履歴に残ることがある</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：確認は echo / printenv、引き回しは export</h4>
+            <p>「コンテナ内で変数が入っているか」は <code>printenv NAME</code> で確認します。Dockerfile の <code>ENV</code> と実行時の <code>-e</code> のどちらで入ったかも、この章の知識で切り分けできます。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="linux-9" id="linux-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>プロセス管理 — ps / top / kill</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 動いているプログラムを見つけて止める</h4>
+            <p><strong>ポートが既に使われている、CPU が張り付いている、ゾンビのように残った Node プロセス</strong>——開発でも本番でも必ず遭遇します。<code>ps</code> で一覧、<code>top</code>/<code>htop</code> で監視、<code>kill</code> で終了。Docker では <code>docker ps</code> がこれに相当しますが、ホスト側のプロセス理解は依然として必須です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>探す・見る</h4>
+            <p><code>ps aux</code> は全部のプロセスを出す定番です。<code>pgrep</code> / <code>pidof</code> で名前から PID を特定できます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>ps aux | head
+ps aux | grep -i node | grep -v grep
+
+# 自分のプロセスだけ
+ps -u $USER
+
+# インタラクティブ監視（q で終了）
+# top
+# htop   # 入っていればこちらが読みやすい</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>止める：SIGTERM から</h4>
+            <p>まず <code>kill PID</code>（SIGTERM：優雅な終了要求）、ダメなら <code>kill -9 PID</code>（SIGKILL：強制）。最初から -9 はデータ破損のリスクがあるため最終手段です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 例: PID を変数に入れる
+PID=$(pgrep -n python3)   # 条件に注意して使う
+echo "target=$PID"
+# kill "$PID"             # 確認してから外す
+# kill -9 "$PID"          # 最終手段
+
+# ポートを塞いでいるプロセスを調べる（後述の ss と併用）
+# ss -ltnp | grep 8000</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：バックグラウンドとジョブ</h4>
+            <p>コマンド末尾の <code>&amp;</code> で背景実行、<code>jobs</code> で一覧、<code>fg</code> で前面に戻せます。長時間タスクは <code>tmux</code> / <code>screen</code> や systemd に載せる方が本番的です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="linux-10" id="linux-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>ネットワーク確認 — curl / ss / ping</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「繋がらない」を切り分ける</h4>
+            <p><strong>API が落ちているのか、DNS か、ポート未解放か、ファイアウォールか</strong>——切り分けの起点は CLI のネットワークコマンドです。<code>curl</code> で HTTP、<code>ss</code>（または <code>lsof</code>）で待ち受けポート、<code>ping</code> で疎通の大まかな確認。Docker 公開ポートのデバッグでも同じ道具を使います。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>curl で HTTP を叩く</h4>
+            <p>ブラウザの代わりにリクエストを送り、ステータスやヘッダを見ます。API 開発の必携ツールです。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ヘッダ付きで見る（-i） / 失敗を判別しやすく（-f） / 詳細（-v）
+curl -i https://example.com
+curl -sS -o /dev/null -w "%{http_code}\n" https://example.com
+
+# JSON API
+curl -sS https://httpbin.org/get | head
+curl -sS -X POST https://httpbin.org/post \
+  -H "Content-Type: application/json" \
+  -d '{"name":"dev"}'</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>ポートと疎通</h4>
+            <p><code>ss -ltnp</code> で LISTEN 中の TCP ポートが見えます（環境により sudo が必要）。コンテナを立てたのに繋がらないときは、まずホストで待ち受けているかを確認します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>ping -c 3 1.1.1.1
+ss -ltnp 2&gt;/dev/null | head
+# sudo ss -ltnp | grep 3000
+
+# DNS の確認（どちらか使える方）
+getent hosts example.com
+# dig example.com +short</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：localhost と 0.0.0.0 の違い</h4>
+            <p>アプリが <code>127.0.0.1</code> だけに bind していると、コンテナ外や他マシンから届きません。Docker では <code>0.0.0.0:ポート</code> で待ち受ける設定が多いです。「ローカルでは動くのに外から見えない」の典型原因です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="linux-11" id="linux-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>SSH — リモートサーバーへ入る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 デプロイ先の操作は SSH が入口</h4>
+            <p><strong>VPS やクラウドインスタンスに入る標準手段が SSH です。</strong> 鍵認証を使い、パスワードログインを閉じるのが現代の最低ラインです。Git の SSH 鍵とも概念は同じで、「秘密鍵は渡さない・権限は 600・エージェントに載せる」を守れば事故りにくいです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>鍵の作成と接続</h4>
+            <p>鍵ペアを作り、公開鍵をサーバーの <code>~/.ssh/authorized_keys</code> に置きます。接続は <code>ssh user@host</code>。初回はホスト指紋の確認が出ます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 鍵を作る（パスフレーズ付き推奨）
+ssh-keygen -t ed25519 -C "you@example.com" -f ~/.ssh/id_ed25519_deploy
+
+# 公開鍵をサーバーへ（ssh-copy-id が使える場合）
+# ssh-copy-id -i ~/.ssh/id_ed25519_deploy.pub user@203.0.113.10
+
+# 接続
+# ssh -i ~/.ssh/id_ed25519_deploy user@203.0.113.10
+
+# 設定ファイルで省略（~/.ssh/config）
+# Host myvps
+#   HostName 203.0.113.10
+#   User user
+#   IdentityFile ~/.ssh/id_ed25519_deploy
+# 接続: ssh myvps</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>トンネルとファイル転送</h4>
+            <p>一時的にポートを持ち帰るなら SSH トンネル、<code>scp</code> / <code>rsync</code> でファイル同期します。デプロイの素朴な形は「rsync でコードを送り、ssh 先で docker compose up」です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ファイルコピー
+# scp -i ~/.ssh/id_ed25519_deploy app.tgz user@host:/tmp/
+
+# 差分同期（削除は --delete に注意）
+# rsync -avz -e "ssh -i ~/.ssh/id_ed25519_deploy" \
+#   ./dist/ user@host:/var/www/app/
+
+# ローカル 8080 → リモートの localhost:80 を見る例
+# ssh -L 8080:127.0.0.1:80 user@host</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：秘密鍵をリポジトリに入れない</h4>
+            <p><code>id_*</code> や <code>.pem</code> を Git にコミットするのは即事故です。CI ではシークレット機能に載せ、ローカルは <code>~/.ssh</code> に置き、<code>chmod 600</code> を徹底してください。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 12 -->
+      <article class="lesson-card" data-section="linux-12" id="linux-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>よくある事故と安全な操作 — 壊れ方を先に知る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 権限・パス・履歴・再実行で起きる典型パターン</h4>
+            <p><strong>CLI の実力は「速いコマンドを知っている」ことより「危険な操作を避ける」ことにあります。</strong> 本番での誤削除、履歴に残した秘密、カレントディレクトリを誤ったままの <code>rm</code>——事前にパターンを知っていれば防げます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>やってはいけない／疑うべき操作</h4>
+            <p>ルート直下への破壊的操作、未確認のコピー＆ペースト、ネットから拾ったスクリプトの直 <code>curl | bash</code> は特に危険です。内容を読んでから実行が原則です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 危険: 中身を確認せずパイプ実行
+# curl -fsSL https://example.com/install.sh | bash
+
+# まし: 一度保存して読む
+curl -fsSL https://example.com/install.sh -o /tmp/install.sh
+less /tmp/install.sh
+# bash /tmp/install.sh
+
+# 現在地を確認してから消す
+pwd
+ls
+# rm -rf ./build</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>履歴と再実行</h4>
+            <p><code>history</code> にパスワードやトークンが残ることがあります。機密は環境変数やシークレットマネージャへ。<code>sudo !!</code> は直前コマンドの再実行で便利ですが、内容を見てから使ってください。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>history | tail -n 20
+# 履歴に残したくない（環境による）
+# unset HISTFILE
+# または先頭にスペース（ignorespace 設定時）
+
+# 直前コマンドを sudo で再実行
+# sudo !!</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：本番では「読むコマンド」から入る</h4>
+            <p>障害対応の初期は <code>pwd</code> / <code>ls</code> / <code>ps</code> / <code>ss</code> / <code>tail</code> / <code>journalctl</code> など<strong>状態を変えないコマンド</strong>で状況を把握します。いきなり再起動や削除に走らないのがプロの手順です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — スクリプト化とサービス運用の入口</h4>
+        <p>繰り返し作業をシェルスクリプトにし、systemd / ログで「動かし続ける」視点を得ます。Docker ホストや VPS 運用の直前段階です。</p>
+      </div>
+
+      <!-- Lesson 13 -->
+      <article class="lesson-card" data-section="linux-13" id="linux-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">13</span>
+            <h3>シェルスクリプト入門 — 繰り返しを自動化する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-13')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 手動手順をファイルに閉じ込める</h4>
+            <p><strong>同じ 5 コマンドを毎日打つなら、スクリプトにします。</strong> shebang、<code>set -euo pipefail</code>、引数、<code>if</code>——最低限これだけあれば、デプロイ補助やバックアップの雛形が書けます。完璧な bash 職人になる必要はなく、「再現可能な手順書」として持てることが目的です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>雛形と安全オプション</h4>
+            <p><code>set -e</code> はエラーで停止、<code>-u</code> は未定義変数をエラー、<code>-o pipefail</code> はパイプ途中の失敗も拾います。実務スクリプトの冒頭定番です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>#!/usr/bin/env bash
+set -euo pipefail
+
+NAME="${1:-world}"
+OUT_DIR="${2:-./out}"
+
+mkdir -p "$OUT_DIR"
+echo "Hello, $NAME" &gt; "$OUT_DIR/greeting.txt"
+echo "wrote $OUT_DIR/greeting.txt"</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>実行権とデバッグ</h4>
+            <p><code>chmod +x script.sh</code> のあと <code>./script.sh</code>。<code>bash -x script.sh</code> で実行トレースが見えます。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>chmod +x ./greet.sh
+./greet.sh "佐藤" /tmp/greet-out
+cat /tmp/greet-out/greeting.txt
+
+# 追跡実行
+bash -x ./greet.sh "dev"</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：変数は必ずクォートする</h4>
+            <p><code>"$var"</code> で空白や空文字の事故を防ぎます。<code>rm -rf $dir/</code> で dir が空だと悲劇になる、は前述のとおりです。スペースを含むパスを扱うならクォートは必須です。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 14 -->
+      <article class="lesson-card" data-section="linux-14" id="linux-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>サービスとログ — systemctl / journalctl</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('linux-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「起動して終わり」ではなく「動かし続ける」</h4>
+            <p><strong>Linux サーバー上の常駐プロセスは、多くの場合 systemd が管理しています。</strong> Nginx や Docker デーモン、自作 API も unit として登録されることがあります。<code>systemctl status</code> と <code>journalctl -u</code> が使えれば、VPS デプロイ後の「なぜ起動しない」の一次切り分けができます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>systemctl の基本</h4>
+            <p>状態確認・起動・再起動・有効化（ブート時自動起動）が主な操作です。権限により sudo が必要です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 例: ssh や docker が入っている環境で
+# systemctl status docker
+# sudo systemctl restart docker
+# sudo systemctl enable docker   # 起動時に自動開始
+# sudo systemctl disable docker
+
+# 自分のユーザーサービスもある（環境による）
+# systemctl --user status ...</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>journalctl でログを追う</h4>
+            <p>systemd 配下のログは journal に集約されます。<code>-u</code> でユニット指定、<code>-f</code> で追従、<code>--since</code> で時間絞り込みが定石です。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># sudo journalctl -u nginx -n 100 --no-pager
+# sudo journalctl -u docker -f
+# sudo journalctl --since "10 min ago" | less
+
+# Docker を使っている場合の対比
+# docker compose logs -f api</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：アプリログとシステムログを両方見る</h4>
+            <p>アプリが標準出力に出すログ（Docker logs）と、OS / プロキシ側のログ（journal / nginx）は別物です。502 のときは両方を見ないと原因を取り違えます。次の Docker 章・デプロイ作業でこの視点がそのまま活きます。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- Linux Quiz -->
+      <div class="quiz-section" id="linux-quiz">
+        <div class="quiz-header">
+          <h3>🧠 理解度チェック</h3>
+        </div>
+        <p class="quiz-intro">Linux / CLI の基本操作と安全な運用の理解度を確認しましょう。</p>
+        <div id="linux-quiz-container"></div>
+        <div class="quiz-result" id="linux-quiz-result"></div>
+      </div>
+
+      <!-- Puzzle Section -->
+      <div class="puzzle-section" id="linux-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header">
+          <h3>🧩 コマンド組み立てパズル</h3>
+        </div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコマンドを組み立ててください。</p>
+        <div class="puzzle-question" id="linux-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="linux-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="linux-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('linux')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('linux')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="linux-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

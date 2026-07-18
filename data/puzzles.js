@@ -110,6 +110,30 @@ const puzzleData = {
     explanation: "「役割」で前提を共有し、「目的」を伝え、「制約」と「出力形式」でコントロールし、最後に「対象データ」を渡すのが、ハルシネーションを防ぐ構造化プロンプトの基本です。"
   },
 
+  linux: {
+    question: "ログを検索して件数を数えるコマンド列を正しい順番に並べてください。",
+    pieces: [
+      { id: "linux-p1", text: "grep -R \"ERROR\" /var/log/app" },
+      { id: "linux-p2", text: "  2>/dev/null" },
+      { id: "linux-p3", text: "  | sort" },
+      { id: "linux-p4", text: "  | uniq -c" },
+      { id: "linux-p5", text: "  | sort -nr" }
+    ],
+    correctOrder: ["linux-p1", "linux-p2", "linux-p3", "linux-p4", "linux-p5"],
+    explanation: "grep で ERROR 行を集め、権限エラーは 2>/dev/null で捨て、sort → uniq -c で集計し、sort -nr で件数の多い順に並べます。パイプとリダイレクトの定番パターンです。"
+  },
+  javascript: {
+    question: "async/await で API から JSON を取得する関数を正しい順番に並べてください。",
+    pieces: [
+      { id: "js-p1", text: "async function fetchUser(id) {" },
+      { id: "js-p2", text: "  const res = await fetch(`/api/users/${id}`);" },
+      { id: "js-p3", text: "  if (!res.ok) throw new Error(`HTTP ${res.status}`);" },
+      { id: "js-p4", text: "  return await res.json();" },
+      { id: "js-p5", text: "}" }
+    ],
+    correctOrder: ["js-p1", "js-p2", "js-p3", "js-p4", "js-p5"],
+    explanation: "async 関数で fetch を await し、response.ok で HTTP エラーを明示的に検査してから json() を待ちます。fetch は 404 でも reject しない点に注意してください。"
+  },
   htmlcss: {
     question: "HTMLの基本構造を正しい順番に組み立ててください",
     pieces: [

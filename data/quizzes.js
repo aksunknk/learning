@@ -4,6 +4,28 @@
 // ============================================================
 const quizData = {
 
+  "linux": [
+    {"question": "本番サーバーや Docker コンテナの操作が主に CLI である理由に最も近いのはどれですか？", "options": ["GUI の方が遅いから禁止されている", "多くのサーバー環境にデスクトップ GUI が無く、操作手段がシェルだから", "Linux ではマウスが使えないから", "クラウド事業者が CLI 以外を契約で禁じているから"], "correct": 1, "explanation": "クラウド上の Linux サーバーやコンテナは GUI を持たないことが一般的で、操作の共通言語がシェル（CLI）になります。"},
+    {"question": "今いるディレクトリの絶対パスを表示するコマンドはどれですか？", "options": ["ls", "cd", "pwd", "whoami"], "correct": 2, "explanation": "pwd（Print Working Directory）が現在地の絶対パスを表示します。CLI 操作の起点です。"},
+    {"question": "権限表記 -rwxr-xr-- を数値モード（8進）で表すとどれに近いですか？", "options": ["777", "644", "754", "600"], "correct": 2, "explanation": "所有者 rwx=7、グループ r-x=5、その他 r--=4 なので 754 です。"},
+    {"question": "コマンドの標準出力を次のコマンドの標準入力に渡す記号はどれですか？", "options": [">", ">>", "|", "2>"], "correct": 2, "explanation": "パイプ | が標準出力→次の標準入力の接続です。> は上書きリダイレクト、>> は追記です。"},
+    {"question": "子プロセスにも引き継がせたい変数を設定するときに使うのはどれですか？", "options": ["alias", "export", "chmod", "source だけ"], "correct": 1, "explanation": "export した変数が環境変数として子プロセスに渡ります。Docker の -e やクラウドの環境変数と同じ発想です。"},
+    {"question": "プロセスを止めるとき、まず試すべきなのはどれですか？", "options": ["最初から kill -9", "kill（SIGTERM）で終了を依頼し、だめなら -9", "reboot する", "rm で実行ファイルを消す"], "correct": 1, "explanation": "SIGTERM で優雅な終了を求め、応答しない場合の最終手段が SIGKILL（-9）です。"},
+    {"question": "SSH 秘密鍵ファイルに対して推奨される権限はどれですか？", "options": ["777", "755", "600", "644"], "correct": 2, "explanation": "秘密鍵は所有者だけが読み書きできる 600（またはそれより厳しい）にします。緩いと ssh が接続を拒否することも多いです。"},
+    {"question": "systemd で管理されるサービスの直近ログを見る定番コマンドはどれですか？", "options": ["cat /etc/passwd", "journalctl -u サービス名", "chmod +x", "ssh-keygen"], "correct": 1, "explanation": "journalctl -u でユニット単位のログを参照します。-f で追従、--since で時間絞り込みがよく使われます。"}
+  ],
+
+  "javascript": [
+    {"question": "現代の JavaScript で変数宣言の既定として推奨されるのはどれですか？", "options": ["常に var を使う", "再代入しない値は const、必要なときだけ let", "すべて let にする", "すべて var にして巻き上げを活用する"], "correct": 1, "explanation": "const を既定にし、再代入が必要なときだけ let を使います。var は関数スコープと巻き上げの罠が多いため新規コードでは使いません。"},
+    {"question": "厳密等価演算子 === について正しい説明はどれですか？", "options": ["型変換してから比較する", "型と値が両方一致するときだけ true", "null と undefined を常に等しいとみなす", "オブジェクトの中身を再帰比較する"], "correct": 1, "explanation": "=== は型変換なしで比較します。== のゆるい等価は直感に反する結果が多いため、実務では === を使います。"},
+    {"question": "配列を変換して新しい配列を得るメソッドとして適切なのはどれですか？", "options": ["push", "map", "splice", "sort（常に非破壊）"], "correct": 1, "explanation": "map は各要素を変換した新しい配列を返します。push / splice は破壊的、従来の sort も破壊的です。"},
+    {"question": "クロージャの説明として正しいものはどれですか？", "options": ["関数が定義されたときの外側スコープの変数を閉じ込められる仕組み", "クラスの private フィールド専用構文", "ガベージコレクションを無効にする機能", "非同期処理を並列化する演算子"], "correct": 0, "explanation": "クロージャは関数とその生成時の語彙的環境の組み合わせです。コールバックやモジュールパターンの基盤になります。"},
+    {"question": "async 関数内で await fetch(...) したあと、HTTP エラー（404 など）を検出するには？", "options": ["await が自動で例外を投げるので何もしない", "response.ok を確認し、必要なら自分で throw する", "response === null を見る", "fetch はエラーにならないので無視してよい"], "correct": 1, "explanation": "fetch はネットワーク失敗以外では reject しません。4xx/5xx も fulfilled になるため、response.ok や status を明示的に確認します。"},
+    {"question": "次の出力順として正しいのはどれですか？ console.log(1); setTimeout(()=>console.log(2),0); Promise.resolve().then(()=>console.log(3)); console.log(4);", "options": ["1 2 3 4", "1 4 2 3", "1 4 3 2", "1 3 4 2"], "correct": 2, "explanation": "同期（1,4）の後にマイクロタスク（Promise の 3）、その後にマクロタスク（setTimeout の 2）の順です。"},
+    {"question": "ユーザー入力を DOM に入れるとき、XSS 対策として優先すべきなのはどれですか？", "options": ["innerHTML にそのまま代入する", "textContent や createElement でテキストとして扱う", "eval でサニタイズする", "document.write を使う"], "correct": 1, "explanation": "innerHTML への生入力は XSS の典型経路です。テキストなら textContent、構造が必要なら要素を組み立てます。"},
+    {"question": "ES Modules の import / export について正しいものはどれですか？", "options": ["ブラウザでは使えず Node 専用", "type=\"module\" の script でブラウザでも利用できる", "必ず webpack が必要", "default export しか存在しない"], "correct": 1, "explanation": "ES Modules は言語標準で、ブラウザは type=\"module\"、Node は package.json の \"type\": \"module\" などで利用します。"}
+  ],
+
   "rust": [
     {"question": "Rust がガベージコレクタなしでメモリ安全を実現する主な仕組みはどれですか？", "options": ["実行時にGCが不要領域を回収する", "コンパイル時に所有権と借用のルールを検査する", "全メモリ確保を手動で行わせる", "参照カウントを常に実行時に更新する"], "correct": 1, "explanation": "Rust は所有権・借用の規則をコンパイル時に検査することで、実行時コストなしに安全性を保証します。"},
     {"question": "let x = 5; と宣言した変数に x = 6; と再代入するとどうなりますか？", "options": ["問題なく6になる", "mut が無いためコンパイルエラー", "実行時に例外が発生する", "警告は出るが動作する"], "correct": 1, "explanation": "let はデフォルトで不変（immutable）です。再代入には let mut が必要です。"},

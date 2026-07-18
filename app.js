@@ -18,11 +18,13 @@
 // lessons は content/{id}.html の lesson-card 数と同期させる（CIが検証する）。
 const TABS = {
   htmlcss:       { label: "HTML/CSS",         icon: "🎨", group: "basics",   lessons: 28, accent: "var(--htmlcss-orange)",  glow: "rgba(227,79,38,0.35)" },
+  javascript:    { label: "JavaScript",       icon: "🟨", group: "basics",   lessons: 15, accent: "#f7df1e",                glow: "rgba(247,223,30,0.35)" },
   python:        { label: "Python",           icon: "🐍", group: "basics",   lessons: 17, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
   algorithm:     { label: "アルゴリズム",     icon: "🧮", group: "basics",   lessons: 8,  accent: "var(--color-warning)",   glow: "rgba(251,191,36,0.35)" },
   rust:          { label: "Rust",             icon: "🦀", group: "basics",   lessons: 14, accent: "#ce422b",                glow: "rgba(206,66,43,0.35)" },
   typescript:    { label: "TypeScript",       icon: "🔷", group: "basics",   lessons: 15, accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
   git:           { label: "Git / GitHub",     icon: "🌿", group: "basics",   lessons: 8,  accent: "var(--git-orange)",      glow: "rgba(240,80,51,0.35)" },
+  linux:         { label: "Linux / CLI",      icon: "🐧", group: "basics",   lessons: 14, accent: "#fcc624",                glow: "rgba(252,198,36,0.35)" },
   database:      { label: "データベース",     icon: "🗄️", group: "backend",  lessons: 12, accent: "var(--database-teal)",   glow: "rgba(0,150,136,0.35)" },
   webapi:        { label: "Web/API",          icon: "🌐", group: "backend",  lessons: 5,  accent: "var(--webapi-green)",    glow: "rgba(0,191,165,0.35)" },
   docker:        { label: "Docker",           icon: "🐳", group: "backend",  lessons: 8,  accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
@@ -42,8 +44,10 @@ const DEFAULT_TAB = "htmlcss";
 // ここに無いタブ（資格・知識系・Rust など）は補強コンテンツとして別枠表示する。
 const ROADMAP = [
   "htmlcss",
+  "javascript",
   "python",
   "git",
+  "linux",
   "algorithm",
   "database",
   "webapi",

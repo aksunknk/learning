@@ -330,11 +330,11 @@ async function main() {
 
   // Assertions
   const failures = [...staticFailures];
-  if (tabs.length !== 15) failures.push(`expected 15 tabs, got ${tabs.length}`);
+  if (tabs.length !== 17) failures.push(`expected 17 tabs, got ${tabs.length}`);
 
   // Phase 3
-  if (results.roadmap.nodes !== 11)
-    failures.push(`expected 11 roadmap nodes, got ${results.roadmap.nodes}`);
+  if (results.roadmap.nodes !== 13)
+    failures.push(`expected 13 roadmap nodes, got ${results.roadmap.nodes}`);
   if (results.roadmap.firstTab !== "htmlcss")
     failures.push(`roadmap should start with htmlcss, got ${results.roadmap.firstTab}`);
   if (!results.search || results.search.count < 1)
