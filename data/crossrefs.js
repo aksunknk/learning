@@ -186,4 +186,64 @@ const crossRefData = {
     { tab: "security", section: "security-8", label: "シークレット管理" },
     { tab: "cicd", section: "cicd-5", label: "CI の環境変数" },
   ],
+
+  // --- System Design ---
+  "sysdesign-1": [
+    { tab: "pathway", section: "pathway-1", label: "TaskBoard のスコープ定義" },
+    { tab: "capstone", section: "capstone-1", label: "キャップストーンの始め方" },
+  ],
+  "sysdesign-4": [
+    { tab: "webapi", section: "webapi-6", label: "REST リソース設計" },
+    { tab: "pathway", section: "pathway-5", label: "TaskBoard の REST 契約" },
+  ],
+  "sysdesign-7": [
+    { tab: "webapi", section: "webapi-10", label: "キャッシュと Cache-Control" },
+    { tab: "cicd", section: "cicd-6", label: "静的配信" },
+  ],
+  "sysdesign-10": [
+    { tab: "docker", section: "docker-10", label: "HEALTHCHECK" },
+    { tab: "cicd", section: "cicd-9", label: "ヘルスチェックとロールバック" },
+  ],
+  "sysdesign-11": [
+    { tab: "security", section: "security-6", label: "認可と IDOR" },
+    { tab: "security", section: "security-7", label: "セッションと JWT" },
+  ],
+  "sysdesign-15": [
+    { tab: "pathway", section: "pathway-12", label: "キャップストーンへの橋渡し" },
+    { tab: "capstone", section: "capstone-3", label: "アーキテクチャを説明する" },
+  ],
+
+  // --- DevTools ---
+  "devtools-1": [
+    { tab: "javascript", section: "javascript-1", label: "JavaScript の入口" },
+    { tab: "pathway", section: "pathway-3", label: "JS + localStorage" },
+  ],
+  "devtools-4": [
+    { tab: "webapi", section: "webapi-1", label: "HTTP の前提" },
+    { tab: "testing", section: "testing-9", label: "結合/E2E" },
+  ],
+  "devtools-6": [
+    { tab: "javascript", section: "javascript-10", label: "DOM とストレージ周辺" },
+    { tab: "pathway", section: "pathway-3", label: "TaskBoard の永続化" },
+  ],
+  "devtools-9": [
+    { tab: "security", section: "security-9", label: "CORS / Cookie" },
+    { tab: "webapi", section: "webapi-4", label: "フロントからの通信" },
+  ],
+  "devtools-11": [
+    { tab: "react", section: "react-1", label: "React の入口" },
+    { tab: "pathway", section: "pathway-7", label: "React/TS クライアント" },
+  ],
+  "devtools-12": [
+    { tab: "pathway", section: "pathway-3", label: "TaskBoard JS 版" },
+    { tab: "sysdesign", section: "sysdesign-12", label: "オブザーバビリティ" },
+  ],
+
+  "pathway-12": [
+    { tab: "sysdesign", section: "sysdesign-15", label: "TaskBoard 10x 設計" },
+    { tab: "capstone", section: "capstone-1", label: "キャップストーン開始" },
+  ],
+  "javascript-2": [
+    { tab: "devtools", section: "devtools-2", label: "Console の使い方" },
+  ],
 };

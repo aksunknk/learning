@@ -184,6 +184,8 @@ async function main() {
         miniMissions: panel.querySelectorAll(".mini-mission").length,
         rubric: panel.querySelectorAll(".chapter-rubric").length,
         crossRefs: panel.querySelectorAll(".cross-refs").length,
+        taskboardApply: panel.querySelectorAll(".taskboard-apply").length,
+        fillBlanks: panel.querySelectorAll(".code-blank").length,
         expectsPractice: hasMissionData,
       };
     }, tab);
@@ -336,11 +338,11 @@ async function main() {
 
   // Assertions
   const failures = [...staticFailures];
-  if (tabs.length !== 20) failures.push(`expected 20 tabs, got ${tabs.length}`);
+  if (tabs.length !== 22) failures.push(`expected 22 tabs, got ${tabs.length}`);
 
   // Phase 3
-  if (results.roadmap.nodes !== 16)
-    failures.push(`expected 16 roadmap nodes, got ${results.roadmap.nodes}`);
+  if (results.roadmap.nodes !== 18)
+    failures.push(`expected 18 roadmap nodes, got ${results.roadmap.nodes}`);
   if (results.roadmap.firstTab !== "htmlcss")
     failures.push(`roadmap should start with htmlcss, got ${results.roadmap.firstTab}`);
   if (!results.search || results.search.count < 1)
@@ -400,6 +402,28 @@ async function main() {
       `webapi should inject cross-refs, got ${results.tabs.webapi?.crossRefs}`
     );
   }
+  if ((results.tabs.sysdesign?.lessons || 0) < 16) {
+    failures.push(
+      `sysdesign should have 16 lessons, got ${results.tabs.sysdesign?.lessons}`
+    );
+  }
+  if ((results.tabs.devtools?.lessons || 0) < 12) {
+    failures.push(
+      `devtools should have 12 lessons, got ${results.tabs.devtools?.lessons}`
+    );
+  }
+  if ((results.tabs.htmlcss?.taskboardApply || 0) < 1) {
+    failures.push("htmlcss should inject TaskBoard apply block");
+  }
+  if ((results.tabs.javascript?.fillBlanks || 0) < 1) {
+    failures.push(
+      `javascript should inject fill-blank inputs, got ${results.tabs.javascript?.fillBlanks}`
+    );
+  }
+  if (!(results.groups.basics || []).includes("devtools"))
+    failures.push("basics group missing devtools");
+  if (!(results.groups.practice || []).includes("sysdesign"))
+    failures.push("practice group missing sysdesign");
 
   if ((results.groups.basics || []).length < 2)
     failures.push("basics group too small");

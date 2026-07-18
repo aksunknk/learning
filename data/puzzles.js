@@ -110,6 +110,30 @@ const puzzleData = {
     explanation: "「役割」で前提を共有し、「目的」を伝え、「制約」と「出力形式」でコントロールし、最後に「対象データ」を渡すのが、ハルシネーションを防ぐ構造化プロンプトの基本です。"
   },
 
+  sysdesign: {
+    question: "HTTPS リクエストがアプリに届くまでの経路を正しい順番に並べてください。",
+    pieces: [
+      { id: "sd-p1", text: "DNS 解決でホスト名を IP にする" },
+      { id: "sd-p2", text: "TCP 接続と TLS ハンドシェイク" },
+      { id: "sd-p3", text: "LB / リバースプロキシがアプリへ転送" },
+      { id: "sd-p4", text: "API が認可し DB をクエリする" },
+      { id: "sd-p5", text: "JSON 応答がブラウザへ戻る" }
+    ],
+    correctOrder: ["sd-p1", "sd-p2", "sd-p3", "sd-p4", "sd-p5"],
+    explanation: "名前解決 → 暗号化通信の確立 → 入口での振り分け → アプリと DB → 応答の復路、が基本の旅です。遅延切り分けはこの順序で層を疑います。"
+  },
+  devtools: {
+    question: "TaskBoard にデータが出ないときの切り分け順を並べてください。",
+    pieces: [
+      { id: "dt-p1", text: "再現手順を 3 行で書く" },
+      { id: "dt-p2", text: "Network で API の status / body を確認" },
+      { id: "dt-p3", text: "Console の例外スタックを読む" },
+      { id: "dt-p4", text: "Application で localStorage の tasks を見る" },
+      { id: "dt-p5", text: "仮説に沿って最小修正 or Issue 化" }
+    ],
+    correctOrder: ["dt-p1", "dt-p2", "dt-p3", "dt-p4", "dt-p5"],
+    explanation: "再現 → 通信 → 例外 → 永続状態 → 修正/記録、の順が 15 分ランブックの基本形です。いきなりコードを書き換えません。"
+  },
   pathway: {
     question: "TaskBoard 縦糸の進め方を正しい順番に並べてください。",
     pieces: [

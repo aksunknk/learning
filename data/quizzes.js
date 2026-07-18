@@ -4,6 +4,30 @@
 // ============================================================
 const quizData = {
 
+  "sysdesign": [
+    {"question": "機能要件と非機能要件の区別として正しいのはどれですか？", "options": ["どちらも同じ意味", "機能は何ができるか、非機能はどれだけ速く・安全に・止めずに等の品質特性", "非機能は UI の色だけを指す", "機能要件にレイテンシ数値を書くのは誤り"], "correct": 1, "explanation": "機能要件はできること、非機能要件（NFR）は性能・可用性・セキュリティなどの品質特性です。最初に仮置きでも数値化します。"},
+    {"question": "認可ロジックを置く場所として最も適切なのはどれですか？", "options": ["ブラウザの CSS だけ", "信頼できるサーバー側（API）で所有者・権限を検証する", "ユーザーが送った user_id をそのまま信じる", "DB のテーブル名を隠すだけ"], "correct": 1, "explanation": "クライアントは改ざん可能なので、認可はサーバー側で行います。"},
+    {"question": "アプリを水平スケールしやすくする条件に近いのはどれですか？", "options": ["セッションをプロセスメモリに持つ", "ステートレスにし、状態は DB/Redis 等へ外出しする", "必ず単一インスタンスに固定する", "静的ファイルを各サーバのローカルだけに置く"], "correct": 1, "explanation": "どのインスタンスに当たっても同じ応答になるようステートレス化します。"},
+    {"question": "認証付き API レスポンスを CDN で長くキャッシュするリスクはどれですか？", "options": ["特に無い", "他人のデータが別ユーザーに見える漏洩リスク", "TLS が無効になる", "DNS が遅くなるだけ"], "correct": 1, "explanation": "認証付きの個別データを共有キャッシュに載せると漏洩し得ます。"},
+    {"question": "結果整合（Eventual Consistency）の説明として近いのはどれですか？", "options": ["常に全読者が瞬間的に同じ最新値を見る", "しばらくすると一致するが、その間ズレうる", "DB を使わない設計だけを指す", "可用性を必ず捨てる"], "correct": 1, "explanation": "キャッシュやレプリカ遅延では結果整合になり得ます。誰が古いデータを見うるかを決めます。"},
+    {"question": "ヘルスチェックで LB が見るべきものに近いのはどれですか？", "options": ["CPU ファンの音", "プロセス生存に加え、依存（DB 等）を含めた Ready 状態", "Git のコミット数", "デザイナーの気分"], "correct": 1, "explanation": "Ready は DB 接続など実働可能かを示し、LB の外し判断に使います。"},
+    {"question": "封筒の裏計算（back-of-the-envelope）の主目的はどれですか？", "options": ["円周率を暗記する", "QPS やストレージの桁を合わせ、1台で足りるか等を判断する", "正確なミリ秒を出すことだけ", "ADR を禁止する"], "correct": 1, "explanation": "オーダー計算で規模感を掴み、過剰設計や過小見積もりを防ぎます。"},
+    {"question": "ADR（Architecture Decision Record）に特に残すべきなのはどれですか？", "options": ["選んだ色の RGB", "何を選び、何を捨てたか（結果・トレードオフ）", "全社員の昼ごはん", "パスワード一覧"], "correct": 1, "explanation": "決定の文脈と捨てた選択肢を残すと、半年後も設計意図を再現できます。"},
+    {"question": "TaskBoard を 10x にするとき、最初にやるべきことに近いのはどれですか？", "options": ["いきなりマイクロサービス分割", "計測（ログ/メトリクス）と遅いクエリの特定", "すべての機能をキュー化する", "CDN で認可を無効化する"], "correct": 1, "explanation": "測ってから割る。プロファイリングとインデックス等の修正が先です。"},
+    {"question": "URL 短縮サービスで読み取りが多いときに効きやすいのはどれですか？", "options": ["毎回フルテーブルスキャン", "code→URL のキャッシュとホットキー対策", "パスワードを平文保存", "POST だけを CDN キャッシュ"], "correct": 1, "explanation": "読み取り優勢なので短コードから長 URL への写像をキャッシュし、人気キーの負荷を設計します。"}
+  ],
+
+  "devtools": [
+    {"question": "画面は出るがデータが空のとき、最初に見るパネルとして適切なのはどれですか？", "options": ["Elements だけ", "Network（通信の status/body）", "Application のフォント一覧", "Performance の FPS だけ"], "correct": 1, "explanation": "データ欠落は通信失敗や空レスポンスが典型なので Network から切り分けます。"},
+    {"question": "CSS が当たらないとき Elements で確認すべきことに近いのはどれですか？", "options": ["Git blame", "Computed の最終値と打ち消し線（詳細度負け）", "DNS TTL", "JWT の iss"], "correct": 1, "explanation": "Computed と Styles の打ち消し線から、どの宣言が勝っているかを見ます。"},
+    {"question": "DevTools を開いた状態の Disable cache の効果として正しいのはどれですか？", "options": ["常に全世界のキャッシュが消える", "DevTools を開いている間、そのブラウザの読み込みキャッシュを無効化しやすい", "サーバーの Redis が消える", "Cookie が永久削除される"], "correct": 1, "explanation": "主に開発中のハードリロード相当の確認用です。開きっぱなし注意。"},
+    {"question": "localStorage の tasks を確認するパネルはどれですか？", "options": ["Security", "Application", "Animations", "Rendering"], "correct": 1, "explanation": "Application で Local Storage / Cookie / Cache を見ます。"},
+    {"question": "CORS エラーの典型的な見え方に近いのはどれですか？", "options": ["サーバーログでは成功でも、ブラウザ Console/Network でブロックされる", "必ず 500 が返る", "CSS がすべて消える", "Python がインストールされる"], "correct": 0, "explanation": "CORS はブラウザ側の防衛で、サーバー単体テストでは気づきにくいことがあります。"},
+    {"question": "ブレークポイントで変数を見る場所として適切なのはどれですか？", "options": ["Sources の Scope / Watch", "Lighthouse の SEO 点", "DNS 設定画面", "Dockerfile"], "correct": 0, "explanation": "Sources で停止中に Scope や Watch で値を確認します。"},
+    {"question": "React DevTools の Profiler の用途として近いのはどれですか？", "options": ["DB の VACUUM", "無駄な再レンダーや長いレンダーを特定する", "TLS 証明書の発行", "npm のキャッシュ削除"], "correct": 1, "explanation": "Profiler はコンポーネントのレンダーコストを可視化します。"},
+    {"question": "15 分ランブックで最初の 2 分にやるべきことはどれですか？", "options": ["いきなり本番 DB を消す", "再現手順を短く書き、別ウィンドウでも再現するか確認する", "全依存を最新に上げる", "ADR を削除する"], "correct": 1, "explanation": "再現が先。仮説と証拠は後続です。"}
+  ],
+
   "pathway": [
     {"question": "通しプロジェクト（縦糸）の主目的として最も近いのはどれですか？", "options": ["新しい言語を増やすこと", "同一アプリに技術を順に接続し、層の役割を説明できること", "資格試験の範囲を暗記すること", "GUI ツールだけを使うこと"], "correct": 1, "explanation": "各チャプターは部品、通しプロジェクトは組み立て図です。同一成果物に接続することで結合理解が得られます。"},
     {"question": "TaskBoard を進めるとき、最初にサーバーを立てずに localStorage 版を作る利点はどれですか？", "options": ["セキュリティが完成する", "状態の形と UI 操作を先に確定でき、後の API 化が容易になる", "Docker が不要になる", "テストが不要になる"], "correct": 1, "explanation": "データ形（id/title/done）と操作を先に固定すると、REST・DB・React へ移植するときの再設計が減ります。"},

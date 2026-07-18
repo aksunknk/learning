@@ -1864,3 +1864,70 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   color: var(--color-text-secondary);
   font-family: var(--font-mono, ui-monospace, monospace);
 }
+
+/* --- TaskBoard apply + fill-in blanks --- */
+.taskboard-apply {
+  margin: 1.75rem 0;
+  padding: 1.25rem 1.35rem;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid #0f766e;
+  background: rgba(15, 118, 110, 0.07);
+}
+
+.taskboard-apply-link {
+  margin: 0.75rem 0 0;
+}
+
+.fillblank-section {
+  margin: 2rem 0;
+  padding: 1.25rem 0 0.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.fillblank-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  margin: 1rem 0 0.45rem;
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+}
+
+.fillblank-hint {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+}
+
+.fillblank-block {
+  margin-bottom: 1.25rem;
+}
+
+.code-blank {
+  display: inline-block;
+  min-width: 4.5rem;
+  margin: 0 0.15rem;
+  padding: 0.1rem 0.35rem;
+  border: none;
+  border-bottom: 2px solid #0f766e;
+  background: rgba(15, 118, 110, 0.08);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  line-height: 1.4;
+}
+
+.code-blank:focus {
+  outline: 2px solid rgba(15, 118, 110, 0.45);
+  outline-offset: 1px;
+  background: rgba(15, 118, 110, 0.14);
+}
+
+.code-run-output.fillblank-pass {
+  border-left: 3px solid #10b981;
+}
+
+.code-run-output.fillblank-fail {
+  border-left: 3px solid #ef4444;
+}

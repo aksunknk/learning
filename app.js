@@ -25,6 +25,7 @@ const TABS = {
   typescript:    { label: "TypeScript",       icon: "🔷", group: "basics",   lessons: 15, accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
   git:           { label: "Git / GitHub",     icon: "🌿", group: "basics",   lessons: 8,  accent: "var(--git-orange)",      glow: "rgba(240,80,51,0.35)" },
   linux:         { label: "Linux / CLI",      icon: "🐧", group: "basics",   lessons: 14, accent: "#fcc624",                glow: "rgba(252,198,36,0.35)" },
+  devtools:      { label: "DevTools",         icon: "🧭", group: "basics",   lessons: 12, accent: "#6366f1",                glow: "rgba(99,102,241,0.35)" },
   database:      { label: "データベース",     icon: "🗄️", group: "backend",  lessons: 16, accent: "var(--database-teal)",   glow: "rgba(0,150,136,0.35)" },
   webapi:        { label: "Web/API",          icon: "🌐", group: "backend",  lessons: 14, accent: "var(--webapi-green)",    glow: "rgba(0,191,165,0.35)" },
   docker:        { label: "Docker",           icon: "🐳", group: "backend",  lessons: 14, accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
@@ -34,6 +35,7 @@ const TABS = {
   "python-prac": { label: "Python実践試験",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
   testing:       { label: "テスト設計",       icon: "🧪", group: "practice", lessons: 14, accent: "var(--testing-green)",   glow: "rgba(76,175,80,0.35)" },
   security:      { label: "セキュリティ",     icon: "🔒", group: "practice", lessons: 12, accent: "#e11d48",                glow: "rgba(225,29,72,0.35)" },
+  sysdesign:     { label: "システム設計",     icon: "📐", group: "practice", lessons: 16, accent: "#7c3aed",                glow: "rgba(124,58,237,0.35)" },
   pathway:       { label: "通しプロジェクト", icon: "🧵", group: "practice", lessons: 12, accent: "#0f766e",                glow: "rgba(15,118,110,0.35)" },
   genai:         { label: "生成AIパスポート", icon: "🤖", group: "practice", lessons: 8,  accent: "var(--genai-purple)",    glow: "rgba(156,39,176,0.35)" },
   capstone:      { label: "キャップストーン", icon: "🏗️", group: "practice", lessons: 10, accent: "var(--capstone-gold)",   glow: "rgba(255,179,0,0.35)" },
@@ -51,6 +53,7 @@ const ROADMAP = [
   "python",
   "git",
   "linux",
+  "devtools",
   "algorithm",
   "database",
   "webapi",
@@ -60,6 +63,7 @@ const ROADMAP = [
   "typescript",
   "testing",
   "security",
+  "sysdesign",
   "pathway",
   "capstone",
 ].map((tab) => ({ tab, ...TABS[tab] }));
@@ -219,13 +223,16 @@ async function loadTabContent(tabId) {
     panel.setAttribute("aria-busy", "false");
     contentCache[tabId] = "loaded";
 
-    // 編末 Mini Mission / 章末ルーブリックを注入してから実行ボタンを付与する
+    // 編末 Mini Mission / 章末ルーブリック / TaskBoard 適用 / 穴埋めを注入
     injectPracticeLayer(tabId, panel);
+    injectTaskBoardApply(tabId, panel);
+    injectFillBlankSection(tabId, panel);
     injectCrossRefs(panel);
 
     // 注入後にタブ固有のインタラクションを初期化
     initQuizForTab(tabId);
     loadPuzzle(tabId);
+    prepareFillBlankBlocks(panel);
     attachRunButtons(panel);
     observeScrollTargets(panel);
     restoreProgress();
@@ -453,6 +460,143 @@ function injectCrossRefs(panel) {
 }
 
 window.injectCrossRefs = injectCrossRefs;
+
+function injectTaskBoardApply(tabId, panel) {
+  if (!panel || panel.dataset.taskboardInjected === "1") return;
+  if (typeof taskBoardApplyData === "undefined" || !taskBoardApplyData[tabId]) return;
+
+  const data = taskBoardApplyData[tabId];
+  const quizEl =
+    panel.querySelector(`#${tabId}-quiz`) ||
+    panel.querySelector(".quiz-section");
+  if (!quizEl) return;
+
+  const section = document.createElement("section");
+  section.className = "taskboard-apply";
+  section.setAttribute("aria-label", "TaskBoard に適用する");
+  const tasksHtml = (data.tasks || [])
+    .map(
+      (task, i) => `<li>
+        <label class="mini-mission-task">
+          <input type="checkbox" data-taskboard-id="${escapeHtml(`${tabId}:${i}`)}" />
+          <span>${escapeHtml(task)}</span>
+        </label>
+      </li>`
+    )
+    .join("");
+
+  section.innerHTML = `
+    <div class="mini-mission-header">
+      <h4>🧵 TaskBoard に適用する</h4>
+      <span class="mini-mission-meta">目安 ${escapeHtml(String(data.minutes || 20))} 分</span>
+    </div>
+    <p class="mini-mission-goal">${escapeHtml(data.goal)}</p>
+    <ul class="mini-mission-tasks">${tasksHtml}</ul>
+    <p class="taskboard-apply-link">
+      <button type="button" class="cross-ref-link"
+        onclick="jumpToLesson('pathway','${escapeHtml(data.pathway)}')">
+        通しプロジェクト ${escapeHtml(data.pathway)} を開く
+        <span class="cross-ref-id">${escapeHtml(data.pathway)}</span>
+      </button>
+    </p>`;
+
+  quizEl.parentNode.insertBefore(section, quizEl);
+  panel.dataset.taskboardInjected = "1";
+
+  try {
+    const saved = JSON.parse(localStorage.getItem("cf_taskboard") || "{}");
+    section.querySelectorAll("input[data-taskboard-id]").forEach((input) => {
+      input.checked = !!saved[input.dataset.taskboardId];
+      input.addEventListener("change", () => {
+        const next = JSON.parse(localStorage.getItem("cf_taskboard") || "{}");
+        next[input.dataset.taskboardId] = input.checked;
+        localStorage.setItem("cf_taskboard", JSON.stringify(next));
+      });
+    });
+  } catch {
+    /* ignore storage errors */
+  }
+}
+
+window.injectTaskBoardApply = injectTaskBoardApply;
+
+function injectFillBlankSection(tabId, panel) {
+  if (!panel || panel.dataset.fillblanksInjected === "1") return;
+  if (typeof fillBlankData === "undefined" || !fillBlankData[tabId]?.length) return;
+
+  const quizEl =
+    panel.querySelector(`#${tabId}-quiz`) ||
+    panel.querySelector(".quiz-section");
+  if (!quizEl) return;
+
+  const wrap = document.createElement("section");
+  wrap.className = "fillblank-section";
+  wrap.setAttribute("aria-label", "穴埋め実行ドリル");
+  wrap.innerHTML = `<div class="quiz-header"><h3>⌨️ 穴埋め実行ドリル</h3></div>
+    <p class="quiz-intro">___ を埋めて ▶ 実行し、期待出力と一致するか確認します。</p>`;
+
+  fillBlankData[tabId].forEach((ex) => {
+    const block = document.createElement("div");
+    block.className = "code-block fillblank-block";
+    block.dataset.fillblank = "1";
+    block.dataset.expect = ex.expect;
+    if (ex.answers) block.dataset.answers = JSON.stringify(ex.answers);
+    block.innerHTML = `
+      <div class="fillblank-meta">
+        <strong>${escapeHtml(ex.title)}</strong>
+        ${ex.hint ? `<span class="fillblank-hint">${escapeHtml(ex.hint)}</span>` : ""}
+      </div>
+      <div class="code-header">
+        <span class="code-lang">${escapeHtml(ex.lang)}</span>
+      </div>
+      <pre><code>${escapeHtml(ex.template)}</code></pre>`;
+    wrap.appendChild(block);
+  });
+
+  quizEl.parentNode.insertBefore(wrap, quizEl);
+  panel.dataset.fillblanksInjected = "1";
+}
+
+window.injectFillBlankSection = injectFillBlankSection;
+
+function prepareFillBlankBlocks(root) {
+  root.querySelectorAll(".code-block").forEach((block) => {
+    if (block.dataset.fillPrepared === "1") return;
+    const codeEl = block.querySelector("code");
+    if (!codeEl) return;
+    const raw = codeEl.textContent;
+    if (!raw.includes("___")) return;
+
+    const parts = raw.split("___");
+    codeEl.replaceChildren();
+    parts.forEach((part, i) => {
+      codeEl.appendChild(document.createTextNode(part));
+      if (i < parts.length - 1) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "code-blank";
+        input.setAttribute("aria-label", `穴埋め ${i + 1}`);
+        input.autocomplete = "off";
+        input.spellcheck = false;
+        codeEl.appendChild(input);
+      }
+    });
+    block.dataset.fillblank = "1";
+    block.dataset.fillPrepared = "1";
+  });
+}
+
+function readCodeFromBlock(block) {
+  const codeEl = block.querySelector("code");
+  if (!codeEl) return "";
+  if (block.dataset.fillblank !== "1") return codeEl.textContent ?? "";
+  let out = "";
+  codeEl.childNodes.forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) out += node.textContent;
+    else if (node.classList?.contains("code-blank")) out += node.value.trim();
+  });
+  return out;
+}
 
 function waitUntil(predicate, intervalMs = 50) {
   return new Promise((resolve) => {
@@ -1566,8 +1710,15 @@ function detectRunnableLang(label) {
   return null;
 }
 
+function normalizeRunOutput(s) {
+  return String(s ?? "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .trim();
+}
+
 async function runCodeBlock(block, lang, btn) {
-  const code = block.querySelector("code")?.textContent ?? "";
+  const code = readCodeFromBlock(block);
   const output = ensureRunOutput(block);
   output.textContent = "実行中…";
   output.className = "code-run-output running";
@@ -1576,8 +1727,20 @@ async function runCodeBlock(block, lang, btn) {
   try {
     const result =
       lang === "js" ? await runJsSandbox(code) : await runPython(code, output);
-    output.className = "code-run-output done";
-    output.textContent = result === "" ? "(出力なし)" : result;
+    const text = result === "" ? "(出力なし)" : result;
+    const expect = block.dataset.expect;
+    if (expect != null && expect !== "") {
+      const ok = normalizeRunOutput(result) === normalizeRunOutput(expect);
+      output.className = ok
+        ? "code-run-output done fillblank-pass"
+        : "code-run-output error fillblank-fail";
+      output.textContent = ok
+        ? `✅ 正解\n${text}`
+        : `❌ 期待と不一致\n出力:\n${text}\n\n期待:\n${expect}`;
+    } else {
+      output.className = "code-run-output done";
+      output.textContent = text;
+    }
   } catch (err) {
     output.className = "code-run-output error";
     output.textContent = String(err.message || err);

@@ -547,6 +547,84 @@ except OSError as e:
     ],
   },
 
+  sysdesign: {
+    beginner: {
+      title: "初級編ミニミッション",
+      minutes: 25,
+      goal: "TaskBoard の機能要件と NFR を1枚に書く",
+      tasks: [
+        "機能を 4 つ以内に列挙する",
+        "レイテンシ・可用性・一貫性を仮置きする",
+        "クライアント / API / DB の責務を3行で書く",
+      ],
+    },
+    intermediate: {
+      title: "中級編ミニミッション",
+      minutes: 30,
+      goal: "スケール手段のトレードオフ表を作る",
+      tasks: [
+        "現状構成（単一 API + DB）を図示する",
+        "キャッシュと水平スケールの長所/短所を表にする",
+        "最初に測るメトリクスを 2 つ選ぶ",
+      ],
+    },
+    advanced: {
+      title: "上級編ミニミッション",
+      minutes: 35,
+      goal: "ADR 1 本と 10x 進化図を書く",
+      tasks: [
+        "永続化または認証配置の ADR を1本書く",
+        "Phase 0 と Phase 1 の構成差分を書く",
+        "既知の制限を 3 つ『次の宿題』として残す",
+      ],
+    },
+    rubric: [
+      { id: "nfr", label: "機能要件と NFR を分けて書ける" },
+      { id: "scale", label: "垂直/水平とステートレスを説明できる" },
+      { id: "consistency", label: "強整合/結果整合の使い分けを説明できる" },
+      { id: "adr", label: "トレードオフを ADR または表に残せる" },
+    ],
+  },
+
+  devtools: {
+    beginner: {
+      title: "初級編ミニミッション",
+      minutes: 20,
+      goal: "Elements / Console / Network を一巡する",
+      tasks: [
+        "適当なページで要素を選択し Computed を見る",
+        "Console でオブジェクトを console.log する",
+        "Network で文書または XHR の status を読む",
+      ],
+    },
+    intermediate: {
+      title: "中級編ミニミッション",
+      minutes: 25,
+      goal: "TaskBoard（または演習ページ）の状態を Application で確認する",
+      tasks: [
+        "localStorage のキーを列挙する",
+        "値をバックアップしてから壊し、リロード挙動を見る",
+        "Sources で 1 箇所ブレークポイントを止める",
+      ],
+    },
+    advanced: {
+      title: "上級編ミニミッション",
+      minutes: 25,
+      goal: "15 分ランブックで架空障害を切り分ける",
+      tasks: [
+        "症状を1文、仮説を2つ書く",
+        "使うパネル順を書き、証拠の取り方を決める",
+        "修正 or Issue テンプレを 5 行で残す",
+      ],
+    },
+    rubric: [
+      { id: "map", label: "症状から初期パネルを選べる" },
+      { id: "network", label: "Network で status/body を読める" },
+      { id: "storage", label: "Application で永続状態を確認できる" },
+      { id: "runbook", label: "切り分け手順を時間区切りで実行できる" },
+    ],
+  },
+
   testing: {
     beginner: {
       title: "初級編ミニミッション",
