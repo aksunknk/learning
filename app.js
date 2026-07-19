@@ -17,28 +17,28 @@
 // 進捗カード・タブボタン・コンテンツ枠・ヒーロー統計は起動時に自動生成される。
 // lessons は content/{id}.html の lesson-card 数と同期させる（CIが検証する）。
 const TABS = {
-  htmlcss:       { label: "HTML/CSS",         icon: "🎨", group: "basics",   lessons: 28, accent: "var(--htmlcss-orange)",  glow: "rgba(227,79,38,0.35)" },
-  javascript:    { label: "JavaScript",       icon: "🟨", group: "basics",   lessons: 15, accent: "#f7df1e",                glow: "rgba(247,223,30,0.35)" },
-  python:        { label: "Python",           icon: "🐍", group: "basics",   lessons: 17, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
-  algorithm:     { label: "アルゴリズム",     icon: "🧮", group: "basics",   lessons: 8,  accent: "var(--color-warning)",   glow: "rgba(251,191,36,0.35)" },
-  rust:          { label: "Rust",             icon: "🦀", group: "basics",   lessons: 14, accent: "#ce422b",                glow: "rgba(206,66,43,0.35)" },
-  typescript:    { label: "TypeScript",       icon: "🔷", group: "basics",   lessons: 15, accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
-  git:           { label: "Git / GitHub",     icon: "🌿", group: "basics",   lessons: 8,  accent: "var(--git-orange)",      glow: "rgba(240,80,51,0.35)" },
-  linux:         { label: "Linux / CLI",      icon: "🐧", group: "basics",   lessons: 14, accent: "#fcc624",                glow: "rgba(252,198,36,0.35)" },
-  devtools:      { label: "DevTools",         icon: "🧭", group: "basics",   lessons: 12, accent: "#6366f1",                glow: "rgba(99,102,241,0.35)" },
-  database:      { label: "データベース",     icon: "🗄️", group: "backend",  lessons: 16, accent: "var(--database-teal)",   glow: "rgba(0,150,136,0.35)" },
-  webapi:        { label: "Web/API",          icon: "🌐", group: "backend",  lessons: 14, accent: "var(--webapi-green)",    glow: "rgba(0,191,165,0.35)" },
-  docker:        { label: "Docker",           icon: "🐳", group: "backend",  lessons: 14, accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
-  cicd:          { label: "CI/CD・デプロイ",  icon: "🚀", group: "backend",  lessons: 12, accent: "#2088ff",                glow: "rgba(32,136,255,0.35)" },
-  react:         { label: "React",            icon: "⚛️", group: "frontend", lessons: 17, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
-  "python-cert": { label: "Python認定基礎",   icon: "📜", group: "practice", lessons: 10, accent: "var(--python-yellow)",   glow: "rgba(255,212,59,0.35)" },
-  "python-prac": { label: "Python実践試験",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
-  testing:       { label: "テスト設計",       icon: "🧪", group: "practice", lessons: 14, accent: "var(--testing-green)",   glow: "rgba(76,175,80,0.35)" },
-  security:      { label: "セキュリティ",     icon: "🔒", group: "practice", lessons: 12, accent: "#e11d48",                glow: "rgba(225,29,72,0.35)" },
-  sysdesign:     { label: "システム設計",     icon: "📐", group: "practice", lessons: 16, accent: "#7c3aed",                glow: "rgba(124,58,237,0.35)" },
-  pathway:       { label: "通しプロジェクト", icon: "🧵", group: "practice", lessons: 12, accent: "#0f766e",                glow: "rgba(15,118,110,0.35)" },
-  genai:         { label: "生成AIパスポート", icon: "🤖", group: "practice", lessons: 8,  accent: "var(--genai-purple)",    glow: "rgba(156,39,176,0.35)" },
-  capstone:      { label: "キャップストーン", icon: "🏗️", group: "practice", lessons: 10, accent: "var(--capstone-gold)",   glow: "rgba(255,179,0,0.35)" },
+  htmlcss:       { label: "HTML/CSS",         short: "HTML",   icon: "🎨", group: "basics",   lessons: 28, accent: "var(--htmlcss-orange)",  glow: "rgba(227,79,38,0.35)" },
+  javascript:    { label: "JavaScript",       short: "JS",     icon: "🟨", group: "basics",   lessons: 15, accent: "#f7df1e",                glow: "rgba(247,223,30,0.35)" },
+  python:        { label: "Python",           short: "Py",     icon: "🐍", group: "basics",   lessons: 17, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
+  algorithm:     { label: "アルゴリズム",     short: "アルゴ", icon: "🧮", group: "basics",   lessons: 8,  accent: "var(--color-warning)",   glow: "rgba(251,191,36,0.35)" },
+  rust:          { label: "Rust",             short: "Rust",   icon: "🦀", group: "basics",   lessons: 14, accent: "#ce422b",                glow: "rgba(206,66,43,0.35)" },
+  typescript:    { label: "TypeScript",       short: "TS",     icon: "🔷", group: "basics",   lessons: 15, accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
+  git:           { label: "Git / GitHub",     short: "Git",    icon: "🌿", group: "basics",   lessons: 8,  accent: "var(--git-orange)",      glow: "rgba(240,80,51,0.35)" },
+  linux:         { label: "Linux / CLI",      short: "Linux",  icon: "🐧", group: "basics",   lessons: 14, accent: "#fcc624",                glow: "rgba(252,198,36,0.35)" },
+  devtools:      { label: "DevTools",         short: "Dev",    icon: "🧭", group: "basics",   lessons: 12, accent: "#6366f1",                glow: "rgba(99,102,241,0.35)" },
+  database:      { label: "データベース",     short: "DB",     icon: "🗄️", group: "backend",  lessons: 16, accent: "var(--database-teal)",   glow: "rgba(0,150,136,0.35)" },
+  webapi:        { label: "Web/API",          short: "API",    icon: "🌐", group: "backend",  lessons: 14, accent: "var(--webapi-green)",    glow: "rgba(0,191,165,0.35)" },
+  docker:        { label: "Docker",           short: "Docker", icon: "🐳", group: "backend",  lessons: 14, accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
+  cicd:          { label: "CI/CD・デプロイ",  short: "CI/CD",  icon: "🚀", group: "backend",  lessons: 12, accent: "#2088ff",                glow: "rgba(32,136,255,0.35)" },
+  react:         { label: "React",            short: "React",  icon: "⚛️", group: "frontend", lessons: 17, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
+  "python-cert": { label: "Python認定基礎",   short: "認定",   icon: "📜", group: "practice", lessons: 10, accent: "var(--python-yellow)",   glow: "rgba(255,212,59,0.35)" },
+  "python-prac": { label: "Python実践試験",   short: "実践",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
+  testing:       { label: "テスト設計",       short: "Test",   icon: "🧪", group: "practice", lessons: 14, accent: "var(--testing-green)",   glow: "rgba(76,175,80,0.35)" },
+  security:      { label: "セキュリティ",     short: "Sec",    icon: "🔒", group: "practice", lessons: 12, accent: "#e11d48",                glow: "rgba(225,29,72,0.35)" },
+  sysdesign:     { label: "システム設計",     short: "設計",   icon: "📐", group: "practice", lessons: 16, accent: "#7c3aed",                glow: "rgba(124,58,237,0.35)" },
+  pathway:       { label: "通しプロジェクト", short: "縦糸",   icon: "🧵", group: "practice", lessons: 12, accent: "#0f766e",                glow: "rgba(15,118,110,0.35)" },
+  genai:         { label: "生成AIパスポート", short: "AI",     icon: "🤖", group: "practice", lessons: 8,  accent: "var(--genai-purple)",    glow: "rgba(156,39,176,0.35)" },
+  capstone:      { label: "キャップストーン", short: "Cap",    icon: "🏗️", group: "practice", lessons: 10, accent: "var(--capstone-gold)",   glow: "rgba(255,179,0,0.35)" },
 };
 
 const TAB_IDS = Object.keys(TABS);
@@ -97,9 +97,13 @@ const state = {
 // --------------------------------------------------
 // 初期化（単一エントリーポイント）
 // --------------------------------------------------
+const lastTabByGroup = {};
+
 document.addEventListener("DOMContentLoaded", async () => {
   renderShell();
   initTabs();
+  initDisclosures();
+  initStickyNavCompact();
   setActiveTabGroup("basics");
   initParticles();
   initScrollAnimations();
@@ -111,6 +115,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 初期表示タブを先に読み込み、進捗・クイズ・パズルを有効化する
   const initial =
     document.querySelector(".tab-button.active")?.dataset.tab || "htmlcss";
+  lastTabByGroup[TABS[initial]?.group || "basics"] = initial;
   await loadTabContent(initial);
 
   restoreProgress();
@@ -148,12 +153,15 @@ function renderShell() {
     tabList.innerHTML = TAB_IDS.map((id) => {
       const t = TABS[id];
       const active = id === DEFAULT_TAB;
+      const short = t.short || t.label;
       return `
         <button class="tab-button${active ? " active" : ""}" data-tab="${id}"
                 data-group="${t.group}" role="tab" aria-selected="${active}"
+                aria-controls="content-${id}"
                 id="tab-${id}"${active ? "" : " hidden"}>
-          <span class="tab-icon">${t.icon}</span>
+          <span class="tab-icon" aria-hidden="true">${t.icon}</span>
           <span class="tab-label">${escapeHtml(t.label)}</span>
+          <span class="tab-label-short">${escapeHtml(short)}</span>
         </button>`;
     }).join("");
   }
@@ -163,7 +171,8 @@ function renderShell() {
     panels.innerHTML = TAB_IDS.map(
       (id) => `
         <div class="tab-content${id === DEFAULT_TAB ? " active" : ""}" id="content-${id}"
-             role="tabpanel" data-content-src="content/${id}.html" aria-busy="true">
+             role="tabpanel" aria-labelledby="tab-${id}"
+             data-content-src="content/${id}.html" aria-busy="true">
           <div class="content-placeholder">
             <div class="content-spinner" aria-hidden="true"></div>
             <p>コンテンツを読み込み中…</p>
@@ -172,11 +181,15 @@ function renderShell() {
     ).join("");
   }
 
-  renderHeroStats();
+  renderCatalogStats();
 }
 
-// ヒーロー統計は TABS / quizData / puzzleData から算出する
+// カタログ統計は TABS / quizData / puzzleData から算出する
 // （手動更新による実数との乖離を防ぐ）。
+function renderCatalogStats() {
+  renderHeroStats(); // 後方互換エイリアス
+}
+
 function renderHeroStats() {
   const stats = {
     topics: TAB_IDS.length,
@@ -234,6 +247,7 @@ async function loadTabContent(tabId) {
     loadPuzzle(tabId);
     prepareFillBlankBlocks(panel);
     attachRunButtons(panel);
+    enhanceLessonHeaders(panel);
     observeScrollTargets(panel);
     restoreProgress();
     updateAllProgress();
@@ -620,16 +634,21 @@ function initTabs() {
     btn.addEventListener("click", () => switchTab(btn.dataset.tab));
   });
 
-  // カテゴリ切替ボタン
+  // カテゴリ切替ボタン（最後に開いたタブを優先）
   document.querySelectorAll(".tab-group-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const group = btn.dataset.group;
       setActiveTabGroup(group);
-      // グループ先頭タブへ自動遷移
-      const first = document.querySelector(
-        `.tab-button[data-group="${group}"]`
-      );
-      if (first) switchTab(first.dataset.tab);
+      const remembered = lastTabByGroup[group];
+      const rememberedBtn = remembered
+        ? document.querySelector(
+            `.tab-button[data-tab="${remembered}"][data-group="${group}"]`
+          )
+        : null;
+      const target =
+        rememberedBtn ||
+        document.querySelector(`.tab-button[data-group="${group}"]`);
+      if (target) switchTab(target.dataset.tab);
     });
   });
 
@@ -681,6 +700,9 @@ async function switchTab(tabName) {
     targetBtn.classList.add("active");
     targetBtn.setAttribute("aria-selected", "true");
     updateTabIndicator(targetBtn, indicator);
+    if (targetBtn.dataset.group) {
+      lastTabByGroup[targetBtn.dataset.group] = tabName;
+    }
   }
 
   tabContents.forEach((tc) => tc.classList.remove("active"));
@@ -718,7 +740,80 @@ function updateTabIndicator(btn, indicator) {
 function toggleSection(headerElement) {
   const card = headerElement.closest(".lesson-card");
   if (!card) return;
-  card.classList.toggle("open");
+  const open = card.classList.toggle("open");
+  const header = card.querySelector(".lesson-header");
+  if (header) header.setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+function enhanceLessonHeaders(root) {
+  if (!root) return;
+  root.querySelectorAll(".lesson-header").forEach((header) => {
+    if (header.dataset.a11yReady === "1") return;
+    header.dataset.a11yReady = "1";
+    header.setAttribute("role", "button");
+    header.tabIndex = 0;
+    const card = header.closest(".lesson-card");
+    header.setAttribute(
+      "aria-expanded",
+      card?.classList.contains("open") ? "true" : "false"
+    );
+    header.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      if (e.target.closest(".complete-btn")) return;
+      e.preventDefault();
+      toggleSection(header);
+    });
+  });
+}
+
+function initDisclosures() {
+  const bindings = [
+    {
+      toggleId: "progress-detail-toggle",
+      panelId: "progress-cards",
+      openLabel: "トピック別の詳細を隠す",
+      closedLabel: "トピック別の詳細を表示",
+    },
+    {
+      toggleId: "roadmap-detail-toggle",
+      panelId: "roadmap-track",
+      openLabel: "推奨経路を隠す",
+      closedLabel: "推奨経路を表示",
+    },
+  ];
+
+  bindings.forEach(({ toggleId, panelId, openLabel, closedLabel }) => {
+    const toggle = document.getElementById(toggleId);
+    const panel = document.getElementById(panelId);
+    if (!toggle || !panel) return;
+
+    const setOpen = (open) => {
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.textContent = open ? openLabel : closedLabel;
+      panel.hidden = !open;
+      panel.classList.toggle("is-collapsed", !open);
+    };
+
+    setOpen(false);
+    toggle.addEventListener("click", () => {
+      setOpen(toggle.getAttribute("aria-expanded") !== "true");
+    });
+  });
+}
+
+function initStickyNavCompact() {
+  const nav = document.getElementById("tab-nav");
+  if (!nav) return;
+
+  const update = () => {
+    // sticky が画面上端に張り付いているときだけ検索を畳む
+    const stuck = nav.getBoundingClientRect().top <= 0.5;
+    nav.classList.toggle("is-compact", stuck);
+  };
+
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
+  update();
 }
 
 function copyCode(btn) {
@@ -1662,6 +1757,8 @@ async function jumpToLesson(tab, sectionId) {
   const card = document.querySelector(`[data-section="${sectionId}"]`);
   if (!card) return;
   card.classList.add("open");
+  const header = card.querySelector(".lesson-header");
+  if (header) header.setAttribute("aria-expanded", "true");
   card.scrollIntoView({ behavior: "smooth", block: "start" });
   card.classList.add("search-highlight");
   setTimeout(() => card.classList.remove("search-highlight"), 2400);
