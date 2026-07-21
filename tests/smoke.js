@@ -431,6 +431,13 @@ async function main() {
       `python should inject write exercises (>=6), got ${results.tabs.python?.writeExercises}`
     );
   }
+  for (const tab of ["algorithm", "typescript", "webapi", "testing", "pathway"]) {
+    if ((results.tabs[tab]?.writeExercises || 0) < 6) {
+      failures.push(
+        `${tab} should inject write exercises (>=6), got ${results.tabs[tab]?.writeExercises}`
+      );
+    }
+  }
   if (!(results.groups.basics || []).includes("devtools"))
     failures.push("basics group missing devtools");
   if (!(results.groups.practice || []).includes("sysdesign"))

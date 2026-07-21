@@ -1986,7 +1986,7 @@ function attachRunButtons(root) {
 function detectRunnableLang(label) {
   const l = label.trim().toLowerCase();
   if (/^python(\b|$|[\s—(-])/.test(l) || /^python-cert/.test(l)) return "python";
-  if (/^(javascript|js)(\b|$|[\s—(-])/.test(l)) return "js";
+  if (/^(javascript|js|typescript|ts)(\b|$|[\s—(-])/.test(l)) return "js";
   return null;
 }
 
