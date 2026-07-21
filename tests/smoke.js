@@ -186,6 +186,7 @@ async function main() {
         crossRefs: panel.querySelectorAll(".cross-refs").length,
         taskboardApply: panel.querySelectorAll(".taskboard-apply").length,
         fillBlanks: panel.querySelectorAll(".code-blank").length,
+        writeExercises: panel.querySelectorAll(".write-exercise").length,
         expectsPractice: hasMissionData,
       };
     }, tab);
@@ -418,6 +419,16 @@ async function main() {
   if ((results.tabs.javascript?.fillBlanks || 0) < 1) {
     failures.push(
       `javascript should inject fill-blank inputs, got ${results.tabs.javascript?.fillBlanks}`
+    );
+  }
+  if ((results.tabs.javascript?.writeExercises || 0) < 6) {
+    failures.push(
+      `javascript should inject write exercises (>=6), got ${results.tabs.javascript?.writeExercises}`
+    );
+  }
+  if ((results.tabs.python?.writeExercises || 0) < 6) {
+    failures.push(
+      `python should inject write exercises (>=6), got ${results.tabs.python?.writeExercises}`
     );
   }
   if (!(results.groups.basics || []).includes("devtools"))

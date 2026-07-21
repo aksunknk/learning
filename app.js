@@ -240,12 +240,14 @@ async function loadTabContent(tabId) {
     injectPracticeLayer(tabId, panel);
     injectTaskBoardApply(tabId, panel);
     injectFillBlankSection(tabId, panel);
+    injectWriteExercises(tabId, panel);
     injectCrossRefs(panel);
 
     // 注入後にタブ固有のインタラクションを初期化
     initQuizForTab(tabId);
     loadPuzzle(tabId);
     prepareFillBlankBlocks(panel);
+    bindWriteExercises(panel);
     attachRunButtons(panel);
     enhanceLessonHeaders(panel);
     observeScrollTargets(panel);
@@ -572,6 +574,187 @@ function injectFillBlankSection(tabId, panel) {
 }
 
 window.injectFillBlankSection = injectFillBlankSection;
+
+const EXERCISE_STORAGE_KEY = "cf_exercises";
+
+function loadExerciseStore() {
+  try {
+    return JSON.parse(localStorage.getItem(EXERCISE_STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function saveExerciseStore(store) {
+  try {
+    localStorage.setItem(EXERCISE_STORAGE_KEY, JSON.stringify(store));
+  } catch {
+    /* ignore quota */
+  }
+}
+
+function findExerciseById(id) {
+  if (typeof exerciseData === "undefined" || !id) return null;
+  for (const list of Object.values(exerciseData)) {
+    const found = list.find((ex) => ex.id === id);
+    if (found) return found;
+  }
+  return null;
+}
+
+function injectWriteExercises(tabId, panel) {
+  if (!panel || panel.dataset.exercisesInjected === "1") return;
+  if (typeof exerciseData === "undefined" || !exerciseData[tabId]?.length) return;
+
+  const quizEl =
+    panel.querySelector(`#${tabId}-quiz`) ||
+    panel.querySelector(".quiz-section");
+  if (!quizEl) return;
+
+  const store = loadExerciseStore();
+  const wrap = document.createElement("section");
+  wrap.className = "write-exercise-section";
+  wrap.setAttribute("aria-label", "コードを書くドリル");
+  wrap.innerHTML = `<div class="quiz-header"><h3>✍️ コードを書くドリル</h3></div>
+    <p class="quiz-intro">関数を自分で実装し、「判定する」でテスト出力と照合します。下書きは端末に保存されます。</p>`;
+
+  exerciseData[tabId].forEach((ex, index) => {
+    const saved = store[ex.id] || {};
+    const code = typeof saved.code === "string" ? saved.code : ex.starter;
+    const passed = !!saved.passed;
+    const card = document.createElement("article");
+    card.className = `write-exercise${passed ? " is-passed" : ""}`;
+    card.dataset.exerciseId = ex.id;
+    card.innerHTML = `
+      <div class="write-exercise-header">
+        <span class="write-exercise-num">${String(index + 1).padStart(2, "0")}</span>
+        <div class="write-exercise-titles">
+          <h4>${escapeHtml(ex.title)}</h4>
+          <p class="write-exercise-prompt">${escapeHtml(ex.prompt)}</p>
+          ${ex.hint ? `<p class="write-exercise-hint">ヒント: ${escapeHtml(ex.hint)}</p>` : ""}
+        </div>
+        <span class="write-exercise-badge"${passed ? "" : " hidden"}>クリア</span>
+      </div>
+      <label class="write-exercise-label" for="ex-editor-${escapeHtml(ex.id)}">
+        <span class="code-lang">${escapeHtml(ex.lang)}</span>
+      </label>
+      <textarea id="ex-editor-${escapeHtml(ex.id)}" class="write-exercise-editor"
+        spellcheck="false" autocomplete="off" aria-label="${escapeHtml(ex.title)} のコード"></textarea>
+      <div class="write-exercise-actions">
+        <button type="button" class="write-exercise-run">▶ 判定する</button>
+        <button type="button" class="write-exercise-reset">リセット</button>
+      </div>
+      <pre class="code-run-output write-exercise-output" hidden></pre>`;
+    const editor = card.querySelector(".write-exercise-editor");
+    if (editor) editor.value = code;
+    wrap.appendChild(card);
+  });
+
+  quizEl.parentNode.insertBefore(wrap, quizEl);
+  panel.dataset.exercisesInjected = "1";
+}
+
+window.injectWriteExercises = injectWriteExercises;
+
+function bindWriteExercises(root) {
+  if (!root) return;
+  root.querySelectorAll(".write-exercise").forEach((card) => {
+    if (card.dataset.bound === "1") return;
+    card.dataset.bound = "1";
+
+    const editor = card.querySelector(".write-exercise-editor");
+    const runBtn = card.querySelector(".write-exercise-run");
+    const resetBtn = card.querySelector(".write-exercise-reset");
+    const output = card.querySelector(".write-exercise-output");
+    const badge = card.querySelector(".write-exercise-badge");
+    const id = card.dataset.exerciseId;
+
+    const persist = (patch) => {
+      const store = loadExerciseStore();
+      store[id] = { ...(store[id] || {}), ...patch };
+      saveExerciseStore(store);
+    };
+
+    editor?.addEventListener("change", () => {
+      persist({ code: editor.value });
+    });
+    editor?.addEventListener("blur", () => {
+      persist({ code: editor.value });
+    });
+
+    resetBtn?.addEventListener("click", () => {
+      const ex = findExerciseById(id);
+      editor.value = ex?.starter || "";
+      persist({ code: editor.value, passed: false });
+      card.classList.remove("is-passed");
+      if (badge) badge.hidden = true;
+      if (output) {
+        output.hidden = true;
+        output.textContent = "";
+        output.className = "code-run-output write-exercise-output";
+      }
+    });
+
+    runBtn?.addEventListener("click", () => runWriteExercise(card, runBtn));
+  });
+}
+
+window.bindWriteExercises = bindWriteExercises;
+
+async function runWriteExercise(card, btn) {
+  const editor = card.querySelector(".write-exercise-editor");
+  const output = card.querySelector(".write-exercise-output");
+  const badge = card.querySelector(".write-exercise-badge");
+  const ex = findExerciseById(card.dataset.exerciseId);
+  if (!editor || !output || !ex) return;
+
+  const lang = detectRunnableLang(ex.lang || "");
+  if (!lang) {
+    output.hidden = false;
+    output.className = "code-run-output error write-exercise-output";
+    output.textContent = "この言語はブラウザ内で実行できません。";
+    return;
+  }
+
+  const userCode = editor.value;
+  const code = `${userCode}\n${ex.tests || ""}`;
+  const expect = ex.expect || "";
+
+  output.hidden = false;
+  output.textContent = "実行中…";
+  output.className = "code-run-output running write-exercise-output";
+  btn.disabled = true;
+
+  try {
+    const result =
+      lang === "js" ? await runJsSandbox(code) : await runPython(code, output);
+    const text = result === "" ? "(出力なし)" : result;
+    const ok = normalizeRunOutput(result) === normalizeRunOutput(expect);
+    output.className = ok
+      ? "code-run-output done fillblank-pass write-exercise-output"
+      : "code-run-output error fillblank-fail write-exercise-output";
+    output.textContent = ok
+      ? `✅ クリア\n${text}`
+      : `❌ 不一致\n出力:\n${text}\n\n期待:\n${expect}`;
+
+    const store = loadExerciseStore();
+    store[card.dataset.exerciseId] = {
+      ...(store[card.dataset.exerciseId] || {}),
+      code: userCode,
+      passed: ok,
+    };
+    saveExerciseStore(store);
+    card.classList.toggle("is-passed", ok);
+    if (badge) badge.hidden = !ok;
+  } catch (err) {
+    output.className = "code-run-output error write-exercise-output";
+    output.textContent = String(err.message || err);
+    card.classList.remove("is-passed");
+    if (badge) badge.hidden = true;
+  } finally {
+    btn.disabled = false;
+  }
+}
 
 function prepareFillBlankBlocks(root) {
   root.querySelectorAll(".code-block").forEach((block) => {
