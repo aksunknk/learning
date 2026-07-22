@@ -31,6 +31,7 @@ const TABS = {
   docker:        { label: "Docker",           short: "Docker", icon: "🐳", group: "backend",  lessons: 14, accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
   cicd:          { label: "CI/CD・デプロイ",  short: "CI/CD",  icon: "🚀", group: "backend",  lessons: 12, accent: "#2088ff",                glow: "rgba(32,136,255,0.35)" },
   react:         { label: "React",            short: "React",  icon: "⚛️", group: "frontend", lessons: 17, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
+  drills:        { label: "コーディング演習", short: "演習",   icon: "✍️", group: "practice", lessons: 1,  accent: "#6366f1",                glow: "rgba(99,102,241,0.35)" },
   "python-cert": { label: "Python認定基礎",   short: "認定",   icon: "📜", group: "practice", lessons: 10, accent: "var(--python-yellow)",   glow: "rgba(255,212,59,0.35)" },
   "python-prac": { label: "Python実践試験",   short: "実践",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
   testing:       { label: "テスト設計",       short: "Test",   icon: "🧪", group: "practice", lessons: 14, accent: "var(--testing-green)",   glow: "rgba(76,175,80,0.35)" },
@@ -61,6 +62,7 @@ const ROADMAP = [
   "cicd",
   "react",
   "typescript",
+  "drills",
   "testing",
   "security",
   "sysdesign",
@@ -248,6 +250,7 @@ async function loadTabContent(tabId) {
     loadPuzzle(tabId);
     prepareFillBlankBlocks(panel);
     bindWriteExercises(panel);
+    if (tabId === "drills") initDrillsHub(panel);
     attachRunButtons(panel);
     enhanceLessonHeaders(panel);
     observeScrollTargets(panel);
@@ -602,8 +605,26 @@ function findExerciseById(id) {
   return null;
 }
 
+function listAllExercises() {
+  if (typeof exerciseData === "undefined") return [];
+  const out = [];
+  Object.entries(exerciseData).forEach(([chapter, list]) => {
+    list.forEach((ex) => out.push({ ...ex, chapter: ex.chapter || chapter }));
+  });
+  return out;
+}
+
+function exerciseLangKey(lang) {
+  const l = String(lang || "").toLowerCase();
+  if (l.startsWith("python")) return "python";
+  if (l.startsWith("type")) return "typescript";
+  if (l.startsWith("java") || l === "js") return "javascript";
+  return l || "other";
+}
+
 function injectWriteExercises(tabId, panel) {
   if (!panel || panel.dataset.exercisesInjected === "1") return;
+  if (tabId === "drills") return;
   if (typeof exerciseData === "undefined" || !exerciseData[tabId]?.length) return;
 
   const quizEl =
@@ -611,14 +632,30 @@ function injectWriteExercises(tabId, panel) {
     panel.querySelector(".quiz-section");
   if (!quizEl) return;
 
+  const all = exerciseData[tabId];
+  const featured = all.filter((ex) => ex.featured).slice(0, 2);
+  const teaser = featured.length ? featured : all.slice(0, 2);
   const store = loadExerciseStore();
-  const wrap = document.createElement("section");
-  wrap.className = "write-exercise-section";
-  wrap.setAttribute("aria-label", "コードを書くドリル");
-  wrap.innerHTML = `<div class="quiz-header"><h3>✍️ コードを書くドリル</h3></div>
-    <p class="quiz-intro">関数を自分で実装し、「判定する」でテスト出力と照合します。下書きは端末に保存されます。</p>`;
+  const cleared = all.filter((ex) => store[ex.id]?.passed).length;
 
-  exerciseData[tabId].forEach((ex, index) => {
+  const wrap = document.createElement("section");
+  wrap.className = "write-exercise-section write-exercise-teaser";
+  wrap.setAttribute("aria-label", "コードを書くドリル");
+  wrap.innerHTML = `
+    <div class="quiz-header"><h3>✍️ コードを書くドリル</h3></div>
+    <p class="quiz-intro">
+      この章の演習は <strong>コーディング演習</strong> ハブが正本です（全 ${all.length} 問 / クリア ${cleared}）。
+      下は代表 ${teaser.length} 問です。
+    </p>
+    <p class="write-exercise-hub-actions">
+      <button type="button" class="cross-ref-link write-exercise-hub-btn"
+        data-drills-chapter="${escapeHtml(tabId)}">
+        演習ハブでこの章の問題をすべて開く
+        <span class="cross-ref-id">${all.length} 問</span>
+      </button>
+    </p>`;
+
+  teaser.forEach((ex, index) => {
     const saved = store[ex.id] || {};
     const code = typeof saved.code === "string" ? saved.code : ex.starter;
     const passed = !!saved.passed;
@@ -643,6 +680,7 @@ function injectWriteExercises(tabId, panel) {
       <div class="write-exercise-actions">
         <button type="button" class="write-exercise-run">▶ 判定する</button>
         <button type="button" class="write-exercise-reset">リセット</button>
+        <button type="button" class="write-exercise-open-hub" data-exercise-id="${escapeHtml(ex.id)}">ハブで開く</button>
       </div>
       <pre class="code-run-output write-exercise-output" hidden></pre>`;
     const editor = card.querySelector(".write-exercise-editor");
@@ -650,11 +688,220 @@ function injectWriteExercises(tabId, panel) {
     wrap.appendChild(card);
   });
 
+  wrap.querySelector(".write-exercise-hub-btn")?.addEventListener("click", () => {
+    openDrillsHub(tabId);
+  });
+  wrap.querySelectorAll(".write-exercise-open-hub").forEach((btn) => {
+    btn.addEventListener("click", () => openDrillsHub(tabId, btn.dataset.exerciseId));
+  });
+
   quizEl.parentNode.insertBefore(wrap, quizEl);
   panel.dataset.exercisesInjected = "1";
 }
 
 window.injectWriteExercises = injectWriteExercises;
+
+const drillsState = {
+  chapter: "all",
+  lang: "all",
+  difficulty: "all",
+  status: "all",
+  view: "list",
+  exerciseId: null,
+};
+
+function initDrillsHub(panel, opts = {}) {
+  const mount = panel?.querySelector("#drills-app");
+  if (!mount) return;
+
+  if (opts.chapter) drillsState.chapter = opts.chapter;
+  if (opts.exerciseId) {
+    drillsState.view = "detail";
+    drillsState.exerciseId = opts.exerciseId;
+    const ex = findExerciseById(opts.exerciseId);
+    if (ex?.chapter) drillsState.chapter = ex.chapter;
+  } else {
+    drillsState.view = "list";
+    drillsState.exerciseId = null;
+  }
+
+  renderDrillsApp(mount);
+}
+
+async function openDrillsHub(chapter, exerciseId) {
+  await switchTab("drills");
+  const panel = document.getElementById("content-drills");
+  if (!panel) return;
+  initDrillsHub(panel, {
+    chapter: chapter || "all",
+    exerciseId: exerciseId || null,
+    view: exerciseId ? "detail" : "list",
+  });
+  panel.querySelector("#drills-app")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+window.openDrillsHub = openDrillsHub;
+
+function filterDrillsList() {
+  const store = loadExerciseStore();
+  return listAllExercises().filter((ex) => {
+    if (drillsState.chapter !== "all" && ex.chapter !== drillsState.chapter) return false;
+    if (drillsState.lang !== "all" && exerciseLangKey(ex.lang) !== drillsState.lang) return false;
+    if (drillsState.difficulty !== "all" && ex.difficulty !== drillsState.difficulty) return false;
+    const passed = !!store[ex.id]?.passed;
+    if (drillsState.status === "open" && passed) return false;
+    if (drillsState.status === "cleared" && !passed) return false;
+    return true;
+  });
+}
+
+function renderDrillsApp(mount) {
+  if (!mount) return;
+  const store = loadExerciseStore();
+  const all = listAllExercises();
+  const clearedTotal = all.filter((ex) => store[ex.id]?.passed).length;
+  const chapters = Object.keys(exerciseData || {});
+
+  if (drillsState.view === "detail" && drillsState.exerciseId) {
+    const ex = findExerciseById(drillsState.exerciseId);
+    if (!ex) {
+      drillsState.view = "list";
+      drillsState.exerciseId = null;
+    } else {
+      const saved = store[ex.id] || {};
+      const code = typeof saved.code === "string" ? saved.code : ex.starter;
+      const passed = !!saved.passed;
+      const chapterLabel = TABS[ex.chapter]?.label || ex.chapter;
+      mount.innerHTML = `
+        <div class="drills-toolbar">
+          <button type="button" class="drills-back-btn">← 一覧へ</button>
+          <span class="drills-progress">${clearedTotal} / ${all.length} クリア</span>
+        </div>
+        <article class="write-exercise drills-detail${passed ? " is-passed" : ""}" data-exercise-id="${escapeHtml(ex.id)}">
+          <div class="write-exercise-header">
+            <span class="write-exercise-num">Q</span>
+            <div class="write-exercise-titles">
+              <h4>${escapeHtml(ex.title)}</h4>
+              <p class="write-exercise-prompt">${escapeHtml(ex.prompt)}</p>
+              ${ex.hint ? `<p class="write-exercise-hint">ヒント: ${escapeHtml(ex.hint)}</p>` : ""}
+              <p class="drills-meta">
+                <span>${escapeHtml(chapterLabel)}</span>
+                · <span>${escapeHtml(ex.lang)}</span>
+                · <span>${escapeHtml(ex.difficulty || "")}</span>
+              </p>
+            </div>
+            <span class="write-exercise-badge"${passed ? "" : " hidden"}>クリア</span>
+          </div>
+          <label class="write-exercise-label" for="drills-editor-${escapeHtml(ex.id)}">
+            <span class="code-lang">${escapeHtml(ex.lang)}</span>
+          </label>
+          <textarea id="drills-editor-${escapeHtml(ex.id)}" class="write-exercise-editor"
+            spellcheck="false" autocomplete="off" aria-label="${escapeHtml(ex.title)} のコード"></textarea>
+          <div class="write-exercise-actions">
+            <button type="button" class="write-exercise-run">▶ 判定する</button>
+            <button type="button" class="write-exercise-reset">リセット</button>
+            ${
+              ex.lesson
+                ? `<button type="button" class="cross-ref-link drills-lesson-btn"
+                    data-lesson-tab="${escapeHtml(ex.chapter)}"
+                    data-lesson-section="${escapeHtml(ex.lesson)}">関連レッスン ${escapeHtml(ex.lesson)}</button>`
+                : ""
+            }
+          </div>
+          <pre class="code-run-output write-exercise-output" hidden></pre>
+        </article>`;
+      const editor = mount.querySelector(".write-exercise-editor");
+      if (editor) editor.value = code;
+      mount.querySelector(".drills-back-btn")?.addEventListener("click", () => {
+        drillsState.view = "list";
+        drillsState.exerciseId = null;
+        renderDrillsApp(mount);
+      });
+      mount.querySelector(".drills-lesson-btn")?.addEventListener("click", (e) => {
+        const btn = e.currentTarget;
+        jumpToLesson(btn.dataset.lessonTab, btn.dataset.lessonSection);
+      });
+      bindWriteExercises(mount);
+      return;
+    }
+  }
+
+  const filtered = filterDrillsList();
+  const chapterOptions = chapters
+    .map(
+      (c) =>
+        `<option value="${escapeHtml(c)}"${drillsState.chapter === c ? " selected" : ""}>${escapeHtml(
+          TABS[c]?.label || c
+        )}</option>`
+    )
+    .join("");
+
+  mount.innerHTML = `
+    <div class="drills-toolbar">
+      <div class="drills-filters">
+        <label>章
+          <select data-drill-filter="chapter">
+            <option value="all"${drillsState.chapter === "all" ? " selected" : ""}>すべて</option>
+            ${chapterOptions}
+          </select>
+        </label>
+        <label>言語
+          <select data-drill-filter="lang">
+            <option value="all"${drillsState.lang === "all" ? " selected" : ""}>すべて</option>
+            <option value="javascript"${drillsState.lang === "javascript" ? " selected" : ""}>JavaScript</option>
+            <option value="python"${drillsState.lang === "python" ? " selected" : ""}>Python</option>
+            <option value="typescript"${drillsState.lang === "typescript" ? " selected" : ""}>TypeScript</option>
+          </select>
+        </label>
+        <label>難易度
+          <select data-drill-filter="difficulty">
+            <option value="all"${drillsState.difficulty === "all" ? " selected" : ""}>すべて</option>
+            <option value="beginner"${drillsState.difficulty === "beginner" ? " selected" : ""}>初級</option>
+            <option value="intermediate"${drillsState.difficulty === "intermediate" ? " selected" : ""}>中級</option>
+            <option value="advanced"${drillsState.difficulty === "advanced" ? " selected" : ""}>上級</option>
+          </select>
+        </label>
+        <label>状態
+          <select data-drill-filter="status">
+            <option value="all"${drillsState.status === "all" ? " selected" : ""}>すべて</option>
+            <option value="open"${drillsState.status === "open" ? " selected" : ""}>未クリア</option>
+            <option value="cleared"${drillsState.status === "cleared" ? " selected" : ""}>クリア済み</option>
+          </select>
+        </label>
+      </div>
+      <span class="drills-progress">${clearedTotal} / ${all.length} クリア · 表示 ${filtered.length}</span>
+    </div>
+    <div class="drills-list">
+      ${
+        filtered.length
+          ? filtered
+              .map((ex) => {
+                const passed = !!store[ex.id]?.passed;
+                return `<button type="button" class="drills-list-item${passed ? " is-passed" : ""}" data-exercise-id="${escapeHtml(ex.id)}">
+                  <span class="drills-list-title">${escapeHtml(ex.title)}</span>
+                  <span class="drills-list-meta">${escapeHtml(TABS[ex.chapter]?.label || ex.chapter)} · ${escapeHtml(ex.lang)} · ${escapeHtml(ex.difficulty || "")}</span>
+                  <span class="drills-list-badge">${passed ? "クリア" : "未"}</span>
+                </button>`;
+              })
+              .join("")
+          : `<p class="drills-empty">条件に合う問題がありません。</p>`
+      }
+    </div>`;
+
+  mount.querySelectorAll("[data-drill-filter]").forEach((sel) => {
+    sel.addEventListener("change", () => {
+      drillsState[sel.dataset.drillFilter] = sel.value;
+      renderDrillsApp(mount);
+    });
+  });
+  mount.querySelectorAll(".drills-list-item").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      drillsState.view = "detail";
+      drillsState.exerciseId = btn.dataset.exerciseId;
+      renderDrillsApp(mount);
+    });
+  });
+}
 
 function bindWriteExercises(root) {
   if (!root) return;

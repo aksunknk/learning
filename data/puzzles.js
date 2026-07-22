@@ -134,6 +134,18 @@ const puzzleData = {
     correctOrder: ["dt-p1", "dt-p2", "dt-p3", "dt-p4", "dt-p5"],
     explanation: "再現 → 通信 → 例外 → 永続状態 → 修正/記録、の順が 15 分ランブックの基本形です。いきなりコードを書き換えません。"
   },
+  drills: {
+    question: "コーディング演習の標準手順を正しい順番に並べてください。",
+    pieces: [
+      { id: "drills-p1", text: "問題文と入出力契約を読む" },
+      { id: "drills-p2", text: "スターターを編集して実装する" },
+      { id: "drills-p3", text: "判定するで隠しテストを走らせる" },
+      { id: "drills-p4", text: "不一致なら修正し、必要なら関連レッスンへ戻る" },
+      { id: "drills-p5", text: "クリアを確認して次の問題へ進む" }
+    ],
+    correctOrder: ["drills-p1", "drills-p2", "drills-p3", "drills-p4", "drills-p5"],
+    explanation: "契約を読んでから実装し、自動判定でフィードバックを受け、詰まりはレッスンに戻る——これがハブの基本ループです。"
+  },
   pathway: {
     question: "TaskBoard 縦糸の進め方を正しい順番に並べてください。",
     pieces: [

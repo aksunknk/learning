@@ -806,3 +806,37 @@ console.log(taskPath("a/b"));`,
   ],
 };
 
+// 章横断ハブ用メタ（未指定分の既定値を埋める）
+(function enrichExerciseMeta() {
+  const lessonByChapter = {
+    javascript: "javascript-3",
+    python: "python-3",
+    algorithm: "algorithm-2",
+    typescript: "typescript-2",
+    webapi: "webapi-1",
+    testing: "testing-2",
+    pathway: "pathway-3",
+  };
+  const tagByChapter = {
+    javascript: ["js", "array"],
+    python: ["python", "list"],
+    algorithm: ["algorithm", "python"],
+    typescript: ["typescript", "js"],
+    webapi: ["http", "api"],
+    testing: ["testing", "python"],
+    pathway: ["taskboard", "js"],
+  };
+
+  Object.entries(exerciseData).forEach(([chapter, list]) => {
+    list.forEach((ex, i) => {
+      ex.chapter = chapter;
+      if (!ex.difficulty) {
+        ex.difficulty = i < 2 ? "beginner" : i < 4 ? "intermediate" : "advanced";
+      }
+      if (!ex.tags) ex.tags = tagByChapter[chapter] || [chapter];
+      if (!ex.lesson) ex.lesson = lessonByChapter[chapter] || `${chapter}-1`;
+      if (ex.featured == null) ex.featured = i < 2;
+    });
+  });
+})();
+

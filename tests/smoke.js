@@ -94,7 +94,8 @@ function verifyLessonCounts() {
       continue;
     }
     const actual = (
-      fs.readFileSync(file, "utf8").match(/class="lesson-card"/g) || []
+      fs.readFileSync(file, "utf8").match(/class="[^"]*\blesson-card\b[^"]*"/g) ||
+      []
     ).length;
     if (actual !== count) {
       failures.push(
@@ -187,6 +188,8 @@ async function main() {
         taskboardApply: panel.querySelectorAll(".taskboard-apply").length,
         fillBlanks: panel.querySelectorAll(".code-blank").length,
         writeExercises: panel.querySelectorAll(".write-exercise").length,
+        drillsList: panel.querySelectorAll(".drills-list-item").length,
+        drillsApp: !!panel.querySelector("#drills-app"),
         expectsPractice: hasMissionData,
       };
     }, tab);
@@ -339,11 +342,11 @@ async function main() {
 
   // Assertions
   const failures = [...staticFailures];
-  if (tabs.length !== 22) failures.push(`expected 22 tabs, got ${tabs.length}`);
+  if (tabs.length !== 23) failures.push(`expected 23 tabs, got ${tabs.length}`);
 
   // Phase 3
-  if (results.roadmap.nodes !== 18)
-    failures.push(`expected 18 roadmap nodes, got ${results.roadmap.nodes}`);
+  if (results.roadmap.nodes !== 19)
+    failures.push(`expected 19 roadmap nodes, got ${results.roadmap.nodes}`);
   if (results.roadmap.firstTab !== "htmlcss")
     failures.push(`roadmap should start with htmlcss, got ${results.roadmap.firstTab}`);
   if (!results.search || results.search.count < 1)
@@ -421,22 +424,37 @@ async function main() {
       `javascript should inject fill-blank inputs, got ${results.tabs.javascript?.fillBlanks}`
     );
   }
-  if ((results.tabs.javascript?.writeExercises || 0) < 6) {
+  if ((results.tabs.javascript?.writeExercises || 0) < 1) {
     failures.push(
-      `javascript should inject write exercises (>=6), got ${results.tabs.javascript?.writeExercises}`
+      `javascript should inject featured write exercises, got ${results.tabs.javascript?.writeExercises}`
     );
   }
-  if ((results.tabs.python?.writeExercises || 0) < 6) {
+  if ((results.tabs.javascript?.writeExercises || 0) > 2) {
     failures.push(
-      `python should inject write exercises (>=6), got ${results.tabs.python?.writeExercises}`
+      `javascript chapter should only teaser <=2 write exercises, got ${results.tabs.javascript?.writeExercises}`
+    );
+  }
+  if ((results.tabs.python?.writeExercises || 0) < 1 || (results.tabs.python?.writeExercises || 0) > 2) {
+    failures.push(
+      `python chapter teaser write exercises expected 1-2, got ${results.tabs.python?.writeExercises}`
     );
   }
   for (const tab of ["algorithm", "typescript", "webapi", "testing", "pathway"]) {
-    if ((results.tabs[tab]?.writeExercises || 0) < 6) {
-      failures.push(
-        `${tab} should inject write exercises (>=6), got ${results.tabs[tab]?.writeExercises}`
-      );
+    const n = results.tabs[tab]?.writeExercises || 0;
+    if (n < 1 || n > 2) {
+      failures.push(`${tab} chapter teaser write exercises expected 1-2, got ${n}`);
     }
+  }
+  if (!results.tabs.drills?.drillsApp) {
+    failures.push("drills hub mount (#drills-app) missing");
+  }
+  if ((results.tabs.drills?.drillsList || 0) < 10) {
+    failures.push(
+      `drills hub should list many exercises, got ${results.tabs.drills?.drillsList}`
+    );
+  }
+  if (!(results.groups.practice || []).includes("drills")) {
+    failures.push("practice group missing drills");
   }
   if (!(results.groups.basics || []).includes("devtools"))
     failures.push("basics group missing devtools");
