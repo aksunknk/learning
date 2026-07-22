@@ -439,7 +439,16 @@ async function main() {
       `python chapter teaser write exercises expected 1-2, got ${results.tabs.python?.writeExercises}`
     );
   }
-  for (const tab of ["algorithm", "typescript", "webapi", "testing", "pathway"]) {
+  for (const tab of [
+    "algorithm",
+    "typescript",
+    "webapi",
+    "testing",
+    "pathway",
+    "database",
+    "react",
+    "security",
+  ]) {
     const n = results.tabs[tab]?.writeExercises || 0;
     if (n < 1 || n > 2) {
       failures.push(`${tab} chapter teaser write exercises expected 1-2, got ${n}`);

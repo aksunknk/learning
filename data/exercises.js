@@ -804,6 +804,410 @@ console.log(taskPath("a/b"));`,
       expect: "/tasks/42\n/tasks/a%2Fb",
     },
   ],
+
+  // DB 行を list[dict] で擬似。本物の SQL エンジンは使わない。
+  database: [
+    {
+      id: "db-write-where",
+      title: "WHERE 相当の絞り込み",
+      prompt: "where_status(rows, status) は status が一致する行だけの新しいリスト。元は壊さない。",
+      hint: "リスト内包 or filter",
+      lang: "Python",
+      starter: `def where_status(rows, status):
+    # TODO
+    pass
+
+`,
+      tests: `rows = [
+  {"id": 1, "status": "open"},
+  {"id": 2, "status": "done"},
+  {"id": 3, "status": "open"},
+]
+print(where_status(rows, "open"))
+print(rows)`,
+      expect:
+        "[{'id': 1, 'status': 'open'}, {'id': 3, 'status': 'open'}]\n[{'id': 1, 'status': 'open'}, {'id': 2, 'status': 'done'}, {'id': 3, 'status': 'open'}]",
+    },
+    {
+      id: "db-write-select",
+      title: "SELECT 列の射影",
+      prompt: "select_cols(rows, cols) は各行から cols のキーだけ残した dict のリスト。",
+      hint: "{c: row[c] for c in cols}",
+      lang: "Python",
+      starter: `def select_cols(rows, cols):
+    # TODO
+    pass
+
+`,
+      tests: `rows = [{"id": 1, "name": "a", "secret": "x"}, {"id": 2, "name": "b", "secret": "y"}]
+print(select_cols(rows, ["id", "name"]))`,
+      expect: "[{'id': 1, 'name': 'a'}, {'id': 2, 'name': 'b'}]",
+    },
+    {
+      id: "db-write-order-by",
+      title: "ORDER BY 昇順",
+      prompt: "order_by(rows, key) は key の値で昇順ソートした新リスト（安定でなくてよい）。",
+      hint: "sorted(rows, key=lambda r: r[key])",
+      lang: "Python",
+      starter: `def order_by(rows, key):
+    # TODO
+    pass
+
+`,
+      tests: `rows = [{"id": 3}, {"id": 1}, {"id": 2}]
+print(order_by(rows, "id"))
+print(rows[0]["id"])`,
+      expect: "[{'id': 1}, {'id': 2}, {'id': 3}]\n3",
+    },
+    {
+      id: "db-write-limit",
+      title: "LIMIT / OFFSET",
+      prompt: "limit_offset(rows, limit, offset=0) は offset から最大 limit 件。",
+      hint: "スライス rows[offset:offset+limit]",
+      lang: "Python",
+      starter: `def limit_offset(rows, limit, offset=0):
+    # TODO
+    pass
+
+`,
+      tests: `rows = [{"id": i} for i in range(1, 6)]
+print(limit_offset(rows, 2))
+print(limit_offset(rows, 2, 2))`,
+      expect: "[{'id': 1}, {'id': 2}]\n[{'id': 3}, {'id': 4}]",
+    },
+    {
+      id: "db-write-inner-join",
+      title: "INNER JOIN 相当",
+      prompt: "inner_join(left, right, key) は key が一致する組だけ {**L, **R} を並べたリスト。一致なしは捨てる。",
+      hint: "二重ループか dict 索引",
+      lang: "Python",
+      starter: `def inner_join(left, right, key):
+    # TODO
+    pass
+
+`,
+      tests: `left = [{"k": 1, "a": "x"}, {"k": 2, "a": "y"}]
+right = [{"k": 2, "b": 9}, {"k": 3, "b": 8}, {"k": 2, "b": 7}]
+print(inner_join(left, right, "k"))
+print(inner_join(left, [{"k": 9, "b": 1}], "k"))`,
+      expect: "[{'k': 2, 'a': 'y', 'b': 9}, {'k': 2, 'a': 'y', 'b': 7}]\n[]",
+    },
+    {
+      id: "db-write-group-count",
+      title: "GROUP BY COUNT",
+      prompt: "group_count(rows, key) は key の値 → 件数の dict。",
+      hint: "collections.Counter でも手書きでも可",
+      lang: "Python",
+      starter: `def group_count(rows, key):
+    # TODO
+    pass
+
+`,
+      tests: `rows = [{"s": "a"}, {"s": "b"}, {"s": "a"}, {"s": "a"}]
+print(dict(sorted(group_count(rows, "s").items())))`,
+      expect: "{'a': 3, 'b': 1}",
+    },
+    {
+      id: "db-write-distinct",
+      title: "DISTINCT",
+      prompt: "distinct_values(rows, key) は key の値の重複なしリスト。初出順を保つ。",
+      hint: "seen set",
+      lang: "Python",
+      starter: `def distinct_values(rows, key):
+    # TODO
+    pass
+
+`,
+      tests: `rows = [{"tag": "js"}, {"tag": "py"}, {"tag": "js"}, {"tag": "go"}]
+print(distinct_values(rows, "tag"))`,
+      expect: "['js', 'py', 'go']",
+    },
+    {
+      id: "db-write-update",
+      title: "UPDATE 相当（非破壊）",
+      prompt: "update_where(rows, pred, patch) は pred(row) が真の行だけ {**row, **patch}。他はそのまま。新リストを返す。",
+      hint: "リスト内包で分岐",
+      lang: "Python",
+      starter: `def update_where(rows, pred, patch):
+    # TODO
+    pass
+
+`,
+      tests: `rows = [{"id": 1, "done": False}, {"id": 2, "done": False}]
+out = update_where(rows, lambda r: r["id"] == 2, {"done": True})
+print(out)
+print(rows[1]["done"])`,
+      expect: "[{'id': 1, 'done': False}, {'id': 2, 'done': True}]\nFalse",
+    },
+  ],
+
+  // React 実行環境は無いので、状態更新・派生・reducer を純 JS で判定する。
+  react: [
+    {
+      id: "react-write-defaults",
+      title: "Props のデフォルト合成",
+      prompt: "withDefaults(props, defaults) は defaults を下に、props で上書きした新オブジェクト。",
+      hint: "{ ...defaults, ...props }",
+      lang: "JavaScript",
+      starter: `function withDefaults(props, defaults) {
+  // TODO
+}
+
+`,
+      tests: `console.log(JSON.stringify(withDefaults({ size: "lg" }, { size: "md", tone: "neutral" })));
+console.log(JSON.stringify(withDefaults({}, { open: false })));`,
+      expect: '{"size":"lg","tone":"neutral"}\n{"open":false}',
+    },
+    {
+      id: "react-write-toggle-state",
+      title: "真偽 state のトグル",
+      prompt: "toggleOpen(state) は { ...state, open: !state.open }。元オブジェクトは変えない。",
+      hint: "スプレッド",
+      lang: "JavaScript",
+      starter: `function toggleOpen(state) {
+  // TODO
+}
+
+`,
+      tests: `const s = { open: false, id: 1 };
+const n = toggleOpen(s);
+console.log(n.open, s.open, n.id);`,
+      expect: "true false 1",
+    },
+    {
+      id: "react-write-reducer",
+      title: "カウンタ reducer",
+      prompt: "counterReducer(state, action) 。action.type が \"inc\" なら +1、\"dec\" なら -1、\"set\" なら action.value。未知は state のまま。",
+      hint: "switch / if",
+      lang: "JavaScript",
+      starter: `function counterReducer(state, action) {
+  // TODO: state は number
+}
+
+`,
+      tests: `console.log(counterReducer(0, { type: "inc" }));
+console.log(counterReducer(2, { type: "dec" }));
+console.log(counterReducer(9, { type: "set", value: 3 }));
+console.log(counterReducer(1, { type: "noop" }));`,
+      expect: "1\n1\n3\n1",
+    },
+    {
+      id: "react-write-update-by-id",
+      title: "一覧の1件を更新",
+      prompt: "updateById(items, id, patch) は id 一致だけ { ...item, ...patch }。他・順序維持。非破壊。",
+      hint: "map",
+      lang: "JavaScript",
+      starter: `function updateById(items, id, patch) {
+  // TODO
+}
+
+`,
+      tests: `const items = [{ id: "a", n: 1 }, { id: "b", n: 2 }];
+const next = updateById(items, "b", { n: 9 });
+console.log(next.map((x) => x.n).join(","));
+console.log(items[1].n);`,
+      expect: "1,9\n2",
+    },
+    {
+      id: "react-write-derive-filter",
+      title: "表示用に派生フィルタ",
+      prompt: "visibleItems(items, query) は title が query を部分一致（大小無視）するもの。query が空文字なら全件。",
+      hint: "toLowerCase + includes",
+      lang: "JavaScript",
+      starter: `function visibleItems(items, query) {
+  // TODO
+}
+
+`,
+      tests: `const items = [{ title: "React Hooks" }, { title: "Vue" }, { title: "react docs" }];
+console.log(visibleItems(items, "react").map((i) => i.title).join("|"));
+console.log(visibleItems(items, "").length);`,
+      expect: "React Hooks|react docs\n3",
+    },
+    {
+      id: "react-write-list-keys",
+      title: "安定キーを付与",
+      prompt: "withKeys(items) は各要素に key: String(id) を足した新配列（元に id がある前提）。",
+      hint: "map でスプレッド",
+      lang: "JavaScript",
+      starter: `function withKeys(items) {
+  // TODO
+}
+
+`,
+      tests: `console.log(JSON.stringify(withKeys([{ id: 1, t: "a" }, { id: 2, t: "b" }])));`,
+      expect: '[{"id":1,"t":"a","key":"1"},{"id":2,"t":"b","key":"2"}]',
+    },
+    {
+      id: "react-write-form-field",
+      title: "フォーム1フィールド更新",
+      prompt: "setField(form, name, value) は { ...form, [name]: value }。",
+      hint: "計算プロパティ名",
+      lang: "JavaScript",
+      starter: `function setField(form, name, value) {
+  // TODO
+}
+
+`,
+      tests: `console.log(JSON.stringify(setField({ title: "", done: false }, "title", "ship")));
+console.log(JSON.stringify(setField({ title: "a", done: false }, "done", true)));`,
+      expect: '{"title":"ship","done":false}\n{"title":"a","done":true}',
+    },
+    {
+      id: "react-write-classname",
+      title: "className を結合",
+      prompt: "cx(...parts) は falsy を除き、文字列だけを空白結合。空なら \"\"。",
+      hint: "filter(Boolean).join(\" \")",
+      lang: "JavaScript",
+      starter: `function cx(...parts) {
+  // TODO
+}
+
+`,
+      tests: `console.log(cx("btn", false, "primary", null, "lg"));
+console.log(cx(null, undefined, ""));
+console.log(cx("only"));`,
+      expect: "btn primary lg\n\nonly",
+    },
+  ],
+
+  security: [
+    {
+      id: "sec-write-escape-html",
+      title: "HTML エスケープ",
+      prompt: "escapeHtml(text) は & < > \" ' を実体参照に置換（& → &amp; を先に）。",
+      hint: "順に replace。& を最初に",
+      lang: "JavaScript",
+      starter: `function escapeHtml(text) {
+  // TODO
+}
+
+`,
+      tests: `console.log(escapeHtml(\`<img src=x onerror="alert(1)">\`));
+console.log(escapeHtml("a & b"));`,
+      expect:
+        "&lt;img src=x onerror=&quot;alert(1)&quot;&gt;\n" +
+        "a &amp; b",
+    },
+    {
+      id: "sec-write-detect-sqli",
+      title: "危険な SQL 断片を検知",
+      prompt: "looksLikeSqli(input) は小文字化後に \"--\" または \";\" または \" drop \" を含めば true。",
+      hint: "toLowerCase + includes",
+      lang: "JavaScript",
+      starter: `function looksLikeSqli(input) {
+  // TODO
+}
+
+`,
+      tests: `console.log(looksLikeSqli("Ada"));
+console.log(looksLikeSqli("1; DROP TABLE users"));
+console.log(looksLikeSqli("x -- comment"));
+console.log(looksLikeSqli("please drop table"));`,
+      expect: "false\ntrue\ntrue\ntrue",
+    },
+    {
+      id: "sec-write-same-origin",
+      title: "オープンリダイレクト防止",
+      prompt: "safeRedirect(url, allowedOrigin) は url が相対パス（/ 始まりで // でない）か、allowedOrigin で始まる絶対 URL なら url、否则は \"/\"。",
+      hint: "startsWith を慎重に",
+      lang: "JavaScript",
+      starter: `function safeRedirect(url, allowedOrigin) {
+  // TODO
+}
+
+`,
+      tests: `console.log(safeRedirect("/home", "https://app.example"));
+console.log(safeRedirect("https://app.example/x", "https://app.example"));
+console.log(safeRedirect("//evil.test", "https://app.example"));
+console.log(safeRedirect("https://evil.test", "https://app.example"));`,
+      expect: "/home\nhttps://app.example/x\n/\n/",
+    },
+    {
+      id: "sec-write-authorize",
+      title: "所有者チェック（IDOR 防止）",
+      prompt: "canAccess(resource, userId, isAdmin) は isAdmin または resource.ownerId === userId なら true。",
+      hint: "||",
+      lang: "JavaScript",
+      starter: `function canAccess(resource, userId, isAdmin) {
+  // TODO
+}
+
+`,
+      tests: `const r = { id: 1, ownerId: "u1" };
+console.log(canAccess(r, "u1", false));
+console.log(canAccess(r, "u2", false));
+console.log(canAccess(r, "u2", true));`,
+      expect: "true\nfalse\ntrue",
+    },
+    {
+      id: "sec-write-redact",
+      title: "秘密情報を伏せる",
+      prompt: "redactSecrets(obj) は password / token キーを \"***\" にした浅いコピー。他キーはそのまま。",
+      hint: "コピーして上書き",
+      lang: "JavaScript",
+      starter: `function redactSecrets(obj) {
+  // TODO
+}
+
+`,
+      tests: `const o = { user: "a", password: "secret", token: "t", n: 1 };
+const r = redactSecrets(o);
+console.log(JSON.stringify(r));
+console.log(o.password);`,
+      expect: '{"user":"a","password":"***","token":"***","n":1}\nsecret',
+    },
+    {
+      id: "sec-write-csrf-token",
+      title: "CSRF トークン照合",
+      prompt: "csrfOk(sessionToken, submitted) は両方とも非空文字列で厳密一致なら true。",
+      hint: "typeof と ===",
+      lang: "JavaScript",
+      starter: `function csrfOk(sessionToken, submitted) {
+  // TODO
+}
+
+`,
+      tests: `console.log(csrfOk("abc", "abc"));
+console.log(csrfOk("abc", "xyz"));
+console.log(csrfOk("", ""));
+console.log(csrfOk(null, "abc"));`,
+      expect: "true\nfalse\nfalse\nfalse",
+    },
+    {
+      id: "sec-write-password-policy",
+      title: "パスワード最低要件",
+      prompt: "passwordOk(pw) は長さ 8 以上かつ、英字と数字を各1以上含めば true。",
+      hint: "/[a-zA-Z]/ と /\\d/",
+      lang: "JavaScript",
+      starter: `function passwordOk(pw) {
+  // TODO
+}
+
+`,
+      tests: `console.log(passwordOk("short1"));
+console.log(passwordOk("longenough"));
+console.log(passwordOk("longenough1"));
+console.log(passwordOk("12345678"));`,
+      expect: "false\nfalse\ntrue\nfalse",
+    },
+    {
+      id: "sec-write-has-script",
+      title: "script タグ混入を検出",
+      prompt: "hasScriptTag(html) は大小無視で \"<script\" を含めば true。",
+      hint: "toLowerCase + includes",
+      lang: "JavaScript",
+      starter: `function hasScriptTag(html) {
+  // TODO
+}
+
+`,
+      tests: `console.log(hasScriptTag("<b>ok</b>"));
+console.log(hasScriptTag("<Script src=x>"));
+console.log(hasScriptTag("nope"));`,
+      expect: "false\ntrue\nfalse",
+    },
+  ],
 };
 
 // 章横断ハブ用メタ（未指定分の既定値を埋める）
@@ -816,6 +1220,9 @@ console.log(taskPath("a/b"));`,
     webapi: "webapi-1",
     testing: "testing-2",
     pathway: "pathway-3",
+    database: "database-3",
+    react: "react-3",
+    security: "security-2",
   };
   const tagByChapter = {
     javascript: ["js", "array"],
@@ -825,6 +1232,9 @@ console.log(taskPath("a/b"));`,
     webapi: ["http", "api"],
     testing: ["testing", "python"],
     pathway: ["taskboard", "js"],
+    database: ["sql", "python"],
+    react: ["react", "js"],
+    security: ["security", "js"],
   };
 
   Object.entries(exerciseData).forEach(([chapter, list]) => {
