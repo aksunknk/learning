@@ -480,6 +480,72 @@ console.log(parseIntSafe("x"));`,
 console.log(messageFrom({ ok: false, error: "boom" }));`,
       expect: "7\nboom",
     },
+    {
+      id: "ts-write-omit-keys",
+      title: "不要なキーを除く",
+      prompt: "omit(obj, keys) は keys に含まれるプロパティを除いた新オブジェクト。",
+      hint: "Object.keys + includes の否定",
+      lang: "TypeScript",
+      starter: `function omit(obj, keys) {
+  // TODO
+}
+
+`,
+      tests: `const o = { id: 1, title: "a", secret: "x" };
+console.log(JSON.stringify(omit(o, ["secret"])));
+console.log(JSON.stringify(omit(o, ["id", "title"])));`,
+      expect: '{"id":1,"title":"a"}\n{"secret":"x"}',
+    },
+    {
+      id: "ts-write-ensure-array",
+      title: "単一値を配列に揃える",
+      prompt: "ensureArray(value) は配列なら浅いコピー、それ以外は [value]（null/undefined も1要素）。",
+      hint: "Array.isArray",
+      lang: "TypeScript",
+      starter: `function ensureArray(value) {
+  // TODO
+}
+
+`,
+      tests: `console.log(JSON.stringify(ensureArray([1, 2])));
+console.log(JSON.stringify(ensureArray("x")));
+console.log(JSON.stringify(ensureArray(null)));
+const src = [9];
+const copy = ensureArray(src);
+copy.push(1);
+console.log(src.length);`,
+      expect: "[1,2]\n[\"x\"]\n[null]\n1",
+    },
+    {
+      id: "ts-write-map-status",
+      title: "判別可能なユニオンを写像",
+      prompt: "labelOf(job) は {status:\"queued\"}→\"待ち\"、{status:\"running\",progress}→\"実行中:\"+progress、{status:\"done\"}→\"完了\"。",
+      hint: "job.status で分岐",
+      lang: "TypeScript",
+      starter: `function labelOf(job) {
+  // TODO
+}
+
+`,
+      tests: `console.log(labelOf({ status: "queued" }));
+console.log(labelOf({ status: "running", progress: 40 }));
+console.log(labelOf({ status: "done" }));`,
+      expect: "待ち\n実行中:40\n完了",
+    },
+    {
+      id: "ts-write-compact",
+      title: "nullish を落とす",
+      prompt: "compact(obj) は値が null または undefined のキーを除いた新オブジェクト（他の falsy は残す）。",
+      hint: "!= null で判定",
+      lang: "TypeScript",
+      starter: `function compact(obj) {
+  // TODO
+}
+
+`,
+      tests: `console.log(JSON.stringify(compact({ a: 0, b: "", c: null, d: undefined, e: false })));`,
+      expect: '{"a":0,"b":"","e":false}',
+    },
   ],
 
   webapi: [
@@ -578,6 +644,75 @@ console.log(canCacheGet("GET", 404, false));`,
 console.log(idFromLocation("/api/tasks/42/"));
 console.log(idFromLocation("https://ex.com/v1/items/abc"));`,
       expect: "42\n42\nabc",
+    },
+    {
+      id: "api-write-bearer",
+      title: "Bearer トークンを抜く",
+      prompt: "bearerToken(authorization) は \"Bearer <token>\"（大文字小文字無視）なら token、それ以外は null。余分な空白は trim。",
+      hint: "startsWith 用に toLowerCase",
+      lang: "JavaScript",
+      starter: `function bearerToken(authorization) {
+  // TODO
+}
+
+`,
+      tests: `console.log(bearerToken("Bearer abc.def"));
+console.log(bearerToken("bearer  xyz  "));
+console.log(bearerToken("Basic abc"));
+console.log(bearerToken(""));`,
+      expect: "abc.def\nxyz\nnull\nnull",
+    },
+    {
+      id: "api-write-retryable",
+      title: "リトライすべきか",
+      prompt: "shouldRetry(status, attempt, maxAttempts) は attempt < maxAttempts かつ status が 408/429/500/502/503/504 のとき true。",
+      hint: "配列 includes",
+      lang: "JavaScript",
+      starter: `function shouldRetry(status, attempt, maxAttempts) {
+  // TODO
+}
+
+`,
+      tests: `console.log(shouldRetry(503, 0, 3));
+console.log(shouldRetry(503, 3, 3));
+console.log(shouldRetry(404, 0, 3));
+console.log(shouldRetry(429, 1, 2));`,
+      expect: "true\nfalse\nfalse\ntrue",
+    },
+    {
+      id: "api-write-json-content-type",
+      title: "JSON Content-Type 判定",
+      prompt: "isJsonContentType(value) は media type が application/json で始まる（大文字小文字無視、;charset 付き可）なら true。",
+      hint: "split(\";\")[0].trim().toLowerCase()",
+      lang: "JavaScript",
+      starter: `function isJsonContentType(value) {
+  // TODO
+}
+
+`,
+      tests: `console.log(isJsonContentType("application/json"));
+console.log(isJsonContentType("Application/JSON; charset=utf-8"));
+console.log(isJsonContentType("text/plain"));
+console.log(isJsonContentType(""));`,
+      expect: "true\ntrue\nfalse\nfalse",
+    },
+    {
+      id: "api-write-merge-headers",
+      title: "ヘッダをマージする",
+      prompt: "mergeHeaders(base, extra) は浅いマージ。同じキーは extra 優先。キーは与えられた文字列のまま（正規化不要）。",
+      hint: "{ ...base, ...extra }",
+      lang: "JavaScript",
+      starter: `function mergeHeaders(base, extra) {
+  // TODO
+}
+
+`,
+      tests: `console.log(JSON.stringify(mergeHeaders(
+  { Accept: "text/plain", "X-Req": "1" },
+  { Accept: "application/json" }
+)));
+console.log(JSON.stringify(mergeHeaders({}, { A: "b" })));`,
+      expect: '{"Accept":"application/json","X-Req":"1"}\n{"A":"b"}',
     },
   ],
 
@@ -693,6 +828,73 @@ print(len(vals) >= 2)`,
 print(stable_ids(src))
 print(src)`,
       expect: "[{'id': 1}, {'id': 2}]\n[{'id': 2}, {'id': 1}]",
+    },
+    {
+      id: "test-write-approx",
+      title: "浮動小数の近似比較",
+      prompt: "approx_eq(a, b, eps=1e-6) は abs(a-b) <= eps なら True。",
+      hint: "abs",
+      lang: "Python",
+      starter: `def approx_eq(a, b, eps=1e-6):
+    # TODO
+    pass
+
+`,
+      tests: `print(approx_eq(0.1 + 0.2, 0.3))
+print(approx_eq(1.0, 1.1, 0.05))
+print(approx_eq(1.0, 1.1, 0.2))`,
+      expect: "True\nFalse\nTrue",
+    },
+    {
+      id: "test-write-fixture",
+      title: "テスト用フィクスチャ",
+      prompt: "make_user(**overrides) は {\"id\": 1, \"name\": \"Ada\", \"role\": \"user\"} を基に overrides で上書きした dict。",
+      hint: "{**defaults, **overrides}",
+      lang: "Python",
+      starter: `def make_user(**overrides):
+    # TODO
+    pass
+
+`,
+      tests: `print(make_user())
+print(make_user(name="Bob", role="admin"))`,
+      expect: "{'id': 1, 'name': 'Ada', 'role': 'user'}\n{'id': 1, 'name': 'Bob', 'role': 'admin'}",
+    },
+    {
+      id: "test-write-spy",
+      title: "呼び出しスパイ",
+      prompt: "make_spy() は callable を返す。呼ぶたびに引数タプルを .calls に追記し、常に None を返す。",
+      hint: "クロージャか簡単なクラス",
+      lang: "Python",
+      starter: `def make_spy():
+    # TODO: 返す関数に calls 属性を付ける
+    pass
+
+`,
+      tests: `spy = make_spy()
+spy(1, 2)
+spy("x")
+print(spy.calls)`,
+      expect: "[(1, 2), ('x',)]",
+    },
+    {
+      id: "test-write-property-commute",
+      title: "性質: 交換律チェック",
+      prompt: "is_commutative(fn, pairs) は全 (a,b) で fn(a,b)==fn(b,a) なら True。",
+      hint: "for で全件",
+      lang: "Python",
+      starter: `def is_commutative(fn, pairs):
+    # TODO
+    pass
+
+`,
+      tests: `def add(a, b):
+    return a + b
+def sub(a, b):
+    return a - b
+print(is_commutative(add, [(1, 2), (0, 5)]))
+print(is_commutative(sub, [(1, 2), (3, 3)]))`,
+      expect: "True\nFalse",
     },
   ],
 
