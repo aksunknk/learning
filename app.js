@@ -550,16 +550,21 @@ function injectFillBlankSection(tabId, panel) {
 
   const wrap = document.createElement("section");
   wrap.className = "fillblank-section";
-  wrap.setAttribute("aria-label", "穴埋め実行ドリル");
-  wrap.innerHTML = `<div class="quiz-header"><h3>⌨️ 穴埋め実行ドリル</h3></div>
-    <p class="quiz-intro">___ を埋めて ▶ 実行し、期待出力と一致するか確認します。</p>`;
+  wrap.setAttribute("aria-label", "穴埋めドリル");
+  wrap.innerHTML = `<div class="quiz-header"><h3>⌨️ 穴埋めドリル</h3></div>
+    <p class="quiz-intro">___ を埋めて判定します。実行可能な言語は ▶ 実行、コマンド／マークアップは ✓ 判定です。</p>`;
 
   fillBlankData[tabId].forEach((ex) => {
     const block = document.createElement("div");
     block.className = "code-block fillblank-block";
     block.dataset.fillblank = "1";
-    block.dataset.expect = ex.expect;
+    const runnable = !!detectRunnableLang(ex.lang || "");
+    const checkMode =
+      ex.mode === "answers" || (!runnable && ex.answers) ? "answers" : "run";
+    block.dataset.checkMode = checkMode;
+    if (ex.expect != null) block.dataset.expect = ex.expect;
     if (ex.answers) block.dataset.answers = JSON.stringify(ex.answers);
+    if (ex.caseInsensitive) block.dataset.caseInsensitive = "1";
     block.innerHTML = `
       <div class="fillblank-meta">
         <strong>${escapeHtml(ex.title)}</strong>
@@ -2211,13 +2216,28 @@ let pyodidePromise = null;
 
 function attachRunButtons(root) {
   root.querySelectorAll(".code-block").forEach((block) => {
-    if (block.querySelector(".run-btn")) return; // 二重付与を防ぐ
+    if (block.querySelector(".run-btn, .check-btn")) return; // 二重付与を防ぐ
+    const header = block.querySelector(".code-header");
+    if (!header) return;
+
+    // 穴埋め（非実行）: answers との照合
+    if (
+      block.dataset.fillblank === "1" &&
+      block.dataset.checkMode === "answers" &&
+      block.dataset.answers
+    ) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "run-btn check-btn";
+      btn.textContent = "✓ 判定";
+      btn.addEventListener("click", () => checkFillBlankAnswers(block, btn));
+      header.appendChild(btn);
+      return;
+    }
+
     const label = block.querySelector(".code-lang")?.textContent ?? "";
     const lang = detectRunnableLang(label);
     if (!lang) return;
-
-    const header = block.querySelector(".code-header");
-    if (!header) return;
 
     const btn = document.createElement("button");
     btn.type = "button";
@@ -2226,6 +2246,45 @@ function attachRunButtons(root) {
     btn.addEventListener("click", () => runCodeBlock(block, lang, btn));
     header.appendChild(btn);
   });
+}
+
+function readFillBlankValues(block) {
+  const values = [];
+  block.querySelectorAll(".code-blank").forEach((input) => {
+    values.push(String(input.value ?? "").trim());
+  });
+  return values;
+}
+
+function checkFillBlankAnswers(block, btn) {
+  const output = ensureRunOutput(block);
+  let expected;
+  try {
+    expected = JSON.parse(block.dataset.answers || "[]");
+  } catch {
+    expected = [];
+  }
+  const got = readFillBlankValues(block);
+  const insensitive = block.dataset.caseInsensitive === "1";
+  const norm = (s) => {
+    const t = String(s ?? "").trim();
+    return insensitive ? t.toLowerCase() : t;
+  };
+  const ok =
+    Array.isArray(expected) &&
+    expected.length === got.length &&
+    expected.every((ans, i) => {
+      if (Array.isArray(ans)) return ans.map(norm).includes(norm(got[i]));
+      return norm(ans) === norm(got[i]);
+    });
+
+  output.className = ok
+    ? "code-run-output done fillblank-pass"
+    : "code-run-output error fillblank-fail";
+  output.textContent = ok
+    ? `✅ 正解\n${got.join(" · ") || "(空)"}`
+    : `❌ 不一致\n入力: ${got.join(" · ") || "(空)"}\nヒントを確認して再入力してください。`;
+  if (btn) btn.disabled = false;
 }
 
 // 言語ラベルから実行エンジンを決める。

@@ -424,6 +424,24 @@ async function main() {
       `javascript should inject fill-blank inputs, got ${results.tabs.javascript?.fillBlanks}`
     );
   }
+  for (const tab of [
+    "htmlcss",
+    "git",
+    "linux",
+    "docker",
+    "cicd",
+    "devtools",
+    "sysdesign",
+  ]) {
+    const fills = results.tabs[tab]?.fillBlanks || 0;
+    if (fills < 1) {
+      failures.push(`${tab} should inject fill-blank inputs, got ${fills}`);
+    }
+    const quizzes = results.tabs[tab]?.quizQuestions || 0;
+    if (quizzes < 10) {
+      failures.push(`${tab} should have >=10 quiz questions, got ${quizzes}`);
+    }
+  }
   if ((results.tabs.javascript?.writeExercises || 0) < 1) {
     failures.push(
       `javascript should inject featured write exercises, got ${results.tabs.javascript?.writeExercises}`
