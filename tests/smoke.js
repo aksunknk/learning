@@ -432,6 +432,7 @@ async function main() {
     "cicd",
     "devtools",
     "sysdesign",
+    "react",
   ]) {
     const fills = results.tabs[tab]?.fillBlanks || 0;
     if (fills < 1) {

@@ -31,7 +31,7 @@ const TABS = {
   webapi:        { label: "Web/API",          short: "API",    icon: "🌐", group: "backend",  lessons: 14, accent: "var(--webapi-green)",    glow: "rgba(0,191,165,0.35)" },
   docker:        { label: "Docker",           short: "Docker", icon: "🐳", group: "backend",  lessons: 14, accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
   cicd:          { label: "CI/CD・デプロイ",  short: "CI/CD",  icon: "🚀", group: "backend",  lessons: 12, accent: "#2088ff",                glow: "rgba(32,136,255,0.35)" },
-  react:         { label: "React",            short: "React",  icon: "⚛️", group: "frontend", lessons: 17, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
+  react:         { label: "React",            short: "React",  icon: "⚛️", group: "frontend", lessons: 20, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
   drills:        { label: "コーディング演習", short: "演習",   icon: "✍️", group: "practice", lessons: 1,  accent: "#6366f1",                glow: "rgba(99,102,241,0.35)" },
   "python-cert": { label: "Python認定基礎",   short: "認定",   icon: "📜", group: "practice", lessons: 10, accent: "var(--python-yellow)",   glow: "rgba(255,212,59,0.35)" },
   "python-prac": { label: "Python実践試験",   short: "実践",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },

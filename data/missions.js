@@ -396,11 +396,11 @@ except OSError as e:
     advanced: {
       title: "上級編ミニミッション",
       minutes: 25,
-      goal: "カスタムフックに切り出す",
+      goal: "カスタムフックに切り出し、モバイルへの対応を1つ説明できる",
       tasks: [
         "useXxx として取得ロジックを分離する",
         "フックのルール（トップレベル呼び出し）を守る",
-        "不要な再レンダーが起きないか確認する",
+        "Web の div/button が RN で何に対応するか対応表で確認する",
       ],
     },
     rubric: [
@@ -408,6 +408,7 @@ except OSError as e:
       { id: "effect", label: "useEffect の依存配列を説明できる" },
       { id: "list", label: "key の意味を説明できる" },
       { id: "hooks", label: "カスタムフックに分割できる" },
+      { id: "mobile-bridge", label: "Web React と RN/Expo の関係を説明できる" },
     ],
   },
 

@@ -399,7 +399,10 @@ const quizData = {
 {"question": "Reactでカスタムフックを作る際のルールとして正しいものは？", "options": ["関数名を必ず 'use' から始める", "必ず 'function' キーワードを使わないといけない", "中で useEffect を使ってはいけない", "ファイル名を必ず大文字から始める"], "correct": 0, "explanation": "Reactのルールとして、フックは必ず「use」から始まる名前にする必要があります（useFetchなど）。これによりReactがフックとして認識します。"},
 {"question": "重い計算処理の結果をキャッシュして、不要な再計算を防ぐReactのフックは？", "options": ["useContext", "useMemo", "useReducer", "useRef"], "correct": 1, "explanation": "useMemoは「計算結果（値）」をメモ化（キャッシュ）します。関数の再生成を防ぐには useCallback を使います。"},
 {"question": "リスト表示で key に配列の index を使うと問題になるのはどんな場合？", "options": ["要素が10個を超える場合", "並び替えや先頭への挿入がある場合", "文字列を表示する場合", "keyは常にindexを使うべき"], "correct": 1, "explanation": "並び替えや挿入で index がずれると React が要素を取り違え、入力欄の状態が別の行に移るバグが起きます。データ固有の ID を使うべきです。"},
-{"question": "useRef と useState の決定的な違いはどれ？", "options": ["useRefは数値しか保持できない", "useRefの値を変更しても再レンダリングが起きない", "useStateはDOM参照専用", "useRefはコンポーネント外でも使える"], "correct": 1, "explanation": "ref の .current は変更しても再レンダリングを起こしません。「表示に使う値は state、使わない値は ref」が使い分けの基準です。"}
+{"question": "useRef と useState の決定的な違いはどれ？", "options": ["useRefは数値しか保持できない", "useRefの値を変更しても再レンダリングが起きない", "useStateはDOM参照専用", "useRefはコンポーネント外でも使える"], "correct": 1, "explanation": "ref の .current は変更しても再レンダリングを起こしません。「表示に使う値は state、使わない値は ref」が使い分けの基準です。"},
+{"question": "React Native で Web の div に最も近いプリミティブはどれですか？", "options": ["div", "View", "section", "Box"], "correct": 1, "explanation": "RN には DOM が無く、レイアウトの箱は View です。テキストは Text、ボタン相当は Pressable 等を使います。"},
+{"question": "Expo を学習・試作の入口にする主な理由はどれですか？", "options": ["ネイティブモジュールが一切不要になるから", "ビルド環境のセットアップを後回しにし、JS/TS で画面を回し始めやすいから", "App Store 審査が不要になるから", "useState が不要になるから"], "correct": 1, "explanation": "Expo はツールチェーンと開発クライアントを整え、まずコンポーネントと状態の練習に集中できます。必要になったらネイティブ側へ降りられます。"},
+{"question": "このサイトの通しプロジェクト（TaskBoard）に対する正しい方針はどれですか？", "options": ["最初から RN と Web を同時実装する", "Web でデータ形と API を固め、RN は移植オプションとする", "モバイル専用にし Web を捨てる", "Expo 無しでは React を学べない"], "correct": 1, "explanation": "縦糸は Web 固定です。状態モデルと契約を先に固め、モバイルは同じ思考の移植先として後続に置きます。"}
 ],
   typescript: [
     {

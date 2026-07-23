@@ -234,6 +234,14 @@ const crossRefData = {
     { tab: "react", section: "react-1", label: "React の入口" },
     { tab: "pathway", section: "pathway-7", label: "React/TS クライアント" },
   ],
+  "react-18": [
+    { tab: "pathway", section: "pathway-7", label: "縦糸は Web クライアント" },
+    { tab: "react", section: "react-20", label: "Web / RN の選び方" },
+  ],
+  "react-20": [
+    { tab: "pathway", section: "pathway-1", label: "TaskBoard は Web 固定" },
+    { tab: "capstone", section: "capstone-1", label: "提出物は Web で可" },
+  ],
   "devtools-12": [
     { tab: "pathway", section: "pathway-3", label: "TaskBoard JS 版" },
     { tab: "sysdesign", section: "sysdesign-12", label: "オブザーバビリティ" },
