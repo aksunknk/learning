@@ -20,8 +20,16 @@ jobs:
       - name: Install dependencies
         run: npm ci || npm install
 
-      - name: Syntax check app.js
-        run: node --check app.js && node --check data/quizzes.js && node --check data/puzzles.js
+      - name: Syntax check scripts
+        run: |
+          node --check app.js
+          node --check js/utils.js
+          node --check js/runner.js
+          node --check js/practice.js
+          node --check data/quizzes.js
+          node --check data/puzzles.js
+          node --check data/exercises.js
+          node --check data/fillblanks.js
 
       - name: Install Chromium
         run: |
