@@ -1,9 +1,10 @@
 // ============================================================
 // app.js — Code Foundations 学習サイト（ロジック層）
 //
-// データは data/quizzes.js / data/puzzles.js、
+// データは data/quizzes.js / data/puzzles.js / data/missions.js、
 // レッスン本文は content/*.html に分離済み。
-// このファイルは UI 操作・進捗・遅延読込のみを担当する。
+// このファイルはシェル・タブ・進捗・quiz/puzzle/SQL/search を担当する。
+// 演習層は js/practice.js、実行器は js/runner.js。
 // ============================================================
 
 "use strict";
@@ -17,25 +18,29 @@
 // 進捗カード・タブボタン・コンテンツ枠・ヒーロー統計は起動時に自動生成される。
 // lessons は content/{id}.html の lesson-card 数と同期させる（CIが検証する）。
 const TABS = {
-  htmlcss:       { label: "HTML/CSS",         icon: "🎨", group: "basics",   lessons: 28, accent: "var(--htmlcss-orange)",  glow: "rgba(227,79,38,0.35)" },
-  javascript:    { label: "JavaScript",       icon: "🟨", group: "basics",   lessons: 15, accent: "#f7df1e",                glow: "rgba(247,223,30,0.35)" },
-  python:        { label: "Python",           icon: "🐍", group: "basics",   lessons: 17, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
-  algorithm:     { label: "アルゴリズム",     icon: "🧮", group: "basics",   lessons: 8,  accent: "var(--color-warning)",   glow: "rgba(251,191,36,0.35)" },
-  rust:          { label: "Rust",             icon: "🦀", group: "basics",   lessons: 14, accent: "#ce422b",                glow: "rgba(206,66,43,0.35)" },
-  typescript:    { label: "TypeScript",       icon: "🔷", group: "basics",   lessons: 15, accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
-  git:           { label: "Git / GitHub",     icon: "🌿", group: "basics",   lessons: 8,  accent: "var(--git-orange)",      glow: "rgba(240,80,51,0.35)" },
-  linux:         { label: "Linux / CLI",      icon: "🐧", group: "basics",   lessons: 14, accent: "#fcc624",                glow: "rgba(252,198,36,0.35)" },
-  database:      { label: "データベース",     icon: "🗄️", group: "backend",  lessons: 12, accent: "var(--database-teal)",   glow: "rgba(0,150,136,0.35)" },
-  webapi:        { label: "Web/API",          icon: "🌐", group: "backend",  lessons: 5,  accent: "var(--webapi-green)",    glow: "rgba(0,191,165,0.35)" },
-  docker:        { label: "Docker",           icon: "🐳", group: "backend",  lessons: 8,  accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
-  cicd:          { label: "CI/CD・デプロイ",  icon: "🚀", group: "backend",  lessons: 12, accent: "#2088ff",                glow: "rgba(32,136,255,0.35)" },
-  react:         { label: "React",            icon: "⚛️", group: "frontend", lessons: 17, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
-  "python-cert": { label: "Python認定基礎",   icon: "📜", group: "practice", lessons: 10, accent: "var(--python-yellow)",   glow: "rgba(255,212,59,0.35)" },
-  "python-prac": { label: "Python実践試験",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
-  testing:       { label: "テスト設計",       icon: "🧪", group: "practice", lessons: 10, accent: "var(--testing-green)",   glow: "rgba(76,175,80,0.35)" },
-  security:      { label: "セキュリティ",     icon: "🔒", group: "practice", lessons: 12, accent: "#e11d48",                glow: "rgba(225,29,72,0.35)" },
-  genai:         { label: "生成AIパスポート", icon: "🤖", group: "practice", lessons: 8,  accent: "var(--genai-purple)",    glow: "rgba(156,39,176,0.35)" },
-  capstone:      { label: "キャップストーン", icon: "🏗️", group: "practice", lessons: 10, accent: "var(--capstone-gold)",   glow: "rgba(255,179,0,0.35)" },
+  htmlcss:       { label: "HTML/CSS",         short: "HTML",   icon: "🎨", group: "basics",   lessons: 28, accent: "var(--htmlcss-orange)",  glow: "rgba(227,79,38,0.35)" },
+  javascript:    { label: "JavaScript",       short: "JS",     icon: "🟨", group: "basics",   lessons: 15, accent: "#f7df1e",                glow: "rgba(247,223,30,0.35)" },
+  python:        { label: "Python",           short: "Py",     icon: "🐍", group: "basics",   lessons: 17, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
+  algorithm:     { label: "アルゴリズム",     short: "アルゴ", icon: "🧮", group: "basics",   lessons: 8,  accent: "var(--color-warning)",   glow: "rgba(251,191,36,0.35)" },
+  rust:          { label: "Rust",             short: "Rust",   icon: "🦀", group: "basics",   lessons: 14, accent: "#ce422b",                glow: "rgba(206,66,43,0.35)" },
+  typescript:    { label: "TypeScript",       short: "TS",     icon: "🔷", group: "basics",   lessons: 15, accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
+  git:           { label: "Git / GitHub",     short: "Git",    icon: "🌿", group: "basics",   lessons: 8,  accent: "var(--git-orange)",      glow: "rgba(240,80,51,0.35)" },
+  linux:         { label: "Linux / CLI",      short: "Linux",  icon: "🐧", group: "basics",   lessons: 14, accent: "#fcc624",                glow: "rgba(252,198,36,0.35)" },
+  devtools:      { label: "DevTools",         short: "Dev",    icon: "🧭", group: "basics",   lessons: 12, accent: "#6366f1",                glow: "rgba(99,102,241,0.35)" },
+  database:      { label: "データベース",     short: "DB",     icon: "🗄️", group: "backend",  lessons: 16, accent: "var(--database-teal)",   glow: "rgba(0,150,136,0.35)" },
+  webapi:        { label: "Web/API",          short: "API",    icon: "🌐", group: "backend",  lessons: 14, accent: "var(--webapi-green)",    glow: "rgba(0,191,165,0.35)" },
+  docker:        { label: "Docker",           short: "Docker", icon: "🐳", group: "backend",  lessons: 14, accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
+  cicd:          { label: "CI/CD・デプロイ",  short: "CI/CD",  icon: "🚀", group: "backend",  lessons: 12, accent: "#2088ff",                glow: "rgba(32,136,255,0.35)" },
+  react:         { label: "React",            short: "React",  icon: "⚛️", group: "frontend", lessons: 20, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
+  drills:        { label: "コーディング演習", short: "演習",   icon: "✍️", group: "practice", lessons: 1,  accent: "#6366f1",                glow: "rgba(99,102,241,0.35)" },
+  "python-cert": { label: "Python認定基礎",   short: "認定",   icon: "📜", group: "practice", lessons: 10, accent: "var(--python-yellow)",   glow: "rgba(255,212,59,0.35)" },
+  "python-prac": { label: "Python実践試験",   short: "実践",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
+  testing:       { label: "テスト設計",       short: "Test",   icon: "🧪", group: "practice", lessons: 14, accent: "var(--testing-green)",   glow: "rgba(76,175,80,0.35)" },
+  security:      { label: "セキュリティ",     short: "Sec",    icon: "🔒", group: "practice", lessons: 12, accent: "#e11d48",                glow: "rgba(225,29,72,0.35)" },
+  sysdesign:     { label: "システム設計",     short: "設計",   icon: "📐", group: "practice", lessons: 16, accent: "#7c3aed",                glow: "rgba(124,58,237,0.35)" },
+  pathway:       { label: "通しプロジェクト", short: "縦糸",   icon: "🧵", group: "practice", lessons: 12, accent: "#0f766e",                glow: "rgba(15,118,110,0.35)" },
+  genai:         { label: "生成AIパスポート", short: "AI",     icon: "🤖", group: "practice", lessons: 8,  accent: "var(--genai-purple)",    glow: "rgba(156,39,176,0.35)" },
+  capstone:      { label: "キャップストーン", short: "Cap",    icon: "🏗️", group: "practice", lessons: 10, accent: "var(--capstone-gold)",   glow: "rgba(255,179,0,0.35)" },
 };
 
 const TAB_IDS = Object.keys(TABS);
@@ -50,6 +55,7 @@ const ROADMAP = [
   "python",
   "git",
   "linux",
+  "devtools",
   "algorithm",
   "database",
   "webapi",
@@ -57,30 +63,20 @@ const ROADMAP = [
   "cicd",
   "react",
   "typescript",
+  "drills",
   "testing",
   "security",
+  "sysdesign",
+  "pathway",
   "capstone",
 ].map((tab) => ({ tab, ...TABS[tab] }));
-
-const STORAGE_KEYS = {
-  completed: "cf_completed",
-  quizAnswered: "cf_quizAnswered",
-};
 
 // タブ別コンテンツの読込状態（未読込 / 読込中 / 完了）
 const contentCache = Object.create(null);
 
 // --------------------------------------------------
-// 進捗状態
+// 進捗状態（STORAGE_KEYS / safeParse は js/utils.js）
 // --------------------------------------------------
-function safeParse(key, fallback) {
-  try {
-    return JSON.parse(localStorage.getItem(key)) ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
-
 const state = {
   completedSections: safeParse(STORAGE_KEYS.completed, []),
   quizAnswered: safeParse(STORAGE_KEYS.quizAnswered, {}),
@@ -89,9 +85,13 @@ const state = {
 // --------------------------------------------------
 // 初期化（単一エントリーポイント）
 // --------------------------------------------------
+const lastTabByGroup = {};
+
 document.addEventListener("DOMContentLoaded", async () => {
   renderShell();
   initTabs();
+  initDisclosures();
+  initStickyNavCompact();
   setActiveTabGroup("basics");
   initParticles();
   initScrollAnimations();
@@ -103,6 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 初期表示タブを先に読み込み、進捗・クイズ・パズルを有効化する
   const initial =
     document.querySelector(".tab-button.active")?.dataset.tab || "htmlcss";
+  lastTabByGroup[TABS[initial]?.group || "basics"] = initial;
   await loadTabContent(initial);
 
   restoreProgress();
@@ -140,12 +141,15 @@ function renderShell() {
     tabList.innerHTML = TAB_IDS.map((id) => {
       const t = TABS[id];
       const active = id === DEFAULT_TAB;
+      const short = t.short || t.label;
       return `
         <button class="tab-button${active ? " active" : ""}" data-tab="${id}"
                 data-group="${t.group}" role="tab" aria-selected="${active}"
+                aria-controls="content-${id}"
                 id="tab-${id}"${active ? "" : " hidden"}>
-          <span class="tab-icon">${t.icon}</span>
+          <span class="tab-icon" aria-hidden="true">${t.icon}</span>
           <span class="tab-label">${escapeHtml(t.label)}</span>
+          <span class="tab-label-short">${escapeHtml(short)}</span>
         </button>`;
     }).join("");
   }
@@ -155,7 +159,8 @@ function renderShell() {
     panels.innerHTML = TAB_IDS.map(
       (id) => `
         <div class="tab-content${id === DEFAULT_TAB ? " active" : ""}" id="content-${id}"
-             role="tabpanel" data-content-src="content/${id}.html" aria-busy="true">
+             role="tabpanel" aria-labelledby="tab-${id}"
+             data-content-src="content/${id}.html" aria-busy="true">
           <div class="content-placeholder">
             <div class="content-spinner" aria-hidden="true"></div>
             <p>コンテンツを読み込み中…</p>
@@ -164,11 +169,15 @@ function renderShell() {
     ).join("");
   }
 
-  renderHeroStats();
+  renderCatalogStats();
 }
 
-// ヒーロー統計は TABS / quizData / puzzleData から算出する
+// カタログ統計は TABS / quizData / puzzleData から算出する
 // （手動更新による実数との乖離を防ぐ）。
+function renderCatalogStats() {
+  renderHeroStats(); // 後方互換エイリアス
+}
+
 function renderHeroStats() {
   const stats = {
     topics: TAB_IDS.length,
@@ -215,10 +224,21 @@ async function loadTabContent(tabId) {
     panel.setAttribute("aria-busy", "false");
     contentCache[tabId] = "loaded";
 
+    // 編末 Mini Mission / 章末ルーブリック / TaskBoard 適用 / 穴埋めを注入
+    injectPracticeLayer(tabId, panel);
+    injectTaskBoardApply(tabId, panel);
+    injectFillBlankSection(tabId, panel);
+    injectWriteExercises(tabId, panel);
+    injectCrossRefs(panel);
+
     // 注入後にタブ固有のインタラクションを初期化
     initQuizForTab(tabId);
     loadPuzzle(tabId);
+    prepareFillBlankBlocks(panel);
+    bindWriteExercises(panel);
+    if (tabId === "drills") initDrillsHub(panel);
     attachRunButtons(panel);
+    enhanceLessonHeaders(panel);
     observeScrollTargets(panel);
     restoreProgress();
     updateAllProgress();
@@ -242,16 +262,8 @@ function retryLoadTab(tabId) {
   return loadTabContent(tabId);
 }
 
-function waitUntil(predicate, intervalMs = 50) {
-  return new Promise((resolve) => {
-    const id = setInterval(() => {
-      if (predicate()) {
-        clearInterval(id);
-        resolve();
-      }
-    }, intervalMs);
-  });
-}
+// 演習層は js/practice.js
+
 
 // --------------------------------------------------
 // タブナビゲーション
@@ -264,16 +276,21 @@ function initTabs() {
     btn.addEventListener("click", () => switchTab(btn.dataset.tab));
   });
 
-  // カテゴリ切替ボタン
+  // カテゴリ切替ボタン（最後に開いたタブを優先）
   document.querySelectorAll(".tab-group-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const group = btn.dataset.group;
       setActiveTabGroup(group);
-      // グループ先頭タブへ自動遷移
-      const first = document.querySelector(
-        `.tab-button[data-group="${group}"]`
-      );
-      if (first) switchTab(first.dataset.tab);
+      const remembered = lastTabByGroup[group];
+      const rememberedBtn = remembered
+        ? document.querySelector(
+            `.tab-button[data-tab="${remembered}"][data-group="${group}"]`
+          )
+        : null;
+      const target =
+        rememberedBtn ||
+        document.querySelector(`.tab-button[data-group="${group}"]`);
+      if (target) switchTab(target.dataset.tab);
     });
   });
 
@@ -325,6 +342,9 @@ async function switchTab(tabName) {
     targetBtn.classList.add("active");
     targetBtn.setAttribute("aria-selected", "true");
     updateTabIndicator(targetBtn, indicator);
+    if (targetBtn.dataset.group) {
+      lastTabByGroup[targetBtn.dataset.group] = tabName;
+    }
   }
 
   tabContents.forEach((tc) => tc.classList.remove("active"));
@@ -362,7 +382,80 @@ function updateTabIndicator(btn, indicator) {
 function toggleSection(headerElement) {
   const card = headerElement.closest(".lesson-card");
   if (!card) return;
-  card.classList.toggle("open");
+  const open = card.classList.toggle("open");
+  const header = card.querySelector(".lesson-header");
+  if (header) header.setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+function enhanceLessonHeaders(root) {
+  if (!root) return;
+  root.querySelectorAll(".lesson-header").forEach((header) => {
+    if (header.dataset.a11yReady === "1") return;
+    header.dataset.a11yReady = "1";
+    header.setAttribute("role", "button");
+    header.tabIndex = 0;
+    const card = header.closest(".lesson-card");
+    header.setAttribute(
+      "aria-expanded",
+      card?.classList.contains("open") ? "true" : "false"
+    );
+    header.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      if (e.target.closest(".complete-btn")) return;
+      e.preventDefault();
+      toggleSection(header);
+    });
+  });
+}
+
+function initDisclosures() {
+  const bindings = [
+    {
+      toggleId: "progress-detail-toggle",
+      panelId: "progress-cards",
+      openLabel: "トピック別の詳細を隠す",
+      closedLabel: "トピック別の詳細を表示",
+    },
+    {
+      toggleId: "roadmap-detail-toggle",
+      panelId: "roadmap-track",
+      openLabel: "推奨経路を隠す",
+      closedLabel: "推奨経路を表示",
+    },
+  ];
+
+  bindings.forEach(({ toggleId, panelId, openLabel, closedLabel }) => {
+    const toggle = document.getElementById(toggleId);
+    const panel = document.getElementById(panelId);
+    if (!toggle || !panel) return;
+
+    const setOpen = (open) => {
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.textContent = open ? openLabel : closedLabel;
+      panel.hidden = !open;
+      panel.classList.toggle("is-collapsed", !open);
+    };
+
+    setOpen(false);
+    toggle.addEventListener("click", () => {
+      setOpen(toggle.getAttribute("aria-expanded") !== "true");
+    });
+  });
+}
+
+function initStickyNavCompact() {
+  const nav = document.getElementById("tab-nav");
+  if (!nav) return;
+
+  const update = () => {
+    // sticky が画面上端に張り付いているときだけ検索を畳む
+    const stuck = nav.getBoundingClientRect().top <= 0.5;
+    nav.classList.toggle("is-compact", stuck);
+  };
+
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
+  update();
 }
 
 function copyCode(btn) {
@@ -825,15 +918,6 @@ document.addEventListener("click", (e) => {
   }, 100);
 });
 
-// --------------------------------------------------
-// ユーティリティ
-// --------------------------------------------------
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
-
 window.toggleSection = toggleSection;
 window.toggleComplete = toggleComplete;
 window.copyCode = copyCode;
@@ -1039,15 +1123,6 @@ const SQL_SAMPLES = [
   "-- CTE: 平均より高額な注文を探す\nWITH order_totals AS (\n  SELECT order_id, SUM(quantity * unit_price) AS total\n  FROM order_items GROUP BY order_id\n)\nSELECT * FROM order_totals\nWHERE total > (SELECT AVG(total) FROM order_totals);",
 ];
 
-function loadScript(src) {
-  return new Promise((resolve, reject) => {
-    const s = document.createElement("script");
-    s.src = src;
-    s.onload = resolve;
-    s.onerror = () => reject(new Error(`failed to load ${src}`));
-    document.head.appendChild(s);
-  });
-}
 
 async function bootSqlPlayground() {
   const root = document.getElementById("sql-playground");
@@ -1306,176 +1381,16 @@ async function jumpToLesson(tab, sectionId) {
   const card = document.querySelector(`[data-section="${sectionId}"]`);
   if (!card) return;
   card.classList.add("open");
+  const header = card.querySelector(".lesson-header");
+  if (header) header.setAttribute("aria-expanded", "true");
   card.scrollIntoView({ behavior: "smooth", block: "start" });
   card.classList.add("search-highlight");
   setTimeout(() => card.classList.remove("search-highlight"), 2400);
 }
 
-// ==================================================
-// コード実行（WBS 3.3.1 JS / 3.3.3 Python）
-// ==================================================
-// コードブロックの言語ラベルから実行可能なものを判定し、
-// 「▶ 実行」ボタンを自動付与する。
-//   - JavaScript: Web Worker サンドボックスで実行（DOMアクセス不可）
-//   - Python:     Pyodide（WASM CPython）を初回実行時にCDNからロード
-// 教材のコードには外部ライブラリ依存など実行不能なものも含まれるため、
-// エラーは「結果」として素直に表示する方針（エラーを読む練習も学習）。
-const PYODIDE_CDN = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full";
-let pyodideInstance = null;
-let pyodidePromise = null;
+window.jumpToLesson = jumpToLesson;
 
-function attachRunButtons(root) {
-  root.querySelectorAll(".code-block").forEach((block) => {
-    if (block.querySelector(".run-btn")) return; // 二重付与を防ぐ
-    const label = block.querySelector(".code-lang")?.textContent ?? "";
-    const lang = detectRunnableLang(label);
-    if (!lang) return;
-
-    const header = block.querySelector(".code-header");
-    if (!header) return;
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "run-btn";
-    btn.textContent = "▶ 実行";
-    btn.addEventListener("click", () => runCodeBlock(block, lang, btn));
-    header.appendChild(btn);
-  });
-}
-
-// 言語ラベルから実行エンジンを決める。
-// 「PYTHON — Zulip」のような注釈付きラベルにも一致させる。
-function detectRunnableLang(label) {
-  const l = label.trim().toLowerCase();
-  if (/^python(\b|$|[\s—(-])/.test(l) || /^python-cert/.test(l)) return "python";
-  if (/^(javascript|js)(\b|$|[\s—(-])/.test(l)) return "js";
-  return null;
-}
-
-async function runCodeBlock(block, lang, btn) {
-  const code = block.querySelector("code")?.textContent ?? "";
-  const output = ensureRunOutput(block);
-  output.textContent = "実行中…";
-  output.className = "code-run-output running";
-  btn.disabled = true;
-
-  try {
-    const result =
-      lang === "js" ? await runJsSandbox(code) : await runPython(code, output);
-    output.className = "code-run-output done";
-    output.textContent = result === "" ? "(出力なし)" : result;
-  } catch (err) {
-    output.className = "code-run-output error";
-    output.textContent = String(err.message || err);
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-function ensureRunOutput(block) {
-  let out = block.querySelector(".code-run-output");
-  if (!out) {
-    out = document.createElement("pre");
-    out.className = "code-run-output";
-    block.appendChild(out);
-  }
-  return out;
-}
-
-// JavaScript を Web Worker 内で実行する。
-// Worker はページの DOM / localStorage に触れない隔離環境なので、
-// 教材コードを安全に評価できる。console.log を捕捉して返す。
-function runJsSandbox(code, timeoutMs = 3000) {
-  return new Promise((resolve, reject) => {
-    const workerSrc = `
-      const logs = [];
-      const fmt = (v) => {
-        if (typeof v === "object" && v !== null) {
-          try { return JSON.stringify(v); } catch { return String(v); }
-        }
-        return String(v);
-      };
-      console.log = (...a) => logs.push(a.map(fmt).join(" "));
-      console.error = console.warn = console.info = console.log;
-      self.onmessage = (e) => {
-        try {
-          const result = eval(e.data);
-          if (result !== undefined) logs.push("=> " + fmt(result));
-          self.postMessage({ ok: true, output: logs.join("\\n") });
-        } catch (err) {
-          self.postMessage({ ok: false, error: err.constructor.name + ": " + err.message });
-        }
-      };
-    `;
-    const blob = new Blob([workerSrc], { type: "text/javascript" });
-    const url = URL.createObjectURL(blob);
-    const worker = new Worker(url);
-
-    const timer = setTimeout(() => {
-      worker.terminate();
-      URL.revokeObjectURL(url);
-      reject(new Error(`タイムアウト（${timeoutMs / 1000}秒）— 無限ループの可能性があります`));
-    }, timeoutMs);
-
-    worker.onmessage = (e) => {
-      clearTimeout(timer);
-      worker.terminate();
-      URL.revokeObjectURL(url);
-      if (e.data.ok) resolve(e.data.output);
-      else reject(new Error(e.data.error));
-    };
-
-    worker.postMessage(code);
-  });
-}
-
-// Python を Pyodide（ブラウザ内CPython）で実行する。
-// 本体（約10MB）は初回実行時のみロードし、以降は再利用する。
-// input() やファイルI/O、pip外部ライブラリは動かないため、
-// その場合はPythonの例外がそのまま出力欄に表示される。
-async function loadPyodideOnce(statusEl) {
-  if (pyodideInstance) return pyodideInstance;
-  if (!pyodidePromise) {
-    pyodidePromise = (async () => {
-      if (statusEl) statusEl.textContent = "Python実行環境を読み込み中…（初回のみ・約10MB）";
-      if (typeof loadPyodide === "undefined") {
-        await loadScript(`${PYODIDE_CDN}/pyodide.js`);
-      }
-      pyodideInstance = await loadPyodide({ indexURL: `${PYODIDE_CDN}/` });
-      return pyodideInstance;
-    })();
-  }
-  return pyodidePromise;
-}
-
-async function runPython(code, statusEl) {
-  const pyodide = await loadPyodideOnce(statusEl);
-  if (statusEl) statusEl.textContent = "実行中…";
-
-  // stdout / stderr を捕捉
-  let buffer = "";
-  pyodide.setStdout({ batched: (s) => (buffer += s + "\n") });
-  pyodide.setStderr({ batched: (s) => (buffer += s + "\n") });
-
-  try {
-    const result = await pyodide.runPythonAsync(code);
-    if (result !== undefined && result !== null) {
-      buffer += `=> ${result}`;
-    }
-    return buffer.trimEnd();
-  } catch (err) {
-    // Pythonのトレースバックは学習素材として有用なのでそのまま見せる
-    throw new Error(shortenTraceback(String(err.message || err)));
-  }
-}
-
-// Pyodideのトレースバックは内部フレームを含み長いので、
-// 学習者に意味のある末尾部分（エラー種別と行）だけに要約する。
-function shortenTraceback(tb) {
-  const lines = tb.trimEnd().split("\n");
-  const idx = lines.findIndex((l) => l.includes('File "<exec>"'));
-  return (idx >= 0 ? lines.slice(idx) : lines.slice(-5)).join("\n");
-}
+// コード実行は js/runner.js
 
 // ==================================================
 // 進捗エクスポート / インポート（WBS 3.4）
@@ -1538,6 +1453,3 @@ function initProgressIO() {
 }
 
 window.exportProgress = exportProgress;
-// テスト・デバッグ用に実行エンジンも公開
-window.runJsSandbox = runJsSandbox;
-window.runPython = runPython;

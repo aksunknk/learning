@@ -94,7 +94,8 @@ function verifyLessonCounts() {
       continue;
     }
     const actual = (
-      fs.readFileSync(file, "utf8").match(/class="lesson-card"/g) || []
+      fs.readFileSync(file, "utf8").match(/class="[^"]*\blesson-card\b[^"]*"/g) ||
+      []
     ).length;
     if (actual !== count) {
       failures.push(
@@ -137,7 +138,7 @@ async function main() {
     const url = res.url();
     if (url.endsWith("favicon.ico")) return;
     // content/ data/ 配下の 404 は致命的
-    if (url.includes("/content/") || url.includes("/data/") || url.endsWith("/app.js") || url.endsWith("/style.css")) {
+    if (url.includes("/content/") || url.includes("/data/") || url.includes("/js/") || url.endsWith("/app.js") || url.endsWith("/style.css")) {
       errors.push("404: " + url);
     }
   });
@@ -173,12 +174,23 @@ async function main() {
 
     results.tabs[tab] = await page.evaluate((name) => {
       const panel = document.getElementById(`content-${name}`);
+      const hasMissionData =
+        typeof missionData !== "undefined" && !!missionData[name];
       return {
         lessons: panel.querySelectorAll(".lesson-card").length,
         quizQuestions: panel.querySelectorAll(".quiz-question").length,
         puzzlePieces: panel.querySelectorAll(
           `#${name}-puzzle-source .puzzle-piece`
         ).length,
+        miniMissions: panel.querySelectorAll(".mini-mission").length,
+        rubric: panel.querySelectorAll(".chapter-rubric").length,
+        crossRefs: panel.querySelectorAll(".cross-refs").length,
+        taskboardApply: panel.querySelectorAll(".taskboard-apply").length,
+        fillBlanks: panel.querySelectorAll(".code-blank").length,
+        writeExercises: panel.querySelectorAll(".write-exercise").length,
+        drillsList: panel.querySelectorAll(".drills-list-item").length,
+        drillsApp: !!panel.querySelector("#drills-app"),
+        expectsPractice: hasMissionData,
       };
     }, tab);
 
@@ -330,11 +342,11 @@ async function main() {
 
   // Assertions
   const failures = [...staticFailures];
-  if (tabs.length !== 19) failures.push(`expected 19 tabs, got ${tabs.length}`);
+  if (tabs.length !== 23) failures.push(`expected 23 tabs, got ${tabs.length}`);
 
   // Phase 3
-  if (results.roadmap.nodes !== 15)
-    failures.push(`expected 15 roadmap nodes, got ${results.roadmap.nodes}`);
+  if (results.roadmap.nodes !== 19)
+    failures.push(`expected 19 roadmap nodes, got ${results.roadmap.nodes}`);
   if (results.roadmap.firstTab !== "htmlcss")
     failures.push(`roadmap should start with htmlcss, got ${results.roadmap.firstTab}`);
   if (!results.search || results.search.count < 1)
@@ -362,7 +374,120 @@ async function main() {
     if (info.lessons < 1) failures.push(`${tab}: no lessons`);
     if (info.quizQuestions < 1) failures.push(`${tab}: no quiz questions`);
     if (info.puzzlePieces < 1) failures.push(`${tab}: no puzzle pieces`);
+    if (info.expectsPractice) {
+      if (info.miniMissions < 1)
+        failures.push(`${tab}: missionData defined but no .mini-mission injected`);
+      if (info.rubric < 1)
+        failures.push(`${tab}: missionData defined but no .chapter-rubric injected`);
+    }
   }
+  if ((results.tabs.javascript?.miniMissions || 0) < 3) {
+    failures.push(
+      `javascript should inject 3 tier missions, got ${results.tabs.javascript?.miniMissions}`
+    );
+  }
+  if ((results.tabs.testing?.miniMissions || 0) < 3) {
+    failures.push(
+      `testing should inject 3 tier missions, got ${results.tabs.testing?.miniMissions}`
+    );
+  }
+  if ((results.tabs.testing?.lessons || 0) < 14) {
+    failures.push(
+      `testing should have 14 lessons, got ${results.tabs.testing?.lessons}`
+    );
+  }
+  if ((results.tabs.security?.crossRefs || 0) < 1) {
+    failures.push(
+      `security should inject cross-refs, got ${results.tabs.security?.crossRefs}`
+    );
+  }
+  if ((results.tabs.webapi?.crossRefs || 0) < 1) {
+    failures.push(
+      `webapi should inject cross-refs, got ${results.tabs.webapi?.crossRefs}`
+    );
+  }
+  if ((results.tabs.sysdesign?.lessons || 0) < 16) {
+    failures.push(
+      `sysdesign should have 16 lessons, got ${results.tabs.sysdesign?.lessons}`
+    );
+  }
+  if ((results.tabs.devtools?.lessons || 0) < 12) {
+    failures.push(
+      `devtools should have 12 lessons, got ${results.tabs.devtools?.lessons}`
+    );
+  }
+  if ((results.tabs.htmlcss?.taskboardApply || 0) < 1) {
+    failures.push("htmlcss should inject TaskBoard apply block");
+  }
+  if ((results.tabs.javascript?.fillBlanks || 0) < 1) {
+    failures.push(
+      `javascript should inject fill-blank inputs, got ${results.tabs.javascript?.fillBlanks}`
+    );
+  }
+  for (const tab of [
+    "htmlcss",
+    "git",
+    "linux",
+    "docker",
+    "cicd",
+    "devtools",
+    "sysdesign",
+    "react",
+  ]) {
+    const fills = results.tabs[tab]?.fillBlanks || 0;
+    if (fills < 1) {
+      failures.push(`${tab} should inject fill-blank inputs, got ${fills}`);
+    }
+    const quizzes = results.tabs[tab]?.quizQuestions || 0;
+    if (quizzes < 10) {
+      failures.push(`${tab} should have >=10 quiz questions, got ${quizzes}`);
+    }
+  }
+  if ((results.tabs.javascript?.writeExercises || 0) < 1) {
+    failures.push(
+      `javascript should inject featured write exercises, got ${results.tabs.javascript?.writeExercises}`
+    );
+  }
+  if ((results.tabs.javascript?.writeExercises || 0) > 2) {
+    failures.push(
+      `javascript chapter should only teaser <=2 write exercises, got ${results.tabs.javascript?.writeExercises}`
+    );
+  }
+  if ((results.tabs.python?.writeExercises || 0) < 1 || (results.tabs.python?.writeExercises || 0) > 2) {
+    failures.push(
+      `python chapter teaser write exercises expected 1-2, got ${results.tabs.python?.writeExercises}`
+    );
+  }
+  for (const tab of [
+    "algorithm",
+    "typescript",
+    "webapi",
+    "testing",
+    "pathway",
+    "database",
+    "react",
+    "security",
+  ]) {
+    const n = results.tabs[tab]?.writeExercises || 0;
+    if (n < 1 || n > 2) {
+      failures.push(`${tab} chapter teaser write exercises expected 1-2, got ${n}`);
+    }
+  }
+  if (!results.tabs.drills?.drillsApp) {
+    failures.push("drills hub mount (#drills-app) missing");
+  }
+  if ((results.tabs.drills?.drillsList || 0) < 10) {
+    failures.push(
+      `drills hub should list many exercises, got ${results.tabs.drills?.drillsList}`
+    );
+  }
+  if (!(results.groups.practice || []).includes("drills")) {
+    failures.push("practice group missing drills");
+  }
+  if (!(results.groups.basics || []).includes("devtools"))
+    failures.push("basics group missing devtools");
+  if (!(results.groups.practice || []).includes("sysdesign"))
+    failures.push("practice group missing sysdesign");
 
   if ((results.groups.basics || []).length < 2)
     failures.push("basics group too small");

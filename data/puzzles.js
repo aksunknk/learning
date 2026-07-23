@@ -110,6 +110,54 @@ const puzzleData = {
     explanation: "「役割」で前提を共有し、「目的」を伝え、「制約」と「出力形式」でコントロールし、最後に「対象データ」を渡すのが、ハルシネーションを防ぐ構造化プロンプトの基本です。"
   },
 
+  sysdesign: {
+    question: "HTTPS リクエストがアプリに届くまでの経路を正しい順番に並べてください。",
+    pieces: [
+      { id: "sd-p1", text: "DNS 解決でホスト名を IP にする" },
+      { id: "sd-p2", text: "TCP 接続と TLS ハンドシェイク" },
+      { id: "sd-p3", text: "LB / リバースプロキシがアプリへ転送" },
+      { id: "sd-p4", text: "API が認可し DB をクエリする" },
+      { id: "sd-p5", text: "JSON 応答がブラウザへ戻る" }
+    ],
+    correctOrder: ["sd-p1", "sd-p2", "sd-p3", "sd-p4", "sd-p5"],
+    explanation: "名前解決 → 暗号化通信の確立 → 入口での振り分け → アプリと DB → 応答の復路、が基本の旅です。遅延切り分けはこの順序で層を疑います。"
+  },
+  devtools: {
+    question: "TaskBoard にデータが出ないときの切り分け順を並べてください。",
+    pieces: [
+      { id: "dt-p1", text: "再現手順を 3 行で書く" },
+      { id: "dt-p2", text: "Network で API の status / body を確認" },
+      { id: "dt-p3", text: "Console の例外スタックを読む" },
+      { id: "dt-p4", text: "Application で localStorage の tasks を見る" },
+      { id: "dt-p5", text: "仮説に沿って最小修正 or Issue 化" }
+    ],
+    correctOrder: ["dt-p1", "dt-p2", "dt-p3", "dt-p4", "dt-p5"],
+    explanation: "再現 → 通信 → 例外 → 永続状態 → 修正/記録、の順が 15 分ランブックの基本形です。いきなりコードを書き換えません。"
+  },
+  drills: {
+    question: "コーディング演習の標準手順を正しい順番に並べてください。",
+    pieces: [
+      { id: "drills-p1", text: "問題文と入出力契約を読む" },
+      { id: "drills-p2", text: "スターターを編集して実装する" },
+      { id: "drills-p3", text: "判定するで隠しテストを走らせる" },
+      { id: "drills-p4", text: "不一致なら修正し、必要なら関連レッスンへ戻る" },
+      { id: "drills-p5", text: "クリアを確認して次の問題へ進む" }
+    ],
+    correctOrder: ["drills-p1", "drills-p2", "drills-p3", "drills-p4", "drills-p5"],
+    explanation: "契約を読んでから実装し、自動判定でフィードバックを受け、詰まりはレッスンに戻る——これがハブの基本ループです。"
+  },
+  pathway: {
+    question: "TaskBoard 縦糸の進め方を正しい順番に並べてください。",
+    pieces: [
+      { id: "path-p1", text: "HTML/CSS で画面骨格を作る" },
+      { id: "path-p2", text: "JS + localStorage で CRUD を動かす" },
+      { id: "path-p3", text: "REST 契約を書いて API + DB を実装する" },
+      { id: "path-p4", text: "React/TS クライアントへ置換しテストで固定する" },
+      { id: "path-p5", text: "Docker → CI/CD → セキュリティ点検 → 公開" }
+    ],
+    correctOrder: ["path-p1", "path-p2", "path-p3", "path-p4", "path-p5"],
+    explanation: "静的骨格 → 手元で動く状態 → 契約とサーバー永続化 → モダンフロントとテスト → 梱包・自動化・点検・公開、の順が縦糸の基本型です。いきなり全部を同時に始めません。"
+  },
   security: {
     question: "パスワード検証付きログイン処理を正しい順番に並べてください。",
     pieces: [

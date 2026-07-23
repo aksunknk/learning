@@ -4,6 +4,56 @@
 // ============================================================
 const quizData = {
 
+  "sysdesign": [
+    {"question": "機能要件と非機能要件の区別として正しいのはどれですか？", "options": ["どちらも同じ意味", "機能は何ができるか、非機能はどれだけ速く・安全に・止めずに等の品質特性", "非機能は UI の色だけを指す", "機能要件にレイテンシ数値を書くのは誤り"], "correct": 1, "explanation": "機能要件はできること、非機能要件（NFR）は性能・可用性・セキュリティなどの品質特性です。最初に仮置きでも数値化します。"},
+    {"question": "認可ロジックを置く場所として最も適切なのはどれですか？", "options": ["ブラウザの CSS だけ", "信頼できるサーバー側（API）で所有者・権限を検証する", "ユーザーが送った user_id をそのまま信じる", "DB のテーブル名を隠すだけ"], "correct": 1, "explanation": "クライアントは改ざん可能なので、認可はサーバー側で行います。"},
+    {"question": "アプリを水平スケールしやすくする条件に近いのはどれですか？", "options": ["セッションをプロセスメモリに持つ", "ステートレスにし、状態は DB/Redis 等へ外出しする", "必ず単一インスタンスに固定する", "静的ファイルを各サーバのローカルだけに置く"], "correct": 1, "explanation": "どのインスタンスに当たっても同じ応答になるようステートレス化します。"},
+    {"question": "認証付き API レスポンスを CDN で長くキャッシュするリスクはどれですか？", "options": ["特に無い", "他人のデータが別ユーザーに見える漏洩リスク", "TLS が無効になる", "DNS が遅くなるだけ"], "correct": 1, "explanation": "認証付きの個別データを共有キャッシュに載せると漏洩し得ます。"},
+    {"question": "結果整合（Eventual Consistency）の説明として近いのはどれですか？", "options": ["常に全読者が瞬間的に同じ最新値を見る", "しばらくすると一致するが、その間ズレうる", "DB を使わない設計だけを指す", "可用性を必ず捨てる"], "correct": 1, "explanation": "キャッシュやレプリカ遅延では結果整合になり得ます。誰が古いデータを見うるかを決めます。"},
+    {"question": "ヘルスチェックで LB が見るべきものに近いのはどれですか？", "options": ["CPU ファンの音", "プロセス生存に加え、依存（DB 等）を含めた Ready 状態", "Git のコミット数", "デザイナーの気分"], "correct": 1, "explanation": "Ready は DB 接続など実働可能かを示し、LB の外し判断に使います。"},
+    {"question": "封筒の裏計算（back-of-the-envelope）の主目的はどれですか？", "options": ["円周率を暗記する", "QPS やストレージの桁を合わせ、1台で足りるか等を判断する", "正確なミリ秒を出すことだけ", "ADR を禁止する"], "correct": 1, "explanation": "オーダー計算で規模感を掴み、過剰設計や過小見積もりを防ぎます。"},
+    {"question": "ADR（Architecture Decision Record）に特に残すべきなのはどれですか？", "options": ["選んだ色の RGB", "何を選び、何を捨てたか（結果・トレードオフ）", "全社員の昼ごはん", "パスワード一覧"], "correct": 1, "explanation": "決定の文脈と捨てた選択肢を残すと、半年後も設計意図を再現できます。"},
+    {"question": "TaskBoard を 10x にするとき、最初にやるべきことに近いのはどれですか？", "options": ["いきなりマイクロサービス分割", "計測（ログ/メトリクス）と遅いクエリの特定", "すべての機能をキュー化する", "CDN で認可を無効化する"], "correct": 1, "explanation": "測ってから割る。プロファイリングとインデックス等の修正が先です。"},
+    {"question": "URL 短縮サービスで読み取りが多いときに効きやすいのはどれですか？", "options": ["毎回フルテーブルスキャン", "code→URL のキャッシュとホットキー対策", "パスワードを平文保存", "POST だけを CDN キャッシュ"], "correct": 1, "explanation": "読み取り優勢なので短コードから長 URL への写像をキャッシュし、人気キーの負荷を設計します。"},
+    {"question": "単一障害点（SPOF）を減らす方針として近いのはどれですか？", "options": ["すべての状態を1プロセスのメモリだけに置く", "冗長化とフェイルオーバー経路を用意する", "バックアップを取らない", "ログを一切出さない"], "correct": 1, "explanation": "SPOF は1点が落ちると全体停止する箇所です。複製・切替・退避で影響範囲を下げます。"},
+    {"question": "読み取りと書き込みで DB を分ける構成の一般名に近いのはどれですか？", "options": ["CQRS（読み取りモデルと書き込みモデルの分離）", "CSS Modules", "セマフォ", "ブルートフォース"], "correct": 0, "explanation": "CQRS はコマンド（書込）とクエリ（読取）のモデルを分け、スケールと最適化の軸を分離します。"},
+    {"question": "レート制限を置く主目的はどれですか？", "options": ["UI の色を揃える", "過負荷や乱用から API を守り公平性を保つ", "SQL を速くするだけ", "HTTPS を無効化する"], "correct": 1, "explanation": "クライアント単位などで要求回数を制限し、障害と不正利用を抑えます。"},
+    {"question": "設計レビューで数字が無い NFR を受け取ったときの適切な対応はどれですか？", "options": ["無視して実装する", "仮置きでも目標値（p95 等）を合意してから進める", "常に最速構成にする", "ドキュメントを捨てる"], "correct": 1, "explanation": "数値がないと過剰/過小設計になります。仮置きでも合意し、計測で更新します。"}
+  ],
+
+  "devtools": [
+    {"question": "画面は出るがデータが空のとき、最初に見るパネルとして適切なのはどれですか？", "options": ["Elements だけ", "Network（通信の status/body）", "Application のフォント一覧", "Performance の FPS だけ"], "correct": 1, "explanation": "データ欠落は通信失敗や空レスポンスが典型なので Network から切り分けます。"},
+    {"question": "CSS が当たらないとき Elements で確認すべきことに近いのはどれですか？", "options": ["Git blame", "Computed の最終値と打ち消し線（詳細度負け）", "DNS TTL", "JWT の iss"], "correct": 1, "explanation": "Computed と Styles の打ち消し線から、どの宣言が勝っているかを見ます。"},
+    {"question": "DevTools を開いた状態の Disable cache の効果として正しいのはどれですか？", "options": ["常に全世界のキャッシュが消える", "DevTools を開いている間、そのブラウザの読み込みキャッシュを無効化しやすい", "サーバーの Redis が消える", "Cookie が永久削除される"], "correct": 1, "explanation": "主に開発中のハードリロード相当の確認用です。開きっぱなし注意。"},
+    {"question": "localStorage の tasks を確認するパネルはどれですか？", "options": ["Security", "Application", "Animations", "Rendering"], "correct": 1, "explanation": "Application で Local Storage / Cookie / Cache を見ます。"},
+    {"question": "CORS エラーの典型的な見え方に近いのはどれですか？", "options": ["サーバーログでは成功でも、ブラウザ Console/Network でブロックされる", "必ず 500 が返る", "CSS がすべて消える", "Python がインストールされる"], "correct": 0, "explanation": "CORS はブラウザ側の防衛で、サーバー単体テストでは気づきにくいことがあります。"},
+    {"question": "ブレークポイントで変数を見る場所として適切なのはどれですか？", "options": ["Sources の Scope / Watch", "Lighthouse の SEO 点", "DNS 設定画面", "Dockerfile"], "correct": 0, "explanation": "Sources で停止中に Scope や Watch で値を確認します。"},
+    {"question": "React DevTools の Profiler の用途として近いのはどれですか？", "options": ["DB の VACUUM", "無駄な再レンダーや長いレンダーを特定する", "TLS 証明書の発行", "npm のキャッシュ削除"], "correct": 1, "explanation": "Profiler はコンポーネントのレンダーコストを可視化します。"},
+    {"question": "15 分ランブックで最初の 2 分にやるべきことはどれですか？", "options": ["いきなり本番 DB を消す", "再現手順を短く書き、別ウィンドウでも再現するか確認する", "全依存を最新に上げる", "ADR を削除する"], "correct": 1, "explanation": "再現が先。仮説と証拠は後続です。"},
+    {"question": "Console に赤い CORS エラーが出たとき、次に見るべきなのはどれですか？", "options": ["CSS の font-family", "Network の当該リクエストのステータスとレスポンスヘッダ", "Dockerfile の FROM", "Git の author"], "correct": 1, "explanation": "CORS はブラウザがブロックするため、実際の HTTP 結果と Access-Control-* を Network で確認します。"},
+    {"question": "Lighthouse の主な用途として近いのはどれですか？", "options": ["DB のマイグレーション", "性能・アクセシビリティ等の簡易監査", "JWT の発行", "Kubernetes のデプロイ"], "correct": 1, "explanation": "Lighthouse はページの性能・a11y・ベストプラクティス等を採点し、改善候補を示します。"},
+    {"question": "Sources でブレークポイントがヒットしない典型原因はどれですか？", "options": ["ソースマップが無く、見ているファイルと実行コードが一致していない", "CPU が必ず壊れている", "HTML に main が無い", "npm が古いだけ"], "correct": 0, "explanation": "バンドル後はマップや正しいファイルを開いているかが重要です。"},
+    {"question": "Performance パネルで最初に確認しやすい指標はどれですか？", "options": ["Git のコミット数", "長いタスクやメインスレッドのブロック", "SSH の鍵長", "Docker のレイヤー数"], "correct": 1, "explanation": "長いタスクやレイアウト・スクリプトのコストを見て、体感遅延の原因を絞ります。"}
+  ],
+
+  "drills": [
+    {"question": "コーディング演習ハブの主な役割として最も近いのはどれですか？", "options": ["各章の本文を置き換えること", "書いて判定する問題の正本を集約し、章横断で練習すること", "Git の履歴を消すこと", "本番デプロイを自動化すること"], "correct": 1, "explanation": "ハブは演習の正本です。各章は導線と代表問に留め、量はハブ側で増やします。"},
+    {"question": "演習で詰まったときの適切な次手はどれですか？", "options": ["関連レッスンへ戻り概念を確認してから再挑戦する", "期待出力を無視して次へ進む", "localStorage を全部消す", "ブラウザを閉じるだけ"], "correct": 0, "explanation": "関連レッスンへのジャンプはハブに用意されています。概念を確認してから再判定するのが効率的です。"},
+    {"question": "クリア状態の保存場所として正しいのはどれですか？", "options": ["GitHub Secrets", "ブラウザの localStorage", "DNS レコード", "Docker イメージ層"], "correct": 1, "explanation": "下書きとクリア状態は端末の localStorage（cf_exercises）に保存されます。"},
+    {"question": "判定の仕組みとして正しい説明はどれですか？", "options": ["サーバーが採点する", "スターターのあとに隠しテストを連結し、出力を期待値と照合する", "人間が目視するだけ", "CSS の色で判定する"], "correct": 1, "explanation": "既存の JS Worker / Pyodide で実行し、stdout を expect と比較します。"}
+  ],
+
+  "pathway": [
+    {"question": "通しプロジェクト（縦糸）の主目的として最も近いのはどれですか？", "options": ["新しい言語を増やすこと", "同一アプリに技術を順に接続し、層の役割を説明できること", "資格試験の範囲を暗記すること", "GUI ツールだけを使うこと"], "correct": 1, "explanation": "各チャプターは部品、通しプロジェクトは組み立て図です。同一成果物に接続することで結合理解が得られます。"},
+    {"question": "TaskBoard を進めるとき、最初にサーバーを立てずに localStorage 版を作る利点はどれですか？", "options": ["セキュリティが完成する", "状態の形と UI 操作を先に確定でき、後の API 化が容易になる", "Docker が不要になる", "テストが不要になる"], "correct": 1, "explanation": "データ形（id/title/done）と操作を先に固定すると、REST・DB・React へ移植するときの再設計が減ります。"},
+    {"question": "API 実装の前に REST 契約を先に書く主目的はどれですか？", "options": ["YAML の練習", "フロントとバックの結合面を固定し、実装中の揺れを減らす", "CSS を自動生成する", "Git 履歴を消す"], "correct": 1, "explanation": "パス・メソッド・JSON・エラー形を先に決めると、並行実装とテスト設計が安定します。"},
+    {"question": "素の JS 版から React に移すときの正しい姿勢はどれですか？", "options": ["契約もデータ形も全部やり直す", "同じ API 契約のまま UI 層だけ置換する", "テストを全部削除する", "localStorage だけを本番永続化にする"], "correct": 1, "explanation": "縦糸では層を一つずつ替えます。契約を維持したままクライアント実装を置き換えるのが要点です。"},
+    {"question": "Docker Compose を縦糸に入れる主目的はどれですか？", "options": ["コードを暗号化する", "起動手順を再現可能にし、環境差を減らす", "HTTPS を無効化する", "SQL を禁止する"], "correct": 1, "explanation": "API/Web/DB を一式で起動できるようにし、「自分のマシンだけ動く」状態を解消します。"},
+    {"question": "公開前セキュリティ点検で TaskBoard が確認すべきことに含まれるのはどれですか？", "options": ["ユーザー入力を innerHTML に直接入れているか", "README の文字数", "Docker のロゴ色", "Node のバージョンを毎日上げること"], "correct": 0, "explanation": "XSS 回避のため、ユーザー入力を HTML として挿入していないかが基本点検項目です。"},
+    {"question": "Mini Mission チェックリストを使う目的はどれですか？", "options": ["読んだ気になること", "各ステップで「できたこと」を自己採点し、次へ進む基準を明確にする", "コミットを禁止する", "関連チャプターを開かないようにする"], "correct": 1, "explanation": "縦糸は手が動いて初めて進みます。自己採点で未完了を可視化します。"},
+    {"question": "キャップストーンへ渡すときに強い提出物の組み合わせはどれですか？", "options": ["ソースだけ", "動く手順または URL、アーキテクチャ図、進化の記録、既知の制限", "スクリーンショットのみ", "秘密鍵を含む zip"], "correct": 1, "explanation": "再現手段・設計・学習過程・未解決リスクが揃うと、学習の証明として説得力があります。"}
+  ],
+
   "security": [
     {"question": "XSS 対策として最も基本的なのはどれですか？", "options": ["パスワードを bcrypt で保存する", "ユーザー入力を HTML として挿入せず textContent 等でエスケープする", "CORS を * にする", "JWT の有効期限を延ばす"], "correct": 1, "explanation": "XSS は入力が HTML/JS として解釈されることで起きます。出力時にテキストとして扱う（または適切なエスケープ／サニタイズ）のが基本です。"},
     {"question": "SQL インジェクションを防ぐ最も確実な方法はどれですか？", "options": ["入力を大文字に変換する", "プレースホルダ（パラメータバインディング）を使う", "エラーメッセージを詳細に返す", "テーブル名を推測しにくくする"], "correct": 1, "explanation": "ユーザー入力を SQL の構文に連結せず、値としてバインドすれば注入で構文を変えられません。"},
@@ -23,7 +73,11 @@ const quizData = {
     {"question": "デプロイ後のヘルスチェックが必要な理由はどれですか？", "options": ["プロセス起動だけでは依存障害を見逃すから", "HTTPS を無効にするため", "テストを書かなくてよくなるから", "イメージサイズを減らすため"], "correct": 0, "explanation": "起動成功とサービス正常は別です。/health 等で外部から確認し、失敗時はロールバック判断に使います。"},
     {"question": "コンテナイメージのタグ運用として望ましいのはどれですか？", "options": ["常に latest だけを使う", "Git SHA やバージョンなど追跡可能なタグを使う", "タグを付けない", "毎回手動でランダム文字列を付けるだけ"], "correct": 1, "explanation": "SHA 等ならどのコミットの成果か追跡でき、前タグへのロールバックも容易です。"},
     {"question": "Required Checks（必須ステータスチェック）の効果はどれですか？", "options": ["PR のタイトルを自動生成する", "指定の CI が成功しないと main へマージできないようにする", "サーバーの CPU を増やす", "Docker Hub の料金を下げる"], "correct": 1, "explanation": "ブランチ保護と組み合わせ、品質ゲートを強制できます。"},
-    {"question": "Dockerfile に本番の JWT_SECRET を ENV で書くことの問題はどれですか？", "options": ["ビルドが速くなる", "イメージや履歴に秘密が残り漏洩リスクが高まる", "Actions が使えなくなる", "HTTPS が強制される"], "correct": 1, "explanation": "秘密はイメージに焼き込まず、実行時の環境変数やシークレット機構で渡します。"}
+    {"question": "Dockerfile に本番の JWT_SECRET を ENV で書くことの問題はどれですか？", "options": ["ビルドが速くなる", "イメージや履歴に秘密が残り漏洩リスクが高まる", "Actions が使えなくなる", "HTTPS が強制される"], "correct": 1, "explanation": "秘密はイメージに焼き込まず、実行時の環境変数やシークレット機構で渡します。"},
+    {"question": "CI でテストが flip（Flaky）なときの適切な対応はどれですか？", "options": ["無視してマージする", "隔離・決定論を直し、ゲートを信頼できる状態に戻す", "Required Checks を全部外す", "本番だけ手動テストにする"], "correct": 1, "explanation": "Flaky はゲート不信の元です。原因を直し、必要なら一時的に quarantine して追跡します。"},
+    {"question": "デプロイのカナリア（canary）の考え方に近いのはどれですか？", "options": ["全ユーザーに一斉投入するだけ", "一部トラフィックに先に出し、問題なければ拡大する", "テストを書かない代わりの手法", "DNS を止める"], "correct": 1, "explanation": "リスクを小さく観測しながら段階的に広げます。"},
+    {"question": "キャッシュされた古い成果物を本番に載せないために重要なのはどれですか？", "options": ["常に latest タグだけ使う", "ビルド成果をコミット SHA 等で一意に識別する", "CI を無効化する", "README を更新しない"], "correct": 1, "explanation": "追跡可能なタグ/ダイジェストで「どのコミットの成果か」を固定します。"},
+    {"question": "Environment protection（承認ゲート）の主目的はどれですか？", "options": ["YAML のインデントを直す", "本番デプロイ前に人の確認を挟み事故を減らす", "Docker を禁止する", "テストカバレッジを下げる"], "correct": 1, "explanation": "本番 Environment に required reviewers を付けると、自動デプロイでも人の承認を要求できます。"}
   ],
 
   "linux": [
@@ -34,7 +88,11 @@ const quizData = {
     {"question": "子プロセスにも引き継がせたい変数を設定するときに使うのはどれですか？", "options": ["alias", "export", "chmod", "source だけ"], "correct": 1, "explanation": "export した変数が環境変数として子プロセスに渡ります。Docker の -e やクラウドの環境変数と同じ発想です。"},
     {"question": "プロセスを止めるとき、まず試すべきなのはどれですか？", "options": ["最初から kill -9", "kill（SIGTERM）で終了を依頼し、だめなら -9", "reboot する", "rm で実行ファイルを消す"], "correct": 1, "explanation": "SIGTERM で優雅な終了を求め、応答しない場合の最終手段が SIGKILL（-9）です。"},
     {"question": "SSH 秘密鍵ファイルに対して推奨される権限はどれですか？", "options": ["777", "755", "600", "644"], "correct": 2, "explanation": "秘密鍵は所有者だけが読み書きできる 600（またはそれより厳しい）にします。緩いと ssh が接続を拒否することも多いです。"},
-    {"question": "systemd で管理されるサービスの直近ログを見る定番コマンドはどれですか？", "options": ["cat /etc/passwd", "journalctl -u サービス名", "chmod +x", "ssh-keygen"], "correct": 1, "explanation": "journalctl -u でユニット単位のログを参照します。-f で追従、--since で時間絞り込みがよく使われます。"}
+    {"question": "systemd で管理されるサービスの直近ログを見る定番コマンドはどれですか？", "options": ["cat /etc/passwd", "journalctl -u サービス名", "chmod +x", "ssh-keygen"], "correct": 1, "explanation": "journalctl -u でユニット単位のログを参照します。-f で追従、--since で時間絞り込みがよく使われます。"},
+    {"question": "ディスク使用量をディレクトリ単位で把握する定番はどれですか？", "options": ["pwd", "du -h", "chmod 777", "echo $HOME"], "correct": 1, "explanation": "du でディレクトリ別の使用量を見ます。df はファイルシステム全体の空き容量です。"},
+    {"question": "バックグラウンドジョブを確認するコマンドはどれですか？", "options": ["jobs", "rm -rf /", "npm init", "curl --version"], "correct": 0, "explanation": "jobs でシェルのジョブを一覧し、fg/bg で制御します。"},
+    {"question": "ファイルの種類や中身の手がかりを見る file コマンドの用途はどれですか？", "options": ["権限を 777 にする", "バイナリ/テキスト等の種別を推定する", "Git を初期化する", "DNS を変更する"], "correct": 1, "explanation": "拡張子に頼らず内容から種別を推定できます。"},
+    {"question": "cron で定期実行するときの注意として近いのはどれですか？", "options": ["絶対パスと環境変数の違いに注意する", "必ず GUI が必要", "ログは不要", "root 以外では動かない"], "correct": 0, "explanation": "cron は最小限の環境で動くため、PATH や絶対パス、ログ出力を明示するのが定石です。"}
   ],
 
   "javascript": [
@@ -63,7 +121,15 @@ const quizData = {
     {"question": "コンテナと仮想マシン(VM)の最大の違いは何ですか？", "options": ["コンテナはハードウェアをエミュレートする", "コンテナはホストOSのカーネルを共有する", "VMはカーネルを共有する", "コンテナは数GBのメモリを必ず消費する"], "correct": 1, "explanation": "コンテナはホストOSのカーネルを共有することで、ゲストOSを起動するVMよりも圧倒的に高速かつ軽量に動作します。"},
     {"question": "Dockerfileにおいて、イメージのベースとなるOSや環境を指定する命令は？", "options": ["RUN", "CMD", "COPY", "FROM"], "correct": 3, "explanation": "FROM命令はDockerfileの最初に記述され、ベースとなるイメージ（例：FROM python:3.12-slim）を指定します。"},
     {"question": "docker-compose.yml の depends_on が保証する状態はどれですか？", "options": ["依存コンテナが起動したこと", "依存コンテナ内のアプリが準備完了したこと", "依存コンテナが正常終了したこと", "依存コンテナのデータが永続化されたこと"], "correct": 0, "explanation": "デフォルトのdepends_onは「起動順序」のみを制御します。アプリの準備完了まで待つには condition: service_healthy と healthcheck を組み合わせる必要があります。"},
-    {"question": "コンテナ内で生成されたデータをコンテナ削除後も残すための仕組みはどれですか？", "options": ["レイヤーキャッシュ", "マルチステージビルド", "ボリューム", "namespaces"], "correct": 2, "explanation": "ボリューム（Volume）やバインドマウントを使用することで、ホスト側の領域にデータを保存し、コンテナが削除されてもデータを永続化できます。"}
+    {"question": "コンテナ内で生成されたデータをコンテナ削除後も残すための仕組みはどれですか？", "options": ["レイヤーキャッシュ", "マルチステージビルド", "ボリューム", "namespaces"], "correct": 2, "explanation": "ボリューム（Volume）やバインドマウントを使用することで、ホスト側の領域にデータを保存し、コンテナが削除されてもデータを永続化できます。"},
+    {"question": "depends_on でアプリの準備完了まで待つために必要な組み合わせはどれですか？", "options": ["restart: always だけ", "healthcheck と condition: service_healthy", "privileged: true", "network_mode: host"], "correct": 1, "explanation": "デフォルトの depends_on は起動順序のみです。準備完了待ちには healthcheck と condition: service_healthy が必要です。"},
+    {"question": ".dockerignore に含めるべきものとして最も適切なのはどれですか？", "options": ["requirements.txt", ".git と .env と node_modules", "Dockerfile", "アプリケーションのソースコードすべて"], "correct": 1, "explanation": "VCS・秘密・ローカル依存をビルド文脈から外し、サイズ肥大と秘密混入とキャッシュ破壊を防ぎます。"},
+    {"question": "起動即死するコンテナを調査するとき有効な手段はどれですか？", "options": ["docker compose down だけ繰り返す", "entrypoint を sh に変えて run/exec し手動で原因コマンドを実行する", "必ず Kubernetes に移行する", "イメージを latest に戻す"], "correct": 1, "explanation": "即死コンテナは logs に加え、entrypoint を差し替えて中に入り、起動コマンドを手動実行すると原因特定が速いです。"},
+    {"question": "BuildKit の cache mount を使う主目的はどれですか？", "options": ["コンテナのセキュリティを無効化する", "依存インストール結果を再利用しビルドを速くする", "ボリュームを自動削除する", "HTTPS を強制する"], "correct": 1, "explanation": "pip/npm のキャッシュをビルド間で再利用し、CI の待ち時間を削減します。"},
+    {"question": "イメージを小さくする定石として近いのはどれですか？", "options": ["常に ubuntu:latest を使う", "slim/distroless とマルチステージで不要物を最終段から除く", "全ての -dev パッケージを入れる", ".git を必ず COPY する"], "correct": 1, "explanation": "実行に不要なコンパイラやソースを最終イメージに入れないのが基本です。"},
+    {"question": "コンテナからホストの Docker ソケットをマウントするリスクはどれですか？", "options": ["特に無い", "ホスト相当の権限につながりうる", "必ず速くなる", "HTTPS が無効になるだけ"], "correct": 1, "explanation": "docker.sock の共有は強い権限委譲になりがちで、隔離が崩れることがあります。"},
+    {"question": "HEALTHCHECK 命令の主目的はどれですか？", "options": ["ビルドを速くする", "コンテナが実働可能かを実行時に検査する", "ソースを暗号化する", "Git 履歴を消す"], "correct": 1, "explanation": "プロセス生存だけでなく、アプリの Ready を見るために使います。"},
+    {"question": "docker compose logs -f の用途はどれですか？", "options": ["イメージをビルドする", "サービスのログを追従表示する", "ボリュームを削除する", "ネットワークを無効化する"], "correct": 1, "explanation": "起動失敗や実行時エラーの一次切り分けに使います。"}
   ],
   "database": [
     {"question": "CSVファイルと比較して、RDBMS(リレーショナルデータベース)の優れた点は何ですか？", "options": ["テキストエディタで直接開いて編集できる", "複数のプログラムから同時に安全に更新できる", "OSを選ばずダブルクリックで実行できる", "データ型の制約が一切ない"], "correct": 1, "explanation": "RDBMSはトランザクション管理により、複数人が同時にアクセス・更新してもデータが壊れたり矛盾したりしないよう制御する機能に優れています。"},
@@ -73,7 +139,11 @@ const quizData = {
     {"question": "複雑なSQLで中間結果に名前を付けて可読性を上げる構文はどれですか？", "options": ["ALIAS句", "WITH句（CTE）", "INDEX句", "UNION句"], "correct": 1, "explanation": "WITH句（Common Table Expression）を使うと、サブクエリに名前を付けて段階的に組み立てられます。3段以上のネストになりそうなら CTE に切り出すのが現代の主流です。"},
     {"question": "ORMで「ユーザー一覧をループしながら各ユーザーの注文を参照」した際に起きる典型的な性能問題は？", "options": ["デッドロック", "N+1問題", "カーディナリティ違反", "ファントムリード"], "correct": 1, "explanation": "1回の一覧取得 + ユーザーごとのN回のクエリが発行されるのがN+1問題です。SQLAlchemyでは selectinload / joinedload による一括読み込みで解決します。"},
     {"question": "SQLインジェクションを防ぐ最も基本的な方法はどれですか？", "options": ["入力文字数を制限する", "SQLを全て大文字で書く", "プレースホルダ（パラメータ化クエリ）を使う", "エラーメッセージを非表示にする"], "correct": 2, "explanation": "ユーザー入力はSQL文字列に連結せず、? などのプレースホルダで「値」として渡します。DBドライバが安全に処理するため、入力がSQL構文として解釈されることがなくなります。"},
-    {"question": "注文明細テーブルに「注文時点の単価」を商品テーブルと重複して保存するのはなぜですか？", "options": ["JOINを書くのが面倒だから", "商品価格の改定後も過去の注文金額を正しく保つため", "ストレージ容量を節約するため", "SQLの制約でそうせざるを得ないから"], "correct": 1, "explanation": "商品マスタの価格は変わりますが「その注文がいくらだったか」は不変の事実です。事実の記録として意図的に非正規化する典型例です。"}
+    {"question": "注文明細テーブルに「注文時点の単価」を商品テーブルと重複して保存するのはなぜですか？", "options": ["JOINを書くのが面倒だから", "商品価格の改定後も過去の注文金額を正しく保つため", "ストレージ容量を節約するため", "SQLの制約でそうせざるを得ないから"], "correct": 1, "explanation": "商品マスタの価格は変わりますが「その注文がいくらだったか」は不変の事実です。事実の記録として意図的に非正規化する典型例です。"},
+    {"question": "本番スキーマ変更で推奨される順序（expand/migrate/contract）の最初の一手はどれですか？", "options": ["旧列を即座に削除する", "後方互換な列追加など展開（expand）を先に行う", "アプリと DB を同時に破壊的変更する", "バックアップを取らずに ALTER する"], "correct": 1, "explanation": "まず互換を広げる expand、次にデータ移行とアプリ切替、十分あとで contract（削除）が安全です。"},
+    {"question": "Web アプリがリクエストごとに新規 DB 接続を張り続けると起きやすい問題はどれですか？", "options": ["必ず結果が速くなる", "接続数が膨らみ DB の max_connections を圧迫する", "SQL インジェクションが自動で防げる", "インデックスが自動作成される"], "correct": 1, "explanation": "接続は重い資源です。プールで再利用し、レプリカ台数×pool size が上限を超えないよう設計します。"},
+    {"question": "バックアップ運用として最も重要な確認はどれですか？", "options": ["バックアップファイルの存在だけ確認する", "別環境へのリストア試験で「戻せる」ことを確認する", "バックアップを Git にコミットする", "本番だけバックアップし手順は残さない"], "correct": 1, "explanation": "取っただけでは不十分で、リストアできることがバックアップの定義です。"},
+    {"question": "WHERE LOWER(email) = 'a@b.c' のように列を関数で包むと起きやすいことはどれですか？", "options": ["必ずインデックスが使われて速くなる", "通常の列インデックスが効かず Seq Scan になりやすい", "トランザクションが不要になる", "JOIN が禁止される"], "correct": 1, "explanation": "列上の関数適用はインデックス利用を妨げがちです。EXPLAIN で確認し、検索用の正規化列や関数インデックスを検討します。"}
   ],
 
   "git": [
@@ -84,7 +154,11 @@ const quizData = {
     {"question": "git reset --hard で消えたはずのコミットを復元する手がかりになるコマンドは？", "options": ["git status", "git reflog", "git stash", "git blame"], "correct": 1, "explanation": "reflog にはHEADの移動履歴がすべて（デフォルト90日）残っています。消えたコミットのハッシュを見つけ、git switch -c rescue <hash> で復元できます。"},
     {"question": "Pull Request の説明文に書くべき内容として最も適切な組み合わせはどれですか？", "options": ["変更行数と作業時間", "何を変更したか・なぜ必要か・動作確認方法", "使用したエディタとOS", "マージ予定日時"], "correct": 1, "explanation": "レビュアーが判断に必要なのは What / Why / How to test です。特に「なぜ」はコードから読み取れないため、PR説明の最重要項目です。"},
     {"question": ".gitignore に必ず入れるべきものはどれですか？", "options": ["README.md", "テストコード", ".env などの秘密情報と node_modules などの再生成可能物", "ソースコード本体"], "correct": 2, "explanation": "秘密情報（.env、鍵ファイル）は漏洩事故防止のため、依存パッケージやビルド成果物はサイズと再現性の観点から、リポジトリに含めません。"},
-    {"question": "APIキーを誤ってコミット・pushしてしまった場合、最初にすべきことは？", "options": ["コミットを削除して隠す", "キーを無効化・再発行する", "リポジトリをprivateにする", "何もしない"], "correct": 1, "explanation": "pushした時点で漏洩したものとして扱います。歴史の書き換えは後処理であり、まず漏れたキー自体を無効化することが最優先です。"}
+    {"question": "APIキーを誤ってコミット・pushしてしまった場合、最初にすべきことは？", "options": ["コミットを削除して隠す", "キーを無効化・再発行する", "リポジトリをprivateにする", "何もしない"], "correct": 1, "explanation": "pushした時点で漏洩したものとして扱います。歴史の書き換えは後処理であり、まず漏れたキー自体を無効化することが最優先です。"},
+    {"question": "git stash の主な用途はどれですか？", "options": ["リモートを削除する", "未コミットの変更を一時退避する", "履歴を永久削除する", "タグを必須にする"], "correct": 1, "explanation": "作業途中の変更を退避し、別ブランチ対応後に戻すための仕組みです。"},
+    {"question": "git blame の用途として近いのはどれですか？", "options": ["誰がどの行を最後に変えたかを見る", "強制 push する", "CI を起動する", "Docker をビルドする"], "correct": 0, "explanation": "行単位の変更履歴を追い、意図や著者を確認します。"},
+    {"question": "ブランチ命名で望ましいのはどれですか？", "options": ["tmp だけを量産する", "目的が分かる短い名前（feature/login 等）", "スペース入りの長い日本語のみ", "常に main で直接作業する"], "correct": 1, "explanation": "目的が伝わる名前はレビューと掃除を楽にします。"},
+    {"question": "git fetch と git pull の違いとして正しいのはどれですか？", "options": ["同じ操作である", "fetch は取得のみ、pull は取得して統合する", "fetch は必ず force する", "pull はローカル専用"], "correct": 1, "explanation": "fetch はリモート追跡を更新し、統合は別操作（merge/rebase）です。pull はそれらをまとめたものです。"}
   ],
 
   "capstone": [
@@ -106,7 +180,11 @@ const quizData = {
     {"question": "ペアワイズ法（All-Pairs法）の根拠となる経験則は何ですか？", "options": ["バグの100%は1つのパラメータで発生する", "バグの約70%は2つのパラメータの組み合わせで発生する", "3つ以上のパラメータのバグは存在しない", "テストケースは常に半分に削減できる"], "correct": 1, "explanation": "NSTの調査では、ソフトウェアの欠陥の約67%は2因子の相互作用で発生するとされています。ペアワイズ法はこの経験則に基づき、任意の2因子の全ペアを網羅する最小テストセットを求めます。"},
     {"question": "TDD（テスト駆動開発）の正しいサイクル順序はどれですか？", "options": ["Green → Red → Refactor", "Refactor → Red → Green", "Red → Green → Refactor", "Red → Refactor → Green"], "correct": 2, "explanation": "TDDは「Red（失敗するテストを書く）→ Green（テストを通す最小限の実装）→ Refactor（コードを改善）」のサイクルを繰り返します。"},
     {"question": "unittest.mock の @patch で指定するパスとして正しいのはどれですか？", "options": ["テスト対象の関数が定義されているモジュールのパス", "テスト対象の関数がインポートされているモジュールのパス", "テストファイル自体のパス", "Python標準ライブラリのパス"], "correct": 1, "explanation": "@patch のパスは「テスト対象がインポートしている場所」を指定します。例えばmyapp.serviceでfrom requests import getしている場合、@patch('myapp.service.get')と書きます。"},
-    {"question": "E2Eテストで CSSクラス名の代わりに使うべきセレクタは何ですか？", "options": ["id属性", "XPath", "data-testid属性", "タグ名"], "correct": 2, "explanation": "data-testid属性はテスト専用に設計された属性で、UI デザインの変更（CSSクラスの変更）に影響されません。E2Eテストの安定性を大幅に向上させます。"}
+    {"question": "E2Eテストで CSSクラス名の代わりに使うべきセレクタは何ですか？", "options": ["id属性", "XPath", "data-testid属性", "タグ名"], "correct": 2, "explanation": "data-testid属性はテスト専用に設計された属性で、UI デザインの変更（CSSクラスの変更）に影響されません。E2Eテストの安定性を大幅に向上させます。"},
+    {"question": "API 結合テストで認可を固定するとき、最低限用意すべきロールの考え方として最も近いのは？", "options": ["管理者だけをテストすれば十分", "所有者・権限なし・未認証など権限境界を複数用意する", "フロントの E2E だけで代用する", "モックサーバーは使わず本番 DB で検証する"], "correct": 1, "explanation": "結合テストでは所有者・他ユーザー・未認証など権限境界を固定し、status とエラー契約（detail 等）まで断言します。本番 DB は使いません。"},
+    {"question": "OpenAPI を使った契約テストの主な目的はどれですか？", "options": ["UI の見た目をピクセル単位で比較する", "API 実装とクライアントが同じレスポンス形を話すことを保証する", "カバレッジを 100% にすること", "デプロイを自動化すること"], "correct": 1, "explanation": "契約テストはスキーマ（OpenAPI 等）を真実の源にし、フィールド欠落や型のズレを CI で検知します。"},
+    {"question": "GitHub の Required status checks を有効にする目的として正しいのは？", "options": ["Workflow ファイルを自動生成する", "指定した CI ジョブが緑でないとマージできないようにする", "カバレッジレポートを削除する", "ローカルの pytest を不要にする"], "correct": 1, "explanation": "Branch protection の Required Checks により、必須ジョブが成功するまでマージを止められます。Workflow を置くだけではゲートになりません。"},
+    {"question": "Flaky テストへの適切な初期対応はどれですか？", "options": ["再実行で通ったらマージしてよい", "隔離・決定論（待機/時刻/共有状態）を直し、無視しない", "すぐに全 E2E を削除する", "カバレッジ閾値を 0 にする"], "correct": 1, "explanation": "Flaky は CI 不信の原因です。sleep 依存や共有状態を直し、再現しない失敗を放置しません。リトライは最後の手段です。"}
   ],
   "python-prac": [
     {"question": "リスト内包表記で if-else（三項演算子）を使う場合、正しい構文はどれですか？", "options": ["[x if x > 0 for x in data else -x]", "[x if x > 0 else -x for x in data]", "[for x in data if x > 0 else -x]", "[x for x in data if x > 0 else -x]"], "correct": 1, "explanation": "三項演算子（if-else）は for の前に配置します。[値A if 条件 else 値B for x in iterable] が正しい構文です。"},
@@ -133,7 +211,11 @@ const quizData = {
 {"question": "レスポンシブデザインで clamp(1.5rem, 4vw, 3rem) と書いた場合の意味はどれですか？", "options": ["常に4vwのサイズを使う", "1.5remから3remの間で4vwに基づいてサイズが変わる", "最小3rem、最大1.5rem", "ビューポート幅の4%を固定値として使う"], "correct": 1, "explanation": "clamp(最小値, 推奨値, 最大値)は、推奨値を使いつつ最小値と最大値の範囲にクランプ（制限）します。画面サイズに応じて流動的にフォントサイズが変化します。"},
 {"question": "imgタグにwidthとheightを指定する主な理由はどれですか？", "options": ["画像のファイルサイズを小さくするため", "CLS（レイアウトシフト）を防止するため", "画像の解像度を上げるため", "レスポンシブデザインのため"], "correct": 1, "explanation": "width/heightを指定することで、画像読み込み前にブラウザがスペースを確保でき、読み込み後のレイアウトのガタつき（CLS）を防止できます。Core Web Vitalsの重要指標です。"},
 {"question": "CSS Gridで repeat(auto-fit, minmax(280px, 1fr)) を使うと何が実現できますか？", "options": ["固定3列のグリッド", "メディアクエリなしのレスポンシブグリッド", "アニメーション付きのグリッド", "グリッドアイテムの重なり"], "correct": 1, "explanation": "auto-fitとminmax()の組み合わせにより、画面幅に応じて自動的に列数が増減するレスポンシブグリッドがメディアクエリなしで実現できます。"},
-{"question": "target='_blank'でリンクを開くとき、セキュリティ上追加すべき属性はどれですか？", "options": ["rel='nofollow'", "rel='noopener noreferrer'", "aria-label='external'", "data-external='true'"], "correct": 1, "explanation": "rel='noopener noreferrer'を付けないと、開いた先のページからwindow.openerを通じて元のページを操作される可能性があります（タブナビング攻撃）。"}
+{"question": "target='_blank'でリンクを開くとき、セキュリティ上追加すべき属性はどれですか？", "options": ["rel='nofollow'", "rel='noopener noreferrer'", "aria-label='external'", "data-external='true'"], "correct": 1, "explanation": "rel='noopener noreferrer'を付けないと、開いた先のページからwindow.openerを通じて元のページを操作される可能性があります（タブナビング攻撃）。"},
+{"question": "見出しレベルを飛ばす（h1 の次が h3）ことの問題として近いのはどれですか？", "options": ["CSS が必ず壊れる", "文書構造が分かりにくく、アクセシビリティが下がる", "HTTPS が無効になる", "Flexbox が使えない"], "correct": 1, "explanation": "見出しはアウトラインです。順序を守ると支援技術と SEO の両方が安定します。"},
+{"question": "button と a の使い分けとして正しいのはどれですか？", "options": ["見た目が同じならどちらでもよい", "遷移は a、操作は button", "常に div に onClick", "常に button で遷移する"], "correct": 1, "explanation": "リンクはリソースへの移動、ボタンはアプリ内アクション、が基本です。"},
+{"question": "prefers-reduced-motion を尊重する理由はどれですか？", "options": ["アニメを必ず無効化するため法律で決まっているから", "前庭障害等への配慮で、過度な動きを抑えられるようにするため", "CSS Grid を無効化するため", "画像を圧縮するため"], "correct": 1, "explanation": "ユーザー設定に合わせ、必須でない動きを減らすのがモダンな UI の作法です。"},
+{"question": "画像に alt を付ける主目的はどれですか？", "options": ["ファイルサイズを減らす", "意味をテキストで伝え、読み上げや欠落時に代替する", "必ず SEO 1位にする", "CSS を不要にする"], "correct": 1, "explanation": "装飾画像は空 alt、意味ある画像は内容を簡潔に書きます。"}
   ],
   "python-cert": [
 {"question": "Pythonの文字列に対するスライス操作 `s = 'Python'` について、`s[1:4]` の結果として正しいものは？", "options": ["'Pyt'", "'yth'", "'ytho'", "'thon'"], "correct": 1, "explanation": "スライス `[start:stop]` は start番目のインデックスを含み、stop番目のインデックスを含みません。インデックス1は 'y'、インデックス4は 'o' なので 'yth' となります。"},
@@ -317,7 +399,10 @@ const quizData = {
 {"question": "Reactでカスタムフックを作る際のルールとして正しいものは？", "options": ["関数名を必ず 'use' から始める", "必ず 'function' キーワードを使わないといけない", "中で useEffect を使ってはいけない", "ファイル名を必ず大文字から始める"], "correct": 0, "explanation": "Reactのルールとして、フックは必ず「use」から始まる名前にする必要があります（useFetchなど）。これによりReactがフックとして認識します。"},
 {"question": "重い計算処理の結果をキャッシュして、不要な再計算を防ぐReactのフックは？", "options": ["useContext", "useMemo", "useReducer", "useRef"], "correct": 1, "explanation": "useMemoは「計算結果（値）」をメモ化（キャッシュ）します。関数の再生成を防ぐには useCallback を使います。"},
 {"question": "リスト表示で key に配列の index を使うと問題になるのはどんな場合？", "options": ["要素が10個を超える場合", "並び替えや先頭への挿入がある場合", "文字列を表示する場合", "keyは常にindexを使うべき"], "correct": 1, "explanation": "並び替えや挿入で index がずれると React が要素を取り違え、入力欄の状態が別の行に移るバグが起きます。データ固有の ID を使うべきです。"},
-{"question": "useRef と useState の決定的な違いはどれ？", "options": ["useRefは数値しか保持できない", "useRefの値を変更しても再レンダリングが起きない", "useStateはDOM参照専用", "useRefはコンポーネント外でも使える"], "correct": 1, "explanation": "ref の .current は変更しても再レンダリングを起こしません。「表示に使う値は state、使わない値は ref」が使い分けの基準です。"}
+{"question": "useRef と useState の決定的な違いはどれ？", "options": ["useRefは数値しか保持できない", "useRefの値を変更しても再レンダリングが起きない", "useStateはDOM参照専用", "useRefはコンポーネント外でも使える"], "correct": 1, "explanation": "ref の .current は変更しても再レンダリングを起こしません。「表示に使う値は state、使わない値は ref」が使い分けの基準です。"},
+{"question": "React Native で Web の div に最も近いプリミティブはどれですか？", "options": ["div", "View", "section", "Box"], "correct": 1, "explanation": "RN には DOM が無く、レイアウトの箱は View です。テキストは Text、ボタン相当は Pressable 等を使います。"},
+{"question": "Expo を学習・試作の入口にする主な理由はどれですか？", "options": ["ネイティブモジュールが一切不要になるから", "ビルド環境のセットアップを後回しにし、JS/TS で画面を回し始めやすいから", "App Store 審査が不要になるから", "useState が不要になるから"], "correct": 1, "explanation": "Expo はツールチェーンと開発クライアントを整え、まずコンポーネントと状態の練習に集中できます。必要になったらネイティブ側へ降りられます。"},
+{"question": "このサイトの通しプロジェクト（TaskBoard）に対する正しい方針はどれですか？", "options": ["最初から RN と Web を同時実装する", "Web でデータ形と API を固め、RN は移植オプションとする", "モバイル専用にし Web を捨てる", "Expo 無しでは React を学べない"], "correct": 1, "explanation": "縦糸は Web 固定です。状態モデルと契約を先に固め、モバイルは同じ思考の移植先として後続に置きます。"}
 ],
   typescript: [
     {
@@ -484,6 +569,50 @@ const quizData = {
       ],
       correct: 0,
       explanation: "SSE（Server-Sent Events）は `data:` で始まる行の後に空行（\\n\\n）を送ることで1つのイベントを構成します。"
+    },
+    {
+      question: "REST 設計として最も適切なのはどれですか。",
+      options: [
+        "GET /deleteUser?id=1 で削除する",
+        "DELETE /users/{id} で削除し、URL はリソース名で切る",
+        "すべての操作を POST /api/doSomething に集約する",
+        "副作用のある処理をキャッシュしやすい GET に載せる"
+      ],
+      correct: 1,
+      explanation: "URL は名詞（リソース）、操作は HTTP メソッドに載せます。削除は DELETE、副作用のある処理を GET に載せるとキャッシュや中間機器の想定と衝突します。"
+    },
+    {
+      question: "認証付きのユーザー固有 JSON API に適した Cache-Control はどれですか。",
+      options: [
+        "public, max-age=31536000, immutable",
+        "private, no-store",
+        "指定しない（ブラウザに任せる）",
+        "public, max-age=86400"
+      ],
+      correct: 1,
+      explanation: "ユーザー固有データは共有キャッシュに載せないのが基本です。private / no-store で誤配信と保存を抑えます。"
+    },
+    {
+      question: "決済など副作用のある POST をクライアントがリトライしても二重実行しにくくする仕組みはどれですか。",
+      options: [
+        "CORS を * にする",
+        "Idempotency-Key（冪等キー）でサーバーが重複を排除する",
+        "常に HTTP 500 を返す",
+        "クエリパラメータをなくす"
+      ],
+      correct: 1,
+      explanation: "同じ冪等キーの再送には同じ結果を返し、処理を再実行しない設計が典型です。"
+    },
+    {
+      question: "OpenAPI（Swagger）を単一の真実源にする主目的はどれですか。",
+      options: [
+        "CDN の料金を下げる",
+        "エンドポイントと型の契約を機械可読にし、実装とドキュメントのズレを減らす",
+        "SQL を自動で書き換える",
+        "ブラウザの Cookie を無効化する"
+      ],
+      correct: 1,
+      explanation: "OpenAPI は API 契約の共有形式です。FastAPI の自動生成やクライアント生成と組み合わせると結合の安全性が上がります。"
     }
   ]
 };

@@ -1,0 +1,575 @@
+
+      <div class="tab-intro devtools-intro">
+        <h2>🧭 DevTools</h2>
+        <p>ブラウザの開発者ツールで、表示・通信・状態・性能を切り分けます。TaskBoard の不具合を 15 分で再現・仮説・検証する手順を身につけます。</p>
+      </div>
+
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: #10b98114;">
+        <h4>🟢 初級編 — 五つのパネルを地図にする</h4>
+        <p>Elements / Console / Network / Sources / Application の役割分担。</p>
+      </div>
+
+      <article class="lesson-card" data-section="devtools-1" id="devtools-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>DevTools の地図 — どのパネルで何を見るか</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ツールを開く前に『疑い』を選ぶ</h4>
+            <p>見た目なら Elements、例外なら Console、通信なら Network、状態なら Application、処理の流れなら Sources。当てずっぽうに全パネルを彷徨わない。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>症状 → 最初のパネル
+
+UI が崩れた / スタイルが当たらない     → Elements
+赤い例外・ログが出る                   → Console
+画面は出るがデータが空 / 遅い          → Network
+クリックしても論理がおかしい           → Sources（ブレーク）
+ログインが消える / キャッシュ怪しい     → Application
+重い・カクつく                         → Performance / Lighthouse
+
+ショートカット（Chromium 系）:
+  Windows: F12 または Ctrl+Shift+I
+  要素を選択: Ctrl+Shift+C
+  ネットワークを空にして再読込: 確認しつつ Disable cache</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Disable cache は DevTools を開いている間だけ有効、が基本です。『自分だけ直った』の多くはキャッシュです。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="devtools-2" id="devtools-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>Console — ログ・レベル・オブジェクト検査</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 console.log はセンサー、例外は警報</h4>
+            <p>ログレベル（log/info/warn/error）を使い分け、オブジェクトは展開して形を確認します。フィルタでノイズを消す。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>const task = { id: "1", title: "ship", done: false };
+console.log("task", task);
+console.table([task]);
+console.assert(task.title.length &gt; 0, "title required");
+
+// 例外を意図的に見る
+try {
+  JSON.parse("{");
+} catch (e) {
+  console.error("parse failed", e);
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>手元で確認</h4>
+            <p>TaskBoard の追加ボタン直後に tasks 配列を log し、done の型が boolean か確認してください。文字列 "false" 混入は古典的バグです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>本番に debug ログを残しすぎない。必要なら構造化ログをサーバー側へ。Console は開発中の顕微鏡です。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="devtools-3" id="devtools-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>Elements — DOM と CSS のライブ編集</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 見た目のバグは『当たっている宣言』を見つけるゲーム</h4>
+            <p>Computed で最終値を見し、打ち消し線の付いたルールから負けた理由を読みます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>手順:
+1. Ctrl+Shift+C で要素を選択
+2. Styles で当たりそうなセレクタを確認
+3. Computed で margin/display/color の最終値
+4. ボックスモデル図で padding と content を確認
+5. 一時的に CSS を編集 → 効いたらソースへ反映
+
+よくある原因:
+  - 詳細度負け（打ち消し線）
+  - display:none の親
+  - Flex 子の min-width:auto によるはみ出し
+  - 間違った要素を編集している</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>ライブ編集で直っても、リロードで戻ります。必ずソース（または DevTools Changes）に戻してコミットしてください。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="devtools-4" id="devtools-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>Network — ステータス・ヘッダ・Timing</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 フロントのバグの半分は通信の物語</h4>
+            <p>status、Response、Timing（TTFB）を読めば、API 落ち・CORS・遅い DB の切り分けが速くなります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>見る順:
+1. 失敗行を赤で探す（4xx/5xx/failed）
+2. Headers: Request URL / Method / Status
+3. Response: JSON の形と detail
+4. Timing: Queueing / TTFB / Content Download
+
+TaskBoard 例:
+  GET /api/tasks  → 401  … トークン忘れ
+  GET /api/tasks  → 200 だが []  … 認可は成功、データ無し or フィルタ過多
+  OPTIONS … 失敗     … CORS プリフライト
+
+Preserve log をオン:
+  リダイレクトやページ遷移でログが消えない</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>『画面が白い』ときは Console より先に Network で index.html と JS バンドルが 200 かを見ると時間を節約できます。</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: #f59e0b14;">
+        <h4>🔶 中級編 — 止め方・状態・性能の入口</h4>
+        <p>ブレークポイント、Application、Lighthouse、モバイル確認。</p>
+      </div>
+
+      <article class="lesson-card" data-section="devtools-5" id="devtools-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>Sources — ブレークポイントと Call Stack</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 推測で直すのをやめ、止めて見る</h4>
+            <p>行ブレーク、条件付きブレーク、Call Stack / Scope で『なぜここに来たか』を確認します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>手順:
+1. Sources で該当 JS を開く（or Ctrl+P でファイル名）
+2. 行番号をクリックしてブレークポイント
+3. 操作を再現 → 停止
+4. Scope で変数の中身
+5. Call Stack で呼び出し元を遡る
+
+条件付き:
+  右クリック → Edit breakpoint
+  title === ""  のときだけ止まる
+
+debugger; 文:
+  コードに直接書いて一時停止（忘れずに削除）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>圧縮されたバンドルは Source Map を有効に。無いときは『読みにくい本番』と割り切り、ローカル開発ビルドで追う。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="devtools-6" id="devtools-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>Application — Storage / Cookie / Cache</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 状態がおかしいときは永続層を疑う</h4>
+            <p>localStorage、Cookie、Cache Storage は TaskBoard 縦糸のど真ん中です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>Application パネル:
+  Local Storage   → tasks JSON の形を目視
+  Session Storage → タブを閉じると消える値
+  Cookies         → Secure / HttpOnly / SameSite
+  Cache Storage   → Service Worker 配下の古い資産
+
+TaskBoard ドリル:
+1. タスクを 2 つ追加
+2. Application でキーを開く
+3. 値を手で壊す（JSON を不正に）→ リロード
+4. アプリが例外で死ぬならガードを足す課題になる
+
+Clear site data:
+  怪しい再現の初期化に使う（本番ユーザーには使わない）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>Cookie の HttpOnly は JS から読めません。読めないのはバグではなくセキュリティ機能です。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="devtools-7" id="devtools-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>Performance と Lighthouse — 数値の読み方</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 体感をメートル法にする</h4>
+            <p>Lighthouse は監査の入口。Performance パネルは長いタスクとレイアウトを可視化します。点数より『何が主犯か』。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>Lighthouse（初見で見る指標）:
+  LCP  最大コンテンツの表示
+  CLS  レイアウトシフト
+  INP  操作への反応（旧 FID の進化）
+
+Performance 録音の見方:
+  Main スレッドの長い黄色/紫ブロック
+  → 長い JS タスクを分割 or 遅延ロード
+
+TaskBoard でやりがちな悪化:
+  - 毎キー入力で localStorage へ全件 stringify
+  - 巨大リストを仮想化せず全部 DOM 化</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>点数 100 を目指すより、ユーザー導線の LCP を守る方がプロductive です。測定はシークレットウィンドウで。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="devtools-8" id="devtools-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>デバイスモード — レスポンシブとタッチ</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 狭い画面は別プロダクトだと思え</h4>
+            <p>幅を変えるだけでなく、タッチターゲットとビューポート、ネットワーク制限を再現します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>Device Toolbar:
+  - iPhone / Pixel プリセット
+  - Responsive で幅をドラッグ
+  - Throttling: Fast 3G で体感遅延
+
+確認項目（TaskBoard）:
+  [ ] 追加フォームが折り返しても押せる
+  [ ] タップ領域が 44px 相当ある
+  [ ] 横スクロールが出ない
+  [ ] キーボード表示でボタンが隠れない（モバイル実機推奨）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>エミュレーションは近似です。致命的 UI は実機 Safari/Chrome で一度は触ってください。</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: #ef444414;">
+        <h4>🔴 上級編 — 障害切り分けを手順書にする</h4>
+        <p>CORS、メモリ、React DevTools、15 分ランブック。</p>
+      </div>
+
+      <article class="lesson-card" data-section="devtools-9" id="devtools-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>CORS と失敗リクエストの切り分け</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 赤い Network 行のメッセージをそのまま信じる</h4>
+            <p>CORS はブラウザの防衛。サーバーログでは 200 なのにフロントだけ失敗、があり得ます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>切り分けフロー:
+1. Network で失敗リクエストを選択
+2. ステータスが (failed) / CORS error か
+3. Console の CORS メッセージを読む
+4. Request Headers の Origin を確認
+5. サーバーの Access-Control-Allow-Origin を確認
+6. Cookie 認証なら Allow-Credentials と許容 Origin の組
+
+TaskBoard:
+  開発中 localhost:5173 → API :8000 は別オリジン
+  → 開発用 CORS 許可を明示（* + credentials は不可）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>セキュリティ章の CORS レッスンとセットで読むと定着します。『とりあえず *』は Cookie 認証と両立しません。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="devtools-10" id="devtools-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>メモリの入口 — リークを疑うとき</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 放置したリスナーがタブを重くする</h4>
+            <p>Heap snapshot の詳細より先に、画面遷移後も増えるリスナーと巨大配列を疑います。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>兆候:
+  - 長時間開いたタブだけ重い
+  - 画面遷移のたびに遅くなり、リロードで直る
+
+初手:
+1. Performance monitor で JS heap を眺める
+2. 疑わしいコンポーネントの useEffect クリーンアップ
+3. addEventListener に対する remove があるか
+
+TaskBoard:
+  setInterval で自動保存するなら clearInterval を忘れない
+  グローバル配列にイベント履歴を push し続けない</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>ヒープの深い比較は上級者向け。まずは『消えるべきものが消えているか』をコードレビューで潰す方が費用対効果が高いです。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="devtools-11" id="devtools-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>React DevTools — Components と Profiler</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 コンポーネント木を外科手術する</h4>
+            <p>Props/State をその場で確認し、Profiler で無駄レンダーを見つけます。React 章との接続点です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>Components:
+  - 木から TaskList を選択
+  - props.tasks の中身を確認
+  - ハイライト更新（Highlight updates）で再レンダー可視化
+
+Profiler:
+  1. Record → 操作 → Stop
+  2. 長いレンダーのコンポーネントを特定
+  3. 原因候補: 毎レンダー新規オブジェクト / 広い context
+
+TaskBoard:
+  入力 1 文字ごとにリスト全体が再レンダーされていないか見る</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>最適化は計測後。memo を儀式的に巻く前に、state の位置を上げすぎていないかを疑ってください。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="devtools-12" id="devtools-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>15 分ランブック — TaskBoard 障害の切り分け</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('devtools-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 手順書があると焦らない</h4>
+            <p>再現 → 仮説 → パネル選択 → 証拠 → 修正 or エスカレーション。時間を区切る。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>TaskBoard 障害ランブック（15 分）
+
+0:00-2:00 再現
+  手順を 3 行で書く。シークレットウィンドウでも再現するか。
+
+2:00-5:00 仮説を 2 つまで
+  A: API が 4xx/5xx
+  B: フロントの状態/ローカルストレージ破壊
+
+5:00-10:00 証拠
+  Network で該当 XHR の status/body
+  Console の例外スタック
+  Application の tasks 値
+
+10:00-15:00 分岐
+  API 悪い → サーバーログ / テスト追加
+  フロント悪い → Sources で停止、最小修正
+  不明 → 再現手順とスクショを Issue に残して休憩
+
+終わったら:
+  [ ] 回帰テスト or チェックリストを 1 行追加
+  [ ] Disable cache をオフに戻した</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>切り分け力は知識量より『記録する習慣』で伸びます。仮説と証拠を残す人が、チームのデバッガになります。</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="quiz-section" id="devtools-quiz">
+        <div class="quiz-header"><h3>🧠 理解度チェック</h3></div>
+        <p class="quiz-intro">パネル選択と切り分け手順の要点を確認しましょう。</p>
+        <div id="devtools-quiz-container"></div>
+        <div class="quiz-result" id="devtools-quiz-result"></div>
+      </div>
+
+      <div class="puzzle-section" id="devtools-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 切り分け手順パズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番に組み立ててください。</p>
+        <div class="puzzle-question" id="devtools-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="devtools-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="devtools-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップして完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('devtools')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('devtools')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="devtools-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
