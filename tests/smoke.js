@@ -138,7 +138,7 @@ async function main() {
     const url = res.url();
     if (url.endsWith("favicon.ico")) return;
     // content/ data/ 配下の 404 は致命的
-    if (url.includes("/content/") || url.includes("/data/") || url.endsWith("/app.js") || url.endsWith("/style.css")) {
+    if (url.includes("/content/") || url.includes("/data/") || url.includes("/js/") || url.endsWith("/app.js") || url.endsWith("/style.css")) {
       errors.push("404: " + url);
     }
   });
