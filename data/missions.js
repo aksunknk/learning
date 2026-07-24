@@ -294,6 +294,45 @@ except OSError as e:
     ],
   },
 
+  django: {
+    beginner: {
+      title: "初級編ミニミッション",
+      minutes: 20,
+      goal: "既存 Django リポの地図を描く",
+      tasks: [
+        "settings / urls / 主要な app 名をメモする",
+        "Model を1つ選び Admin 登録の有無を確認する",
+        "HTML 応答か /api JSON かを切り分ける",
+      ],
+    },
+    intermediate: {
+      title: "中級編ミニミッション",
+      minutes: 25,
+      goal: "問い合わせ1件を調査手順で追う",
+      tasks: [
+        "再現手順と想定ステータスを書く",
+        "urls → view（または ViewSet）まで逆引きする",
+        "対象レコードを Admin または shell で確認する手順を書く",
+      ],
+    },
+    advanced: {
+      title: "上級編ミニミッション",
+      minutes: 25,
+      goal: "小さな表示改修とエスカレーション境界を決める",
+      tasks: [
+        "テンプレ文言修正の差分方針を書く",
+        "CSRF / 認可に触る変更は開発へ回す判断基準を一文で書く",
+        "DRF なら Serializer の fields に秘密が混ざっていないか点検する",
+      ],
+    },
+    rubric: [
+      { id: "mvt", label: "MVT と project/app を説明できる" },
+      { id: "orm", label: "Model / migrate / Admin を追える" },
+      { id: "web", label: "Template/Form と CSRF を意識できる" },
+      { id: "api", label: "DRF と調査手順を説明できる" },
+    ],
+  },
+
   docker: {
     beginner: {
       title: "初級編ミニミッション",

@@ -1410,6 +1410,78 @@ console.log(hasScriptTag("nope"));`,
       expect: "false\ntrue\nfalse",
     },
   ],
+
+  // Django 概念を Pyodide で擬似（本物の Django は動かさない）
+  django: [
+    {
+      id: "dj-write-filter-status",
+      title: "ORM filter 相当",
+      prompt: "filter_status(rows, status) は status 一致行だけの新リスト。元は壊さない。",
+      hint: "リスト内包",
+      lang: "Python",
+      starter: `def filter_status(rows, status):
+    # TODO
+    pass
+
+`,
+      tests: `rows = [
+  {"id": 1, "status": "active"},
+  {"id": 2, "status": "past_due"},
+  {"id": 3, "status": "active"},
+]
+print(filter_status(rows, "active"))
+print(rows)`,
+      expect:
+        "[{'id': 1, 'status': 'active'}, {'id': 3, 'status': 'active'}]\n[{'id': 1, 'status': 'active'}, {'id': 2, 'status': 'past_due'}, {'id': 3, 'status': 'active'}]",
+    },
+    {
+      id: "dj-write-serialize-fields",
+      title: "Serializer fields 相当",
+      prompt: "pick_fields(row, fields) は fields のキーだけ残した dict。無いキーは無視。",
+      hint: "dict 内包",
+      lang: "Python",
+      starter: `def pick_fields(row, fields):
+    # TODO
+    pass
+
+`,
+      tests: `row = {"id": 1, "status": "active", "secret": "x", "plan": "pro"}
+print(pick_fields(row, ["id", "status", "plan"]))
+print(pick_fields(row, ["id", "missing"]))`,
+      expect: "{'id': 1, 'status': 'active', 'plan': 'pro'}\n{'id': 1}",
+    },
+    {
+      id: "dj-write-owner-guard",
+      title: "認可ガード",
+      prompt: "can_view(user_id, row) は row['owner_id'] == user_id のとき True。",
+      hint: "所有者比較",
+      lang: "Python",
+      starter: `def can_view(user_id, row):
+    # TODO
+    pass
+
+`,
+      tests: `print(can_view(7, {"id": 1, "owner_id": 7}))
+print(can_view(7, {"id": 2, "owner_id": 9}))`,
+      expect: "True\nFalse",
+    },
+    {
+      id: "dj-write-template-escape",
+      title: "エスケープ判定",
+      prompt: "needs_escape(text) は '<' または '>' を含めば True。",
+      hint: "in 演算子",
+      lang: "Python",
+      starter: `def needs_escape(text):
+    # TODO
+    pass
+
+`,
+      tests: `print(needs_escape("hello"))
+print(needs_escape("<b>x</b>"))
+print(needs_escape("a > b"))`,
+      expect: "False\nTrue\nTrue",
+    },
+  ],
 };
 
 // 章横断ハブ用メタ（未指定分の既定値を埋める）
@@ -1419,12 +1491,13 @@ console.log(hasScriptTag("nope"));`,
     python: "python-3",
     algorithm: "algorithm-2",
     typescript: "typescript-2",
-    webapi: "webapi-1",
+    webapi: "webapi-15",
     testing: "testing-2",
     pathway: "pathway-3",
     database: "database-3",
     react: "react-3",
     security: "security-2",
+    django: "django-4",
   };
   const tagByChapter = {
     javascript: ["js", "array"],
@@ -1437,6 +1510,7 @@ console.log(hasScriptTag("nope"));`,
     database: ["sql", "python"],
     react: ["react", "js"],
     security: ["security", "js"],
+    django: ["django", "python"],
   };
 
   Object.entries(exerciseData).forEach(([chapter, list]) => {

@@ -24,7 +24,9 @@
 #   2. data/quizzes.js / data/puzzles.js にキーを追加
 #   3. app.js の TABS にエントリを追加
 #      （label / icon / group / lessons / accent / glow。表示順 = 記述順）
-#   4. npm test で確認
+#      推奨経路に入れる場合は ROADMAP 配列にも tab id を追加
+#   4. data/missions.js / fillblanks.js / crossrefs.js / exercises.js を必要に応じて追加
+#   5. npm test で確認（タブ数・roadmap 数の期待値も tests/smoke.js を更新）
 #
 # 注意: TABS の lessons は content/{id}.html の lesson-card 数と
 #       一致させること（CIが検証する）。ヒーロー統計は自動算出される。

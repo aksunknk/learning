@@ -290,5 +290,17 @@ const puzzleData = {
     ],
     correctOrder: ["w1", "w2", "w3", "w4", "w5"],
     explanation: "async 関数内で、エラーハンドリングのために try-catch ブロックを配置し、その中で await を使って fetch と json() の非同期処理を待ち受けます。"
+  },
+  django: {
+    question: "以下を並べ替えて、Django の Model → Admin 登録の最小形を完成させてください。",
+    pieces: [
+      { id: "d1", text: "from django.db import models" },
+      { id: "d2", text: "class Subscription(models.Model):" },
+      { id: "d3", text: "    status = models.CharField(max_length=32)" },
+      { id: "d4", text: "from django.contrib import admin" },
+      { id: "d5", text: "admin.site.register(Subscription)" }
+    ],
+    correctOrder: ["d1", "d2", "d3", "d4", "d5"],
+    explanation: "先に Model を定義し、その後 admin.site.register で管理画面に載せます。実際のプロジェクトでは ModelAdmin で list_display 等を足します。"
   }
 };

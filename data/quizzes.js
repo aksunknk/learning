@@ -472,6 +472,28 @@ const quizData = {
 ],
   webapi: [
     {
+      question: "API（Application Programming Interface）の説明として最も近いのはどれですか。",
+      options: [
+        "画面の見た目を決める CSS のこと",
+        "プログラム同士がやり取りするための使い方の約束（窓口）",
+        "データベースの物理ディスク名",
+        "Git のブランチ保護だけを指す"
+      ],
+      correct: 1,
+      explanation: "API は呼び出し側が内部実装を知らなくても使える契約です。Web API はそのうち HTTP で JSON 等をやり取りする層です。"
+    },
+    {
+      question: "REST でリソース操作を表すとき、一般に URL に載せるのはどれですか。",
+      options: [
+        "動詞だけ（/deleteUser）",
+        "名詞（リソース）でパスを切り、操作は HTTP メソッドに載せる",
+        "必ずクエリだけ",
+        "常に WebSocket のみ"
+      ],
+      correct: 1,
+      explanation: "REST 流儀では /users/42 のようなリソース名と、GET/POST/PUT/PATCH/DELETE の組み合わせが基本です。"
+    },
+    {
       question: "バリデーション不一致でFastAPIが返しやすいステータスコードとして最も適切なのはどれですか。",
       options: [
         "200",
@@ -613,6 +635,126 @@ const quizData = {
       ],
       correct: 1,
       explanation: "OpenAPI は API 契約の共有形式です。FastAPI の自動生成やクライアント生成と組み合わせると結合の安全性が上がります。"
+    }
+  ],
+
+  django: [
+    {
+      question: "Django の MVT で、URL から呼ばれ HTML や JSON を組み立てる層はどれですか。",
+      options: ["Model", "View", "Template だけ", "Migration"],
+      correct: 1,
+      explanation: "View がリクエストを受け、Model からデータを取り、Template（または Serializer）で応答を作ります。"
+    },
+    {
+      question: "startproject と startapp の役割分担として正しいのはどれですか。",
+      options: [
+        "どちらも同じ",
+        "project は設定ルート、app は機能単位のパッケージ",
+        "app が settings.py を必ず持つ",
+        "project はフロント専用"
+      ],
+      correct: 1,
+      explanation: "django-admin startproject が設定と urls の根、python manage.py startapp がドメイン機能（models/views 等）です。"
+    },
+    {
+      question: "モデル変更を DB に反映する一般的な手順はどれですか。",
+      options: [
+        "Admin を再起動するだけ",
+        "makemigrations で差分を作り migrate で適用する",
+        "templates を編集する",
+        "STATIC_URL を変える"
+      ],
+      correct: 1,
+      explanation: "スキーマ変更はマイグレーションファイルとして残し、migrate で適用します。"
+    },
+    {
+      question: "Django Admin の主目的に近いのはどれですか。",
+      options: [
+        "本番の公開 API を自動公開する",
+        "権限付きの管理画面でデータ確認・編集をする",
+        "CSS を生成する",
+        "Docker を必須にする"
+      ],
+      correct: 1,
+      explanation: "Admin は社内向けの CRUD 画面です。CS の状態確認にもよく使われます。"
+    },
+    {
+      question: "テンプレートでユーザー入力をそのまま |safe するリスクはどれですか。",
+      options: ["CSS が遅くなる", "XSS（スクリプト注入）", "migrate が失敗する", "JWT が無効になる"],
+      correct: 1,
+      explanation: "自動エスケープを外すと HTML/JS 注入の余地が生まれます。信頼できない入力には使いません。"
+    },
+    {
+      question: "Cookie セッションの POST フォームで CSRF トークンが必要な理由はどれですか。",
+      options: [
+        "SQL を速くするため",
+        "別サイトからの意図しない操作送信を防ぐため",
+        "HTTPS を無効にするため",
+        "Admin を非表示にするため"
+      ],
+      correct: 1,
+      explanation: "ブラウザが Cookie を自動添付するため、トークン無しだと外部サイトから操作を誘発され得ます。"
+    },
+    {
+      question: "login_required や permission チェックが守るべきものに近いのはどれですか。",
+      options: ["見た目の色", "認可（誰が何をしてよいか）", "DNS TTL", "Docker レイヤー"],
+      correct: 1,
+      explanation: "認証後も、所有者・権限の検証（認可）が無いと IDOR になります。"
+    },
+    {
+      question: "Django REST Framework の Serializer の役割として近いのはどれですか。",
+      options: [
+        "CSS を圧縮する",
+        "モデルや dict と JSON 入出力の変換・検証",
+        "Git の履歴を消す",
+        "nginx の設定を書く"
+      ],
+      correct: 1,
+      explanation: "Serializer は API の入出力契約をコード化します。FastAPI の Pydantic に相当する位置です。"
+    },
+    {
+      question: "問い合わせ調査で最初に固定すべきことに近いのはどれですか。",
+      options: [
+        "いきなり migrate",
+        "再現手順とステータス／エラーメッセージ",
+        "全依存のメジャーアップデート",
+        "SECRET_KEY の公開"
+      ],
+      correct: 1,
+      explanation: "再現と観測（ログ・ステータス）が無いと、ログや shell の探索が的外れになります。"
+    },
+    {
+      question: "テンプレート文言の誤字修正と、価格計算ロジック変更の扱いとして適切なのはどれですか。",
+      options: [
+        "どちらも同じ優先度で本番直編集",
+        "文言は表示層の小さな改修、計算は開発チケットへエスカレーションしがち",
+        "常に CSRF を切って直す",
+        "Admin を削除する"
+      ],
+      correct: 1,
+      explanation: "表示の安全な差分と、課金・権限などリスクの高い変更を切り分けるのが実務スキルです。"
+    },
+    {
+      question: "DEBUG=True を本番で残す主な問題はどれですか。",
+      options: [
+        "特に無い",
+        "詳細エラーや設定情報が露出し攻撃面が増える",
+        "migrate が速くなる",
+        "Admin が使えなくなる"
+      ],
+      correct: 1,
+      explanation: "本番は DEBUG=False。秘密は環境変数、ALLOWED_HOSTS 等も本番値にします。"
+    },
+    {
+      question: "ORM の N+1 を疑うきっかけとして近いのはどれですか。",
+      options: [
+        "一覧で関連オブジェクトに都度アクセスしクエリが増える",
+        "CSS の詳細度",
+        "HTTPS の証明書更新",
+        "Git の fast-forward"
+      ],
+      correct: 0,
+      explanation: "select_related / prefetch_related でまとめて取るのが定石です。DB 章の N+1 と同型です。"
     }
   ]
 };

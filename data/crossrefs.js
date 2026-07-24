@@ -51,6 +51,10 @@ const crossRefData = {
   ],
 
   // --- Web/API ---
+  "webapi-15": [
+    { tab: "django", section: "django-1", label: "Django MVT の地図" },
+    { tab: "webapi", section: "webapi-6", label: "REST リソース設計" },
+  ],
   "webapi-1": [
     { tab: "security", section: "security-7", label: "セッションと JWT" },
     { tab: "webapi", section: "webapi-12", label: "DNS と TLS" },
@@ -58,6 +62,7 @@ const crossRefData = {
   "webapi-6": [
     { tab: "pathway", section: "pathway-5", label: "TaskBoard の REST 契約" },
     { tab: "security", section: "security-6", label: "認可と IDOR" },
+    { tab: "django", section: "django-9", label: "DRF への橋" },
   ],
   "webapi-9": [
     { tab: "testing", section: "testing-11", label: "API 結合テスト" },
@@ -253,5 +258,31 @@ const crossRefData = {
   ],
   "javascript-2": [
     { tab: "devtools", section: "devtools-2", label: "Console の使い方" },
+  ],
+
+  // --- Django ---
+  "django-1": [
+    { tab: "webapi", section: "webapi-15", label: "API とは何か" },
+    { tab: "python", section: "python-1", label: "Python の基礎" },
+  ],
+  "django-4": [
+    { tab: "database", section: "database-3", label: "SQL の SELECT" },
+    { tab: "database", section: "database-10", label: "N+1 とインデックス" },
+  ],
+  "django-7": [
+    { tab: "security", section: "security-3", label: "CSRF" },
+    { tab: "security", section: "security-2", label: "XSS" },
+  ],
+  "django-8": [
+    { tab: "security", section: "security-5", label: "認証" },
+    { tab: "security", section: "security-6", label: "認可と IDOR" },
+  ],
+  "django-9": [
+    { tab: "webapi", section: "webapi-6", label: "REST リソース設計" },
+    { tab: "webapi", section: "webapi-3", label: "FastAPI との対比" },
+  ],
+  "django-12": [
+    { tab: "webapi", section: "webapi-15", label: "API の契約" },
+    { tab: "security", section: "security-12", label: "公開前チェックリスト" },
   ],
 };

@@ -439,4 +439,55 @@ RUN pip install -r requirements.txt`,
       answers: ["StyleSheet"],
     },
   ],
+
+  django: [
+    {
+      id: "dj-fb-startproject",
+      title: "プロジェクトを作る",
+      hint: "django-admin のサブコマンド",
+      lang: "Shell",
+      mode: "answers",
+      template: `$ django-admin ___ config`,
+      answers: ["startproject"],
+    },
+    {
+      id: "dj-fb-migrate",
+      title: "マイグレーションを適用",
+      hint: "manage.py のサブコマンド",
+      lang: "Shell",
+      mode: "answers",
+      template: `$ python manage.py ___`,
+      answers: ["migrate"],
+    },
+    {
+      id: "dj-fb-csrf",
+      title: "フォームに CSRF トークン",
+      hint: "テンプレートタグ",
+      lang: "Django",
+      mode: "answers",
+      template: `<form method="post">
+  {% ___ %}
+  <button type="submit">保存</button>
+</form>`,
+      answers: ["csrf_token"],
+    },
+    {
+      id: "dj-fb-filter",
+      title: "ORM で絞り込み",
+      hint: "QuerySet メソッド",
+      lang: "Python",
+      mode: "answers",
+      template: `qs = Subscription.objects.___(status="active")`,
+      answers: ["filter"],
+    },
+    {
+      id: "dj-fb-get",
+      title: "主キーで1件取得",
+      hint: "無ければ例外",
+      lang: "Python",
+      mode: "answers",
+      template: `sub = Subscription.objects.___(pk=42)`,
+      answers: ["get"],
+    },
+  ],
 };

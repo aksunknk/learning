@@ -62,6 +62,12 @@ function findChrome() {
     "/usr/bin/google-chrome",
     "/usr/bin/chromium",
     "/usr/bin/chromium-browser",
+    "C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe",
+    "C:\\\\Program Files (x86)\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe",
+    process.env.LOCALAPPDATA
+      ? path.join(process.env.LOCALAPPDATA, "Google", "Chrome", "Application", "chrome.exe")
+      : null,
+    "C:\\\\Program Files\\\\Microsoft\\\\Edge\\\\Application\\\\msedge.exe",
   ].filter(Boolean);
   for (const c of candidates) {
     if (fs.existsSync(c)) return c;
@@ -342,11 +348,11 @@ async function main() {
 
   // Assertions
   const failures = [...staticFailures];
-  if (tabs.length !== 23) failures.push(`expected 23 tabs, got ${tabs.length}`);
+  if (tabs.length !== 24) failures.push(`expected 24 tabs, got ${tabs.length}`);
 
   // Phase 3
-  if (results.roadmap.nodes !== 19)
-    failures.push(`expected 19 roadmap nodes, got ${results.roadmap.nodes}`);
+  if (results.roadmap.nodes !== 20)
+    failures.push(`expected 20 roadmap nodes, got ${results.roadmap.nodes}`);
   if (results.roadmap.firstTab !== "htmlcss")
     failures.push(`roadmap should start with htmlcss, got ${results.roadmap.firstTab}`);
   if (!results.search || results.search.count < 1)
@@ -406,6 +412,21 @@ async function main() {
       `webapi should inject cross-refs, got ${results.tabs.webapi?.crossRefs}`
     );
   }
+  if ((results.tabs.django?.lessons || 0) < 12) {
+    failures.push(
+      `django should have 12 lessons, got ${results.tabs.django?.lessons}`
+    );
+  }
+  if ((results.tabs.django?.crossRefs || 0) < 1) {
+    failures.push(
+      `django should inject cross-refs, got ${results.tabs.django?.crossRefs}`
+    );
+  }
+  if ((results.tabs.webapi?.lessons || 0) < 15) {
+    failures.push(
+      `webapi should have 15 lessons, got ${results.tabs.webapi?.lessons}`
+    );
+  }
   if ((results.tabs.sysdesign?.lessons || 0) < 16) {
     failures.push(
       `sysdesign should have 16 lessons, got ${results.tabs.sysdesign?.lessons}`
@@ -433,6 +454,7 @@ async function main() {
     "devtools",
     "sysdesign",
     "react",
+    "django",
   ]) {
     const fills = results.tabs[tab]?.fillBlanks || 0;
     if (fills < 1) {
@@ -467,6 +489,7 @@ async function main() {
     "database",
     "react",
     "security",
+    "django",
   ]) {
     const n = results.tabs[tab]?.writeExercises || 0;
     if (n < 1 || n > 2) {
@@ -495,6 +518,8 @@ async function main() {
     failures.push("basics group missing git");
   if (!(results.groups.backend || []).includes("docker"))
     failures.push("backend group missing docker");
+  if (!(results.groups.backend || []).includes("django"))
+    failures.push("backend group missing django");
   if (!(results.groups.frontend || []).includes("react"))
     failures.push("frontend group missing react");
   if (!(results.groups.practice || []).includes("capstone"))

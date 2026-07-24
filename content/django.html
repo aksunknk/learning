@@ -1,0 +1,441 @@
+      <div class="tab-intro django-intro">
+        <h2>🐍 Django</h2>
+        <p>Python の本格 Web フレームワークを、初級（MVT・ORM・Admin）・中級（テンプレート・フォーム・認証）・上級（DRF・調査・テンプレ改修）の 3 段階で学びます。内定後の CS / バックエンド業務を想定し、「どこを見れば状態が分かるか」を重視します。</p>
+      </div>
+
+      <!-- ===== 初級編 ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — プロジェクトの地図とデータの置き場</h4>
+        <p>Django の役割分担（MVT）、アプリ分割、ORM と Admin。まず「リクエストがどこを通るか」「データはどのモデルか」を説明できるようにします。</p>
+      </div>
+
+      <article class="lesson-card" data-section="django-1" id="django-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">01</span><h3>Django とは何か — MVT と「電池付属」</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-1')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Django = Admin・ORM・認証が最初から揃った Web 枠組み</h4>
+            <p>Flask / FastAPI が「薄いコア + 自分で組み立て」なのに対し、Django は <strong>管理画面・ORM・フォーム・ユーザー認証</strong>まで一体です。SaaS の社内向け画面や、古典的なサーバ描画、そして <strong>Django REST Framework（DRF）による JSON API</strong>の土台として広く使われます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>MVT（Model / View / Template）</h4>
+            <pre><code>Model     … DB の表を Python クラスで表す（ORM）
+View      … リクエストを受け、Model を使い、応答を決める
+Template  … HTML を組み立てる（サーバ側レンダリング）
+
+※ MVC の Controller に近いのが Django の View。
+※ JSON API だけの場合、Template の代わりに Serializer が「表現」を担う（DRF）。</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>FastAPI との役割分担（頭の整理）</h4>
+            <p><strong>Web/API 章の FastAPI</strong>は API ファースト。<strong>Django</strong>はフルスタック寄りで、同じ REST でも「Admin で中を見る」「テンプレを少し直す」が近い。CS 案件では後者の接点が多いです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips</h4>
+            <p>まず公式チュートリアルの Polls を一度通すと、以降の用語が定着します。この章は「用語と実務の見方」を圧縮した地図です。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="django-2" id="django-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">02</span><h3>プロジェクトとアプリ — どこに何を置くか</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-2')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 project = 設定の器、app = 機能の箱</h4>
+            <p><code>django-admin startproject config</code> が設定ルート、<code>startapp billing</code> がドメイン機能です。問い合わせ「請求がおかしい」はだいたい <code>billing</code> アプリの models / views を見ます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">DIRECTORY</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>mysite/
+  manage.py
+  config/           # settings.py, urls.py, wsgi.py
+  billing/          # models.py, views.py, admin.py, urls.py
+  templates/        # 共有 HTML（プロジェクト方針による）
+  static/</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>urls の接続</h4>
+            <pre><code># config/urls.py
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/", include("billing.urls")),  # DRF ならよくある
+    path("", include("billing.urls")),
+]</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips</h4>
+            <p>未知のコードベースでは <code>config/urls.py</code> → <code>include</code> 先 → <code>views</code> の順で辿ると速いです。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="django-3" id="django-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">03</span><h3>settings と環境変数 — 本番で壊れない最低限</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-3')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 DEBUG・SECRET_KEY・ALLOWED_HOSTS・DATABASES は最初に確認</h4>
+            <p>「ローカルでは動くが staging だけ落ちる」の多くは settings 差分です。秘密はリポジトリに書かず環境変数へ。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">PYTHON</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>import os
+DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
+# DATABASES は DATABASE_URL または ENGINE/NAME/USER/... </code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips（CS）</h4>
+            <p>「特定テナントだけ 500」→ その環境のログと <code>ALLOWED_HOSTS</code> / DB 接続先を疑う。コードより設定のことが多いです。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="django-4" id="django-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">04</span><h3>ORM とマイグレーション — 表をコードで表す</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-4')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Model が「データの辞書」、migrate が「DB への適用」</h4>
+            <p>問い合わせの「データが無い／古い」は、モデル定義と実レコードの両方を見ます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">PYTHON</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>from django.db import models
+
+class Subscription(models.Model):
+    customer_id = models.CharField(max_length=64, db_index=True)
+    status = models.CharField(max_length=20)  # active / past_due / canceled
+    plan_code = models.CharField(max_length=40)
+    current_period_end = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.customer_id}:{self.status}"</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">SHELL</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>python manage.py makemigrations
+python manage.py migrate
+python manage.py shell
+>>> from billing.models import Subscription
+>>> Subscription.objects.filter(status="past_due").count()</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips</h4>
+            <p><code>filter</code> / <code>get</code> / <code>DoesNotExist</code> / <code>MultipleObjectsReturned</code> は切り分けの定番語彙です。DB 章の SQL と対応づけて覚えると早いです。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="django-5" id="django-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">05</span><h3>Django Admin — 運用の第一画面</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-5')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Admin は「非エンジニアでも触れる正規の覗き窓」になりうる</h4>
+            <p>CS がデータを確認する経路として Admin が許可されている現場は多いです。登録・検索・権限を間違えると事故るので、list_display / search_fields / 権限は設計対象です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">PYTHON</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>from django.contrib import admin
+from .models import Subscription
+
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = ("id", "customer_id", "status", "plan_code", "current_period_end")
+    list_filter = ("status", "plan_code")
+    search_fields = ("customer_id",)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips</h4>
+            <p>本番 Admin での手編集は、可能なら「誰が・何を・なぜ」をチケットに残す。監査と再現性のためです。</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 中級編 ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🟡 中級編 — 画面・入力・ログイン</h4>
+        <p>テンプレート、フォーム、CSRF、認証。サーバ描画と「小さな HTML 改修」の実務に直結します。</p>
+      </div>
+
+      <article class="lesson-card" data-section="django-6" id="django-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">06</span><h3>ビューとテンプレート — HTML を返す道</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-6')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 View が文脈を渡し、Template が描画する</h4>
+            <p>案件の「Django テンプレート改修」は、多くの場合ここです。文言・条件分岐・ループ・リンク先の修正が中心になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">PYTHON</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>from django.shortcuts import render, get_object_or_404
+from .models import Subscription
+
+def subscription_detail(request, pk):
+    sub = get_object_or_404(Subscription, pk=pk)
+    return render(request, "billing/subscription_detail.html", {"sub": sub})</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">DJANGO TEMPLATE</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>{% extends "base.html" %}
+{% block content %}
+  &lt;h1&gt;契約 {{ sub.id }}&lt;/h1&gt;
+  &lt;p&gt;状態: {{ sub.status }}&lt;/p&gt;
+  {% if sub.status == "past_due" %}
+    &lt;p class="warn"&gt;お支払いの確認が必要です。&lt;/p&gt;
+  {% endif %}
+{% endblock %}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips</h4>
+            <p>テンプレにビジネスロジックを書きすぎない。<code>{% if %}</code> が肥大化したら View か Model のプロパティへ。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="django-7" id="django-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">07</span><h3>フォームと CSRF — 入力の正しさと改ざん耐性</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 POST フォームには CSRF トークンが必須</h4>
+            <p>Django はデフォルトで CSRF を守ります。トークン欠落は 403 になります。セキュリティ章の CSRF と対応づけてください。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">HTML</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>&lt;form method="post"&gt;
+  {% csrf_token %}
+  {{ form.as_p }}
+  &lt;button type="submit"&gt;保存&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips（CS）</h4>
+            <p>「保存ボタンを押すと 403」→ テンプレ改修で <code>{% csrf_token %}</code> が消えていないかを疑う。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="django-8" id="django-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">08</span><h3>認証の入口 — login_required と request.user</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「誰のリクエストか」が全ての認可の起点</h4>
+            <p>セッション認証では <code>request.user</code>、API ではトークンからユーザーを解決します。他人の契約 ID をURLに入れても見せない（IDOR 防止）はセキュリティ章と同型です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">PYTHON</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>from django.contrib.auth.decorators import login_required
+from django.http import Http404
+
+@login_required
+def my_subscription(request, pk):
+    sub = get_object_or_404(Subscription, pk=pk)
+    if sub.owner_id != request.user.id and not request.user.is_staff:
+        raise Http404()  # 存在を隠すなら 404 も選択肢
+    return render(request, "billing/subscription_detail.html", {"sub": sub})</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== 上級編 ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — API・調査・小さな改修</h4>
+        <p>DRF への橋、ログと shell による切り分け、テンプレート改修の安全な進め方。</p>
+      </div>
+
+      <article class="lesson-card" data-section="django-9" id="django-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">09</span><h3>Django REST Framework — JSON API への橋</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-9')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 DRF = Django ORM の上に載る REST 道具箱</h4>
+            <p>Web/API 章の REST を、Serializer（入出力）と ViewSet（CRUD）で実装します。withham 型の構成（<code>/api/</code> + JWT）は典型例です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">PYTHON</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>from rest_framework import serializers, viewsets
+from .models import Subscription
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscription
+        fields = ("id", "customer_id", "status", "plan_code", "current_period_end")
+
+class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Subscription.objects.all().order_by("-id")
+    serializer_class = SubscriptionSerializer
+    # 実際は permission / filter でテナント制限する</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>FastAPI との対比（再掲）</h4>
+            <p>FastAPI は関数 + Pydantic、DRF はクラス + Serializer。どちらも「HTTP + JSON の契約」をコード化する点は同じです。先に Web/API 章を読むと吸収が速いです。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="django-10" id="django-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">10</span><h3>調査の型 — ログ・shell・URL 逆引き</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-10')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 CS の技術寄り対応 = 「再現 → ログ → データ → コード」</h4>
+            <p>メール問い合わせをチケット化したあと、自分で追う順序を固定します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>チェックリスト</h4>
+            <pre><code>1. 再現手順（どの画面 / どの API / いつ頃）
+2. ステータスコードとエラーメッセージ
+3. サーバログ（traceback・request id）
+4. Admin または shell で対象レコード
+5. urls.py から view / serializer を特定
+6. 修正が必要なら最小差分（テンプレ文言 or 設定 or バグ票）</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">SHELL</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>python manage.py shell
+>>> from django.urls import resolve
+>>> resolve("/billing/subs/42/")  # どの view か
+>>> Subscription.objects.get(pk=42).__dict__</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="django-11" id="django-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">11</span><h3>テンプレート改修の安全手順</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-11')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 文言・表示条件・リンクの3点以外は慎重に</h4>
+            <p>CS 権限で触ってよい改修の多くは表示層です。課金判定や権限ロジックは開発チケットへ回す判断もスキルです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>やってよい例 / エスカレーション例</h4>
+            <pre><code>やってよい:
+- 誤字、説明文、ヘルプリンク
+- {% if status == "past_due" %} の表示強化
+- メール文面テンプレの差し替え（運用ルールに従う）
+
+エスカレーション:
+- 価格計算、権限、他テナントのデータが見える疑い
+- migrate が必要なスキーマ変更
+- CSRF や認証まわりの無効化提案</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips</h4>
+            <p>改修前後のスクリーンショットと、対象テンプレパスをチケットに残すとレビューが速いです。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="django-12" id="django-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area"><span class="lesson-number">12</span><h3>学習の接続 — Web/API・DB・Security・次の一手</h3></div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('django-12')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Django 単体で閉じず、隣接章と往復する</h4>
+            <p>HTTP/REST は Web/API、表設計はデータベース、XSS/CSRF/IDOR はセキュリティ、デプロイは Docker/CI。Django はそれらを束ねる実装面です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>おすすめ学習順（内定準備）</h4>
+            <pre><code>1. Web/API: APIとは → HTTP → REST
+2. データベース: ORM の裏にある SQL
+3. この Django 章（MVT → Admin → Template → DRF）
+4. セキュリティ: CSRF / XSS / 認可
+5. 手元で polls or 小さな CRUD を一度通す</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips</h4>
+            <p>面接・面談では「Admin で状態確認 → urls から view 特定 → テンプレか API か切り分け」と手順を話せるだけで、技術寄り CS の説得力が上がります。</p>
+          </div>
+        </div>
+      </article>
+
+<div class="quiz-section" id="django-quiz">
+        <div class="quiz-header"><h3>🧠 理解度チェック</h3></div>
+        <p class="quiz-intro">Django の地図と実務の見方を確認しましょう。</p>
+        <div id="django-quiz-container"></div>
+        <div class="quiz-result" id="django-quiz-result"></div>
+      </div>
+
+      <div class="puzzle-section" id="django-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 コード組み立てパズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="django-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="django-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="django-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('django')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('django')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="django-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

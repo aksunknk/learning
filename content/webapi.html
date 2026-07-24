@@ -1,19 +1,75 @@
       <div class="tab-intro webapi-intro">
         <h2>🌐 Web / API 実践</h2>
-        <p>フロントとバックエンドを繋ぐ HTTP 契約を、初級（HTTP/REST）・中級（通信実装とキャッシュ）・上級（OpenAPI・経路・耐障害・バージョニング）の 3 段階で学びます。</p>
+        <p>まず「API とは何か」を言葉にし、HTTP・REST・実装（TS / FastAPI）・運用（OpenAPI・耐障害）までを初級・中級・上級で積み上げます。Django / DRF は隣接章で深掘りします。</p>
       </div>
 
       <!-- ===== 初級編 セパレータ ===== -->
       <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
-        <h4>🟢 初級編 — 通信の語彙と API の形を揃える</h4>
-        <p>HTTP・REST・リクエスト部品、そして TypeScript / FastAPI の概要まで。結合で使う共通言語を先に固定します。</p>
+        <h4>🟢 初級編 — API の意味と通信の語彙を揃える</h4>
+        <p>API / HTTP / REST の共通言語を先に固定し、そのあと TypeScript と FastAPI の概要へ進みます。</p>
       </div>
+
+<!-- Lesson: APIとは -->
+      <article class="lesson-card" data-section="webapi-15" id="webapi-lesson-15">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>APIとは何か — プログラム同士の契約</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('webapi-15')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 API = 「呼び出し側が知らなくてよい内部を隠した窓口」</h4>
+            <p><strong>API（Application Programming Interface）</strong>は、あるプログラムが別のプログラムに提供する<strong>使い方の約束</strong>です。レストランのメニューと同じで、「何を注文できるか」「何が返るか」が決まっていれば、厨房の作り方（DB テーブル名や内部関数）を知らなくても利用できます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>身近な API の層</h4>
+            <pre><code>1. 言語の API …… list.append()、dict.get()
+2. ライブラリの API …… requests.get()、stripe.Customer.create()
+3. Web API …… HTTPS で JSON をやりとりする HTTP エンドポイント
+
+この章の主語は 3。フロント・モバイル・他社システムが同じ契約でサーバと話す。</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>なぜ Web API が必要か</h4>
+            <p>ブラウザの React、スマホの Expo、社内のバッチ、カスタマーサポート用の管理画面——利用者は増えても、<strong>サーバ側の真実（契約・請求・ユーザー）は一箇所</strong>に置きたい。API はその共有窓口です。CS が「ログを見て切り分ける」ときも、結局は「どの API が何を返したか」を追うことになります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">契約の最小セット</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>決まっていると嬉しいもの:
+- どこへ　URL（例: GET /api/subscriptions/42）
+- どうやって　HTTP メソッド + ヘッダ（認証など）
+- 何を送る　リクエスト JSON / クエリ
+- 何が返る　ステータス + レスポンス JSON
+- 失敗時　4xx/5xx とエラーボディの形</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>REST / RPC / GraphQL（地図だけ）</h4>
+            <p><strong>REST</strong>はリソース（名詞）を URL にし、HTTP メソッドで操作する流儀。<strong>RPC</strong>は「手続き名」を叩く流儀（<code>POST /doSomething</code>）。<strong>GraphQL</strong>はクライアントが欲しい形を問い合わせる別契約。このサイトの Web/API・Django 章はまず REST を土台にします。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：内定後の Django 案件との接続</h4>
+            <p>Django 本体は HTML も返せますが、現代の SaaS では <strong>Django REST Framework で JSON API</strong>を出すことが多いです。「API の意味 → HTTP/REST → Django/DRF」の順で学ぶと、問い合わせ切り分け（どの URL・どのステータスか）が一段速くなります。次レッスンから HTTP の語彙に入ります。</p>
+          </div>
+        </div>
+      </article>
 
 <!-- Lesson 1 -->
       <article class="lesson-card" data-section="webapi-1" id="webapi-lesson-1">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">01</span>
+            <span class="lesson-number">02</span>
             <h3>Web開発の土台：HTTP・JSON・クライアント/サーバー</h3>
           </div>
           <div class="lesson-controls">
@@ -117,7 +173,7 @@ async function fetchLessons() {
       <article class="lesson-card" data-section="webapi-6" id="webapi-lesson-6">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">02</span>
+            <span class="lesson-number">03</span>
             <h3>REST 設計 — リソースと HTTP メソッドの意味</h3>
           </div>
           <div class="lesson-controls">
@@ -170,7 +226,7 @@ POST /api/doSomething</code></pre>
       <article class="lesson-card" data-section="webapi-7" id="webapi-lesson-7">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">03</span>
+            <span class="lesson-number">04</span>
             <h3>リクエストの部品 — パス・クエリ・ヘッダ・ボディ</h3>
           </div>
           <div class="lesson-controls">
@@ -237,7 +293,7 @@ Content-Type: application/json
       <article class="lesson-card" data-section="webapi-2" id="webapi-lesson-2">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">04</span>
+            <span class="lesson-number">05</span>
             <h3>TypeScript 概要：型で壊れ方を先に制御する</h3>
           </div>
           <div class="lesson-controls">
@@ -347,7 +403,7 @@ function handleResult(result: ApiResult&lt;LessonMeta[]&gt;) {
       <article class="lesson-card" data-section="webapi-3" id="webapi-lesson-3">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">05</span>
+            <span class="lesson-number">06</span>
             <h3>FastAPI 概要：ルーティング・バリデーション・依存性注入</h3>
           </div>
           <div class="lesson-controls">
@@ -475,7 +531,7 @@ def list_items(
       <article class="lesson-card" data-section="webapi-4" id="webapi-lesson-4">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">06</span>
+            <span class="lesson-number">07</span>
             <h3>React + TypeScript 通信基礎：副作用・中断・UI状態</h3>
           </div>
           <div class="lesson-controls">
@@ -613,7 +669,7 @@ return &lt;LessonView data={state.data} /&gt;;</code></pre>
       <article class="lesson-card" data-section="webapi-8" id="webapi-lesson-8">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">07</span>
+            <span class="lesson-number">08</span>
             <h3>一覧 API の実務 — ページネーション・フィルタ・ソート</h3>
           </div>
           <div class="lesson-controls">
@@ -679,7 +735,7 @@ def list_items(
       <article class="lesson-card" data-section="webapi-9" id="webapi-lesson-9">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">08</span>
+            <span class="lesson-number">09</span>
             <h3>エラーレスポンス契約 — 失敗の形を揃える</h3>
           </div>
           <div class="lesson-controls">
@@ -747,7 +803,7 @@ async function readError(res: Response): Promise&lt;ApiError&gt; {
       <article class="lesson-card" data-section="webapi-10" id="webapi-lesson-10">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">09</span>
+            <span class="lesson-number">10</span>
             <h3>HTTP キャッシュ — Cache-Control と ETag</h3>
           </div>
           <div class="lesson-controls">
@@ -825,7 +881,7 @@ def get_config(if_none_match: str | None = Header(default=None)):
       <article class="lesson-card" data-section="webapi-5" id="webapi-lesson-5">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">10</span>
+            <span class="lesson-number">11</span>
             <h3>非同期処理の基礎からSSEへ：asyncio実践入門</h3>
           </div>
           <div class="lesson-controls">
@@ -942,7 +998,7 @@ async def stream_response(request: Request):
       <article class="lesson-card" data-section="webapi-11" id="webapi-lesson-11">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">11</span>
+            <span class="lesson-number">12</span>
             <h3>OpenAPI — 仕様を単一の真実源にする</h3>
           </div>
           <div class="lesson-controls">
@@ -998,7 +1054,7 @@ def get_user(user_id: int):
       <article class="lesson-card" data-section="webapi-12" id="webapi-lesson-12">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">12</span>
+            <span class="lesson-number">13</span>
             <h3>名前解決と TLS — ブラウザからサーバーまでの道</h3>
           </div>
           <div class="lesson-controls">
@@ -1051,7 +1107,7 @@ curl -vI https://example.com 2&gt;&amp;1 | head -n 40
       <article class="lesson-card" data-section="webapi-13" id="webapi-lesson-13">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">13</span>
+            <span class="lesson-number">14</span>
             <h3>冪等性・リトライ・レート制限 — 不安定なネットワークに耐える</h3>
           </div>
           <div class="lesson-controls">
@@ -1113,7 +1169,7 @@ Retry-After: 30
       <article class="lesson-card" data-section="webapi-14" id="webapi-lesson-14">
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
-            <span class="lesson-number">14</span>
+            <span class="lesson-number">15</span>
             <h3>API バージョニング — 壊さずに進化させる</h3>
           </div>
           <div class="lesson-controls">

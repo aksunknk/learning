@@ -83,6 +83,16 @@ const taskBoardApplyData = {
       "/health の HEALTHCHECK または手動 curl 手順を書く",
     ],
   },
+  django: {
+    pathway: "pathway-5",
+    minutes: 20,
+    goal: "TaskBoard API を Django/DRF で実装するならの地図を書く",
+    tasks: [
+      "Model（Task）と Serializer fields を列挙する",
+      "ViewSet の list/create/partial_update/destroy を対応づける",
+      "所有者チェック（認可）をどの層に置くか一文で書く",
+    ],
+  },
   cicd: {
     pathway: "pathway-10",
     minutes: 25,
