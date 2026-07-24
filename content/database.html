@@ -1,5 +1,16 @@
+      <div class="tab-intro database-intro">
+        <h2>🗄️ データベース</h2>
+        <p>データの永続化とクエリを、初級（モデルと SQL）・中級（性能と ORM）・上級（運用）の 3 段階で学びます。</p>
+      </div>
 
-      <article class="lesson-card" data-section="database-1" id="database-lesson-1">
+
+      <!-- ===== 初級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — モデルと SQL の読み書き</h4>
+        <p>なぜ DB が必要か、テーブル設計、SELECT/更新、JOIN、集約——データを正しく出し入れする基礎体力。</p>
+      </div>
+
+<article class="lesson-card" data-section="database-1" id="database-lesson-1">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">01</span><h3>データベースとは何か — ファイル保存では不十分な理由</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-1')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 CSVやJSONでは「同時に2人がデータを変更する」と壊れる</h4></div>
@@ -27,8 +38,7 @@
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>個人開発では SQLite で十分な場面が多い:</strong> PostgreSQL や MySQL はサーバーの起動が必要ですが、SQLite はファイル1つで完結します。月間10万リクエスト以下のサービスなら SQLite で十分な性能が出ます。Django も FastAPI も SQLite をサポートしています。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="database-2" id="database-lesson-2">
+<article class="lesson-card" data-section="database-2" id="database-lesson-2">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">02</span><h3>テーブル設計の基礎 — リレーショナルモデルの考え方</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-2')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 テーブル設計は「現実世界のモデル化」</h4></div>
@@ -61,8 +71,7 @@ CREATE TABLE orders (
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「正規化しすぎ」の弊害:</strong> 理論上は全て正規化すべきですが、JOINが増えすぎるとクエリが複雑になりパフォーマンスも悪化します。実務では<strong>「読み取り頻度の高いデータは意図的に非正規化する」</strong>ことがあります（例: 注文テーブルにユーザー名を直接入れる）。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="database-3" id="database-lesson-3">
+<article class="lesson-card" data-section="database-3" id="database-lesson-3">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">03</span><h3>SQL基本① — データの取得（SELECT）</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-3')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 SQL の 80% は SELECT 文の習得で決まる</h4></div>
@@ -99,8 +108,7 @@ SELECT DISTINCT city AS "都市名" FROM users;  -- 重複除去 + 列の別名<
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong><code>SELECT *</code> を本番で使ってはいけない理由:</strong> ① 不要な列も取得するため<strong>ネットワーク帯域を浪費</strong>する ② 将来テーブルに BLOB（画像データ等）列が追加されると<strong>クエリが劇的に遅くなる</strong> ③ カバリングインデックスが効かなくなり<strong>パフォーマンスが低下</strong>する。必要な列だけを明示的に指定してください。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="database-4" id="database-lesson-4">
+<article class="lesson-card" data-section="database-4" id="database-lesson-4">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">04</span><h3>SQL基本② — データの追加・更新・削除</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-4')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 WHERE を忘れた UPDATE/DELETE は全行に影響する — 最も危険な操作</h4></div>
@@ -133,8 +141,7 @@ ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name;
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>本番での DELETE/UPDATE の鉄則:</strong> ① まず <code>SELECT * FROM users WHERE id = 1;</code> で対象を確認 ② 件数が想定通りか確認 ③ <code>BEGIN;</code> でトランザクションを開始 ④ DELETE/UPDATE を実行 ⑤ 結果を確認してから <code>COMMIT;</code>（間違えたら <code>ROLLBACK;</code>）。この手順を<strong>必ず</strong>守ってください。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="database-5" id="database-lesson-5">
+<article class="lesson-card" data-section="database-5" id="database-lesson-5">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">05</span><h3>JOIN — テーブルの結合</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-5')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 正規化したテーブルを「元に戻す」のが JOIN</h4></div>
@@ -167,8 +174,7 @@ WHERE o.id IS NULL;  -- 注文テーブルに一致がない = 注文なし</cod
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>N+1 問題:</strong> ORM（SQLAlchemy 等）で <code>for user in users: print(user.orders)</code> と書くと、ユーザー1件ごとに注文を別クエリで取得します（100ユーザーなら 1 + 100 = 101回のクエリ）。JOIN を使えば<strong>1回のクエリで全データを取得</strong>できます。ORM の <code>joinedload()</code> や <code>include</code> を使って解決してください。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="database-6" id="database-lesson-6">
+<article class="lesson-card" data-section="database-6" id="database-lesson-6">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">06</span><h3>集約とグループ化 — データ分析の基礎</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-6')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 GROUP BY は「カテゴリごとの集計」を1行のSQLで実現する</h4></div>
@@ -203,7 +209,13 @@ WHERE amount &gt; (SELECT AVG(amount) FROM orders);</code></pre>
         </div>
       </article>
 
-      <article class="lesson-card" data-section="database-7" id="database-lesson-7">
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — 速さと正しさを両立する</h4>
+        <p>インデックス、トランザクション、CTE、ORM と N+1——アプリから見たときの性能と整合性。</p>
+      </div>
+
+<article class="lesson-card" data-section="database-7" id="database-lesson-7">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">07</span><h3>インデックスとパフォーマンス — 遅いクエリを速くする</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 インデックス = 「本の索引」— 全ページをめくらずに目的のページを開ける</h4></div>
@@ -231,8 +243,7 @@ CREATE INDEX idx_orders_created ON orders(created_at DESC);
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>インデックスの副作用:</strong> INSERT/UPDATE/DELETE のたびにインデックスも更新されるため、<strong>書き込み性能が低下</strong>します。「とりあえず全列にインデックス」は逆効果です。<strong>実際に遅いクエリを EXPLAIN で分析してから、必要なインデックスだけを追加</strong>するのが正しいアプローチです。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="database-8" id="database-lesson-8">
+<article class="lesson-card" data-section="database-8" id="database-lesson-8">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">08</span><h3>トランザクションと実務パターン</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 トランザクション = 「全部成功するか、全部なかったことにするか」</h4></div>
@@ -261,8 +272,7 @@ COMMIT;
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>デッドロックの原因と対策:</strong> トランザクションAが「テーブル1 → テーブル2」の順でロックし、トランザクションBが「テーブル2 → テーブル1」の順でロックすると、互いに相手のロック解除を待ち続けます（デッドロック）。対策: <strong>常に同じ順序でテーブルにアクセスする</strong>、トランザクションを短く保つ。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="database-9" id="database-lesson-9">
+<article class="lesson-card" data-section="database-9" id="database-lesson-9">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">09</span><h3>サブクエリとCTE — 複雑な質問をSQLで表現する</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-9')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 CTE（WITH句）は「クエリに名前を付ける」機能 — 複雑なSQLの可読性が劇的に上がる</h4></div>
@@ -300,8 +310,7 @@ JOIN monthly_sales m ON m.user_id = v.user_id;</code></pre>
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「とりあえずCTEで書く」が現代の主流:</strong> パフォーマンスはほとんどの場合サブクエリと同等です（オプティマイザが同じ実行計画に変換します）。レビューする側の読みやすさが段違いなので、2段以上ネストしそうなら迷わず WITH 句に切り出してください。なお、SQLite・PostgreSQL・MySQL 8.0以降のすべてでCTEは使えます。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="database-10" id="database-lesson-10">
+<article class="lesson-card" data-section="database-10" id="database-lesson-10">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">10</span><h3>ORMとN+1問題 — SQLAlchemyでPythonからDBを操作する</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-10')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 ORMは「SQLを書かなくて済む」道具ではなく「SQLを生成する」道具 — 裏で何が発行されるかを常に意識する</h4></div>
@@ -345,7 +354,13 @@ with Session(engine) as session:
         </div>
       </article>
 
-      <article class="lesson-card" data-section="database-11" id="database-lesson-11">
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 壊さず進化させ、止めずに守る</h4>
+        <p>インジェクション対策と設計演習に加え、マイグレーション運用、接続プール、バックアップ、EXPLAIN / ロックの入口。</p>
+      </div>
+
+<article class="lesson-card" data-section="database-11" id="database-lesson-11">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">11</span><h3>SQLインジェクション — 絶対にやってはいけない文字列連結</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-11')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 ユーザー入力をSQLに文字列連結した瞬間、あなたのDBは全世界に公開されたのと同じ</h4></div>
@@ -377,8 +392,7 @@ cur = conn.execute(
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>コードレビューでの検出パターン:</strong> <code>execute(f"...")</code>、<code>execute("..." + 変数)</code>、<code>execute("...".format(...))</code> を見たら即座に指摘してください。例外は「テーブル名や列名の動的切替」で、これはプレースホルダにできないため、<strong>許可リスト（ホワイトリスト）との照合</strong>で守ります。生成AIにコードを書かせた場合も、この観点でのセルフレビューを習慣化してください。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="database-12" id="database-lesson-12">
+<article class="lesson-card" data-section="database-12" id="database-lesson-12">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">12</span><h3>実践演習 — ECサイトのスキーマを設計してみる</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-12')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 設計の手順は「エンティティ抽出 → 関係の整理 → 制約の付与」— いきなりCREATE TABLEを書かない</h4></div>
@@ -421,6 +435,217 @@ CREATE INDEX idx_items_product ON order_items(product_id);</code></pre>
           </div>
           <div class="explanation-box"><h4>🔍 設計判断のポイント</h4><p><strong>unit_price をあえて重複保存する理由:</strong> 商品の価格は改定されます。products.price だけを参照していると、値上げ後に過去の注文金額まで変わってしまいます。「注文時点の価格」は注文の事実の一部なので、order_items に複製するのが正解です。これが「意図的な非正規化」の典型例です。</p></div>
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>迷ったら「事実の記録」と「現在の状態」を分ける:</strong> 注文（事実、不変）とカート（状態、可変）は性質がまったく違うテーブルです。事実テーブルはINSERTのみ・UPDATE禁止に寄せると、監査・集計・デバッグのすべてが楽になります。下の<strong>SQLプレイグラウンド</strong>で、このスキーマに対して実際にクエリを書いて試してみてください。</p></div>
+        </div>
+      </article>
+
+      <!-- Lesson 13 (new) -->
+      <article class="lesson-card" data-section="database-13" id="database-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">13</span>
+            <h3>マイグレーション運用 — スキーマを「展開→移行→収縮」で変える</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-13')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 本番 DB への ALTER はデプロイそのもの</h4>
+            <p><strong>コードとスキーマのバージョンがズレるとサービスは即死します。</strong> Alembic / Prisma Migrate / Flyway などツールは何でもよく、重要なのは後方互換を保つ順序です。列追加（expand）→ アプリが新旧を書ける → データ移行 → 古い列を削除（contract）。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>危険: 列をリネームして同時にアプリを出す
+  → 旧インスタンスが落ちる / 新インスタンスが読めない
+
+安全（expand / migrate / contract）:
+  1) users.display_name を NULL 可で追加（expand）
+  2) アプリが name と display_name の両方を埋める
+  3) バックフィル UPDATE
+  4) アプリを display_name のみ参照に切替
+  5) 十分あとで name を削除（contract）</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 概念（ツールはプロジェクトに合わせる）
+alembic revision -m "add display_name"
+alembic upgrade head
+# CI では migrate をデプロイ前ジョブに固定する</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：ダウンタイム前提の変更は明示する</h4>
+            <p>大きなテーブルの全件 rewrite はロックで止まります。必要ならメンテ告知かオンラインスキーマ変更ツールを検討し、「静かに破壊」しないでください。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- Lesson 14 (new) -->
+      <article class="lesson-card" data-section="database-14" id="database-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>コネクションプール — 接続しすぎて DB を殺さない</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 リクエストごとに connect するとスケールしない</h4>
+            <p><strong>DB 接続は重いリソースです。</strong> Web アプリはプール（SQLAlchemy の pool、PgBouncer 等）で再利用します。コンテナを水平に増やしたとき、各レプリカの pool size × 台数が DB の max_connections を超えないよう計算します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Python</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from sqlalchemy import create_engine
+
+engine = create_engine(
+    DATABASE_URL,
+    pool_size=5,
+    max_overflow=10,
+    pool_pre_ping=True,  # 切れた接続を検知
+)</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>ざっくり見積もり:
+  max_connections(DB) &gt;= web_replicas * pool_size + admin/batch 余裕
+
+例: DB 100, web 4 台 → 台あたり 15 以下に抑える、など</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：サーバーレスは特に危険</h4>
+            <p>リクエスト単位でプロセスが増える環境では、直結せずプールプロキシ（PgBouncer 等）を挟むのが定石です。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- Lesson 15 (new) -->
+      <article class="lesson-card" data-section="database-15" id="database-lesson-15">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">15</span>
+            <h3>バックアップとリストア — 消えたデータを前提にする</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-15')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 バックアップは「取った」ではなく「戻せる」</h4>
+            <p><strong>障害訓練をしていないバックアップは、バックアップではありません。</strong> 論理バックアップ（dump）と、可能なら PITR。個人開発でも <code>pg_dump</code> / SQLite ファイルコピーを定期化し、リストア手順を README に書きます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># PostgreSQL 例
+pg_dump -Fc "$DATABASE_URL" -f backup.dump
+pg_restore -d "$DATABASE_URL" backup.dump
+
+# SQLite 例（アプリ停止 or 安全なコピー手段を使う）
+cp data/app.db "backup/app-$(date +%F).db"</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>運用チェック:
+  [ ] 自動バックアップの間隔と保持期間が分かっている
+  [ ] 四半期に一度、別環境へリストア試験した
+  [ ] バックアップに秘密が平置きされていない</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：削除をソフトデリートにする判断</h4>
+            <p>誤削除に弱いドメインでは <code>deleted_at</code> を用意し、物理削除はバッチへ遅延させます。ただしユニーク制約や個人情報削除請求（忘れられる権利）と両立する設計が必要です。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- Lesson 16 (new) -->
+      <article class="lesson-card" data-section="database-16" id="database-lesson-16">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">16</span>
+            <h3>EXPLAIN 実践とロックの入口 — 遅さと待ちを見抜く</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('database-16')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 遅いクエリは感覚ではなく実行計画で語る</h4>
+            <p><strong>インデックスを貼ったつもりでも、型不一致や関数ラップで効かないことがあります。</strong> <code>EXPLAIN</code>（可能な環境では <code>ANALYZE</code>）で Seq Scan / Index Scan を確認します。あわせて、長いトランザクションがロックを握ったままになっていないかも疑います。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">SQL</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>EXPLAIN QUERY PLAN
+SELECT * FROM orders WHERE user_id = 1;
+
+-- PostgreSQL なら:
+-- EXPLAIN ANALYZE SELECT ...;</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>よくある「インデックス無効」:
+  - WHERE LOWER(email) = 'a@b.c'  （列を関数で包んだ）
+  - 型が違う（TEXT 列に数値比較）
+  - 選択性が極端に低い列だけを見て安心した
+
+ロックの入口:
+  - 長いトランザクション中に行を更新したまま待つ
+  - マイグレーションの ALTER が表をロック</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：プレイグラウンドで計画を見る習慣</h4>
+            <p>下の SQL プレイグラウンド（SQLite）でも <code>EXPLAIN QUERY PLAN</code> が使えます。遅いと感じる前に、計画を読む一手を挟んでください。</p>
+          </div>
         </div>
       </article>
 

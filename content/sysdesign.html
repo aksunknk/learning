@@ -1,0 +1,852 @@
+
+      <div class="tab-intro sysdesign-intro">
+        <h2>🏗️ システム設計</h2>
+        <p>機能要件と非機能要件、スケール、キャッシュ、一貫性、観測性まで。TaskBoard とキャップストーンにそのまま使える「設計の言葉」を身につけます。</p>
+      </div>
+
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: #10b98114;">
+        <h4>🟢 初級編 — 設計の地図を持つ</h4>
+        <p>何を守り、どこに責務を置き、リクエストがどう旅するかを言語化します。</p>
+      </div>
+
+      <article class="lesson-card" data-section="sysdesign-1" id="sysdesign-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>システム設計とは — 機能要件と非機能要件</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 「動く」と「耐えられる」は別物</h4>
+            <p>機能要件は「ユーザーが何ができるか」。非機能要件（NFR）は「どれだけ速く・安全に・止めずに」です。面接でも現場でも、先に NFR を数字で置く人が設計をリードします。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>要件を分解する質問</h4>
+            <p>誰が・何を・どの頻度で・失敗したらどうなるか。曖昧なまま箱を並べると、後から全部がボトルネックになります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>機能要件（例: TaskBoard）:
+  - タスクの作成 / 一覧 / 完了 / 削除
+  - ユーザーごとに自分のタスクだけ見える
+
+非機能要件（最初に仮置きする）:
+  - レイテンシ: 一覧 p95 &lt; 300ms
+  - 可用性: 月間 99.9%（約 43 分/月までダウン可）
+  - 一貫性: 自分の書き込みは直後に自分に見える
+  - セキュリティ: 他ユーザーのタスクは 403/404
+  - コスト: 初期は単一リージョン・マネージド DB 1 台
+
+⚠️ NFR は「後で考える」と必ず痛い目を見る
+   → 仮置きでもよいので数値と優先度を書く</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>完璧な数字より「優先順位」が重要です。初期 TaskBoard なら一貫性とセキュリティを優先し、グローバル低レイテンシは後回し、が合理的です。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-2" id="sysdesign-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>責務分割 — クライアント / API / データストア</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 どこにロジックを置くかが設計の本体</h4>
+            <p>UI に認可を置くと改ざんされます。DB にビジネスルールを詰め込みすぎると変更が死にます。境界を先に決めるのがシステム設計です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>┌─────────────┐     HTTPS      ┌─────────────┐      SQL      ┌──────────┐
+│  Client     │ ─────────────► │  API        │ ───────────► │  DB      │
+│  (React)    │ ◄───────────── │  (FastAPI)  │ ◄─────────── │(Postgres)│
+└─────────────┘   JSON         └─────────────┘              └──────────┘
+   表示・入力                     認可・検証                    永続化
+   楽観的 UI                     オーケストレーション           整合性の最後の砦
+
+やってはいけない例:
+  - Client だけで「他人のタスクを隠す」（API で弾くのが正解）
+  - DB トリガに複雑な料金計算（テストと移行が地獄）
+  - API が HTML を返す巨大モノリス（フロント置換不能）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>TaskBoard での割り当て</h4>
+            <p>Client は描画とローカル状態。API は所有権検証とバリデーション。DB は tasks 行の真実。この三角を崩さないのが縦糸の基本形です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>迷ったら「信頼境界」で切る。インターネットから来る入力はすべて信用しない。信頼できるのは認証済みのサーバー側だけです。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-3" id="sysdesign-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>リクエストの旅 — DNS から DB まで</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 1 リクエストの経路を説明できると障害に強くなる</h4>
+            <p>ブラウザの URL 入力から JSON が返るまでには、DNS・TLS・LB・アプリ・DB が直列に並びます。遅延の犯人探しは、この地図が無いと始まりません。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>ユーザーが https://app.example.com/api/tasks を開く
+
+1. DNS 解決          app.example.com → 203.0.113.10
+2. TCP + TLS         ハンドシェイク（証明書検証）
+3. HTTP リクエスト   GET /api/tasks  Authorization: Bearer …
+4. CDN/LB            近い PoP またはロードバランサへ
+5. リバースプロキシ  nginx / ingress → アプリ Pod
+6. アプリ            JWT 検証 → 認可 → クエリ組み立て
+7. DB                SELECT … WHERE user_id = ?
+8. 応答の復路        JSON → 圧縮 → ブラウザ描画
+
+レイテンシの内訳（感覚値）:
+  DNS+TLS   数十〜数百 ms（初回）
+  アプリ    数 ms〜数十 ms
+  DB        数 ms〜（ロック/全表スキャンで爆発）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>本番で「遅い」と言われたら、まず Network の Waterfall とサーバーの DB 時間を分ける。クライアント遅いのか、API 遅いのか、DB 遅いのかで対策が全く違います。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-4" id="sysdesign-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>API 設計 — リソース・冪等性・バージョン</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 URL は動詞ではなくリソース</h4>
+            <p>REST では名詞を並べ、操作は HTTP メソッドに載せます。冪等性を意識するとリトライと CI のスモークが安全になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>TaskBoard API（契約の骨格）:
+
+GET    /tasks              一覧（自分の分だけ）
+POST   /tasks              作成  → 201 + Location
+GET    /tasks/{id}         取得  → 200 / 404
+PATCH  /tasks/{id}         部分更新（done など）
+DELETE /tasks/{id}         削除  → 204
+
+冪等性:
+  GET / DELETE / PUT     同じ要求を繰り返しても結果が同じ
+  POST                   原則非冪等 → Idempotency-Key を検討
+
+バージョン:
+  /v1/tasks  または  Accept: application/vnd.taskboard.v1+json
+  破壊的変更は新バージョン。旧クライアントを殺さない。
+
+エラー契約（固定する）:
+  { "detail": "Not found", "code": "task_not_found" }</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>フィールド名を一度公開したら、リネームはバージョンアップ案件です。OpenAPI を真実の源にすると、契約テストとフロント型が同じ地図を共有できます。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-5" id="sysdesign-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>データモデリング — 正規化と意図的な非正規化</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 最初は正規化し、痛みが見えてから崩す</h4>
+            <p>重複を減らす正規化はバグを減らします。ただし一覧が JOIN 地獄になったら、読み取り用の非正規化やキャッシュを検討します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>正規化（第3正規形の感覚）:
+
+users(id, email, ...)
+tasks(id, user_id, title, done, created_at)
+labels(id, name)
+task_labels(task_id, label_id)
+
+クエリ例（自分の未完了）:
+  SELECT id, title, done FROM tasks
+  WHERE user_id = $1 AND done = false
+  ORDER BY created_at DESC
+  LIMIT 50;
+
+意図的な非正規化の例:
+  tasks.comment_count  を持つ
+  → コメント追加時にカウンタ更新（書き込みコスト↑、一覧が速い）
+
+判断基準:
+  - 書き込み頻度 &lt;&lt; 読み取り頻度 なら非正規化候補
+  - 一貫性が絶対なら正規化を維持し、キャッシュで稼ぐ</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>TaskBoard v1 は tasks 1 テーブルで十分です。ラベルや共有を入れたくなったら、先にユースケースとクエリを書いてから表を増やしてください。</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: #f59e0b14;">
+        <h4>🔶 中級編 — スケールと分散の基本語彙</h4>
+        <p>垂直/水平スケール、キャッシュ、キュー、一貫性、可用性。トレードオフを表で選べるようにします。</p>
+      </div>
+
+      <article class="lesson-card" data-section="sysdesign-6" id="sysdesign-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>スケールの軸 — 垂直・水平・ステートレス</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 まず測り、それから割る</h4>
+            <p>スケールアウト（水平）の前に、プロファイリングでボトルネックを特定します。ステートフルなサーバーは水平展開が難しい——セッションは Redis 等へ外出しが定石です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>垂直スケール（Scale Up）:
+  マシンを大きくする。簡単。上限と単一障害点がある。
+
+水平スケール（Scale Out）:
+  同じ役割のインスタンスを増やす。LB 必須。
+  → アプリをステートレスに（ファイルセッション禁止）
+
+TaskBoard 成長シナリオ:
+  1) 単一 VM + Postgres          … 学習〜小規模
+  2) アプリ N 台 + DB 1 台       … 読み取り増に強い（書き込みは DB）
+  3) 読み取りレプリカ            … 一覧を replica へ
+  4) キャッシュ層                … ホットな一覧を短 TTL で
+
+ステートレス化チェック:
+  [ ] アップロードをローカルディスクに書いていない
+  [ ] セッションをプロセスメモリに持っていない
+  [ ] どのインスタンスに当たっても同じ応答</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>「とりあえず Kubernetes」は手段の先走りです。単一 VM で p95 とエラー率を測れないなら、分散しても観測できません。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-7" id="sysdesign-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>キャッシュ戦略 — CDN / アプリ / DB</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 速さは『どこを忘れないか』の設計</h4>
+            <p>キャッシュはレイテンシを下げる代わりに、古いデータを見せるリスクを買います。鍵設計と無効化（TTL / 明示削除）が本体です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>層別キャッシュ:
+
+CDN / エッジ
+  静的 JS/CSS、公開ランディング
+  Cache-Control: max-age=31536000, immutable（ハッシュ付きファイル名）
+
+アプリ近傍（Redis 等）
+  GET /tasks の結果を user_id キーで 30s
+  キー: tb:tasks:{user_id}:v1
+  無効化: POST/PATCH/DELETE 成功時に DEL
+
+DB
+  マテビュー / インデックス（広い意味での『計算結果の保存』）
+
+アンチパターン:
+  - 認証付き JSON を CDN で長くキャッシュ（他人のデータが洩れる）
+  - TTL 無限 + 無効化忘れ（永遠に古い一覧）
+
+TaskBoard 推奨:
+  静的資産 → CDN
+  タスク一覧 → まずはキャッシュ無しで正しい認可
+  負荷が見えてから user 単位の短 TTL</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>キャッシュを入れる前に、遅いクエリにインデックスを足す方が安く終わることが多いです。測ってから買いましょう。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-8" id="sysdesign-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>非同期とキュー — 同期 API を守る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 ユーザーを待たせない仕事を切り出す</h4>
+            <p>メール送信・サムネ生成・集計はリクエストスレッドでやらない。受け付けたら 202/200 で返し、ワーカーが処理します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>同期（今の TaskBoard）:
+  Client → API → DB → 応答
+  すべてがリクエストの寿命内
+
+非同期化の例（通知を足すとき）:
+  Client → API → DB に task INSERT
+           API → Queue に "task.created" イベント
+           API → 201 を返す（メール完了を待たない）
+  Worker ← Queue → メール送信 / リトライ / DLQ
+
+キューが守るもの:
+  - API のレイテンシ
+  - 一時的な下流障害（後で再実行）
+  - バースト（流入を平滑化）
+
+最初に決めること:
+  at-least-once か exactly-once（実務は前者 + 冪等消費者）
+  失敗時の DLQ（死文字キュー）とアラート</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>学習用 TaskBoard にキューは必須ではありません。ただし設計図には『将来ここを非同期にする』と点線で書いておくと、キャップストーンで語れます。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-9" id="sysdesign-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>一貫性 — 強整合と結果整合</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 CAP を暗記するより『誰が古いデータを見うるか』を決める</h4>
+            <p>単一 Postgres の同期書き込みは強い一貫性に近い。レプリカ遅延やキャッシュを入れると結果整合になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>強整合（Strong）:
+  書き込み成功後、全読者が同じ最新値を見る
+  → 単一 DB への同期 READ が典型
+
+結果整合（Eventual）:
+  しばらくすると一致する。その間ズレうる
+  → キャッシュ、非同期レプリカ、マルチリージョン
+
+TaskBoard での選択:
+  「自分が今トグルした done が、自分の画面で即座に反映」
+  → 自分読みは Primary（またはキャッシュ無効化）必須
+
+  「管理者ダッシュボードの全ユーザー統計が 30 秒遅れ」
+  → 結果整合で十分
+
+読み取り分離:
+  write → primary
+  read  → replica（遅延許容ユースケースのみ）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>『整合性を上げる』は常にレイテンシか可用性かコストを払います。トレードオフ表に『何を犠牲にしたか』を一行書いてください。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-10" id="sysdesign-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>可用性 — SPOF・ヘルスチェック・劣化</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 止めない設計は『壊れ方』を設計すること</h4>
+            <p>単一障害点（SPOF）を消し、ヘルスチェックで悪いインスタンスを外し、一部機能を落としても核心を残す（Graceful degradation）。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>SPOF チェックリスト（TaskBoard）:
+  [ ] アプリが 1 プロセスだけ → 複製 + LB
+  [ ] DB が 1 台 → マネージドの自動フェイルオーバーを検討
+  [ ] 秘密鍵が 1 人のノート PC → Secrets 管理
+  [ ] DNS の TTL が極端に長い → 切替に時間がかかる
+
+ヘルスチェック:
+  GET /health  → プロセス生存
+  GET /ready   → DB 接続可（起動完了）
+  LB は /ready を見る
+
+Graceful degradation 例:
+  通知サービス障害 → タスク CRUD は継続、ベルアイコンだけ無効
+  検索障害 → 一覧は新しい順のみ（フィルタ無し）
+
+SLO の書き方:
+  「一覧 API の成功率が 30 日で 99.9%」
+  エラー予算 = 許容失敗量。超えたら機能追加を止めて信頼性作業</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>可用性 99.99% を口にする前に、デプロイ手順とロールバックを宿題にしてください。落ちる最大要因はしばしば『悪いリリース』です。</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: #ef444414;">
+        <h4>🔴 上級編 — 安全・観測・見積もり・ケーススタディ</h4>
+        <p>認証配置、オブザーバビリティ、バックオブエンベロープ、TaskBoard 10x と URL 短縮。</p>
+      </div>
+
+      <article class="lesson-card" data-section="sysdesign-11" id="sysdesign-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>認証・認可の配置 — Gateway から行レベルまで</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 認証は『誰か』、認可は『何をしてよいか』</h4>
+            <p>JWT/セッションで身份を確立し、リソースごとに所有者チェックします。Gateway だけで認可を終わらせると、サービス間呼び出しで穴が開きます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>層:
+  Edge / API Gateway
+    - TLS 終端、レート制限、JWT 検証（署名）
+  サービス（FastAPI）
+    - クレームから user_id 取得
+    - tasks.id に対する所有権 SQL: WHERE id=? AND user_id=?
+  DB
+    - 行レベルセキュリティ（RLS）は防御深度として有効
+
+アンチパターン:
+  - クライアントが送った user_id を信じる
+  - 「隠しているだけ」の ID（推測可能な連番）に認可無し
+  - 管理 API を同じ認証で公開したまま
+
+TaskBoard:
+  PATCH /tasks/{id} は必ず所有者検証
+  他者なら 403 または 404（存在漏洩を嫌うなら 404）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>セキュリティ章の IDOR と同じ話です。設計図に『認可チェックの位置』を赤で書いてください。箱だけ描いて安心しない。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-12" id="sysdesign-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>オブザーバビリティ — ログ・メトリクス・トレース</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 見えないシステムは運用できない</h4>
+            <p>ログはイベント、メトリクスは集計、トレースはリクエストの横断物語。三つ揃うと『遅い』『落ちた』『なぜ』に答えられます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>Logs（構造化）:
+  {"ts":"...","level":"info","route":"GET /tasks",
+   "user_id":"u_1","latency_ms":42,"request_id":"…"}
+
+Metrics:
+  http_requests_total{route,status}
+  http_request_duration_seconds（ヒストグラム）
+  db_pool_in_use
+
+Traces:
+  Client → API span → DB span
+  request_id / trace_id をログに相関付ける
+
+最低限のダッシュボード:
+  - エラー率（5xx）
+  - p95 レイテンシ
+  - DB 接続数 / スロークエリ
+
+アラートは症状に:
+  「CPU 80%」より「エラー率 &gt; 2% が 5 分」</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>個人開発でも request_id をログに足すだけで、障害再現の速度が段違いです。プリントデバッグの進化版だと思ってください。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-13" id="sysdesign-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">13</span>
+            <h3>キャパシティ見積もり — 封筒の裏計算</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-13')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 桁さえ合えば設計は大きく外さない</h4>
+            <p>QPS・ストレージ・帯域をオーダー計算します。精密さより『1 台で足りるか / 10 台要るか』を判別するのが目的です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>例: TaskBoard 10x 見積もり
+
+前提（仮）:
+  DAU = 10,000
+  1 ユーザーあたり 1 日 20 リクエスト（一覧多め）
+  ピークは平均の 3 倍
+
+QPS:
+  10_000 * 20 / 86400 ≈ 2.3 qps（平均）
+  ピーク ≈ 7 qps  → 単一小さな API で余裕
+
+ストレージ:
+  ユーザー 10k、平均 50 タスク、1 行 200 bytes
+  10k * 50 * 200 ≈ 100 MB  → DB サイズは問題にならない
+
+帯域:
+  一覧 JSON 5 KB * 7 qps ≈ 35 KB/s  → 誤差範囲
+
+いつ真剣に割るか:
+  DAU が 100 万、または重い検索/ファイルアップロード
+  → 計算をやり直し、キャッシュと非同期を検討
+
+⚠️ 見積もりは前提を書く。前提が嘘なら結果も嘘。</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>面接のシステム設計でも、最初の 2 分で DAU と読み書き比率を置くと、以降の議論が噛み合います。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-14" id="sysdesign-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>設計レビュー — ADR とトレードオフ表</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 決定を残さない設計は、半年後に再現できない</h4>
+            <p>ADR（Architecture Decision Record）は『何を選んだか』より『何を捨てたか』を残す文書です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ADR-0003: TaskBoard の永続化に Postgres を選ぶ
+
+Status: Accepted
+Context:
+  localStorage では端末をまたげない。複数ユーザーが必要。
+Decision:
+  マネージド Postgres を単一リージョンで使う。
+Consequences:
+  + トランザクションと認可 SQL が素直
+  + 学習コストが SQLite から連続
+  - 接続数とバックアップ運用が発生
+  - マルチリージョンは後回し
+
+トレードオフ表（抜粋）:
+  選択肢          | レイテンシ | 運用 | 一貫性 | 採用
+  localStorage    | 最速       | 易   | 端末内 | 学習初期
+  SQLite ファイル | 速い       | 中   | 強     | 単体デモ
+  Postgres        | 十分       | 中   | 強     | ✅
+  分散 DB         | 場合による | 難   | 設計次第| 時期尚早</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>PR に ADR へのリンクを 1 行置くだけで、レビューが『好み』から『前提の検証』に変わります。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-15" id="sysdesign-lesson-15">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">15</span>
+            <h3>ケーススタディ — TaskBoard を 10x ユーザーへ</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-15')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 同じアプリでも段階で形が変わる</h4>
+            <p>学習用の一式から、読み取り負荷・障害・リリース安全へと進化させます。いきなり全部やらない。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>Phase 0（今）:
+  [Browser] → [API x1] → [Postgres x1]
+  デプロイ: 手動 or 単純 CI
+
+Phase 1（利用者増・読み取り増）:
+  [CDN: 静的] → [LB] → [API x2+] → [Postgres]
+  - ステートレス化完了
+  - /ready ヘルスチェック
+  - スロークエリに INDEX（user_id, created_at）
+
+Phase 2（さらに負荷 or 機能増）:
+  [CDN] → [LB] → [API] → [Postgres primary]
+                      └→ [Redis 短 TTL キャッシュ]
+                      └→ [Queue] → [Worker: 通知]
+  - 一覧の p95 を監視
+  - エラー予算を守る
+
+移行の順番（重要）:
+  1. 計測（ログ/メトリクス）
+  2. 正しいクエリ修正
+  3. 水平スケール
+  4. キャッシュ / 非同期
+  逆順は運用負債が増える</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>キャップストーンへの接続</h4>
+            <p>提出物のアーキテクチャ図は Phase 0 と『次の Phase』の 2 枚があると説得力が増します。既知の制限に Phase 1 への宿題を書いてください。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>10x は必ずしもマイクロサービスを意味しません。モジュールモノリス + よい境界の方が、チームが小さいうちは勝率が高いです。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="sysdesign-16" id="sysdesign-lesson-16">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">16</span>
+            <h3>ケーススタディ — URL 短縮と通知配信</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('sysdesign-16')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 別ドメインで同じ語彙を使う練習</h4>
+            <p>URL 短縮は『書き込み少なく・読み取り多い・キー設計』。通知は『非同期・冪等・バックプレッシャー』。両方とも TaskBoard 拡張の雛形になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>A) URL 短縮（読み取り優勢）
+
+  POST /shorten { url } → { code }
+  GET  /{code} → 302 Location: 元 URL
+
+  データ:
+    code (PK, 7 chars) | long_url | created_at | hits
+
+  論点:
+    - code の生成（乱数 vs ハッシュ）と衝突
+    - キャッシュ: code → long_url を Redis へ
+    - ホットキー（バズった短 URL）対策
+    - 削除/失効と法的要件
+
+B) 通知配信（非同期必須）
+
+  task.completed → イベント
+  Worker がメール/Webhook 送信
+  リトライ: 指数バックオフ
+  冪等キー: event_id で二重送信防止
+  過負荷時: キュー長を監視し、受付を 503 で戻すことも
+
+共通テンプレ（設計面接の型）:
+  1. 要件・NFR を置く
+  2. API とデータモデル
+  3. ボトルネックを予測
+  4. スケール手段を段階で出す
+  5. 失敗モードと観測</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務で遭遇する現場の勘所</h4>
+            <p>新しい題材でも『リクエストの旅・責務・一貫性・可用性・観測』のチェックリストを回せば、ゼロから迷子になりません。それがこの章の成果です。</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="quiz-section" id="sysdesign-quiz">
+        <div class="quiz-header"><h3>🧠 理解度チェック</h3></div>
+        <p class="quiz-intro">要件・スケール・一貫性・可用性の要点を確認しましょう。</p>
+        <div id="sysdesign-quiz-container"></div>
+        <div class="quiz-result" id="sysdesign-quiz-result"></div>
+      </div>
+
+      <div class="puzzle-section" id="sysdesign-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 リクエスト経路パズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番に組み立ててください。</p>
+        <div class="puzzle-question" id="sysdesign-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="sysdesign-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="sysdesign-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップして完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('sysdesign')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('sysdesign')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="sysdesign-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

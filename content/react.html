@@ -1603,6 +1603,203 @@ export const getHandler = async ({ ctx, input }: GetOptions) => {
         </div>
       </article>
 
+      <!-- ===== モバイルへの橋（RN / Expo） ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #06b6d4; background: rgba(6,182,212,0.08);">
+        <h4>📱 モバイルへの橋 — React Native / Expo</h4>
+        <p>ここまでの React は Web（DOM）向けです。同じ「コンポーネントと状態」の思考をネイティブへ写す最短の地図だけ置きます。通しプロジェクト（縦糸）は Web のまま進め、本格的な RN カリキュラムは別章（elective）候補です。</p>
+      </div>
+
+      <article class="lesson-card" data-section="react-18" id="react-lesson-18">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">18</span>
+            <h3>Web React と React Native の対応表</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-18')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 同じ React、違う「描画先」</h4>
+            <p>React Native（RN）も <code>useState</code> / props / フックのルールは同じです。違うのは <strong>DOM が無い</strong>こと。HTML タグの代わりにネイティブ部品（View / Text / Pressable）を使い、CSS もブラウザのカスケードではなく StyleSheet のオブジェクトです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>よく使う対応</h4>
+            <p>頭の中の辞書を一度入れ替えると、既存のコンポーネント設計がそのまま移植しやすくなります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">対応表</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>Web (DOM)              React Native
+──────────────         ─────────────────
+div / section          View
+p / span / h1          Text
+button / a             Pressable / TouchableOpacity
+img                    Image
+input                  TextInput
+className + CSS        style={styles.xxx}（StyleSheet）
+react-router           @react-navigation/*</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT NATIVE</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import { View, Text, Pressable, StyleSheet } from "react-native";
+
+export function TaskRow({ title, onPress }) {
+  return (
+    &lt;View style={styles.row}&gt;
+      &lt;Text&gt;{title}&lt;/Text&gt;
+      &lt;Pressable onPress={onPress}&gt;
+        &lt;Text&gt;開く&lt;/Text&gt;
+      &lt;/Pressable&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  row: { padding: 12, flexDirection: "row", justifyContent: "space-between" },
+});</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：現場の勘所</h4>
+            <p>「CSS をそのまま持っていく」は失敗しやすいです。レイアウトは Flexbox が中心で、Web のセレクタ・メディアクエリ・一部単位は使えません。状態とデータ取得のフックは再利用し、見た目レイヤだけ RN 用に切り替えるのが定石です。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="react-19" id="react-lesson-19">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">19</span>
+            <h3>Expo で同じ思考を保つ最小構成</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-19')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 Expo は「RN への最短オンランプ」</h4>
+            <p>素の React Native CLI はネイティブビルド環境のセットアップが重いです。Expo はツールチェーンと開発クライアントを用意し、<strong>JS/TS のまま画面を回す</strong>ところまでを短くします。学習と試作の入口として合理的です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>最小の心象風景</h4>
+            <p>アプリの入口は Web の <code>main.tsx</code> に近く、画面はコンポーネントの木です。ルーティングはファイルベース（Expo Router）か React Navigation を選びます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">SHELL</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 新規（公式テンプレの一例）
+npx create-expo-app@latest MyApp
+cd MyApp
+npx expo start
+# QR を Expo Go で開く / シミュレータで開く</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">APP (概念)</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// App.tsx — Web のルートコンポーネントと同じ役割
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View } from "react-native";
+
+export default function App() {
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Text&gt;TaskBoard (mobile)&lt;/Text&gt;
+      &lt;StatusBar style="auto" /&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, alignItems: "center", justifyContent: "center" },
+});</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Web で学んだことの再利用</h4>
+            <ul>
+              <li>状態は <code>useState</code> / <code>useReducer</code>（このサイトの演習と同じ）</li>
+              <li>副作用は <code>useEffect</code>（購読のクリーンアップも同じ）</li>
+              <li>リストの <code>key</code> は安定 ID（index 禁止の理由も同じ）</li>
+            </ul>
+            <p>変わるのは主に UI プリミティブとビルド/配布です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：現場の勘所</h4>
+            <p>最初から「素の RN + 自前ネイティブモジュール」に行かず、Expo の managed で画面と API 契約を固める方が失敗が少ないです。ネイティブモジュールが本当に必要になったら prebuild / 開発ビルドへ降りればよい、という段階戦略が現実的です。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="react-20" id="react-lesson-20">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">20</span>
+            <h3>いつ Web / いつ RN か — このサイトでの進め方</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-20')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 選択は「同じ状態モデルをどこに載せるか」</h4>
+            <p>モバイルが必要でも、まず Web でデータ形・API・認可を固めると総コストが下がります。このサイトの通しプロジェクト（TaskBoard）も <strong>Web 固定</strong>です。RN は「同じ思考の移植」として後続オプションに置きます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>ざっくり判断</h4>
+            <pre><code>優先 Web（ブラウザ）
+  - 社内ツール、管理画面、SEO が要る公開サイト
+  - まず API とドメインを検証したい
+
+優先 RN / Expo
+  - カメラ・プッシュ・オフラインが中核
+  - ストア配布がプロダクト要件
+
+両方
+  - 共有は「ドメインロジックと API クライアント」
+  - UI は Web / Native で分ける（無理な完全共有は避ける）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>このカリキュラムでの位置づけ</h4>
+            <ol>
+              <li>React（Web）章を完了する ← 今ここまでの本体</li>
+              <li>Pathway / Capstone は Web で通す</li>
+              <li>必要なら RN/Expo を elective 章として深掘り（将来）</li>
+            </ol>
+            <p>橋渡し 3 レッスンのゴールは「対応表が頭にあり、Expo で Hello を想像できる」までです。ストア審査・ネイティブモジュール・性能チューニングは本編の外です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：現場の勘所</h4>
+            <p>「最初からクロスプラットフォームで全部書く」は、状態と API が固まっていない段階では逆に遅いです。Web で契約を固定 → モバイルは薄いクライアント、の順がフルスタック学習と相性が良いです。</p>
+          </div>
+        </div>
+      </article>
+
     
 <div class="quiz-section" id="react-quiz">
         <div class="quiz-header">

@@ -16,40 +16,15 @@
   <header class="hero" id="hero">
     <canvas id="particle-canvas"></canvas>
     <div class="hero-content">
-      <div class="hero-badge">🚀 AI時代のプログラマーへ</div>
       <h1 class="hero-title">
         <span class="gradient-text">Code Foundations</span>
       </h1>
       <p class="hero-subtitle">
-        Python・React・TypeScript<br>
-        <span class="highlight-text">基礎から実践まで</span>、手を動かして学ぶ
+        「なぜそう書くのか」を、手を動かして身につける学習ガイド
       </p>
-      <p class="hero-description">
-        生成AIでアプリを作った経験はあるけど、コードの中身がよくわからない——<br>
-        そんなあなたのための、<strong>「なぜそう書くのか」</strong>を理解するための学習ガイドです。
-      </p>
-      <!-- 統計値は app.js が TABS / quizData / puzzleData から算出して埋める -->
-      <div class="hero-stats">
-        <div class="stat-item">
-          <span class="stat-number" data-stat="topics">15</span>
-          <span class="stat-label">学習トピック</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number" data-stat="lessons">166</span>
-          <span class="stat-label">レッスン</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number" data-stat="quizzes">121</span>
-          <span class="stat-label">クイズ</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number" data-stat="puzzles">15</span>
-          <span class="stat-label">パズル</span>
-        </div>
-      </div>
-      <a href="#learning-area" class="hero-cta">
+      <a href="#tab-nav" class="hero-cta">
         学習をはじめる
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M12 5v14M19 12l-7 7-7-7"/>
         </svg>
       </a>
@@ -62,10 +37,10 @@
     <!-- Progress Overview -->
     <section class="progress-overview">
       <div class="progress-header">
-        <h2>📊 学習の進捗</h2>
+        <h2>学習の進捗</h2>
         <div class="progress-header-actions">
-          <button type="button" class="progress-io-btn" id="export-progress-btn" title="進捗をJSONファイルに保存">⬇ エクスポート</button>
-          <button type="button" class="progress-io-btn" id="import-progress-btn" title="保存した進捗を読み込み">⬆ インポート</button>
+          <button type="button" class="progress-io-btn" id="export-progress-btn" title="進捗をJSONファイルに保存">エクスポート</button>
+          <button type="button" class="progress-io-btn" id="import-progress-btn" title="保存した進捗を読み込み">インポート</button>
           <input type="file" id="import-progress-file" accept="application/json,.json" hidden>
           <span class="overall-progress-text" id="overall-progress-text">0% 完了</span>
         </div>
@@ -73,17 +48,44 @@
       <div class="progress-bar-container">
         <div class="progress-bar" id="overall-progress-bar"></div>
       </div>
-      <div class="progress-cards"><!-- app.js が TABS レジストリから生成 --></div>
+      <!-- 統計値は app.js が TABS / quizData / puzzleData から算出 -->
+      <div class="catalog-stats" aria-label="学習カタログの規模">
+        <div class="stat-item">
+          <span class="stat-number" data-stat="topics">—</span>
+          <span class="stat-label">トピック</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" data-stat="lessons">—</span>
+          <span class="stat-label">レッスン</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" data-stat="quizzes">—</span>
+          <span class="stat-label">クイズ</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" data-stat="puzzles">—</span>
+          <span class="stat-label">パズル</span>
+        </div>
+      </div>
+      <button type="button" class="disclosure-toggle" id="progress-detail-toggle"
+              aria-expanded="false" aria-controls="progress-cards">
+        トピック別の詳細を表示
+      </button>
+      <div class="progress-cards is-collapsed" id="progress-cards" hidden><!-- app.js が生成 --></div>
     </section>
 
     <!-- Learning Roadmap（推奨学習経路） -->
     <section class="roadmap-section" aria-label="学習ロードマップ">
       <div class="roadmap-header">
-        <h2>🗺️ 学習ロードマップ</h2>
-        <p>フルスタックエンジニアへの推奨経路です。上から順に進めると、各章の前提知識が揃った状態で学べます。</p>
+        <h2>学習ロードマップ</h2>
+        <p>推奨順に進めると、各章の前提が揃った状態で学べます。</p>
       </div>
-      <div class="roadmap-track" id="roadmap-track"></div>
-      <p class="roadmap-note">📜 Python認定基礎 / 🏆 Python実践試験 / 🤖 生成AIパスポート は、対応する章の学習後いつでも挑戦できる資格・知識の補強コンテンツです。</p>
+      <button type="button" class="disclosure-toggle" id="roadmap-detail-toggle"
+              aria-expanded="false" aria-controls="roadmap-track">
+        推奨経路を表示
+      </button>
+      <div class="roadmap-track is-collapsed" id="roadmap-track" hidden></div>
+      <p class="roadmap-note">Python認定基礎 / Python実践試験 / 生成AIパスポートは、対応章のあと任意で挑戦できます。</p>
     </section>
 
     <!-- Tab Navigation（カテゴリグループ化） -->
@@ -117,6 +119,14 @@
 
   <script src="data/quizzes.js"></script>
   <script src="data/puzzles.js"></script>
+  <script src="data/missions.js"></script>
+  <script src="data/crossrefs.js"></script>
+  <script src="data/taskboard.js"></script>
+  <script src="data/fillblanks.js"></script>
+  <script src="data/exercises.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/runner.js"></script>
+  <script src="js/practice.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

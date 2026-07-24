@@ -1,5 +1,16 @@
+      <div class="tab-intro docker-intro">
+        <h2>🐳 Docker</h2>
+        <p>コンテナの基礎から Compose・本番運用・デバッグまでを、初級・中級・上級の 3 段階で学びます。Linux / CI/CD 章と接続する実務スキルです。</p>
+      </div>
 
-      <article class="lesson-card" data-section="docker-1" id="docker-lesson-1">
+
+      <!-- ===== 初級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
+        <h4>🟢 初級編 — コンテナの正体とイメージの作り方</h4>
+        <p>VM との違い、イメージ／コンテナ／レジストリ、Dockerfile——「動く箱」を自分で作れる状態まで。</p>
+      </div>
+
+<article class="lesson-card" data-section="docker-1" id="docker-lesson-1">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">01</span><h3>コンテナとは何か — 仮想マシンとの違いを根本から理解する</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-1')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 コンテナは「軽量な隔離環境」— OSカーネルを共有するからこそ速い</h4></div>
@@ -32,8 +43,7 @@
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Docker を使わない方が良い場面:</strong> GUI アプリケーション、低レイテンシが求められるリアルタイムシステム、Windows ネイティブの .NET Framework アプリ。また、チームに Docker の知見がない場合、学習コストが開発速度を上回ることもあります。<strong>「全てを Docker 化すべき」は誤り</strong>です。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="docker-2" id="docker-lesson-2">
+<article class="lesson-card" data-section="docker-2" id="docker-lesson-2">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">02</span><h3>Docker の基本概念 — イメージ・コンテナ・レジストリ</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-2')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 イメージ = レシピ（設計図）、コンテナ = 料理（実体）</h4></div>
@@ -74,8 +84,7 @@ docker rm my-nginx     # コンテナを削除</code></pre>
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Docker Hub の「公式イメージ」の見分け方:</strong> 公式イメージは <code>python</code>, <code>nginx</code>, <code>postgres</code> のように<strong>ユーザー名なし</strong>で表示されます。<code>someone/python</code> のように / が入っているものは非公式です。セキュリティリスクを避けるため、<strong>本番では必ず公式イメージ（Official Image）のバッジを確認</strong>してください。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="docker-3" id="docker-lesson-3">
+<article class="lesson-card" data-section="docker-3" id="docker-lesson-3">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">03</span><h3>Dockerfile — イメージ設計の技術</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-3')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 Dockerfile は「再現可能な環境構築の手順書」</h4></div>
@@ -117,7 +126,13 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
         </div>
       </article>
 
-      <article class="lesson-card" data-section="docker-4" id="docker-lesson-4">
+      <!-- ===== 中級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
+        <h4>🔶 中級編 — 複数容器・永続化・現場の切り分け</h4>
+        <p>Compose、ボリュームとネットワーク、開発〜本番の流れに加え、HEALTHCHECK・イメージ肥大化対策・ログ／exec デバッグを固めます。</p>
+      </div>
+
+<article class="lesson-card" data-section="docker-4" id="docker-lesson-4">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">04</span><h3>docker compose — 複数コンテナの連携</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-4')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 現実のサービスは「Web + DB + キャッシュ」の組み合わせで動く</h4></div>
@@ -168,8 +183,7 @@ volumes:
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong><code>depends_on</code> の罠:</strong> デフォルトの <code>depends_on</code> は「コンテナが起動した」だけを保証し、「アプリが準備完了した」ことは保証しません。PostgreSQL のコンテナは起動しても、接続を受け付けるまでに数秒かかります。<code>condition: service_healthy</code> + <code>healthcheck</code> の組み合わせで解決してください。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="docker-5" id="docker-lesson-5">
+<article class="lesson-card" data-section="docker-5" id="docker-lesson-5">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">05</span><h3>ボリュームとネットワーク — データ永続化と通信</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-5')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 コンテナは「使い捨て」— だからこそデータの置き場所が重要</h4></div>
@@ -191,8 +205,7 @@ docker run -v $(pwd):/app python:3.12
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>最もよくある事故:</strong> <code>docker compose down -v</code> の <code>-v</code> フラグは <strong>Named Volume も削除</strong> します。開発中にデータベースを含むボリュームを消してしまい、データが全て消失する事故が頻発します。<strong><code>-v</code> は「何が削除されるか」を理解してから使ってください。</strong></p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="docker-6" id="docker-lesson-6">
+<article class="lesson-card" data-section="docker-6" id="docker-lesson-6">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">06</span><h3>実務の Docker ワークフロー — 開発→テスト→本番</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-6')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 「開発で docker compose、本番は別」が現実解</h4></div>
@@ -215,8 +228,187 @@ docker push 123456789.dkr.ecr.ap-northeast-1.amazonaws.com/myapp:latest</code></
         </div>
       </article>
 
-      <article class="lesson-card" data-section="docker-7" id="docker-lesson-7">
-        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">07</span><h3>Docker セキュリティ — 本番運用の鉄則</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+      <!-- Lesson 9 (new) -->
+      <article class="lesson-card" data-section="docker-9" id="docker-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>.dockerignore とイメージ肥大化対策 — 速く・小さく・安全に</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 コピーした瞬間にイメージは太る</h4>
+            <p><strong>マルチステージビルドだけでは不十分です。</strong> <code>node_modules</code> や <code>.git</code>、<code>.env</code> をビルド文脈に入れるとサイズ・秘密漏洩・キャッシュ無効化の三重苦になります。<code>.dockerignore</code> とレイヤ順の最適化は、CI 時間を直接削ります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>最低限 ignore する項目</h4>
+            <p>VCS、依存のローカルコピー、秘密、ビルド成果、エディタ設定を外します。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Text</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>.git
+.gitignore
+.env
+.env.*
+node_modules
+dist
+__pycache__
+*.pyc
+.venv
+.pytest_cache
+README.md
+docs/</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>レイヤキャッシュを活かす順序</h4>
+            <p>変わりにくいファイル（依存定義）を先に COPY → install、ソースは後。これだけで再ビルドが桁違いに速くなります。</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Dockerfile</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>FROM python:3.12-slim AS base
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：docker history で太ったレイヤを見る</h4>
+            <p><code>docker history IMAGE</code> でどの命令が重いが一目瞭然です。感覚ではなく数値でダイエットしてください。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- Lesson 10 (new) -->
+      <article class="lesson-card" data-section="docker-10" id="docker-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>HEALTHCHECK — 「起動した」と「準備できた」を分ける</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 depends_on だけではアプリは待ってくれない</h4>
+            <p><strong>コンテナプロセスの起動と、ポートで応答できる状態は別物です。</strong> DB や API に対し HEALTHCHECK（または Compose の healthcheck）を定義し、<code>depends_on: condition: service_healthy</code> で依存を待つと、起動レースのフレークが消えます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Dockerfile</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>HEALTHCHECK --interval=10s --timeout=3s --retries=5 --start-period=10s \
+  CMD curl -fsS http://127.0.0.1:8000/health || exit 1</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>services:
+  api:
+    build: .
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+  web:
+    depends_on:
+      api:
+        condition: service_healthy</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：/health は軽く保つ</h4>
+            <p>ヘルスチェックが重い外部 API を叩くと、負荷試験中に自分で自分を落とします。プロセス生存か、ローカル DB ping 程度に留めます。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- Lesson 11 (new) -->
+      <article class="lesson-card" data-section="docker-11" id="docker-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>コンテナのデバッグ — logs / exec / inspect</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 壊れた箱の中を、壊さずに覗く</h4>
+            <p><strong>本番相当の障害切り分けは、ほぼログと一時シェルです。</strong> <code>docker compose logs -f</code> で時系列を追い、<code>exec</code> で中に入り、<code>inspect</code> でネットワークとマウントを確認します。Linux 章の <code>ps</code> / <code>ss</code> / <code>curl</code> がここで活きます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ログ追従
+docker compose logs -f api
+
+# 稼働中コンテナでシェル（イメージに sh がある前提）
+docker compose exec api sh
+# curl localhost:8000/health
+# ls -la /data
+
+# 設定・IP・マウントの確認
+docker inspect $(docker compose ps -q api) | head
+
+# 終了済みの理由
+docker compose ps -a
+docker inspect --format '{{.State.ExitCode}} {{.State.Error}}' NAME</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：exec できないときは run で同イメージを調査</h4>
+            <p>起動即死するコンテナには <code>docker compose run --rm --entrypoint sh api</code> で入り、コマンドを手動実行して原因を特定します。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- ===== 上級編 セパレータ ===== -->
+      <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #ef4444; background: rgba(239,68,68,0.08);">
+        <h4>🔴 上級編 — 環境差を消し、本番耐性を上げる</h4>
+        <p>セキュリティとオーケストレーション概論に加え、dev/prod の Compose 分離、リソース制限、BuildKit キャッシュまで。</p>
+      </div>
+
+<article class="lesson-card" data-section="docker-7" id="docker-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">10</span><h3>Docker セキュリティ — 本番運用の鉄則</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 コンテナは「デフォルトで安全」ではない</h4></div>
           <div class="code-block"><div class="code-header"><span class="code-lang">Dockerfile — セキュリティのベストプラクティス</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
@@ -243,9 +435,8 @@ CMD ["app.py"]</code></pre>
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Alpine vs Distroless:</strong> Alpine は軽量（5MB）でシェルが使えるためデバッグしやすい一方、musl libc を使うため<strong>一部のPythonパッケージが動かない</strong>ことがあります。Distroless はシェルもパッケージマネージャもない究極の最小イメージで、<strong>攻撃面が最小</strong>ですがデバッグが困難です。開発は Alpine、本番は Distroless が現実的な使い分けです。</p></div>
         </div>
       </article>
-
-      <article class="lesson-card" data-section="docker-8" id="docker-lesson-8">
-        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">08</span><h3>コンテナオーケストレーション概論 — Kubernetes への橋渡し</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+<article class="lesson-card" data-section="docker-8" id="docker-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">11</span><h3>コンテナオーケストレーション概論 — Kubernetes への橋渡し</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
           <div class="concept-box"><h4>💡 「コンテナ1個」から「コンテナ1000個」への道</h4></div>
           <div class="explanation-box"><h4>なぜオーケストレーションが必要か</h4><p><code>docker compose</code> は1台のサーバーで複数コンテナを管理できますが、<strong>トラフィック増加で複数サーバーが必要</strong>になると対応できません。Kubernetes（K8s）は<strong>数百〜数千のコンテナを複数サーバーに分散配置し、自動スケーリング、自動復旧、ローリングアップデート</strong>を実現するプラットフォームです。</p></div>
@@ -274,6 +465,175 @@ spec:
             cpu: "500m"</code></pre>
           </div>
           <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>「Kubernetes は本当に必要か？」:</strong> K8s の学習・運用コストは非常に高いです。<strong>月間100万リクエスト以下、チーム5人以下</strong>なら、<strong>AWS ECS / Google Cloud Run / Fly.io</strong> のようなマネージドサービスの方が費用対効果が高いことが多いです。「K8s を使いこなすこと」を目的にしないでください。</p></div>
+        </div>
+      </article>
+
+      <!-- Lesson 12 (new) -->
+      <article class="lesson-card" data-section="docker-12" id="docker-lesson-12">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">12</span>
+            <h3>compose override — 開発と本番でファイルを分ける</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-12')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 1 ファイルに全部書くと必ず腐る</h4>
+            <p><strong>共通定義を <code>compose.yml</code> に置き、開発用は <code>compose.override.yml</code>（自動マージ）または <code>-f</code> で重ねます。</strong> ソースのバインドマウントやホットリロードは開発だけ、本番はイメージ内の成果物だけ、が基本です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># compose.yml（共通）
+services:
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: sqlite:////data/app.db
+    volumes:
+      - api-data:/data
+volumes:
+  api-data:
+
+# compose.override.yml（ローカル開発・自動で読まれる）
+services:
+  api:
+    ports: ["8000:8000"]
+    volumes:
+      - ./api:/app
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 本番寄りの起動例（override を使わない）
+docker compose -f compose.yml -f compose.prod.yml up -d --build</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：秘密は override にも直書きしない</h4>
+            <p><code>env_file: .env</code> か実行環境のシークレットに寄せます。CI/CD 章の Environment secrets と同じ思想です。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- Lesson 13 (new) -->
+      <article class="lesson-card" data-section="docker-13" id="docker-lesson-13">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">13</span>
+            <h3>リソース制限と restart — 近所迷惑を防ぐ</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-13')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 1 コンテナがホストを食い潰さないようにする</h4>
+            <p><strong>メモリリークしたアプリは、制限が無いとホストごと落とします。</strong> CPU/メモリ上限と restart ポリシーを Compose で明示し、落ちたときの振る舞い（常に再起動するか、失敗時だけか）を決めます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">YAML</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>services:
+  api:
+    image: myapi:1.2.3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          memory: 128M
+    # Swarm 以外でも、近年の Compose は上記を解釈する実装が多い。
+    # エンジンによっては mem_limit / cpus の旧キーを使う。</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># 単体実行での制限例
+docker run --rm -m 256m --cpus 0.5 myapi:1.2.3</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：OOM で死んだかログを見る</h4>
+            <p>突然死のときは <code>docker inspect</code> の OOMKilled やホストの dmesg を疑います。「アプリ例外」と「カーネルに殺された」は対処が別です。</p>
+          </div>
+        </div>
+      </article>
+
+
+      <!-- Lesson 14 (new) -->
+      <article class="lesson-card" data-section="docker-14" id="docker-lesson-14">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">14</span>
+            <h3>BuildKit キャッシュ — CI の待ち時間を削る</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('docker-14')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 毎回 pip/npm し直すのはパイプラインの敵</h4>
+            <p><strong>GitHub Actions 上の docker build は、キャッシュ戦略で何倍も差が出ます。</strong> BuildKit の cache mount や registry cache を使うと、依存インストール層を再利用できます。CI/CD 章の「速いフィードバック」と直結します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Dockerfile</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># syntax=docker/dockerfile:1
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements.txt
+COPY . .</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Bash</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ローカルで BuildKit 有効化（多くの環境で既定）
+export DOCKER_BUILDKIT=1
+docker build -t myapi:dev .
+
+# CI では docker/build-push-action の cache-from / cache-to を使う</code></pre>
+          </div>
+
+          <div class="explanation-box">
+            <h4>💼 Tips：キャッシュは正しさの敵にもなる</h4>
+            <p>依存を上げたのに古い wheel が残る、などの事故に注意。<code>requirements.txt</code> の変更でレイヤが無効化される設計を維持し、怪しいときだけ <code>--no-cache</code> します。</p>
+          </div>
         </div>
       </article>
 

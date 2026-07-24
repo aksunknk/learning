@@ -1,0 +1,57 @@
+      <div class="tab-intro drills-intro">
+        <h2>✍️ コーディング演習</h2>
+        <p>章を横断して「書いて判定する」問題の正本です。フィルタで絞り、1問ずつ実装してください。関連レッスンへいつでも戻れます。</p>
+      </div>
+
+      <article class="lesson-card open" data-section="drills-1" id="drills-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>演習ハブの使い方</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('drills-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 本文は辞書、ここがジム</h4>
+            <p>各章の末尾には代表問題への短い導線だけを残し、<strong>問題の本体はこのハブ</strong>に集約しています。クリア状態は端末に保存され、章をまたいでも続きます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>進め方</h4>
+            <p>1. フィルタで章・言語・難易度・未クリアを選ぶ<br>2. 問題を開き、スターターを編集する<br>3. 「判定する」で隠しテストと照合する<br>4. 詰まったら関連レッスンへジャンプする</p>
+          </div>
+        </div>
+      </article>
+
+      <div id="drills-app" class="drills-app" aria-live="polite">
+        <p class="drills-loading">演習カタログを準備しています…</p>
+      </div>
+
+      <div class="quiz-section" id="drills-quiz">
+        <div class="quiz-header"><h3>🧠 理解度チェック</h3></div>
+        <p class="quiz-intro">演習の進め方を確認しましょう。</p>
+        <div id="drills-quiz-container"></div>
+        <div class="quiz-result" id="drills-quiz-result"></div>
+      </div>
+
+      <div class="puzzle-section" id="drills-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 演習手順パズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順番に組み立ててください。</p>
+        <div class="puzzle-question" id="drills-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="drills-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="drills-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップして完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('drills')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('drills')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="drills-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
