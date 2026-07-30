@@ -499,9 +499,11 @@ async function main() {
   if (!results.tabs.drills?.drillsApp) {
     failures.push("drills hub mount (#drills-app) missing");
   }
-  if ((results.tabs.drills?.drillsList || 0) < 10) {
+  // exerciseData 全問 + data/drills.js 追加分（現行 87）
+  const EXPECTED_DRILLS_COUNT = 87;
+  if ((results.tabs.drills?.drillsList || 0) !== EXPECTED_DRILLS_COUNT) {
     failures.push(
-      `drills hub should list many exercises, got ${results.tabs.drills?.drillsList}`
+      `drills hub should list ${EXPECTED_DRILLS_COUNT} exercises, got ${results.tabs.drills?.drillsList}`
     );
   }
   if (!(results.groups.practice || []).includes("drills")) {
