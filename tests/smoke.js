@@ -215,6 +215,16 @@ async function main() {
     }, group);
   }
 
+  // ハッシュ路由: #backend でバックエンドグループがアクティブになる
+  results.hashRoute = await page.evaluate(async () => {
+    history.pushState(null, "", "#backend");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    await new Promise((r) => setTimeout(r, 50));
+    const group = document.querySelector(".tab-group-btn.active")?.dataset.group;
+    const tab = document.querySelector(".tab-button.active")?.dataset.tab;
+    return { hash: location.hash, group, tab };
+  });
+
   // SQLプレイグラウンド（databaseタブ）
   await page.evaluate(() => window.switchTab("database"));
   await page.waitForFunction(
@@ -522,6 +532,19 @@ async function main() {
     failures.push("backend group missing docker");
   if (!(results.groups.backend || []).includes("django"))
     failures.push("backend group missing django");
+  if (results.hashRoute?.hash !== "#backend") {
+    failures.push(`hash route expected #backend, got ${results.hashRoute?.hash}`);
+  }
+  if (results.hashRoute?.group !== "backend") {
+    failures.push(
+      `hash #backend should activate backend group, got ${results.hashRoute?.group}`
+    );
+  }
+  if (!(results.groups.backend || []).includes(results.hashRoute?.tab)) {
+    failures.push(
+      `hash #backend active tab should be in backend, got ${results.hashRoute?.tab}`
+    );
+  }
   if (!(results.groups.frontend || []).includes("react"))
     failures.push("frontend group missing react");
   if (!(results.groups.practice || []).includes("capstone"))

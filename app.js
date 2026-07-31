@@ -47,6 +47,9 @@ const TABS = {
 const TAB_IDS = Object.keys(TABS);
 const DEFAULT_TAB = "htmlcss";
 
+// カテゴリグループ（index.html の .tab-group-btn と一致）。ハッシュ路由の単位。
+const TAB_GROUP_IDS = ["basics", "backend", "frontend", "practice"];
+
 // 学習ロードマップ（推奨順）。フルスタックエンジニアへの最短経路。
 // ラベル・アイコンは TABS から導出する。
 // ここに無いタブ（資格・知識系・Rust など）は補強コンテンツとして別枠表示する。
@@ -76,6 +79,9 @@ const ROADMAP = [
 // タブ別コンテンツの読込状態（未読込 / 読込中 / 完了）
 const contentCache = Object.create(null);
 
+// ハッシュ自行更新中は hashchange/popstate を無視する
+let suppressHashRoute = false;
+
 // --------------------------------------------------
 // 進捗状態（STORAGE_KEYS / safeParse は js/utils.js）
 // --------------------------------------------------
@@ -92,9 +98,9 @@ const lastTabByGroup = {};
 document.addEventListener("DOMContentLoaded", async () => {
   renderShell();
   initTabs();
+  initHashRouting();
   initDisclosures();
   initStickyNavCompact();
-  setActiveTabGroup("basics");
   initParticles();
   initScrollAnimations();
   initPuzzleDropzones();
@@ -102,11 +108,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   initSearch();
   initProgressIO();
 
-  // 初期表示タブを先に読み込み、進捗・クイズ・パズルを有効化する
-  const initial =
-    document.querySelector(".tab-button.active")?.dataset.tab || "htmlcss";
-  lastTabByGroup[TABS[initial]?.group || "basics"] = initial;
-  await loadTabContent(initial);
+  // ハッシュ（例: #backend）があればそのグループを初期表示。無ければ basics。
+  const initialGroup = parseTabGroupHash(location.hash) || "basics";
+  setActiveTabGroup(initialGroup);
+  const initialTab = resolveTabForGroup(initialGroup);
+  lastTabByGroup[initialGroup] = initialTab;
+  // ディープリンク時は履歴を汚さずハッシュを正規化
+  setGroupHash(initialGroup, "replace");
+  await switchTab(initialTab, { skipHash: true });
 
   restoreProgress();
   updateAllProgress();
@@ -270,6 +279,57 @@ function retryLoadTab(tabId) {
 // --------------------------------------------------
 // タブナビゲーション
 // --------------------------------------------------
+function parseTabGroupHash(hash) {
+  const raw = String(hash || "")
+    .replace(/^#/, "")
+    .trim()
+    .toLowerCase();
+  return TAB_GROUP_IDS.includes(raw) ? raw : null;
+}
+
+function firstTabInGroup(group) {
+  return TAB_IDS.find((id) => TABS[id].group === group) || DEFAULT_TAB;
+}
+
+function resolveTabForGroup(group) {
+  const remembered = lastTabByGroup[group];
+  if (remembered && TABS[remembered]?.group === group) return remembered;
+  const rememberedBtn = remembered
+    ? document.querySelector(
+        `.tab-button[data-tab="${remembered}"][data-group="${group}"]`
+      )
+    : null;
+  if (rememberedBtn) return rememberedBtn.dataset.tab;
+  const firstBtn = document.querySelector(`.tab-button[data-group="${group}"]`);
+  return firstBtn?.dataset.tab || firstTabInGroup(group);
+}
+
+/** URL ハッシュをカテゴリグループと同期（リロードなし） */
+function setGroupHash(group, mode = "push") {
+  if (!TAB_GROUP_IDS.includes(group)) return;
+  const next = `#${group}`;
+  if (location.hash === next) return;
+  suppressHashRoute = true;
+  const url = `${location.pathname}${location.search}${next}`;
+  if (mode === "replace") history.replaceState(null, "", url);
+  else history.pushState(null, "", url);
+  queueMicrotask(() => {
+    suppressHashRoute = false;
+  });
+}
+
+function initHashRouting() {
+  const onRoute = () => {
+    if (suppressHashRoute) return;
+    const group = parseTabGroupHash(location.hash) || "basics";
+    setActiveTabGroup(group);
+    const tab = resolveTabForGroup(group);
+    switchTab(tab, { skipHash: true });
+  };
+  window.addEventListener("hashchange", onRoute);
+  window.addEventListener("popstate", onRoute);
+}
+
 function initTabs() {
   const tabButtons = document.querySelectorAll(".tab-button");
   const indicator = document.getElementById("tab-indicator");
@@ -278,21 +338,14 @@ function initTabs() {
     btn.addEventListener("click", () => switchTab(btn.dataset.tab));
   });
 
-  // カテゴリ切替ボタン（最後に開いたタブを優先）
+  // カテゴリ切替ボタン（最後に開いたタブを優先）→ ハッシュも更新
   document.querySelectorAll(".tab-group-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const group = btn.dataset.group;
       setActiveTabGroup(group);
-      const remembered = lastTabByGroup[group];
-      const rememberedBtn = remembered
-        ? document.querySelector(
-            `.tab-button[data-tab="${remembered}"][data-group="${group}"]`
-          )
-        : null;
-      const target =
-        rememberedBtn ||
-        document.querySelector(`.tab-button[data-group="${group}"]`);
-      if (target) switchTab(target.dataset.tab);
+      setGroupHash(group, "push");
+      const targetTab = resolveTabForGroup(group);
+      if (targetTab) switchTab(targetTab, { skipHash: true });
     });
   });
 
@@ -324,15 +377,17 @@ function setActiveTabGroup(group) {
   });
 }
 
-async function switchTab(tabName) {
+async function switchTab(tabName, opts = {}) {
   const tabButtons = document.querySelectorAll(".tab-button");
   const tabContents = document.querySelectorAll(".tab-content");
   const indicator = document.getElementById("tab-indicator");
 
   // グループが異なる場合はグループも切替
   const targetBtn = document.querySelector(`[data-tab="${tabName}"]`);
-  if (targetBtn?.dataset.group) {
-    setActiveTabGroup(targetBtn.dataset.group);
+  const group = targetBtn?.dataset.group || TABS[tabName]?.group;
+  if (group) {
+    setActiveTabGroup(group);
+    if (!opts.skipHash) setGroupHash(group, "replace");
   }
 
   tabButtons.forEach((b) => {
