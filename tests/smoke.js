@@ -205,7 +205,8 @@ async function main() {
     );
   }
 
-  // カテゴリ切替で表示タブ数が変わること
+  // カテゴリ切替で表示タブ数が変わること + BAD/GOOD 比較の有無
+  results.coreConcepts = {};
   for (const group of ["basics", "backend", "frontend", "practice"]) {
     results.groups[group] = await page.evaluate((g) => {
       document.querySelector(`.tab-group-btn[data-group="${g}"]`).click();
@@ -213,6 +214,15 @@ async function main() {
         (b) => b.dataset.tab
       );
     }, group);
+    results.coreConcepts[group] = await page.evaluate(() => {
+      const root = document.getElementById("core-concept-root");
+      return {
+        visible: !!(root && !root.hidden),
+        hasBad: !!root?.querySelector(".core-concept-pane.is-bad pre code"),
+        hasGood: !!root?.querySelector(".core-concept-pane.is-good pre code"),
+        title: root?.querySelector(".core-concept-title")?.textContent || "",
+      };
+    });
   }
 
   // ハッシュ路由: #backend でバックエンドグループがアクティブになる
@@ -532,6 +542,14 @@ async function main() {
     failures.push("backend group missing docker");
   if (!(results.groups.backend || []).includes("django"))
     failures.push("backend group missing django");
+  for (const group of ["basics", "backend", "frontend", "practice"]) {
+    const cc = results.coreConcepts?.[group];
+    if (!cc?.visible || !cc.hasBad || !cc.hasGood) {
+      failures.push(
+        `coreConcept missing for ${group}: ${JSON.stringify(cc || null)}`
+      );
+    }
+  }
   if (results.hashRoute?.hash !== "#backend") {
     failures.push(`hash route expected #backend, got ${results.hashRoute?.hash}`);
   }

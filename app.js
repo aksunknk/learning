@@ -367,6 +367,7 @@ function setActiveTabGroup(group) {
   document.querySelectorAll(".tab-button").forEach((b) => {
     b.hidden = b.dataset.group !== group;
   });
+  renderCoreConcept(group);
   // インジケーター再配置
   requestAnimationFrame(() => {
     const activeBtn = document.querySelector(
@@ -375,6 +376,45 @@ function setActiveTabGroup(group) {
     const indicator = document.getElementById("tab-indicator");
     if (activeBtn && indicator) updateTabIndicator(activeBtn, indicator);
   });
+}
+
+/** 大項目冒頭の BAD / GOOD 比較カードを描画する */
+function renderCoreConcept(group) {
+  const root = document.getElementById("core-concept-root");
+  if (!root) return;
+  if (typeof coreConceptData === "undefined" || !coreConceptData[group]) {
+    root.hidden = true;
+    root.innerHTML = "";
+    return;
+  }
+
+  const data = coreConceptData[group];
+  const lang = escapeHtml(data.language || "CODE");
+  root.hidden = false;
+  root.innerHTML = `
+    <section class="core-concept" aria-label="なぜそう書くのか">
+      <header class="core-concept-header">
+        <p class="core-concept-eyebrow">Why we write it this way</p>
+        <h3 class="core-concept-title">${escapeHtml(data.title || "")}</h3>
+        <p class="core-concept-desc">${escapeHtml(data.description || "")}</p>
+      </header>
+      <div class="core-concept-compare">
+        <article class="core-concept-pane is-bad">
+          <div class="core-concept-pane-label">BAD</div>
+          <div class="code-block compact">
+            <div class="code-header"><span class="code-lang">${lang}</span></div>
+            <pre><code>${escapeHtml(data.badCode || "")}</code></pre>
+          </div>
+        </article>
+        <article class="core-concept-pane is-good">
+          <div class="core-concept-pane-label">GOOD</div>
+          <div class="code-block compact">
+            <div class="code-header"><span class="code-lang">${lang}</span></div>
+            <pre><code>${escapeHtml(data.goodCode || "")}</code></pre>
+          </div>
+        </article>
+      </div>
+    </section>`;
 }
 
 async function switchTab(tabName, opts = {}) {
