@@ -103,7 +103,9 @@ const quizData = {
     {"question": "async 関数内で await fetch(...) したあと、HTTP エラー（404 など）を検出するには？", "options": ["await が自動で例外を投げるので何もしない", "response.ok を確認し、必要なら自分で throw する", "response === null を見る", "fetch はエラーにならないので無視してよい"], "correct": 1, "explanation": "fetch はネットワーク失敗以外では reject しません。4xx/5xx も fulfilled になるため、response.ok や status を明示的に確認します。"},
     {"question": "次の出力順として正しいのはどれですか？ console.log(1); setTimeout(()=>console.log(2),0); Promise.resolve().then(()=>console.log(3)); console.log(4);", "options": ["1 2 3 4", "1 4 2 3", "1 4 3 2", "1 3 4 2"], "correct": 2, "explanation": "同期（1,4）の後にマイクロタスク（Promise の 3）、その後にマクロタスク（setTimeout の 2）の順です。"},
     {"question": "ユーザー入力を DOM に入れるとき、XSS 対策として優先すべきなのはどれですか？", "options": ["innerHTML にそのまま代入する", "textContent や createElement でテキストとして扱う", "eval でサニタイズする", "document.write を使う"], "correct": 1, "explanation": "innerHTML への生入力は XSS の典型経路です。テキストなら textContent、構造が必要なら要素を組み立てます。"},
-    {"question": "ES Modules の import / export について正しいものはどれですか？", "options": ["ブラウザでは使えず Node 専用", "type=\"module\" の script でブラウザでも利用できる", "必ず webpack が必要", "default export しか存在しない"], "correct": 1, "explanation": "ES Modules は言語標準で、ブラウザは type=\"module\"、Node は package.json の \"type\": \"module\" などで利用します。"}
+    {"question": "ES Modules の import / export について正しいものはどれですか？", "options": ["ブラウザでは使えず Node 専用", "type=\"module\" の script でブラウザでも利用できる", "必ず webpack が必要", "default export しか存在しない"], "correct": 1, "explanation": "ES Modules は言語標準で、ブラウザは type=\"module\"、Node は package.json の \"type\": \"module\" などで利用します。"},
+    {"question": "ネストした Promise.then をリファクタするとき、最も適切な方針はどれですか？", "options": ["さらに深いネストで分岐を増やす", "async/await で直線化し、エラーは try/catch に集約する", "すべて setTimeout に置き換える", "eval で順番を制御する"], "correct": 1, "explanation": "async/await は非同期の順序を同期コード同様に読める形にします。失敗経路も catch にまとめられます。"},
+    {"question": "互いに依存しない複数の非同期取得を速くする定石はどれですか？", "options": ["必ず直列 await する", "Promise.all で並列化する", "同期 XMLHttpRequest を使う", "グローバル変数に結果を書く"], "correct": 1, "explanation": "依存が無ければ Promise.all（または allSettled）で待ち時間を重ねられます。"}
   ],
 
   "rust": [
@@ -402,7 +404,9 @@ const quizData = {
 {"question": "useRef と useState の決定的な違いはどれ？", "options": ["useRefは数値しか保持できない", "useRefの値を変更しても再レンダリングが起きない", "useStateはDOM参照専用", "useRefはコンポーネント外でも使える"], "correct": 1, "explanation": "ref の .current は変更しても再レンダリングを起こしません。「表示に使う値は state、使わない値は ref」が使い分けの基準です。"},
 {"question": "React Native で Web の div に最も近いプリミティブはどれですか？", "options": ["div", "View", "section", "Box"], "correct": 1, "explanation": "RN には DOM が無く、レイアウトの箱は View です。テキストは Text、ボタン相当は Pressable 等を使います。"},
 {"question": "Expo を学習・試作の入口にする主な理由はどれですか？", "options": ["ネイティブモジュールが一切不要になるから", "ビルド環境のセットアップを後回しにし、JS/TS で画面を回し始めやすいから", "App Store 審査が不要になるから", "useState が不要になるから"], "correct": 1, "explanation": "Expo はツールチェーンと開発クライアントを整え、まずコンポーネントと状態の練習に集中できます。必要になったらネイティブ側へ降りられます。"},
-{"question": "このサイトの通しプロジェクト（TaskBoard）に対する正しい方針はどれですか？", "options": ["最初から RN と Web を同時実装する", "Web でデータ形と API を固め、RN は移植オプションとする", "モバイル専用にし Web を捨てる", "Expo 無しでは React を学べない"], "correct": 1, "explanation": "縦糸は Web 固定です。状態モデルと契約を先に固め、モバイルは同じ思考の移植先として後続に置きます。"}
+{"question": "このサイトの通しプロジェクト（TaskBoard）に対する正しい方針はどれですか？", "options": ["最初から RN と Web を同時実装する", "Web でデータ形と API を固め、RN は移植オプションとする", "モバイル専用にし Web を捨てる", "Expo 無しでは React を学べない"], "correct": 1, "explanation": "縦糸は Web 固定です。状態モデルと契約を先に固め、モバイルは同じ思考の移植先として後続に置きます。"},
+{"question": "useEffect の第2引数（依存配列）を省略したときの典型リスクはどれですか？", "options": ["一度も実行されない", "毎レンダー後に実行され、中で setState するとループしやすい", "必ず SSR 専用になる", "key が必須になる"], "correct": 1, "explanation": "依存配列省略は毎更新で Effect が走ります。取得＋setState と組み合わさると無限ループの温床です。"},
+{"question": "データ取得ロジックをコンポーネントから切り出す主目的として近いのはどれですか？", "options": ["JSX を禁止する", "再利用・テスト・依存の明示を容易にする（カスタムフック化）", "CSS を自動生成する", "useState を不要にする"], "correct": 1, "explanation": "useXxx フックへ移すと画面部品は描画に集中でき、取得の依存とクリーンアップも一箇所にまとまります。"}
 ],
   typescript: [
     {
@@ -468,7 +472,9 @@ const quizData = {
 {"question": "TypeScriptの Utility Types のうち、型 T のすべてのプロパティを「任意（省略可能）」にするのはどれ？", "options": ["Omit<T>", "Pick<T>", "Partial<T>", "Record<T>"], "correct": 2, "explanation": "Partial（パーシャル）を使うと、指定した型のすべてのプロパティに ? がつき、部分的な更新APIなどに便利です。"},
 {"question": "「obj is Bird」のように、戻り値の型として記述し、TypeScriptに型を教え込む仕組みを何と呼ぶ？", "options": ["Type Casting", "Type Assertion", "Type Guard（ユーザー定義型ガード）", "Type Inference"], "correct": 2, "explanation": "ユーザー定義型ガードを使うと、実行時のバリデーション結果をもとに、コンパイル時にも安全な型付けを強制できます。"},
 {"question": "satisfies 演算子（TS 4.9+）が型注釈（: Type）と異なる点は？", "options": ["実行時にも型検査を行う", "型に適合するか検査しつつ、推論された詳細な型を保つ", "any を自動で排除する", "コンパイルを高速化する"], "correct": 1, "explanation": "型注釈は値の型を注釈した型に丸めますが、satisfies は適合検査だけ行い、リテラルレベルの詳細な推論結果をそのまま残します。"},
-{"question": "fetch で受け取った JSON を「as User」でキャストする方法の問題点は？", "options": ["コンパイルエラーになる", "実行時には何も検証されず、想定外のデータで静かに壊れる", "パフォーマンスが大幅に低下する", "JSONのパースに失敗する"], "correct": 1, "explanation": "TypeScript の型はコンパイル時にしか存在しません。外部データは Zod などで実行時に parse（検証）して初めて型を信頼できます。"}
+{"question": "fetch で受け取った JSON を「as User」でキャストする方法の問題点は？", "options": ["コンパイルエラーになる", "実行時には何も検証されず、想定外のデータで静かに壊れる", "パフォーマンスが大幅に低下する", "JSONのパースに失敗する"], "correct": 1, "explanation": "TypeScript の型はコンパイル時にしか存在しません。外部データは Zod などで実行時に parse（検証）して初めて型を信頼できます。"},
+{"question": "API レスポンスを any で受けることの最大の問題はどれですか？", "options": ["実行速度が必ず落ちる", "型検査が無効になり、存在しないプロパティ参照もコンパイルを通る", "import ができなくなる", "ブラウザがクラッシュする"], "correct": 1, "explanation": "any は検査を止めます。境界で型または Zod により形を固定するのがリファクタの第一歩です。"},
+{"question": "外部入力を安全に受けるとき、最初に付ける型として適切なのはどれですか？", "options": ["any", "unknown（必要なら検証して絞り込む）", "never", "Function"], "correct": 1, "explanation": "unknown は「何か分からない」ことを表現し、使う前に絞り込みを強制します。"}
 ],
   webapi: [
     {

@@ -1125,8 +1125,68 @@ console.log(add(2, PI));
         </div>
       </article>
 
+      <article class="lesson-card" data-section="javascript-16" id="javascript-lesson-16">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">16</span>
+            <h3>非同期のリファクタリング — コールバック地獄をほどく</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('javascript-16')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜリファクタするか</h4>
+            <p>ネストした <code>then</code> は成功経路・失敗経路・キャンセルが散らばり、「何が先に起きるか」が読みにくくなります。<code>async/await</code> と早期 return で直線化し、エラーは <code>try/catch</code> に集約します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>BAD — ネストと重複したエラー処理</h4>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+              <pre><code>function loadDashboard(userId) {
+  fetchUser(userId).then((user) => {
+    fetchOrders(user.id).then((orders) => {
+      fetchStats(user.id).then((stats) => {
+        render(user, orders, stats);
+      }).catch(showError);
+    }).catch(showError);
+  }).catch(showError);
+}</code></pre>
+            </div>
+          </div>
+          <div class="explanation-box">
+            <h4>GOOD — async/await + 単一の catch</h4>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+              <pre><code>async function loadDashboard(userId) {
+  try {
+    const user = await fetchUser(userId);
+    const [orders, stats] = await Promise.all([
+      fetchOrders(user.id),
+      fetchStats(user.id),
+    ]);
+    render(user, orders, stats);
+  } catch (err) {
+    showError(err);
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="explanation-box">
+            <h4>演習の着眼点</h4>
+            <p>1. 直列必須か、並列でよいか（<code>Promise.all</code>）<br>2. 失敗時に部分結果を残すか、全体を失敗扱いにするか<br>3. 呼び出し側が <code>await</code> できるよう <code>async</code> 関数として切り出すか</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips</h4>
+            <p>章末クイズとコーディング演習ハブの「非同期結果の整形」で、リファクタ後の純粋なデータ変換を手を動かして確認してください。</p>
+          </div>
+        </div>
+      </article>
 
-      
       <!-- JavaScript Quiz -->
       <div class="quiz-section" id="javascript-quiz">
         <div class="quiz-header">

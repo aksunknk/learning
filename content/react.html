@@ -1800,7 +1800,92 @@ const styles = StyleSheet.create({
         </div>
       </article>
 
-    
+      <article class="lesson-card" data-section="react-21" id="react-lesson-21">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">21</span>
+            <h3>副作用の統制とリファクタリング（useEffect の罠）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-21')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 何でも useEffect に詰めると壊れる</h4>
+            <p>データ取得・購読・DOM 操作を無秩序に <code>useEffect</code> へ押し込むと、(1) 依存配列漏れによる<strong>古いクロージャ</strong>、(2) 依存不足／過剰による<strong>無限フェッチ</strong>、(3) 子への props バケツリレーと副作用の二重管理、が同時に起きます。取得はカスタムフックへ、変換は純粋関数へ切り出します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>BAD — スパゲッティ化したプロフィール画面</h4>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+              <pre><code>function Profile({ userId }: { userId: string }) {
+  const [user, setUser] = useState&lt;User | null&gt;(null);
+  const [posts, setPosts] = useState&lt;Post[]&gt;([]);
+
+  // 依存配列なし → 毎レンダーで fetch（無限ループの温床）
+  useEffect(() => {
+    fetch(`/api/users/${userId}`)
+      .then((r) => r.json())
+      .then((u) => {
+        setUser(u);
+        fetch(`/api/users/${u.id}/posts`)
+          .then((r) => r.json())
+          .then(setPosts);
+      });
+  });
+
+  return &lt;Feed user={user} posts={posts} /&gt;;
+}</code></pre>
+            </div>
+          </div>
+          <div class="explanation-box">
+            <h4>GOOD — フック切り出し + 依存の明示 + クリーンアップ</h4>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+              <pre><code>function useUserBundle(userId: string) {
+  const [user, setUser] = useState&lt;User | null&gt;(null);
+  const [posts, setPosts] = useState&lt;Post[]&gt;([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const u = await fetchUser(userId);
+      const p = await fetchPosts(u.id);
+      if (!cancelled) {
+        setUser(u);
+        setPosts(p);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [userId]);
+
+  return { user, posts };
+}
+
+function Profile({ userId }: { userId: string }) {
+  const { user, posts } = useUserBundle(userId);
+  return &lt;Feed user={user} posts={posts} /&gt;;
+}</code></pre>
+            </div>
+          </div>
+          <div class="explanation-box">
+            <h4>リファクタ手順（チェックリスト）</h4>
+            <pre><code>1. レンダー本体から「取得・購読」を useEffect / フックへ移す
+2. 依存配列に使う値だけを列挙（オブジェクト丸ごと禁止が基本）
+3. アンマウント時の cancelled / abort を入れる
+4. 表示用の整形は純粋関数（コンポーネント外）へ</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>選択式で確認すること</h4>
+            <p>章末クイズの「依存配列を付けない useEffect の結果」「カスタムフック切り出しの主目的」を解いてください。演習ハブには依存配列の変化判定ドリルもあります。</p>
+          </div>
+        </div>
+      </article>
+
 <div class="quiz-section" id="react-quiz">
         <div class="quiz-header">
           <h3>🧠 理解度チェック</h3>

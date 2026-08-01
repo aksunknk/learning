@@ -141,6 +141,28 @@ console.log(formatTask({ title: "learn", done: false }));`,
 console.log(uniqueTitles([]).length);`,
       expect: "a,b,c\n0",
     },
+    {
+      id: "js-write-refactor-settle",
+      title: "非同期結果の整形（リファクタ）",
+      prompt:
+        "settleAll(results) は Promise.allSettled 相当の結果配列を受け、status が \"fulfilled\" の value だけを新しい配列で返す（順序維持）。",
+      hint: "filter + map",
+      lang: "JavaScript",
+      featured: false,
+      starter: `function settleAll(results) {
+  // TODO: [{status, value|reason}, ...] → value[]
+}
+
+`,
+      tests: `const input = [
+  { status: "fulfilled", value: 1 },
+  { status: "rejected", reason: "x" },
+  { status: "fulfilled", value: 3 },
+];
+console.log(settleAll(input).join(","));
+console.log(settleAll([]).length);`,
+      expect: "1,3\n0",
+    },
   ],
 
   python: [
@@ -545,6 +567,25 @@ console.log(labelOf({ status: "done" }));`,
 `,
       tests: `console.log(JSON.stringify(compact({ a: 0, b: "", c: null, d: undefined, e: false })));`,
       expect: '{"a":0,"b":"","e":false}',
+    },
+    {
+      id: "ts-write-refactor-guard",
+      title: "unknown からの絞り込み（リファクタ）",
+      prompt:
+        "asEmail(input) は string かつ trim 後に \"@\" を含むときその trim 済み文字列、それ以外は null。any を使わず実装する。",
+      hint: "typeof + includes",
+      lang: "TypeScript",
+      featured: false,
+      starter: `function asEmail(input) {
+  // TODO
+}
+
+`,
+      tests: `console.log(asEmail(" a@b.c "));
+console.log(asEmail("nope"));
+console.log(asEmail(1));
+console.log(asEmail("  "));`,
+      expect: "a@b.c\nnull\nnull\nnull",
     },
   ],
 
@@ -1270,6 +1311,25 @@ console.log(JSON.stringify(setField({ title: "a", done: false }, "done", true)))
 console.log(cx(null, undefined, ""));
 console.log(cx("only"));`,
       expect: "btn primary lg\n\nonly",
+    },
+    {
+      id: "react-write-refactor-deps",
+      title: "依存配列の変化判定（リファクタ）",
+      prompt:
+        "depsChanged(prev, next) は長さが違う、またはいずれかの index で Object.is が false なら true。どちらも配列前提。",
+      hint: "長さ比較のあと for + Object.is",
+      lang: "JavaScript",
+      featured: false,
+      starter: `function depsChanged(prev, next) {
+  // TODO
+}
+
+`,
+      tests: `console.log(depsChanged([1, "a"], [1, "a"]));
+console.log(depsChanged([1], [1, 2]));
+console.log(depsChanged([NaN], [NaN]));
+console.log(depsChanged([0], [-0]));`,
+      expect: "false\ntrue\nfalse\ntrue",
     },
   ],
 

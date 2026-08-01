@@ -259,6 +259,18 @@ const crossRefData = {
   "javascript-2": [
     { tab: "devtools", section: "devtools-2", label: "Console の使い方" },
   ],
+  "javascript-16": [
+    { tab: "javascript", section: "javascript-11", label: "Promise と async/await" },
+    { tab: "typescript", section: "typescript-16", label: "any を境界で止める" },
+  ],
+  "typescript-16": [
+    { tab: "typescript", section: "typescript-15", label: "Zod と実行時検証" },
+    { tab: "javascript", section: "javascript-16", label: "非同期リファクタ" },
+  ],
+  "react-21": [
+    { tab: "react", section: "react-4", label: "useEffect の罠" },
+    { tab: "react", section: "react-7", label: "依存配列の正しい使い方" },
+  ],
 
   // --- Django ---
   "django-1": [

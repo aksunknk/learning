@@ -1,6 +1,7 @@
 // ============================================================
-// data/coreConcepts.js — 大項目（カテゴリグループ）ごとの
-// 「なぜそう書くのか」BAD / GOOD 比較データ
+// data/coreConcepts.js — 「なぜそう書くのか」BAD / GOOD 比較データ
+// - グループキー（basics 等）: カテゴリ切替時の既定
+// - topics.{tabId}: 個別章（javascript / typescript / react 等）を開いたときの上書き
 // ============================================================
 const coreConceptData = {
   basics: {
@@ -79,5 +80,69 @@ function renderName(el, name) {
   b.textContent = name;
   el.appendChild(b);
 }`,
+  },
+
+  // 章（トピック）単位の上書き — タブ切替時に優先表示
+  topics: {
+    javascript: {
+      title: "なぜそう書くのか — コールバック地獄をほどく",
+      description:
+        "ネストした then / コールバックはエラー経路と順序が読みにくくなります。async/await で「上から下」に直し、失敗は try/catch に集約します。",
+      language: "JavaScript",
+      badCode: `// BAD: ネストした Promise
+fetchUser(id)
+  .then((u) => fetchPosts(u.id)
+    .then((posts) => {
+      render(u, posts);
+    }));`,
+      goodCode: `// GOOD: async/await で直線化
+async function loadProfile(id) {
+  try {
+    const u = await fetchUser(id);
+    const posts = await fetchPosts(u.id);
+    render(u, posts);
+  } catch (err) {
+    showError(err);
+  }
+}`,
+    },
+
+    typescript: {
+      title: "なぜそう書くのか — any で口を塞がない",
+      description:
+        "any は型検査を無効化します。外部 JSON は unknown（または Zod）で受け、必要な形だけに絞り込みます。",
+      language: "TypeScript",
+      badCode: `// BAD: any で握りつぶす
+function saveUser(data: any) {
+  db.insert(data.email); // 存在しないキーでもコンパイル通過
+}`,
+      goodCode: `// GOOD: 形を宣言してから使う
+type User = { email: string; name: string };
+
+function saveUser(data: User) {
+  db.insert(data.email);
+}`,
+    },
+
+    react: {
+      title: "なぜそう書くのか — useEffect に何でも詰め込まない",
+      description:
+        "レンダー中の setState や、依存配列の誤りは無限ループや古いクロージャの温床です。取得ロジックはフック／純粋関数へ切り出し、依存を明示します。",
+      language: "TypeScript",
+      badCode: `// BAD: 依存なし + レンダー中に setState しがち
+useEffect(() => {
+  fetch(\`/api/users/\${userId}\`)
+    .then((r) => r.json())
+    .then(setUser);
+}); // 毎レンダー実行 → ループの危険`,
+      goodCode: `// GOOD: 依存を明示し、取得をフックへ
+useEffect(() => {
+  let cancelled = false;
+  fetchUser(userId).then((u) => {
+    if (!cancelled) setUser(u);
+  });
+  return () => { cancelled = true; };
+}, [userId]);`,
+    },
   },
 };

@@ -1229,7 +1229,63 @@ if (result.success) {
         </div>
       </article>
 
-      <!-- Typescript Quiz -->
+      <article class="lesson-card" data-section="typescript-16" id="typescript-lesson-16">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">16</span>
+            <h3>型安全リファクタリング — any を境界で止める</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-16')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜ any を捨てるか</h4>
+            <p><code>any</code> は「型検査オフ」です。API JSON やフォーム値に付けると、存在しないプロパティ参照もコンパイルが通ってしまい、実行時までバグが潜伏します。境界で形を固定し、内側は型を信頼します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>BAD — any のバケツリレー</h4>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+              <pre><code>async function createTask(body: any) {
+  if (!body.title) throw new Error("no title");
+  await api.post("/tasks", {
+    title: body.title,
+    done: body.done, // 型が無いので typo しても気づかない
+  });
+}</code></pre>
+            </div>
+          </div>
+          <div class="explanation-box">
+            <h4>GOOD — 型（＋必要なら Zod）で入口を固定</h4>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+              <pre><code>type NewTask = { title: string; done?: boolean };
+
+function parseNewTask(input: unknown): NewTask {
+  if (!input || typeof input !== "object") throw new Error("invalid");
+  const title = (input as { title?: unknown }).title;
+  if (typeof title !== "string" || !title.trim()) throw new Error("no title");
+  const done = (input as { done?: unknown }).done;
+  return { title: title.trim(), done: done === true };
+}
+
+async function createTask(input: unknown) {
+  const body = parseNewTask(input);
+  await api.post("/tasks", body);
+}</code></pre>
+            </div>
+          </div>
+          <div class="explanation-box">
+            <h4>演習の着眼点</h4>
+            <p>1. 外部データは <code>unknown</code>（または Zod）で受ける<br>2. 絞り込み後だけ業務ロジックへ渡す<br>3. <code>as Type</code> の連発は any と同罪になりがち — 検証とセットで使う</p>
+          </div>
+        </div>
+      </article>
 
 <div class="quiz-section" id="typescript-quiz">
         <div class="quiz-header">
