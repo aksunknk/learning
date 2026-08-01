@@ -19,11 +19,11 @@
 // lessons は content/{id}.html の lesson-card 数と同期させる（CIが検証する）。
 const TABS = {
   htmlcss:       { label: "HTML/CSS",         short: "HTML",   icon: "🎨", group: "basics",   lessons: 28, accent: "var(--htmlcss-orange)",  glow: "rgba(227,79,38,0.35)" },
-  javascript:    { label: "JavaScript",       short: "JS",     icon: "🟨", group: "basics",   lessons: 15, accent: "#f7df1e",                glow: "rgba(247,223,30,0.35)" },
+  javascript:    { label: "JavaScript",       short: "JS",     icon: "🟨", group: "basics",   lessons: 16, accent: "#f7df1e",                glow: "rgba(247,223,30,0.35)" },
   python:        { label: "Python",           short: "Py",     icon: "🐍", group: "basics",   lessons: 17, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
   algorithm:     { label: "アルゴリズム",     short: "アルゴ", icon: "🧮", group: "basics",   lessons: 8,  accent: "var(--color-warning)",   glow: "rgba(251,191,36,0.35)" },
   rust:          { label: "Rust",             short: "Rust",   icon: "🦀", group: "basics",   lessons: 14, accent: "#ce422b",                glow: "rgba(206,66,43,0.35)" },
-  typescript:    { label: "TypeScript",       short: "TS",     icon: "🔷", group: "basics",   lessons: 15, accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
+  typescript:    { label: "TypeScript",       short: "TS",     icon: "🔷", group: "basics",   lessons: 16, accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
   git:           { label: "Git / GitHub",     short: "Git",    icon: "🌿", group: "basics",   lessons: 8,  accent: "var(--git-orange)",      glow: "rgba(240,80,51,0.35)" },
   linux:         { label: "Linux / CLI",      short: "Linux",  icon: "🐧", group: "basics",   lessons: 14, accent: "#fcc624",                glow: "rgba(252,198,36,0.35)" },
   devtools:      { label: "DevTools",         short: "Dev",    icon: "🧭", group: "basics",   lessons: 12, accent: "#6366f1",                glow: "rgba(99,102,241,0.35)" },
@@ -32,7 +32,7 @@ const TABS = {
   django:        { label: "Django",           short: "Django", icon: "🌿", group: "backend",  lessons: 12, accent: "#092e20",                glow: "rgba(9,46,32,0.35)" },
   docker:        { label: "Docker",           short: "Docker", icon: "🐳", group: "backend",  lessons: 14, accent: "var(--docker-blue)",     glow: "rgba(36,150,237,0.35)" },
   cicd:          { label: "CI/CD・デプロイ",  short: "CI/CD",  icon: "🚀", group: "backend",  lessons: 12, accent: "#2088ff",                glow: "rgba(32,136,255,0.35)" },
-  react:         { label: "React",            short: "React",  icon: "⚛️", group: "frontend", lessons: 20, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
+  react:         { label: "React",            short: "React",  icon: "⚛️", group: "frontend", lessons: 21, accent: "var(--react-cyan)",      glow: "rgba(97,218,251,0.35)" },
   drills:        { label: "コーディング演習", short: "演習",   icon: "✍️", group: "practice", lessons: 1,  accent: "#6366f1",                glow: "rgba(99,102,241,0.35)" },
   "python-cert": { label: "Python認定基礎",   short: "認定",   icon: "📜", group: "practice", lessons: 10, accent: "var(--python-yellow)",   glow: "rgba(255,212,59,0.35)" },
   "python-prac": { label: "Python実践試験",   short: "実践",   icon: "🏆", group: "practice", lessons: 10, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
@@ -367,7 +367,7 @@ function setActiveTabGroup(group) {
   document.querySelectorAll(".tab-button").forEach((b) => {
     b.hidden = b.dataset.group !== group;
   });
-  renderCoreConcept(group);
+  renderCoreConcept(group, resolveTabForGroup(group));
   // インジケーター再配置
   requestAnimationFrame(() => {
     const activeBtn = document.querySelector(
@@ -378,17 +378,25 @@ function setActiveTabGroup(group) {
   });
 }
 
-/** 大項目冒頭の BAD / GOOD 比較カードを描画する */
-function renderCoreConcept(group) {
+/** 大項目／章冒頭の BAD / GOOD 比較カードを描画する（topics があれば章を優先） */
+function renderCoreConcept(group, tabId) {
   const root = document.getElementById("core-concept-root");
   if (!root) return;
-  if (typeof coreConceptData === "undefined" || !coreConceptData[group]) {
+  if (typeof coreConceptData === "undefined") {
     root.hidden = true;
     root.innerHTML = "";
     return;
   }
 
-  const data = coreConceptData[group];
+  const data =
+    (tabId && coreConceptData.topics && coreConceptData.topics[tabId]) ||
+    coreConceptData[group];
+  if (!data) {
+    root.hidden = true;
+    root.innerHTML = "";
+    return;
+  }
+
   const lang = escapeHtml(data.language || "CODE");
   root.hidden = false;
   root.innerHTML = `
@@ -443,6 +451,9 @@ async function switchTab(tabName, opts = {}) {
       lastTabByGroup[targetBtn.dataset.group] = tabName;
     }
   }
+
+  // 章固有の coreConcept（topics）を優先表示
+  if (group) renderCoreConcept(group, tabName);
 
   tabContents.forEach((tc) => tc.classList.remove("active"));
   const targetContent = document.getElementById(`content-${tabName}`);

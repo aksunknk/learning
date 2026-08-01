@@ -45,6 +45,19 @@ console.log(raw.includes("ship"));`,
       answers: ["stringify"],
       expect: "string\ntrue",
     },
+    {
+      id: "js-fb-async",
+      title: "await を置く関数修飾",
+      hint: "非同期関数にするキーワード",
+      lang: "JavaScript",
+      mode: "answers",
+      caseInsensitive: true,
+      template: `___ function load() {
+  const data = await fetch("/api").then((r) => r.json());
+  return data;
+}`,
+      answers: ["async"],
+    },
   ],
   python: [
     {
@@ -397,7 +410,33 @@ RUN pip install -r requirements.txt`,
     },
   ],
 
+  typescript: [
+    {
+      id: "ts-fb-unknown",
+      title: "外部 JSON の受け皿",
+      hint: "any の代わりに使う型",
+      lang: "TypeScript",
+      mode: "answers",
+      caseInsensitive: true,
+      template: `function parse(data: ___): User {
+  // 検証してから User として返す
+}`,
+      answers: ["unknown"],
+    },
+  ],
+
   react: [
+    {
+      id: "react-fb-effect-deps",
+      title: "userId 変更時だけ再取得",
+      hint: "依存配列に入れる値",
+      lang: "React",
+      mode: "answers",
+      template: `useEffect(() => {
+  fetchUser(userId).then(setUser);
+}, [___]);`,
+      answers: ["userId"],
+    },
     {
       id: "react-fb-view",
       title: "div の RN 対応",

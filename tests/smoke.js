@@ -235,6 +235,18 @@ async function main() {
     return { hash: location.hash, group, tab };
   });
 
+  // 章固有 coreConcept（topics）がタブ切替で出ること
+  results.topicCoreConcepts = await page.evaluate(async () => {
+    const out = {};
+    for (const tab of ["javascript", "typescript", "react"]) {
+      await window.switchTab(tab);
+      out[tab] =
+        document.querySelector("#core-concept-root .core-concept-title")
+          ?.textContent || "";
+    }
+    return out;
+  });
+
   // SQLプレイグラウンド（databaseタブ）
   await page.evaluate(() => window.switchTab("database"));
   await page.waitForFunction(
@@ -519,8 +531,23 @@ async function main() {
   if (!results.tabs.drills?.drillsApp) {
     failures.push("drills hub mount (#drills-app) missing");
   }
-  // exerciseData 全問 + data/drills.js 追加分（現行 87）
-  const EXPECTED_DRILLS_COUNT = 87;
+  // exerciseData 全問 + data/drills.js 追加分（現行 90）
+  const EXPECTED_DRILLS_COUNT = 90;
+  if ((results.tabs.javascript?.lessons || 0) < 16) {
+    failures.push(
+      `javascript should have 16 lessons, got ${results.tabs.javascript?.lessons}`
+    );
+  }
+  if ((results.tabs.typescript?.lessons || 0) < 16) {
+    failures.push(
+      `typescript should have 16 lessons, got ${results.tabs.typescript?.lessons}`
+    );
+  }
+  if ((results.tabs.react?.lessons || 0) < 21) {
+    failures.push(
+      `react should have 21 lessons, got ${results.tabs.react?.lessons}`
+    );
+  }
   if ((results.tabs.drills?.drillsList || 0) !== EXPECTED_DRILLS_COUNT) {
     failures.push(
       `drills hub should list ${EXPECTED_DRILLS_COUNT} exercises, got ${results.tabs.drills?.drillsList}`
@@ -547,6 +574,18 @@ async function main() {
     if (!cc?.visible || !cc.hasBad || !cc.hasGood) {
       failures.push(
         `coreConcept missing for ${group}: ${JSON.stringify(cc || null)}`
+      );
+    }
+  }
+  for (const [tab, needle] of [
+    ["javascript", "コールバック"],
+    ["typescript", "any"],
+    ["react", "useEffect"],
+  ]) {
+    const title = results.topicCoreConcepts?.[tab] || "";
+    if (!title.includes(needle)) {
+      failures.push(
+        `topic coreConcept for ${tab} should mention ${needle}, got "${title}"`
       );
     }
   }
