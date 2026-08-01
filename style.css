@@ -579,6 +579,107 @@ strong { color: var(--color-text-primary); font-weight: 600; }
 /* ========================================
    TAB CONTENT
    ======================================== */
+/* 大項目（basics/backend/…）冒頭の BAD / GOOD 比較 */
+.core-concept-root {
+  margin: 0 0 1.25rem;
+}
+
+.core-concept {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 1.1rem 1.15rem 1.2rem;
+}
+
+.core-concept-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.core-concept-title {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.core-concept-desc {
+  margin: 0 0 0.95rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--color-text-secondary);
+}
+
+.core-concept-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.core-concept-pane {
+  min-width: 0;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-base);
+  overflow: hidden;
+}
+
+.core-concept-pane.is-bad {
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+.core-concept-pane.is-good {
+  border-color: rgba(52, 211, 153, 0.35);
+}
+
+.core-concept-pane-label {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.core-concept-pane.is-bad .core-concept-pane-label {
+  color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+.core-concept-pane.is-good .core-concept-pane-label {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.core-concept-pane .code-block {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.core-concept-pane .code-block pre {
+  margin: 0;
+  padding: 0.75rem 0.85rem 0.9rem;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.core-concept-pane .code-header {
+  padding: 0.35rem 0.75rem 0;
+  border: none;
+  background: transparent;
+}
+
+@media (max-width: 768px) {
+  .core-concept-compare {
+    grid-template-columns: 1fr;
+  }
+}
+
 .tab-content {
   display: none;
   opacity: 0;

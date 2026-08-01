@@ -8,6 +8,7 @@
 #   data/missions.js    編末 Mini Mission / 章末ルーブリック（読込後に注入）
 #   data/exercises.js   合否付き write ドリル
 #   data/fillblanks.js  穴埋めドリル
+#   data/coreConcepts.js 大項目（basics等）の BAD/GOOD 比較（#core-concept-root）
 #   js/utils.js         共有ユーティリティ（escapeHtml / safeParse / loadScript）
 #   js/runner.js        コード実行（JS Worker / Pyodide）と ▶ 実行ボタン
 #   js/practice.js      演習層（Mission / CrossRef / TaskBoard / Fill / Write / Drills）

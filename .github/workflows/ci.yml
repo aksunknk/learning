@@ -30,6 +30,7 @@ jobs:
           node --check data/puzzles.js
           node --check data/exercises.js
           node --check data/drills.js
+          node --check data/coreConcepts.js
           node --check data/fillblanks.js
 
       - name: Install Chromium
