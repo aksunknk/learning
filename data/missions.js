@@ -781,4 +781,43 @@ except OSError as e:
       { id: "test", label: "cargo test を回せる" },
     ],
   },
+
+  reactarch: {
+    beginner: {
+      title: "初級編ミニミッション",
+      minutes: 20,
+      goal: "単方向 CFG を一文で説明できる",
+      tasks: [
+        "Action → Handler → I/O → Reconciliation → Paint を順に書く",
+        "双方向バインディングが障害グラフを増やす理由を1つ挙げる",
+        "Handler に描画ロジックを混ぜない理由を書く",
+      ],
+    },
+    intermediate: {
+      title: "中級編ミニミッション",
+      minutes: 25,
+      goal: "Abort と境界 parse を実装方針にする",
+      tasks: [
+        "useEffect クリーンアップで abort する骨格を書く",
+        "API JSON を unknown から契約型へ絞り込む関数を置く",
+        "loading / error / ready を分離した状態型を定義する",
+      ],
+    },
+    advanced: {
+      title: "上級編ミニミッション",
+      minutes: 25,
+      goal: "状態の局所化で再描画コストを下げる",
+      tasks: [
+        "親に上げる必要のない State を1つ洗い出す",
+        "リスト行の選択状態を行ローカルへ下ろす案を書く",
+        "面談用に『契約・Abort・局所 State』を30秒で説明する",
+      ],
+    },
+    rubric: [
+      { id: "cfg", label: "単方向データフローを説明できる" },
+      { id: "abort", label: "AbortController で競合を防げる" },
+      { id: "contract", label: "境界で any を使わず契約する" },
+      { id: "entropy", label: "State を狭く保つ理由を言える" },
+    ],
+  },
 };

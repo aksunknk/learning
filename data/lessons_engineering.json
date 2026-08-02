@@ -1,0 +1,40 @@
+{
+  "chapterId": "reactarch",
+  "title": "React / TypeScript アーキテクチャ: 制御フロー(CFG)とUI防衛設計",
+  "audience": "Python/バックエンドおよびインフラ知見を持つエンジニア",
+  "group": "frontend",
+  "lessons": [
+    {
+      "id": "reactarch-1",
+      "title": "単方向データフローと CFG（Control Flow Graph）",
+      "summary": "Action → Handler → 副作用 → Reconciliation → Repaint の一方向制約"
+    },
+    {
+      "id": "reactarch-2",
+      "title": "TypeScript による Layer 7 防衛（境界モデル）",
+      "summary": "I/O 契約としての型。any パージと不当ペイロードのコンパイル時遮断"
+    },
+    {
+      "id": "reactarch-3",
+      "title": "副作用と再レンダリング最適化",
+      "summary": "AbortController、状態の局所化、低エントロピーなコンポーネント境界"
+    },
+    {
+      "id": "reactarch-4",
+      "title": "実戦演習 — 型安全 fetch と loading/error 分離",
+      "summary": "書籍/ログ API を想定した運用レベルの TS/React 断片"
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "reactarch-q1",
+      "question": "非同期通信中にコンポーネントがアンマウントされたとき、メモリリークや Race Condition を防ぐ適切な実装はどれか？",
+      "correct": "AbortController を用いた通信のクリーンアップ処理"
+    },
+    {
+      "id": "reactarch-q2",
+      "question": "外部 API レスポンスを UI に載せるとき、any を使わず型安全性を保つ最も適切なアプローチはどれか？",
+      "correct": "境界で unknown/スキーマ検証し、成功時のみ契約型へ絞り込む"
+    }
+  ]
+}
