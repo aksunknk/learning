@@ -144,5 +144,30 @@ useEffect(() => {
   return () => { cancelled = true; };
 }, [userId]);`,
     },
+
+    reactarch: {
+      title: "なぜそう書くのか — アンマウント後も fetch を生かさない",
+      description:
+        "I/O はコンポーネント寿命より長く生き得る。AbortController で通信を殺し、古い応答による Race Condition を断つ。",
+      language: "TypeScript",
+      badCode: `// BAD: クリーンアップ無し
+useEffect(() => {
+  fetch("/api/logs")
+    .then((r) => r.json())
+    .then(setLogs); // アンマウント後も setState し得る
+}, []);`,
+      goodCode: `// GOOD: AbortController で打ち切る
+useEffect(() => {
+  const ac = new AbortController();
+  fetch("/api/logs", { signal: ac.signal })
+    .then((r) => r.json())
+    .then(setLogs)
+    .catch((e) => {
+      if (e.name === "AbortError") return;
+      setError(e);
+    });
+  return () => ac.abort();
+}, []);`,
+    },
   },
 };

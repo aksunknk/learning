@@ -712,6 +712,58 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   line-height: 1.8;
 }
 
+/* React/TS アーキテクチャ章 — CLI / ターミナル美学（章スコープのみ） */
+#content-reactarch {
+  --reactarch-green: #39ff14;
+  background: #000;
+  color: #e8ffe8;
+}
+
+#content-reactarch .reactarch-prompt {
+  color: var(--reactarch-green);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  margin-right: 0.35rem;
+}
+
+#content-reactarch .reactarch-intro h2 {
+  color: #fff;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.02em;
+}
+
+#content-reactarch .reactarch-intro p,
+#content-reactarch .reactarch-banner p {
+  color: #b8e6b8;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.92rem;
+}
+
+#content-reactarch .reactarch-banner {
+  border-left: 3px solid var(--reactarch-green);
+  background: rgba(57, 255, 20, 0.06);
+}
+
+#content-reactarch .reactarch-banner h4 {
+  color: var(--reactarch-green);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.08em;
+}
+
+#content-reactarch .lesson-card {
+  background: #050505;
+  border-color: rgba(57, 255, 20, 0.22);
+}
+
+#content-reactarch .concept-box h4,
+#content-reactarch .explanation-box h4 {
+  color: var(--reactarch-green);
+}
+
+#content-reactarch pre,
+#content-reactarch code {
+  color: #c8ffc8;
+}
+
 /* ========================================
    LESSON CARDS
    ======================================== */

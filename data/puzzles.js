@@ -302,5 +302,17 @@ const puzzleData = {
     ],
     correctOrder: ["d1", "d2", "d3", "d4", "d5"],
     explanation: "先に Model を定義し、その後 admin.site.register で管理画面に載せます。実際のプロジェクトでは ModelAdmin で list_display 等を足します。"
+  },
+  reactarch: {
+    question: "以下を並べ替えて、AbortController 付き useEffect の骨格を完成させてください。",
+    pieces: [
+      { id: "ra1", text: "useEffect(() => {" },
+      { id: "ra2", text: "  const ac = new AbortController();" },
+      { id: "ra3", text: "  fetch(url, { signal: ac.signal }).then(/* ... */);" },
+      { id: "ra4", text: "  return () => ac.abort();" },
+      { id: "ra5", text: "}, [url]);" }
+    ],
+    correctOrder: ["ra1", "ra2", "ra3", "ra4", "ra5"],
+    explanation: "Effect 開始時に AbortController を作り、fetch に signal を渡す。クリーンアップで abort し、依存は url を明示する。"
   }
 };

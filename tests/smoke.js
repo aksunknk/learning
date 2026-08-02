@@ -238,7 +238,7 @@ async function main() {
   // 章固有 coreConcept（topics）がタブ切替で出ること
   results.topicCoreConcepts = await page.evaluate(async () => {
     const out = {};
-    for (const tab of ["javascript", "typescript", "react"]) {
+    for (const tab of ["javascript", "typescript", "react", "reactarch"]) {
       await window.switchTab(tab);
       out[tab] =
         document.querySelector("#core-concept-root .core-concept-title")
@@ -380,11 +380,11 @@ async function main() {
 
   // Assertions
   const failures = [...staticFailures];
-  if (tabs.length !== 24) failures.push(`expected 24 tabs, got ${tabs.length}`);
+  if (tabs.length !== 25) failures.push(`expected 25 tabs, got ${tabs.length}`);
 
   // Phase 3
-  if (results.roadmap.nodes !== 20)
-    failures.push(`expected 20 roadmap nodes, got ${results.roadmap.nodes}`);
+  if (results.roadmap.nodes !== 21)
+    failures.push(`expected 21 roadmap nodes, got ${results.roadmap.nodes}`);
   if (results.roadmap.firstTab !== "htmlcss")
     failures.push(`roadmap should start with htmlcss, got ${results.roadmap.firstTab}`);
   if (!results.search || results.search.count < 1)
@@ -581,6 +581,7 @@ async function main() {
     ["javascript", "コールバック"],
     ["typescript", "any"],
     ["react", "useEffect"],
+    ["reactarch", "アンマウント"],
   ]) {
     const title = results.topicCoreConcepts?.[tab] || "";
     if (!title.includes(needle)) {
@@ -604,6 +605,18 @@ async function main() {
   }
   if (!(results.groups.frontend || []).includes("react"))
     failures.push("frontend group missing react");
+  if (!(results.groups.frontend || []).includes("reactarch"))
+    failures.push("frontend group missing reactarch");
+  if ((results.tabs.reactarch?.lessons || 0) < 4) {
+    failures.push(
+      `reactarch should have 4 lessons, got ${results.tabs.reactarch?.lessons}`
+    );
+  }
+  if ((results.tabs.reactarch?.quizQuestions || 0) !== 2) {
+    failures.push(
+      `reactarch should have exactly 2 quiz questions, got ${results.tabs.reactarch?.quizQuestions}`
+    );
+  }
   if (!(results.groups.practice || []).includes("capstone"))
     failures.push("practice group missing capstone");
 

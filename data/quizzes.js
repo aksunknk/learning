@@ -762,5 +762,34 @@ const quizData = {
       correct: 0,
       explanation: "select_related / prefetch_related でまとめて取るのが定石です。DB 章の N+1 と同型です。"
     }
+  ],
+
+  reactarch: [
+    {
+      question:
+        "非同期通信を行うコンポーネントがアンマウントされた際に発生するメモリリークや競合状態（Race Condition）を防ぐための適切な実装手法はどれか？",
+      options: [
+        "依存配列を省略して毎レンダーで再取得する",
+        "AbortController を用いた通信のクリーンアップ処理",
+        "setState をグローバル変数に退避する",
+        "any 型でレスポンスを受け取り無視する"
+      ],
+      correct: 1,
+      explanation:
+        "useEffect のクリーンアップで AbortController.abort() し、進行中の fetch を打ち切る。アンマウント後の setState と古い応答による上書きを防ぐ。"
+    },
+    {
+      question:
+        "外部 API からのレスポンスをコンポーネントに反映する際、any を使わずにシステム全体の型安全性を保つための最も適切なアプローチはどれか？",
+      options: [
+        "レスポンス全体に any を付け、描画側でフィールドを推測する",
+        "as Book でキャストだけし、実行時検証は行わない",
+        "境界で unknown（またはスキーマ検証）として受け、成功時のみ契約型へ絞り込む",
+        "JSON.stringify してから string として扱う"
+      ],
+      correct: 2,
+      explanation:
+        "ネットワーク境界は信頼できない。unknown / Zod 等で検証し、契約型 T だけを UI 核へ渡す。any と無検証キャストは防衛壁に穴を開ける。"
+    }
   ]
 };

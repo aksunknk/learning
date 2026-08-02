@@ -270,6 +270,19 @@ const crossRefData = {
   "react-21": [
     { tab: "react", section: "react-4", label: "useEffect の罠" },
     { tab: "react", section: "react-7", label: "依存配列の正しい使い方" },
+    { tab: "reactarch", section: "reactarch-3", label: "Abort と再レンダー防衛" },
+  ],
+  "reactarch-2": [
+    { tab: "typescript", section: "typescript-16", label: "any を境界で止める" },
+    { tab: "webapi", section: "webapi-11", label: "OpenAPI と契約" },
+  ],
+  "reactarch-3": [
+    { tab: "react", section: "react-21", label: "useEffect リファクタ" },
+    { tab: "react", section: "react-4", label: "useEffect の罠" },
+  ],
+  "reactarch-4": [
+    { tab: "typescript", section: "typescript-15", label: "Zod と実行時検証" },
+    { tab: "webapi", section: "webapi-4", label: "フロントからの API 通信" },
   ],
 
   // --- Django ---

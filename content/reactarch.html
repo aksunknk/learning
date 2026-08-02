@@ -1,0 +1,265 @@
+      <div class="tab-intro reactarch-intro">
+        <h2><span class="reactarch-prompt">$</span> React / TypeScript アーキテクチャ</h2>
+        <p>制御フロー(CFG)と UI 防衛設計 — BE/インフラ経験者向け。文法解説は省略し、データフロー・境界・レンダリングコストの理由だけを残す。</p>
+      </div>
+
+      <div class="explanation-box reactarch-banner">
+        <h4>SCOPE</h4>
+        <p>面談・実案件で問われるのは「なぜその境界か」。Action から Paint までの CFG、L7 での契約検証、副作用の寿命管理を一本の線で説明できる状態を目標にする。</p>
+      </div>
+
+      <article class="lesson-card" data-section="reactarch-1" id="reactarch-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>単方向データフローと CFG（Control Flow Graph）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('reactarch-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>CFG としての React ランタイム</h4>
+            <p>React の更新は双方向バインディングではない。<strong>情報は一方向にしか流れない</strong>。逆方向（DOM → 勝手に State）を許すと、観測不能な状態分岐が増え、障害時の再現グラフが爆発する。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>正規パス（簡略 CFG）</h4>
+            <pre><code>User Action
+  → Event Handler（同期の意思決定）
+  → Side Effect / Async I/O（fetch, WS, timer）
+  → setState / dispatch（意図の宣言）
+  → Virtual DOM diff（Reconciliation）
+  → Commit → Browser Repaint
+
+禁止に近い逆流:
+  DOM を読んで State を「推測で」埋める
+  Effect 内で無制限に Effect を連鎖させる（観測不能ループ）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>SRE 視点</h4>
+            <p>インシデントで追うのは「どのノードで分岐したか」。Handler で分岐したのか、I/O 失敗後の再試行か、Reconciliation の結果 UI が古いのか。単方向制約は<strong>障害グラフの辺を減らす</strong>ための設計制約である。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>// Handler は「意図」だけを書く。描画は State の写像に任せる。
+function onRetry(dispatch: (a: Action) => void) {
+  dispatch({ type: "logs/retry" }); // → reducer/effect が I/O を担う
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="reactarch-2" id="reactarch-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>TypeScript による Layer 7 防衛（境界モデル）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('reactarch-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>型は UI 内部の便利機能ではない — L7 の契約壁</h4>
+            <p>FastAPI / OpenAPI がサーバ境界でスキーマを強制するのと同様、ブラウザ側の TypeScript Interface/Type（＋実行時 parse）は<strong>不当ペイロードをアプリ核に入れない防衛壁</strong>である。<code>any</code> はその壁に穴を開ける。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>なぜ any をパージするか</h4>
+            <pre><code>any を付けた瞬間:
+- 存在しないフィールド参照がコンパイルを通る
+- バックエンドの破壊的変更が「静かに」UI へ侵入する
+- 障害時、型が「嘘のドキュメント」になる
+
+境界の正しい受け口:
+  unknown（または Zod 等）→ 検証 → 契約型 T
+内側（描画・ドメイン）は T だけを信じる。</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>// FastAPI の response_model に相当する「契約」
+type Book = { id: string; title: string; updatedAt: string };
+
+function parseBook(input: unknown): Book {
+  if (!input || typeof input !== "object") throw new Error("contract");
+  const o = input as Record&lt;string, unknown&gt;;
+  if (typeof o.id !== "string" || typeof o.title !== "string") {
+    throw new Error("contract");
+  }
+  return {
+    id: o.id,
+    title: o.title,
+    updatedAt: typeof o.updatedAt === "string" ? o.updatedAt : "",
+  };
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>運用メモ</h4>
+            <p><code>as Book</code> だけのキャストは検証ではない。コンパイルは通っても実行時は壊れる。OpenAPI 生成型があっても、<strong>ネットワーク境界では一度 parse</strong>する。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="reactarch-3" id="reactarch-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>副作用と再レンダリング最適化</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('reactarch-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>副作用には寿命がある</h4>
+            <p>fetch はコンポーネント寿命より長く生き得る。アンマウント後の <code>setState</code> はリーク警告と Race Condition（遅い応答が新しい画面を上書き）の原因になる。<code>AbortController</code> で I/O 自体を殺すのが正攻法。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>useEffect(() => {
+  const ac = new AbortController();
+  (async () => {
+    try {
+      const res = await fetch(`/api/logs?q=${q}`, { signal: ac.signal });
+      const json: unknown = await res.json();
+      setLogs(parseLogList(json));
+    } catch (e) {
+      if ((e as { name?: string }).name === "AbortError") return;
+      setError("fetch_failed");
+    }
+  })();
+  return () => ac.abort();
+}, [q]);</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>状態のエントロピーを下げる</h4>
+            <pre><code>原則:
+- State は「可能な限り狭く・ローカルに」
+- 親が持つ理由がない値を Context/グローバルへ上げない
+- 子の再描画コスト = props 参照の安定性 × 部分木の大きさ
+
+低エントロピー設計:
+  List は items だけ受け、選択状態は行コンポーネント内
+  サーバキャッシュは専用レイヤ（Query 等）へ追い出し、画面 State を薄くする</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="reactarch-4" id="reactarch-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>実戦演習 — 型安全 fetch と loading/error 分離</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('reactarch-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>運用レベル最小骨格</h4>
+            <p>loading / error / data を同一変数に詰めない。UI 分岐が CFG 上の別ノードになるよう、状態機械として分離する。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>type Book = { id: string; title: string };
+
+type LoadState =
+  | { status: "idle" | "loading" }
+  | { status: "error"; message: string }
+  | { status: "ready"; books: Book[] };
+
+function parseBooks(input: unknown): Book[] {
+  if (!Array.isArray(input)) throw new Error("contract");
+  return input.map((row) => {
+    if (!row || typeof row !== "object") throw new Error("contract");
+    const o = row as Record&lt;string, unknown&gt;;
+    if (typeof o.id !== "string" || typeof o.title !== "string") {
+      throw new Error("contract");
+    }
+    return { id: o.id, title: o.title };
+  });
+}
+
+function BookPanel() {
+  const [state, setState] = useState&lt;LoadState&gt;({ status: "idle" });
+
+  useEffect(() => {
+    const ac = new AbortController();
+    setState({ status: "loading" });
+    (async () => {
+      try {
+        const res = await fetch("/api/books", { signal: ac.signal });
+        if (!res.ok) throw new Error(`http_${res.status}`);
+        const books = parseBooks(await res.json());
+        setState({ status: "ready", books });
+      } catch (e) {
+        if ((e as { name?: string }).name === "AbortError") return;
+        setState({
+          status: "error",
+          message: e instanceof Error ? e.message : "unknown",
+        });
+      }
+    })();
+    return () => ac.abort();
+  }, []);
+
+  if (state.status === "loading" || state.status === "idle") {
+    return &lt;p className="term"&gt;loading…&lt;/p&gt;;
+  }
+  if (state.status === "error") {
+    return &lt;p className="term err"&gt;ERR {state.message}&lt;/p&gt;;
+  }
+  return (
+    &lt;ul className="term"&gt;
+      {state.books.map((b) => (
+        &lt;li key={b.id}&gt;{b.title}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>面談で一言で言うなら</h4>
+            <p>「UI は契約型の写像。I/O は Abort 可能な副作用。状態は局所化し、loading/error/data を混ぜない。」</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="quiz-section" id="reactarch-quiz">
+        <div class="quiz-header"><h3>🧠 実務トラブルシューティング・チェック</h3></div>
+        <p class="quiz-intro">アンマウント競合と境界の型防衛 — 2 問。</p>
+        <div id="reactarch-quiz-container"></div>
+        <div class="quiz-result" id="reactarch-quiz-result"></div>
+      </div>
+
+      <div class="puzzle-section" id="reactarch-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 Abort 付き Effect の順序</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップでクリーンアップまで含む順序に並べてください。</p>
+        <div class="puzzle-question" id="reactarch-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="reactarch-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="reactarch-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップして完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('reactarch')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('reactarch')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="reactarch-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
