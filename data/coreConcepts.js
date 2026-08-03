@@ -169,5 +169,24 @@ useEffect(() => {
   return () => ac.abort();
 }, []);`,
     },
+
+    rust: {
+      title: "なぜそう書くのか — unwrap を ? にほどく",
+      description:
+        "unwrap 連打は失敗時に panic し、呼び出し側が回復できません。Result を返し ? で伝播すると、成功パスが直線化し境界で一度だけ扱えます。",
+      language: "Rust",
+      badCode: `// BAD: unwrap で panic 点を散らす
+fn sum_two(a: &str, b: &str) -> i32 {
+    let x = a.parse::<i32>().unwrap();
+    let y = b.parse::<i32>().unwrap();
+    x + y
+}`,
+      goodCode: `// GOOD: Result + ? で伝播
+fn sum_two(a: &str, b: &str) -> Result<i32, std::num::ParseIntError> {
+    let x = a.parse::<i32>()?;
+    let y = b.parse::<i32>()?;
+    Ok(x + y)
+}`,
+    },
   },
 };

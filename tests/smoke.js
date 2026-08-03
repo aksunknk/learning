@@ -238,7 +238,7 @@ async function main() {
   // 章固有 coreConcept（topics）がタブ切替で出ること
   results.topicCoreConcepts = await page.evaluate(async () => {
     const out = {};
-    for (const tab of ["javascript", "typescript", "react", "reactarch"]) {
+    for (const tab of ["javascript", "typescript", "react", "reactarch", "rust"]) {
       await window.switchTab(tab);
       out[tab] =
         document.querySelector("#core-concept-root .core-concept-title")
@@ -548,6 +548,11 @@ async function main() {
       `react should have 21 lessons, got ${results.tabs.react?.lessons}`
     );
   }
+  if ((results.tabs.rust?.lessons || 0) < 15) {
+    failures.push(
+      `rust should have 15 lessons, got ${results.tabs.rust?.lessons}`
+    );
+  }
   if ((results.tabs.drills?.drillsList || 0) !== EXPECTED_DRILLS_COUNT) {
     failures.push(
       `drills hub should list ${EXPECTED_DRILLS_COUNT} exercises, got ${results.tabs.drills?.drillsList}`
@@ -582,6 +587,7 @@ async function main() {
     ["typescript", "any"],
     ["react", "useEffect"],
     ["reactarch", "アンマウント"],
+    ["rust", "unwrap"],
   ]) {
     const title = results.topicCoreConcepts?.[tab] || "";
     if (!title.includes(needle)) {
