@@ -284,6 +284,14 @@ const crossRefData = {
     { tab: "typescript", section: "typescript-15", label: "Zod と実行時検証" },
     { tab: "webapi", section: "webapi-4", label: "フロントからの API 通信" },
   ],
+  "rust-10": [
+    { tab: "rust", section: "rust-15", label: "unwrap を ? にリファクタ" },
+    { tab: "rust", section: "rust-14", label: "cargo test で失敗経路を固定" },
+  ],
+  "rust-15": [
+    { tab: "rust", section: "rust-10", label: "Result と ? の基礎" },
+    { tab: "rust", section: "rust-14", label: "テストで is_err を断言" },
+  ],
 
   // --- Django ---
   "django-1": [

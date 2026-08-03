@@ -1006,6 +1006,86 @@ cargo test -- --nocapture</code></pre>
         </div>
       </article>
 
+      <article class="lesson-card" data-section="rust-15" id="rust-lesson-15">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">15</span>
+            <h3>エラー処理のリファクタリング — unwrap を ? にほどく</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('rust-15')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 なぜリファクタするか</h4>
+            <p><code>unwrap()</code> と深い <code>match</code> は、失敗経路を呼び出し側へ戻せなくし、panic 点を散らします。戻り値を <code>Result</code> に揃え、<code>?</code> で直線化すると、成功パスは上から下に読め、失敗は境界で一度だけ扱えます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>BAD — unwrap 連打とネスト match</h4>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">Rust</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+              <pre><code>fn load_config(path: &amp;str) -&gt; String {
+    let raw = std::fs::read_to_string(path).unwrap(); // 失敗で panic
+    let n: i32 = raw.trim().parse().unwrap();         // 失敗で panic
+    match std::fs::read_to_string(&amp;format!("extra-{n}.txt")) {
+        Ok(extra) =&gt; format!("{raw}\n{extra}"),
+        Err(_) =&gt; raw, // エラー詳細を捨てている
+    }
+}</code></pre>
+            </div>
+          </div>
+          <div class="explanation-box">
+            <h4>GOOD — Result 戻り値 + ? で伝播</h4>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">Rust</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+              <pre><code>use std::num::ParseIntError;
+
+#[derive(Debug)]
+enum ConfigError {
+    Io(std::io::Error),
+    Parse(ParseIntError),
+}
+
+impl From&lt;std::io::Error&gt; for ConfigError {
+    fn from(e: std::io::Error) -&gt; Self { Self::Io(e) }
+}
+impl From&lt;ParseIntError&gt; for ConfigError {
+    fn from(e: ParseIntError) -&gt; Self { Self::Parse(e) }
+}
+
+fn load_config(path: &amp;str) -&gt; Result&lt;String, ConfigError&gt; {
+    let raw = std::fs::read_to_string(path)?;
+    let n: i32 = raw.trim().parse()?;
+    let extra = std::fs::read_to_string(format!("extra-{n}.txt")).unwrap_or_default();
+    Ok(format!("{raw}\n{extra}"))
+}
+
+fn main() {
+    match load_config("config.txt") {
+        Ok(body) =&gt; println!("{body}"),
+        Err(e) =&gt; eprintln!("config failed: {e:?}"),
+    }
+}</code></pre>
+            </div>
+          </div>
+          <div class="explanation-box">
+            <h4>演習の着眼点</h4>
+            <p>1. panic してよいのは「プログラムのバグ」だけか（入力・I/O 失敗は Result）<br>
+            2. 中間の <code>match</code> は <code>?</code> か <code>map_err</code> に畳めないか<br>
+            3. エラー型を揃えるために <code>From</code> / <code>thiserror</code> が要るか<br>
+            4. 意図的に握りつぶすなら <code>unwrap_or</code> / <code>unwrap_or_default</code> を明示する</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips</h4>
+            <p>学習中の <code>unwrap()</code> は「ここが失敗点」と印をつける用途に留め、章末クイズで「伝播 vs panic」を言語化できたら十分です。テストでは <code>assert!(result.is_err())</code> で失敗経路を固定します。</p>
+          </div>
+        </div>
+      </article>
+
       <!-- Rust Quiz -->
       <div class="quiz-section" id="rust-quiz">
         <div class="quiz-header">

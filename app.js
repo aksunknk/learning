@@ -22,7 +22,7 @@ const TABS = {
   javascript:    { label: "JavaScript",       short: "JS",     icon: "🟨", group: "basics",   lessons: 16, accent: "#f7df1e",                glow: "rgba(247,223,30,0.35)" },
   python:        { label: "Python",           short: "Py",     icon: "🐍", group: "basics",   lessons: 17, accent: "var(--python-blue)",     glow: "rgba(55,118,171,0.35)" },
   algorithm:     { label: "アルゴリズム",     short: "アルゴ", icon: "🧮", group: "basics",   lessons: 8,  accent: "var(--color-warning)",   glow: "rgba(251,191,36,0.35)" },
-  rust:          { label: "Rust",             short: "Rust",   icon: "🦀", group: "basics",   lessons: 14, accent: "#ce422b",                glow: "rgba(206,66,43,0.35)" },
+  rust:          { label: "Rust",             short: "Rust",   icon: "🦀", group: "basics",   lessons: 15, accent: "#ce422b",                glow: "rgba(206,66,43,0.35)" },
   typescript:    { label: "TypeScript",       short: "TS",     icon: "🔷", group: "basics",   lessons: 16, accent: "var(--typescript-blue)", glow: "rgba(49,120,198,0.35)" },
   git:           { label: "Git / GitHub",     short: "Git",    icon: "🌿", group: "basics",   lessons: 8,  accent: "var(--git-orange)",      glow: "rgba(240,80,51,0.35)" },
   linux:         { label: "Linux / CLI",      short: "Linux",  icon: "🐧", group: "basics",   lessons: 14, accent: "#fcc624",                glow: "rgba(252,198,36,0.35)" },
