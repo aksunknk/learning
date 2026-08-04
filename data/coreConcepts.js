@@ -188,5 +188,25 @@ fn sum_two(a: &str, b: &str) -> Result<i32, std::num::ParseIntError> {
     Ok(x + y)
 }`,
     },
+
+    serverstate: {
+      title: "なぜそう書くのか — サーバデータを useState に二重管理しない",
+      description:
+        "API 由来の値を各画面の useState に置くと、コピーが散在し古い fetch が新しい画面を上書きします。キー付きキャッシュへ追い出し、画面は購読だけにします。",
+      language: "TypeScript",
+      badCode: `// BAD: 画面ごとに fetch + useState
+function TaskList() {
+  const [tasks, setTasks] = useState([]);
+  useEffect(() => {
+    fetch("/api/tasks").then((r) => r.json()).then(setTasks);
+  }, []);
+  // 別画面も同じパターン → 二重管理
+}`,
+      goodCode: `// GOOD: キーで共有キャッシュを購読
+function TaskList() {
+  const { data: tasks } = useQuery(["tasks"], fetchTasks);
+  // mutation 後は invalidate(["tasks"])
+}`,
+    },
   },
 };

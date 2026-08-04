@@ -764,6 +764,58 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   color: #c8ffc8;
 }
 
+/* サーバ状態 / Query 章 — シアン系ターミナル美学（章スコープのみ） */
+#content-serverstate {
+  --serverstate-cyan: #22d3ee;
+  background: #000;
+  color: #e0f7fa;
+}
+
+#content-serverstate .serverstate-prompt {
+  color: var(--serverstate-cyan);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  margin-right: 0.35rem;
+}
+
+#content-serverstate .serverstate-intro h2 {
+  color: #fff;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.02em;
+}
+
+#content-serverstate .serverstate-intro p,
+#content-serverstate .serverstate-banner p {
+  color: #a5f3fc;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.92rem;
+}
+
+#content-serverstate .serverstate-banner {
+  border-left: 3px solid var(--serverstate-cyan);
+  background: rgba(34, 211, 238, 0.06);
+}
+
+#content-serverstate .serverstate-banner h4 {
+  color: var(--serverstate-cyan);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.08em;
+}
+
+#content-serverstate .lesson-card {
+  background: #050505;
+  border-color: rgba(34, 211, 238, 0.22);
+}
+
+#content-serverstate .concept-box h4,
+#content-serverstate .explanation-box h4 {
+  color: var(--serverstate-cyan);
+}
+
+#content-serverstate pre,
+#content-serverstate code {
+  color: #cffafe;
+}
+
 /* ========================================
    LESSON CARDS
    ======================================== */

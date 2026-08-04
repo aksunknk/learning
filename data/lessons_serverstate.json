@@ -1,0 +1,40 @@
+{
+  "chapterId": "serverstate",
+  "title": "サーバ状態管理とキャッシュ境界（Query パターン）",
+  "audience": "Python/バックエンドおよびインフラ知見を持つエンジニア",
+  "group": "frontend",
+  "lessons": [
+    {
+      "id": "serverstate-1",
+      "title": "クライアント状態 vs サーバ状態",
+      "summary": "二重管理が Race Condition の温床になる理由と責務分離"
+    },
+    {
+      "id": "serverstate-2",
+      "title": "stale-while-revalidate とキャッシュキー",
+      "summary": "キー設計・再検証タイミング・HTTP キャッシュとの対応"
+    },
+    {
+      "id": "serverstate-3",
+      "title": "楽観更新とロールバック",
+      "summary": "失敗時の整合性回復と競合の観測可能性"
+    },
+    {
+      "id": "serverstate-4",
+      "title": "実戦 — Query パターンの最小自作実装",
+      "summary": "ライブラリ非依存でキャッシュ・再検証・購読を示す骨格"
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "serverstate-q1",
+      "question": "フォーム入力中の文字列と API から取得したタスク一覧のうち、サーバ状態として扱うべきなのはどれか？",
+      "correct": "API から取得したタスク一覧"
+    },
+    {
+      "id": "serverstate-q2",
+      "question": "楽観更新が失敗したとき、整合性を保つために必要な処理はどれか？",
+      "correct": "キャッシュをロールバック（または invalidate）し、サーバ真相と再同期する"
+    }
+  ]
+}

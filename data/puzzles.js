@@ -314,5 +314,17 @@ const puzzleData = {
     ],
     correctOrder: ["ra1", "ra2", "ra3", "ra4", "ra5"],
     explanation: "Effect 開始時に AbortController を作り、fetch に signal を渡す。クリーンアップで abort し、依存は url を明示する。"
+  },
+  serverstate: {
+    question: "以下を並べ替えて、楽観更新と失敗時ロールバックの骨格を完成させてください。",
+    pieces: [
+      { id: "ss1", text: "const prev = cache.get(key);" },
+      { id: "ss2", text: "cache.set(key, optimistic);" },
+      { id: "ss3", text: "try { await api.patch(url, body); }" },
+      { id: "ss4", text: "catch { cache.set(key, prev); throw; }" },
+      { id: "ss5", text: "// success: keep optimistic (or set server response)" }
+    ],
+    correctOrder: ["ss1", "ss2", "ss3", "ss4", "ss5"],
+    explanation: "先にスナップショットを取り、楽観で書き換え、API 成功なら維持（またはサーバ応答で上書き）、失敗なら prev へ戻す。"
   }
 };

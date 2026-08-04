@@ -820,4 +820,43 @@ except OSError as e:
       { id: "entropy", label: "State を狭く保つ理由を言える" },
     ],
   },
+
+  serverstate: {
+    beginner: {
+      title: "初級編ミニミッション",
+      minutes: 20,
+      goal: "クライアント状態とサーバ状態を分類できる",
+      tasks: [
+        "手元の画面要素を2列に分けて書く",
+        "二重 useState fetch が Race を生む理由を1つ挙げる",
+        "キャッシュキーの例を1つ設計する",
+      ],
+    },
+    intermediate: {
+      title: "中級編ミニミッション",
+      minutes: 25,
+      goal: "SWR と invalidate のタイミングを決める",
+      tasks: [
+        "staleTime の意味を一文で書く",
+        "mutation 後に無効化するキー範囲を決める",
+        "HTTP Cache-Control の SWR との対応を説明する",
+      ],
+    },
+    advanced: {
+      title: "上級編ミニミッション",
+      minutes: 25,
+      goal: "楽観更新の失敗経路を設計する",
+      tasks: [
+        "スナップショット → 楽観 → API → ロールバックの順を書く",
+        "409 Conflict 時の再同期方針を決める",
+        "面談用に『キー・SWR・楽観』を30秒で説明する",
+      ],
+    },
+    rubric: [
+      { id: "classify", label: "状態を正しく分類できる" },
+      { id: "key", label: "キャッシュキーを設計できる" },
+      { id: "swr", label: "SWR / invalidate を説明できる" },
+      { id: "optimistic", label: "楽観更新とロールバックを設計できる" },
+    ],
+  },
 };
