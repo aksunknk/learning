@@ -238,7 +238,14 @@ async function main() {
   // 章固有 coreConcept（topics）がタブ切替で出ること
   results.topicCoreConcepts = await page.evaluate(async () => {
     const out = {};
-    for (const tab of ["javascript", "typescript", "react", "reactarch", "rust"]) {
+    for (const tab of [
+      "javascript",
+      "typescript",
+      "react",
+      "reactarch",
+      "serverstate",
+      "rust",
+    ]) {
       await window.switchTab(tab);
       out[tab] =
         document.querySelector("#core-concept-root .core-concept-title")
@@ -380,11 +387,11 @@ async function main() {
 
   // Assertions
   const failures = [...staticFailures];
-  if (tabs.length !== 25) failures.push(`expected 25 tabs, got ${tabs.length}`);
+  if (tabs.length !== 26) failures.push(`expected 26 tabs, got ${tabs.length}`);
 
   // Phase 3
-  if (results.roadmap.nodes !== 21)
-    failures.push(`expected 21 roadmap nodes, got ${results.roadmap.nodes}`);
+  if (results.roadmap.nodes !== 22)
+    failures.push(`expected 22 roadmap nodes, got ${results.roadmap.nodes}`);
   if (results.roadmap.firstTab !== "htmlcss")
     failures.push(`roadmap should start with htmlcss, got ${results.roadmap.firstTab}`);
   if (!results.search || results.search.count < 1)
@@ -587,6 +594,7 @@ async function main() {
     ["typescript", "any"],
     ["react", "useEffect"],
     ["reactarch", "アンマウント"],
+    ["serverstate", "サーバ"],
     ["rust", "unwrap"],
   ]) {
     const title = results.topicCoreConcepts?.[tab] || "";
@@ -613,6 +621,8 @@ async function main() {
     failures.push("frontend group missing react");
   if (!(results.groups.frontend || []).includes("reactarch"))
     failures.push("frontend group missing reactarch");
+  if (!(results.groups.frontend || []).includes("serverstate"))
+    failures.push("frontend group missing serverstate");
   if ((results.tabs.reactarch?.lessons || 0) < 4) {
     failures.push(
       `reactarch should have 4 lessons, got ${results.tabs.reactarch?.lessons}`
@@ -621,6 +631,16 @@ async function main() {
   if ((results.tabs.reactarch?.quizQuestions || 0) !== 2) {
     failures.push(
       `reactarch should have exactly 2 quiz questions, got ${results.tabs.reactarch?.quizQuestions}`
+    );
+  }
+  if ((results.tabs.serverstate?.lessons || 0) < 4) {
+    failures.push(
+      `serverstate should have 4 lessons, got ${results.tabs.serverstate?.lessons}`
+    );
+  }
+  if ((results.tabs.serverstate?.quizQuestions || 0) !== 2) {
+    failures.push(
+      `serverstate should have exactly 2 quiz questions, got ${results.tabs.serverstate?.quizQuestions}`
     );
   }
   if (!(results.groups.practice || []).includes("capstone"))

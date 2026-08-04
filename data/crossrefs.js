@@ -278,11 +278,27 @@ const crossRefData = {
   ],
   "reactarch-3": [
     { tab: "react", section: "react-21", label: "useEffect リファクタ" },
-    { tab: "react", section: "react-4", label: "useEffect の罠" },
+    { tab: "serverstate", section: "serverstate-1", label: "サーバ状態はキャッシュへ" },
   ],
   "reactarch-4": [
     { tab: "typescript", section: "typescript-15", label: "Zod と実行時検証" },
     { tab: "webapi", section: "webapi-4", label: "フロントからの API 通信" },
+  ],
+  "serverstate-1": [
+    { tab: "reactarch", section: "reactarch-3", label: "副作用と状態の局所化" },
+    { tab: "react", section: "react-4", label: "useEffect の罠" },
+  ],
+  "serverstate-2": [
+    { tab: "webapi", section: "webapi-10", label: "HTTP キャッシュと配信" },
+    { tab: "database", section: "database-10", label: "N+1 と同型の問題" },
+  ],
+  "serverstate-3": [
+    { tab: "webapi", section: "webapi-6", label: "REST リソース設計" },
+    { tab: "serverstate", section: "serverstate-4", label: "Query 最小実装" },
+  ],
+  "serverstate-4": [
+    { tab: "reactarch", section: "reactarch-4", label: "型安全 fetch と状態分離" },
+    { tab: "typescript", section: "typescript-16", label: "any を境界で止める" },
   ],
   "rust-10": [
     { tab: "rust", section: "rust-15", label: "unwrap を ? にリファクタ" },

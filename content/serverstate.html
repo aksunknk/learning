@@ -1,0 +1,284 @@
+      <div class="tab-intro serverstate-intro">
+        <h2><span class="serverstate-prompt">$</span> サーバ状態 / Query</h2>
+        <p>キャッシュ境界と再検証 — useState にサーバデータを抱え込まない。ライブラリ名より「キー・寿命・真実の所在」を言語化する。</p>
+      </div>
+
+      <div class="explanation-box serverstate-banner">
+        <h4>SCOPE</h4>
+        <p>reactarch が「副作用を Abort し、状態を局所化せよ」まで述べた続き。<strong>サーバ由来の値はコンポーネント State ではなくキャッシュ層の責務</strong>とする。TanStack Query / SWR の API 暗記ではなく、なぜ必要かを説明する章。</p>
+      </div>
+
+      <article class="lesson-card" data-section="serverstate-1" id="serverstate-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>クライアント状態 vs サーバ状態</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('serverstate-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>真実の所在で分類する</h4>
+            <p><strong>クライアント状態</strong>は UI が所有者（入力中テキスト、開閉、選択）。<strong>サーバ状態</strong>は API / DB が所有者で、クライアントはキャッシュされた写しにすぎない。後者を <code>useState</code> に二重管理すると、画面 A が更新した直後に画面 B の古い fetch が上書きする Race が構造的に起きる。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>分類表（面談用）</h4>
+            <pre><code>クライアント状態（UI 所有）:
+  - フォーム draft、モーダル open、タブ index
+  - 「まだサーバに無い」一時値
+
+サーバ状態（API 所有・キャッシュ）:
+  - GET /tasks の一覧、ユーザープロフィール
+  - 最終更新時刻・ETag を持つ永続データ
+
+アンチパターン:
+  各画面が独自に fetch → setState
+  → 同一リソースのコピーが N 箇所に散在
+  → invalidate 手段が無い</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>SRE 視点</h4>
+            <p>障害時に追うのは「どの画面の State が古いか」ではなく「キャッシュキーと再検証がいつ走ったか」。サーバ状態を一箇所に寄せると、観測点がログとキャッシュメタに集約される。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="serverstate-2" id="serverstate-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>stale-while-revalidate とキャッシュキー</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('serverstate-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>古い写しを出しつつ裏で取り直す</h4>
+            <p>stale-while-revalidate（SWR）は「キャッシュを即表示し、背後で再取得して差し替える」。HTTP の <code>Cache-Control: stale-while-revalidate</code>（Web/API 章）と同型の思考を、アプリ内メモリキャッシュに降ろしたもの。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>キー設計がすべて</h4>
+            <pre><code>キー = リソースの同一性を表すタプル
+  ["tasks", { status: "open" }]
+  ["task", id]
+
+ルール:
+- 同じキー → 同じキャッシュエントリ（購読者で共有）
+- 変異後は関連キーを invalidate / setQueryData
+- キーに「今の時刻」を入れない（毎回ミスヒット）
+
+寿命:
+  fresh → stale（表示は継続、再検証トリガ）
+  → inactive（購読者ゼロで GC 候補）</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>// 概念: キーと fetcher の対がキャッシュの原子
+type QueryKey = readonly unknown[];
+
+type Entry&lt;T&gt; = {
+  data?: T;
+  error?: unknown;
+  updatedAt: number;
+  subscribers: Set&lt;() =&gt; void&gt;;
+};
+
+// staleTime 経過後の read は「即 data + 裏で refetch」
+function isStale(entry: Entry&lt;unknown&gt;, staleTime: number) {
+  return Date.now() - entry.updatedAt &gt; staleTime;
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>DB の N+1 との対応</h4>
+            <p>コンポーネントごとに個別 fetch するのは、ORM で行ループしながら関連を取る N+1 と同型。キー共有キャッシュは「一括読み」に相当する。一覧キーと詳細キーの無効化範囲を設計で決める。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="serverstate-3" id="serverstate-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>楽観更新とロールバック</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('serverstate-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>UI を先に進め、失敗なら真実へ戻す</h4>
+            <p>楽観更新は「サーバ応答前にキャッシュを書き換える」。失敗時は<strong>スナップショットへロールバック</strong>するか、<strong>invalidate してサーバ真相と再同期</strong>する。ロールバック無しの楽観更新は、障害時にクライアントだけ嘘を表示し続ける。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>async function toggleDone(cache: Cache, id: string) {
+  const key = ["task", id] as const;
+  const prev = cache.get&lt;Task&gt;(key); // スナップショット
+  if (!prev) return;
+
+  cache.set(key, { ...prev, done: !prev.done }); // 楽観
+  try {
+    await api.patch(`/tasks/${id}`, { done: !prev.done });
+  } catch (e) {
+    cache.set(key, prev); // ロールバック
+    throw e;
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>競合の観測</h4>
+            <pre><code>同時編集:
+  - ETag / updatedAt を PATCH に載せて 409 を取る
+  - 409 なら invalidate → 最新を取り直す（黙って上書きしない）
+
+一覧と詳細:
+  - 詳細を楽観更新したら一覧キーも整合させる
+    （setQueryData で両方、または ["tasks"] を invalidate）</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="serverstate-4" id="serverstate-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>実戦 — Query パターンの最小自作実装</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('serverstate-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>ライブラリ無しで原理を固定する</h4>
+            <p>本番は TanStack Query 等でよい。面談では「キー・Entry・購読・stale 再検証・mutate」を自作できるかが問われる。以下は教育用の最小骨格（本番非推奨の簡略化あり）。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>type Key = string; // 本番は配列シリアライズ。ここでは簡略
+
+type Entry&lt;T&gt; = {
+  data?: T;
+  error?: unknown;
+  updatedAt: number;
+  promise?: Promise&lt;T&gt;;
+  listeners: Set&lt;() =&gt; void&gt;;
+};
+
+class QueryCache {
+  private map = new Map&lt;Key, Entry&lt;unknown&gt;&gt;();
+
+  get&lt;T&gt;(key: Key) {
+    return this.map.get(key) as Entry&lt;T&gt; | undefined;
+  }
+
+  subscribe(key: Key, fn: () =&gt; void) {
+    let e = this.map.get(key);
+    if (!e) {
+      e = { updatedAt: 0, listeners: new Set() };
+      this.map.set(key, e);
+    }
+    e.listeners.add(fn);
+    return () =&gt; e!.listeners.delete(fn);
+  }
+
+  private notify(key: Key) {
+    this.map.get(key)?.listeners.forEach((l) =&gt; l());
+  }
+
+  setData&lt;T&gt;(key: Key, data: T) {
+    const e = this.get&lt;T&gt;(key) ?? { updatedAt: 0, listeners: new Set() };
+    e.data = data;
+    e.error = undefined;
+    e.updatedAt = Date.now();
+    this.map.set(key, e as Entry&lt;unknown&gt;);
+    this.notify(key);
+  }
+
+  async fetchQuery&lt;T&gt;(
+    key: Key,
+    fetcher: (signal: AbortSignal) =&gt; Promise&lt;T&gt;,
+    staleTime = 30_000
+  ): Promise&lt;T&gt; {
+    const e = this.get&lt;T&gt;(key) ?? { updatedAt: 0, listeners: new Set() };
+    this.map.set(key, e as Entry&lt;unknown&gt;);
+
+    const fresh = Date.now() - e.updatedAt &lt;= staleTime &amp;&amp; e.data !== undefined;
+    if (fresh) return e.data as T;
+    if (e.promise) return e.promise as Promise&lt;T&gt;; // 同時購読の合流
+
+    const ac = new AbortController();
+    const p = fetcher(ac.signal)
+      .then((data) =&gt; {
+        this.setData(key, data);
+        e.promise = undefined;
+        return data;
+      })
+      .catch((err) =&gt; {
+        e.error = err;
+        e.promise = undefined;
+        this.notify(key);
+        throw err;
+      });
+    e.promise = p as Promise&lt;unknown&gt;;
+    return p;
+  }
+
+  invalidate(key: Key) {
+    const e = this.get(key);
+    if (!e) return;
+    e.updatedAt = 0; // 即 stale → 次の fetchQuery で再取得
+    this.notify(key);
+  }
+}
+
+// React 側（概念）: subscribe で再レンダー、mount で fetchQuery
+// useEffect(() =&gt; cache.subscribe(key, forceUpdate), [key]);</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>面談で一言で言うなら</h4>
+            <p>「サーバ状態はキー付きキャッシュ。表示は SWR、更新は楽観＋ロールバック。コンポーネントは購読者であり所有者ではない。」</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="quiz-section" id="serverstate-quiz">
+        <div class="quiz-header"><h3>🧠 実務設計チェック</h3></div>
+        <p class="quiz-intro">状態の分類と楽観更新の失敗処理 — 2 問。</p>
+        <div id="serverstate-quiz-container"></div>
+        <div class="quiz-result" id="serverstate-quiz-result"></div>
+      </div>
+
+      <div class="puzzle-section" id="serverstate-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 楽観更新の順序</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで、失敗時ロールバックまで含む順序に並べてください。</p>
+        <div class="puzzle-question" id="serverstate-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="serverstate-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="serverstate-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップして完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('serverstate')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('serverstate')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="serverstate-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
