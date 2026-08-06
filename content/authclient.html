@@ -1,11 +1,11 @@
       <div class="tab-intro authclient-intro">
         <h2><span class="authclient-prompt">$</span> 認証 / キャッシュ</h2>
-        <p>セッションの寿命と Query キャッシュの寿命を同期させる。トークンの置き場・401 処理・認可の真実は API 側。</p>
+        <p>ログイン状態（セッション）の寿命と、前章のサーバ状態キャッシュの寿命をそろえる章です。「ログイン情報をどこに置くか」「ログアウトや期限切れのあと、古いデータを残さないか」「画面でボタンを隠すだけで守れているか」を、用語を一つずつ押さえながら整理します。</p>
       </div>
 
       <div class="explanation-box authclient-banner">
-        <h4>SCOPE</h4>
-        <p>serverstate 章の続き。<strong>ログアウト／トークン失効後も古いサーバ状態の写しが残る</strong>のが典型事故。Security・Web/API の用語をフロント運用に接続する。</p>
+        <h4>この章の位置づけ</h4>
+        <p>「サーバ状態 / Query」章の続きです。よくある事故は、<strong>ログアウトしたあと、またはログインの有効期限が切れたあとにも、ブラウザのメモリ上に前のユーザーのタスク一覧などが残っている</strong>ことです。セキュリティ章や Web/API 章で出た用語を、フロントエンドの運用手順に接続します。</p>
       </div>
 
       <article class="lesson-card" data-section="authclient-1" id="authclient-lesson-1">
@@ -23,28 +23,48 @@
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>トークンの置き場 = 攻撃面の選択</h4>
-            <p><code>localStorage</code> に JWT を置くと、XSS 一本で Bearer ごと盗まれる。HttpOnly + Secure + SameSite の Cookie セッションは JS から読めない一方、CSRF 対策（トークン／SameSite）が必須になる。どちらかが「常に正しい」のではなく、<strong>選んだ保管場所に対応する防御を必ず載せる</strong>。</p>
+            <h4>ログイン証明の「置き場」を選ぶと、狙われ方も決まる</h4>
+            <p>ログインしたことをサーバに証明するための文字列を、ここではまとめて<strong>トークン</strong>（通行证のようなもの）と呼びます。<strong>JWT</strong>（JSON Web Token）は、そのトークンのよくある形式の一つで、中にユーザー ID などを載せた署名付きの文字列です。<strong>Bearer</strong>（ベアラ）は HTTP の <code>Authorization: Bearer &lt;トークン&gt;</code> のように「このトークンを持っている者が本人である」と伝える送り方の名前です。</p>
+            <p>ブラウザの <code>localStorage</code>（ドメインごとに文字列を保存できる領域）に JWT を置くと、JavaScript からいつでも読めます。その結果、<strong>XSS</strong>（Cross-Site Scripting：悪意のあるスクリプトをページに紛れ込ませる攻撃）が一度成功すると、攻撃者のスクリプトがトークンを読み取り、Bearer として API を呼べてしまいます。「XSS 一本で通行证ごと盗まれる」とはこの意味です。</p>
+            <p>一方、<strong>Cookie</strong>（ブラウザが自動でサーバへ添える小さなデータ）にセッション情報を載せ、<strong>HttpOnly</strong> 属性を付けると、JavaScript からはその Cookie を読めません。XSS が起きても「JS がトークンをコピーして外へ送る」経路は塞ぎやすくなります。あわせて <strong>Secure</strong>（HTTPS のときだけ送る）や <strong>SameSite</strong>（どのサイトからのリクエストに Cookie を付けるか制限する）もよく使います。</p>
+            <p>ただし Cookie 方式は別の攻撃 <strong>CSRF</strong>（Cross-Site Request Forgery：別サイトから、ログイン済みブラウザに意図しないリクエストを送らせる攻撃）への対策が必要になります。対策の例は、フォームに独自の CSRF トークンを載せる、SameSite を厳しくする、などです。</p>
+            <p>どちらの方式が「常に正解」ではありません。<strong>選んだ保管場所ごとに、対応する防御を必ず載せる</strong>、というのが設計の原則です。</p>
           </div>
           <div class="explanation-box">
-            <h4>対応表（面談用）</h4>
-            <pre><code>Bearer in localStorage / memory:
-  + SPA から付け替えやすい
-  - XSS → 即トークン漏洩
-  - タブ間共有・永続化の設計が雑になりがち
-
-HttpOnly Cookie セッション:
-  + XSS でも JS がトークンを読めない
-  - CSRF（POST 等）対策が必須
-  - クロスオリジンでは credentials 設計が要る
-
-実務の折衷（よくある）:
-  短期 access（memory）+ 長期 refresh（HttpOnly Cookie）
-  → refresh 経路だけ Cookie、API 呼び出しは短命トークン</code></pre>
+            <h4>用語メモ（このレッスンの単語帳）</h4>
+            <pre><code>トークン     … ログイン済みであることを示す文字列（通行证）
+JWT         … よく使われるトークン形式の一種
+Bearer      … Authorization ヘッダでトークンを渡す方式の名前
+localStorage … JS から読めるブラウザ内の保存領域
+XSS         … ページに悪意あるスクリプトを仕込む攻撃
+Cookie      … ブラウザがリクエストに自動添付する小さなデータ
+HttpOnly    … Cookie を JS から読めなくする属性
+Secure      … HTTPS のときだけ Cookie を送る属性
+SameSite    … 他サイト経由のリクエストに Cookie を付けるかを制限
+CSRF        … 他サイトから「本人のブラウザ」に不正操作をさせる攻撃
+セッション   … 「いま誰としてログインしているか」のサーバ側の文脈</code></pre>
           </div>
           <div class="explanation-box">
-            <h4>SRE 視点</h4>
-            <p>インシデントで最初に聞くのは「トークンはどこにいたか」。置き場が決まっていないコードベースは、漏洩範囲の見積もりができない。</p>
+            <h4>方式ごとの得失（面談用の整理）</h4>
+            <pre><code>Bearer を localStorage やメモリに置く場合:
+  良い点: SPA（単一ページアプリ）から付け替えやすい
+  悪い点: XSS が成功するとトークンがすぐ盗まれる
+  悪い点: タブ間の共有や「どこまで残すか」が雑になりやすい
+
+HttpOnly Cookie でセッションを持つ場合:
+  良い点: XSS でも JS がトークン文字列を直接読めない
+  悪い点: CSRF 対策（トークンや SameSite など）が必須
+  悪い点: 別ドメインの API を叩くとき credentials 設計が要る
+           （Cookie を送るかどうかの明示）
+
+実務でよくある折衷:
+  短命の access トークンはメモリだけに置き、
+  長めの refresh 用は HttpOnly Cookie に置く。
+  → 延長（refresh）だけ Cookie、普段の API は短命トークン。</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>障害・漏洩調査の視点</h4>
+            <p>インシデント対応で最初に確認するのは「トークンはどこに置いていたか」です。置き場がコードベース全体でバラバラだと、「どこまで漏洩したか」の見積もりができません。保管方針はチームで一文に固定しておく価値があります。</p>
           </div>
         </div>
       </article>
@@ -64,22 +84,30 @@ HttpOnly Cookie セッション:
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>セッション終了 = キャッシュの死亡時刻</h4>
-            <p>401（未認証）や明示ログアウトの直後に Query キャッシュを残すと、<strong>次のユーザー（または同一端末の別セッション）に前ユーザーの写しが見える</strong>。invalidate 個別キーでは足りないことが多い。原則は <code>clear()</code>（全破棄）またはユーザー ID をキー接頭辞にして丸ごと捨てる。</p>
+            <h4>ログインが終わった瞬間＝キャッシュも終わりにする</h4>
+            <p>HTTP のステータスコード <strong>401 Unauthorized</strong> は、ざっくり言うと「あなたが誰か分からない／ログインが無効」という応答です。明示的なログアウトも同様に、「もうこのユーザーとしては操作しない」状態です。</p>
+            <p>この直後に、前章の <strong>Query キャッシュ</strong>（サーバから取ったデータの写しをキーごとに覚えておく領域）を残したままだと、<strong>次にログインした別ユーザーや、同じ端末の別セッションに、前の人の一覧などが見える</strong>危険があります。キーを1つずつ invalidate（古い印）するだけでは漏れやすいので、原則は <code>clear()</code> で<strong>キャッシュを全部捨てる</strong>か、キーの先頭にユーザー ID を付けて「そのユーザー分をまとめて捨てる」設計にします。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>用語メモ</h4>
+            <pre><code>401 … 未ログイン／セッション無効。再ログインが必要になりやすい
+403 … ログイン自体はできているが、その操作は許可されない（権限不足）
+clear() … キャッシュ全体を空にする
+invalidate … 特定キーだけ「古い」にして取り直し候補にする</code></pre>
           </div>
           <div class="code-block">
             <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
-            <pre><code>// fetch ラッパの概念
+            <pre><code>// API 呼び出しを包むラッパの概念コード
 async function apiFetch(input: RequestInfo, init?: RequestInit) {
   const res = await fetch(input, { credentials: "include", ...init });
   if (res.status === 401) {
-    authStore.setSession(null);
-    queryCache.clear(); // 前ユーザーのサーバ状態を残さない
-    navigateToLogin();
+    authStore.setSession(null); // 「いま誰か」を忘れる
+    queryCache.clear();         // 前ユーザーの写しを残さない
+    navigateToLogin();          // ログイン画面へ
     throw new Error("unauthorized");
   }
   if (res.status === 403) {
-    // 認証は有効だが権限不足 — キャッシュ全消しは通常不要
+    // ログインは有効だが権限不足 — 通常はキャッシュ全消ししない
     throw new Error("forbidden");
   }
   return res;
@@ -88,14 +116,20 @@ async function apiFetch(input: RequestInfo, init?: RequestInit) {
 function logout() {
   authStore.setSession(null);
   queryCache.clear();
-  // サーバ側セッション破棄 API も呼ぶ
+  // あわせてサーバ側のセッション破棄 API も呼ぶ
 }</code></pre>
           </div>
           <div class="explanation-box">
-            <h4>401 と 403 を混ぜない</h4>
-            <pre><code>401 Unauthorized … 誰かが分からない／セッション無効 → 再ログイン + clear
-403 Forbidden   … 誰かは分かるが許可されない → 権限 UI / エラー表示
-                  （誤って clear すると UX が壊れる）</code></pre>
+            <h4>401 と 403 を同じ処理にしない</h4>
+            <pre><code>401 Unauthorized
+  → 「誰かが分からない／ログイン無効」
+  → 再ログインへ誘導 + キャッシュ clear
+
+403 Forbidden
+  → 「誰かは分かるが、その操作は禁止」
+  → 権限エラーの表示など
+  → ここで clear すると、使えるデータまで消えて UX が壊れる</code></pre>
+            <p><code>credentials: "include"</code> は、Cookie をリクエストに含めて送る指定です。Cookie セッション方式ではこれが無いとログイン状態がサーバに伝わりません。</p>
           </div>
         </div>
       </article>
@@ -115,26 +149,28 @@ function logout() {
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>隠すこと ≠ 守れていること</h4>
-            <p><code>{role === "admin" &amp;&amp; &lt;AdminPanel /&gt;}</code> は UX 最適化であり認可ではない。DevTools や直接 API 呼び出しで突破される。真実の認可はサーバ（所有者チェック・権限）。フロントは「見えないようにする」だけを担当する。</p>
+            <h4>画面から隠すことと、実際に守れていることは別</h4>
+            <p><strong>認証（Authentication）</strong>は「あなたは誰か」を確かめること、<strong>認可（Authorization）</strong>は「その誰かが、その操作をしてよいか」を確かめることです。よく混同されます。</p>
+            <p>React で <code>&#123;role === "admin" &amp;&amp; &lt;AdminPanel /&gt;&#125;</code> のように管理者メニューを出さないのは、<strong>見た目・操作感のための最適化（UX）</strong>であり、認可そのものではありません。ブラウザの開発者ツールや、API への直接リクエストで突破できます。本当の認可はサーバ側で、所有者かどうか・権限があるかを毎回検証します。フロントの役割は「一般ユーザーには見せない」までです。</p>
           </div>
           <div class="explanation-box">
-            <h4>IDOR をフロントだけで防がない</h4>
-            <pre><code>BAD:
-  /tasks/123 を「自分の一覧に無い ID はリンクしない」
-  → 攻撃者は 124, 125 を直接 GET する
+            <h4>IDOR をフロントのリンク非表示だけで防がない</h4>
+            <p><strong>IDOR</strong>（Insecure Direct Object Reference）は、URL や ID を書き換えて、本来見てはいけない他人のリソースに直接アクセスできてしまう一类の欠陥です。</p>
+            <pre><code>BAD（不十分）:
+  「自分の一覧に無い /tasks/123 はリンクしない」
+  → 攻撃者は /tasks/124 を手打ちやツールで GET する
 
 GOOD:
-  API が resource.owner_id === session.user_id を検証
-  フロントは 403/404 を正しく表示するだけ
+  API が「このリソースの所有者 === 今のログインユーザーか」を検証する
+  フロントは 403 や 404 を正しく表示するだけ
 
-/me の役割:
-  表示名や role のヒントを返す
-  それでも各 mutation の認可はサーバが再検証する</code></pre>
+/me（「いまの自分」を返す API）の役割:
+  表示名や role（役割）のヒントをフロントに渡す
+  それでも、更新・削除など各操作の許可はサーバが再度確かめる</code></pre>
           </div>
           <div class="explanation-box">
             <h4>キャッシュキーに userId を入れる理由</h4>
-            <p>同一ブラウザでユーザー切替があり得るなら、キーを <code>["tasks", userId]</code> のようにスコープする。clear 忘れの保険になるが、<strong>clear 自体を省略する理由にはならない</strong>。</p>
+            <p>同じブラウザでユーザーを切り替える可能性があるなら、キーを <code>["tasks", userId]</code> のように<strong>ユーザー単位で分ける</strong>と、別人の写しが同じ枠に混ざりにくくなります。これは clear を忘れたときの保険になります。ただし保険があるからといって、<strong>ログアウト時の clear 自体を省略してよい理由にはなりません</strong>。</p>
           </div>
         </div>
       </article>
@@ -154,8 +190,9 @@ GOOD:
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>最小運用骨格</h4>
-            <p>セッションはクライアント状態（誰として操作しているか）。<code>/me</code> のプロフィールはサーバ状態。ログアウトは両方を同時に殺す。</p>
+            <h4>最小の運用骨格をコードで見る</h4>
+            <p><strong>セッション</strong>（「いま誰として操作しているか」）はクライアント状態です。一方 <code>/api/me</code> が返すプロフィール（名前や role）はサーバ状態で、前章のキャッシュに載せてよいデータの一例です。ログアウトでは、<strong>セッションを消し、キャッシュも消す</strong>を同じタイミングで行います。</p>
+            <p>下の <code>parseMe</code> は、API の JSON を信じ込まず、形を確認してから型の付いた値にする例です（TypeScript の境界防衛。CFG/UI防衛章や TypeScript 章と同型の発想です）。</p>
           </div>
           <div class="code-block">
             <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
@@ -173,7 +210,7 @@ function parseMe(input: unknown): Me {
   return { id: o.id, name: o.name, role: o.role };
 }
 
-// 概念的 authStore（実装は context / zustand 等）
+// 概念的な authStore（実装は Context や zustand などでもよい）
 const authStore = {
   session: null as Session | null,
   setSession(s: Session | null) {
@@ -192,7 +229,7 @@ async function bootstrapSession(cache: { clear: () =&gt; void; fetchQuery: Funct
     if (!res.ok) throw new Error(`http_${res.status}`);
     const me = parseMe(await res.json());
     authStore.setSession({ userId: me.id, role: me.role });
-    // /me 自体もサーバ状態としてキャッシュしてよい
+    // /me の結果もサーバ状態としてキャッシュしてよい
     await cache.fetchQuery(["me", me.id], async () =&gt; me);
     return me;
   } catch {
@@ -210,14 +247,14 @@ function logout(cache: { clear: () =&gt; void }) {
           </div>
           <div class="explanation-box">
             <h4>面談で一言で言うなら</h4>
-            <p>「トークンの置き場で攻撃面が決まる。401 とログアウトではキャッシュを殺す。role 分岐は UX、認可は API。」</p>
+            <p>「トークンをどこに置くかで、XSS や CSRF のどちらを主に防ぐかが変わる。401 やログアウトでは Query キャッシュを空にする。画面の role 分岐は見せ方の話で、許可するかどうかの判定は API 側が真実。」</p>
           </div>
         </div>
       </article>
 
       <div class="quiz-section" id="authclient-quiz">
         <div class="quiz-header"><h3>🧠 実務セキュリティ・設計チェック</h3></div>
-        <p class="quiz-intro">キャッシュ破棄と認可の境界 — 2 問。</p>
+        <p class="quiz-intro">キャッシュ破棄と、認可の境界 — 2 問。</p>
         <div id="authclient-quiz-container"></div>
         <div class="quiz-result" id="authclient-quiz-result"></div>
       </div>

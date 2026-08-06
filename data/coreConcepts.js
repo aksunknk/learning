@@ -192,7 +192,7 @@ fn sum_two(a: &str, b: &str) -> Result<i32, std::num::ParseIntError> {
     serverstate: {
       title: "なぜそう書くのか — サーバデータを useState に二重管理しない",
       description:
-        "API 由来の値を各画面の useState に置くと、コピーが散在し古い fetch が新しい画面を上書きします。キー付きキャッシュへ追い出し、画面は購読だけにします。",
+        "API（サーバ）から取った一覧などを、画面ごとの useState にそれぞれ持つと、同じデータの写しが散らばり、古い通信結果が新しい画面を上書きすることがあります。キー付きの共有キャッシュに置き、画面は購読（聞き役）だけにします。",
       language: "TypeScript",
       badCode: `// BAD: 画面ごとに fetch + useState
 function TaskList() {
@@ -205,14 +205,14 @@ function TaskList() {
       goodCode: `// GOOD: キーで共有キャッシュを購読
 function TaskList() {
   const { data: tasks } = useQuery(["tasks"], fetchTasks);
-  // mutation 後は invalidate(["tasks"])
+  // 更新後は invalidate(["tasks"]) で「古い」印を付ける
 }`,
     },
 
     authclient: {
       title: "なぜそう書くのか — ログアウト後もキャッシュを残さない",
       description:
-        "401 やログアウトのあと Query キャッシュが残ると、次セッションに前ユーザーの写しが見えます。セッション破棄と cache.clear を同じトランザクションにする。",
+        "HTTP 401（未ログイン）やログアウトのあと、Query キャッシュ（サーバデータの写し）が残ると、次のログインに前ユーザーのデータが見えることがあります。セッション破棄と cache.clear（全削除）を同じタイミングで行います。",
       language: "TypeScript",
       badCode: `// BAD: セッションだけ落としてキャッシュは残す
 function logout() {
