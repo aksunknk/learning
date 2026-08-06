@@ -1,11 +1,11 @@
       <div class="tab-intro serverstate-intro">
         <h2><span class="serverstate-prompt">$</span> サーバ状態 / Query</h2>
-        <p>キャッシュ境界と再検証 — useState にサーバデータを抱え込まない。ライブラリ名より「キー・寿命・真実の所在」を言語化する。</p>
+        <p>API から取ってきたデータを、画面コンポーネントの <code>useState</code> に抱え込まないための考え方です。ライブラリ（TanStack Query など）の使い方暗記より、「データの持ち主は誰か」「古い写しをどう扱うか」を言葉にできるようにします。</p>
       </div>
 
       <div class="explanation-box serverstate-banner">
-        <h4>SCOPE</h4>
-        <p>reactarch が「副作用を Abort し、状態を局所化せよ」まで述べた続き。<strong>サーバ由来の値はコンポーネント State ではなくキャッシュ層の責務</strong>とする。TanStack Query / SWR の API 暗記ではなく、なぜ必要かを説明する章。</p>
+        <h4>この章の位置づけ</h4>
+        <p>前の「CFG / UI防衛」章では、非同期通信の打ち切り（Abort）や、状態をできるだけ狭い範囲に置く話まで触れました。その続きです。<strong>サーバ（API・データベース）に本体があるデータ</strong>は、各画面がバラバラに <code>useState</code> で持つより、<strong>アプリ内の共有キャッシュ（あとで説明する Query 層）</strong>に置く方が事故が減ります。有名ライブラリの API を覚える章ではなく、「なぜその層が必要か」を説明する章です。</p>
       </div>
 
       <article class="lesson-card" data-section="serverstate-1" id="serverstate-lesson-1">
@@ -23,27 +23,39 @@
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>真実の所在で分類する</h4>
-            <p><strong>クライアント状態</strong>は UI が所有者（入力中テキスト、開閉、選択）。<strong>サーバ状態</strong>は API / DB が所有者で、クライアントはキャッシュされた写しにすぎない。後者を <code>useState</code> に二重管理すると、画面 A が更新した直後に画面 B の古い fetch が上書きする Race が構造的に起きる。</p>
+            <h4>「データの持ち主」で二種類に分ける</h4>
+            <p>画面に出る値はすべて同じではありません。<strong>クライアント状態</strong>とは、ブラウザ上の UI だけが知っていればよい一時的な値です。例: 入力フォームに打ち込んでいる途中の文字、モーダル（ポップアップ）が開いているかどうか、今どのタブを選んでいるか。これらはまだサーバに保存されていなくてもよく、持ち主は「その画面」です。</p>
+            <p>一方 <strong>サーバ状態</strong>とは、本当の持ち主が API やデータベース側にあるデータです。例: タスク一覧、ユーザーのプロフィール、注文履歴。ブラウザが見ているのは「サーバからコピーしてきた写し（キャッシュ）」にすぎません。ここでいう<strong>キャッシュ</strong>とは、「一度取った結果をしばらく手元に覚えておき、すぐ同じ画面を描画できるようにする仕組み」のことです。</p>
+            <p>サーバ状態まで各画面が <code>useState</code> で二重に持つと、次のような事故が起きやすくなります。画面 A が最新に更新した直後に、画面 B が少し前に始めた通信（fetch）の古い結果で上書きする——いわゆる <strong>Race Condition（競合状態）</strong>です。複数の非同期処理が、到着順によって意図しない結果になる現象を指します。</p>
           </div>
           <div class="explanation-box">
-            <h4>分類表（面談用）</h4>
-            <pre><code>クライアント状態（UI 所有）:
-  - フォーム draft、モーダル open、タブ index
-  - 「まだサーバに無い」一時値
-
-サーバ状態（API 所有・キャッシュ）:
-  - GET /tasks の一覧、ユーザープロフィール
-  - 最終更新時刻・ETag を持つ永続データ
-
-アンチパターン:
-  各画面が独自に fetch → setState
-  → 同一リソースのコピーが N 箇所に散在
-  → invalidate 手段が無い</code></pre>
+            <h4>用語メモ</h4>
+            <pre><code>useState … React で「画面が覚えておく値」を持つ仕組み
+fetch    … ブラウザから API（サーバ）へ HTTP リクエストを送る関数
+キャッシュ … 写しを手元に残すこと。本体はサーバ側にある前提
+invalidate（無効化）… 「この写しは古い」と印を付け、次は取り直すこと</code></pre>
           </div>
           <div class="explanation-box">
-            <h4>SRE 視点</h4>
-            <p>障害時に追うのは「どの画面の State が古いか」ではなく「キャッシュキーと再検証がいつ走ったか」。サーバ状態を一箇所に寄せると、観測点がログとキャッシュメタに集約される。</p>
+            <h4>分類の具体例</h4>
+            <pre><code>クライアント状態（UI が持ち主）:
+  - フォームの下書きテキスト
+  - モーダルの開閉
+  - タブの選択位置
+  - 「まだサーバに送っていない」一時的な値
+
+サーバ状態（API / DB が持ち主・ブラウザは写し）:
+  - GET /tasks で取ったタスク一覧
+  - ログイン中ユーザーのプロフィール
+  - 最終更新時刻などが付いた永続データ
+
+やりがちな失敗:
+  画面ごとに各自が fetch → setState
+  → 同じデータのコピーが何箇所にも散らばる
+  → 「全部まとめて古くなったと印を付ける」手段が無い</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>障害調査の視点</h4>
+            <p>本番で「画面が古い」と問い合わせが来たとき、「どのコンポーネントの State が悪いか」を一つずつ探すより、「どのキャッシュのキーで、いつ再取得が走ったか」を追える設計の方が調査が速いです。サーバ状態を一箇所（キャッシュ層）に寄せると、観測点もそこに集まります。</p>
           </div>
         </div>
       </article>
@@ -63,27 +75,34 @@
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>古い写しを出しつつ裏で取り直す</h4>
-            <p>stale-while-revalidate（SWR）は「キャッシュを即表示し、背後で再取得して差し替える」。HTTP の <code>Cache-Control: stale-while-revalidate</code>（Web/API 章）と同型の思考を、アプリ内メモリキャッシュに降ろしたもの。</p>
+            <h4>古い写しを先に出し、裏で取り直す</h4>
+            <p><strong>stale-while-revalidate</strong>（略して SWR）は英語のまま覚えるより、意味で覚える方がよいです。<code>stale</code> は「賞味期限が切れた／古くなった」、<code>revalidate</code> は「もう一度確かめて更新する」です。合わせると「<strong>まず手元の（少し古い可能性のある）写しを画面に出し、その裏でサーバに最新を取りに行き、届いたら差し替える</strong>」という戦略です。</p>
+            <p>ユーザーは待ちスピナーばかり見なくて済み、裏では新鮮さに寄せていく、というトレードオフです。HTTP レスポンスヘッダの <code>Cache-Control: stale-while-revalidate</code>（ブラウザや CDN が使う仕組み。Web/API 章）と同じ考え方を、<strong>アプリのメモリ上のキャッシュ</strong>にも持ち込んだものだ、と捉えるとつながりやすいです。</p>
           </div>
           <div class="explanation-box">
-            <h4>キー設計がすべて</h4>
-            <pre><code>キー = リソースの同一性を表すタプル
-  ["tasks", { status: "open" }]
-  ["task", id]
+            <h4>キャッシュキーとは何か</h4>
+            <p><strong>キャッシュキー</strong>は、「この写しは何のデータのコピーか」を表す名前札です。配列で <code>["tasks", &#123; status: "open" &#125;]</code> や <code>["task", id]</code> のように書くことが多いです。同じキーを使う画面は<strong>同じ写しを共有</strong>します。キーが違えば別物として扱われます。</p>
+            <pre><code>ルールのイメージ:
+- 同じキー → 同じキャッシュ枠（複数画面が購読＝聞き役になる）
+- データを更新（作成・変更・削除）したあと
+  → 関係するキーを invalidate（「古い」印）するか、
+    手元の写しを正しい値に書き換える
+- キーに「いまの時刻」を入れない
+  → 入れると毎回別名になり、キャッシュが効かない（ミスヒット）
 
-ルール:
-- 同じキー → 同じキャッシュエントリ（購読者で共有）
-- 変異後は関連キーを invalidate / setQueryData
-- キーに「今の時刻」を入れない（毎回ミスヒット）
-
-寿命:
-  fresh → stale（表示は継続、再検証トリガ）
-  → inactive（購読者ゼロで GC 候補）</code></pre>
+寿命のイメージ:
+  fresh（新鮮）→ stale（古いが当面は表示してよい）
+  → 誰も購読していない → メモリから捨てる候補</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>用語メモ</h4>
+            <pre><code>staleTime … 「この写しを新鮮とみなす時間」。過ぎたら裏で取り直し候補
+refetch   … 同じキーでもう一度サーバへ取りに行くこと
+購読（subscribe）… キャッシュが変わったら画面に知らせてもらう登録</code></pre>
           </div>
           <div class="code-block">
             <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
-            <pre><code>// 概念: キーと fetcher の対がキャッシュの原子
+            <pre><code>// 概念: 「キー」と「取りに行く関数」の組がキャッシュの最小単位
 type QueryKey = readonly unknown[];
 
 type Entry&lt;T&gt; = {
@@ -93,14 +112,14 @@ type Entry&lt;T&gt; = {
   subscribers: Set&lt;() =&gt; void&gt;;
 };
 
-// staleTime 経過後の read は「即 data + 裏で refetch」
+// staleTime を超えたら「古い」と判定するだけの例
 function isStale(entry: Entry&lt;unknown&gt;, staleTime: number) {
   return Date.now() - entry.updatedAt &gt; staleTime;
 }</code></pre>
           </div>
           <div class="explanation-box">
-            <h4>DB の N+1 との対応</h4>
-            <p>コンポーネントごとに個別 fetch するのは、ORM で行ループしながら関連を取る N+1 と同型。キー共有キャッシュは「一括読み」に相当する。一覧キーと詳細キーの無効化範囲を設計で決める。</p>
+            <h4>データベースの N+1 問題との似た構造</h4>
+            <p><strong>N+1</strong> とは、一覧を1回取ったあと、各行ごとに関連データを追加で取りに行き、合計で「1 + N 回」の問い合わせになる性能問題です（データベース章）。フロントでも、コンポーネントごとにバラバラに fetch すると、同じ「細かすぎる取り直し」が起きます。キーを共有するキャッシュは、いわば「まとめて読んで使い回す」側の設計です。一覧用キーと詳細用キーを、更新のあとどこまで無効化するかは、あらかじめ決めておく必要があります。</p>
           </div>
         </div>
       </article>
@@ -120,34 +139,32 @@ function isStale(entry: Entry&lt;unknown&gt;, staleTime: number) {
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>UI を先に進め、失敗なら真実へ戻す</h4>
-            <p>楽観更新は「サーバ応答前にキャッシュを書き換える」。失敗時は<strong>スナップショットへロールバック</strong>するか、<strong>invalidate してサーバ真相と再同期</strong>する。ロールバック無しの楽観更新は、障害時にクライアントだけ嘘を表示し続ける。</p>
+            <h4>画面を先に進め、失敗したら元に戻す</h4>
+            <p><strong>楽観更新（Optimistic Update）</strong>とは、「サーバが成功を返す前に、うまくいった前提で手元のキャッシュと画面を先に書き換える」手法です。チェックボックスを押した瞬間に完了表示になる、といった体感の速さのためです。</p>
+            <p>サーバが失敗を返したときは、嘘のまま放置してはいけません。<strong>ロールバック</strong>とは、「更新前に取っておいたスナップショット（直前の写し）へ戻す」ことです。またはキャッシュに「古い」印を付けて（invalidate）、サーバから正しい値を取り直して<strong>再同期</strong>します。ロールバックも再取得もしない楽観更新は、障害時にブラウザだけが誤った内容を表示し続けます。</p>
           </div>
           <div class="code-block">
             <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
             <pre><code>async function toggleDone(cache: Cache, id: string) {
   const key = ["task", id] as const;
-  const prev = cache.get&lt;Task&gt;(key); // スナップショット
+  const prev = cache.get&lt;Task&gt;(key); // 直前の写しを退避（スナップショット）
   if (!prev) return;
 
-  cache.set(key, { ...prev, done: !prev.done }); // 楽観
+  cache.set(key, { ...prev, done: !prev.done }); // 楽観的に先に書き換え
   try {
     await api.patch(`/tasks/${id}`, { done: !prev.done });
   } catch (e) {
-    cache.set(key, prev); // ロールバック
+    cache.set(key, prev); // 失敗したのでロールバック
     throw e;
   }
 }</code></pre>
           </div>
           <div class="explanation-box">
-            <h4>競合の観測</h4>
-            <pre><code>同時編集:
-  - ETag / updatedAt を PATCH に載せて 409 を取る
-  - 409 なら invalidate → 最新を取り直す（黙って上書きしない）
-
-一覧と詳細:
-  - 詳細を楽観更新したら一覧キーも整合させる
-    （setQueryData で両方、または ["tasks"] を invalidate）</code></pre>
+            <h4>同時に編集されたとき（競合）</h4>
+            <p>二人のユーザーが同じデータをほぼ同時に直すと、後勝ちで意図しない上書きが起き得ます。<strong>ETag</strong> や <strong>updatedAt</strong>（最終更新時刻）を更新リクエストに添え、サーバが「あなたが見ていた版ともう違う」と判断したら <strong>HTTP 409 Conflict</strong>（競合）を返す、という設計があります。409 を受けたら黙って上書きせず、invalidate して最新を取り直すのが安全です。</p>
+            <pre><code>一覧と詳細の両方をキャッシュしている場合:
+  - 詳細だけ楽観更新すると、一覧側の写しが古いまま残ることがある
+  - 両方を書き換えるか、一覧キー ["tasks"] を invalidate する</code></pre>
           </div>
         </div>
       </article>
@@ -167,12 +184,13 @@ function isStale(entry: Entry&lt;unknown&gt;, staleTime: number) {
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>ライブラリ無しで原理を固定する</h4>
-            <p>本番は TanStack Query 等でよい。面談では「キー・Entry・購読・stale 再検証・mutate」を自作できるかが問われる。以下は教育用の最小骨格（本番非推奨の簡略化あり）。</p>
+            <h4>ライブラリ無しで「中で何をしているか」を固定する</h4>
+            <p>本番アプリでは TanStack Query や SWR といったライブラリを使うことが多いです。それでも面談や設計レビューでは、「キー」「1件分のキャッシュ（Entry）」「画面からの購読」「古くなったあとの再取得」「更新（mutate）」を自分の言葉で説明できるかが問われます。以下は教育用の最小スケルトンです。本番向けに機能を削ぎ落としているので、コピーしてそのまま製品に載せる用途ではありません。</p>
+            <p><strong>Query（クエリ）</strong>という言葉は、ここでは「あるキーに対応するデータの取得とキャッシュ管理の単位」くらいに読んでください。SQL の SELECT そのものではなく、「画面が欲しがるサーバ状態の1かたまり」に近いです。</p>
           </div>
           <div class="code-block">
             <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
-            <pre><code>type Key = string; // 本番は配列シリアライズ。ここでは簡略
+            <pre><code>type Key = string; // 本番は配列を文字列化する。ここでは簡略
 
 type Entry&lt;T&gt; = {
   data?: T;
@@ -222,7 +240,7 @@ class QueryCache {
 
     const fresh = Date.now() - e.updatedAt &lt;= staleTime &amp;&amp; e.data !== undefined;
     if (fresh) return e.data as T;
-    if (e.promise) return e.promise as Promise&lt;T&gt;; // 同時購読の合流
+    if (e.promise) return e.promise as Promise&lt;T&gt;; // 同時に同じ取得が走ったら1本に合流
 
     const ac = new AbortController();
     const p = fetcher(ac.signal)
@@ -244,31 +262,31 @@ class QueryCache {
   invalidate(key: Key) {
     const e = this.get(key);
     if (!e) return;
-    e.updatedAt = 0; // 即 stale → 次の fetchQuery で再取得
+    e.updatedAt = 0; // 即「古い」扱いにし、次の fetchQuery で再取得
     this.notify(key);
   }
 }
 
-// React 側（概念）: subscribe で再レンダー、mount で fetchQuery
+// React 側のイメージ: subscribe で再描画、表示時に fetchQuery
 // useEffect(() =&gt; cache.subscribe(key, forceUpdate), [key]);</code></pre>
           </div>
           <div class="explanation-box">
             <h4>面談で一言で言うなら</h4>
-            <p>「サーバ状態はキー付きキャッシュ。表示は SWR、更新は楽観＋ロールバック。コンポーネントは購読者であり所有者ではない。」</p>
+            <p>「サーバにあるデータの写しは、キー付きキャッシュに置く。画面にはまず手元の写しを出しつつ裏で取り直す（SWR）。更新は楽観的に先に進め、失敗したらロールバックする。コンポーネントはデータの持ち主ではなく、キャッシュの聞き役（購読者）である。」</p>
           </div>
         </div>
       </article>
 
       <div class="quiz-section" id="serverstate-quiz">
         <div class="quiz-header"><h3>🧠 実務設計チェック</h3></div>
-        <p class="quiz-intro">状態の分類と楽観更新の失敗処理 — 2 問。</p>
+        <p class="quiz-intro">状態の分類と、楽観更新が失敗したときの扱い — 2 問。</p>
         <div id="serverstate-quiz-container"></div>
         <div class="quiz-result" id="serverstate-quiz-result"></div>
       </div>
 
       <div class="puzzle-section" id="serverstate-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
         <div class="quiz-header"><h3>🧩 楽観更新の順序</h3></div>
-        <p class="quiz-intro">ドラッグ＆ドロップで、失敗時ロールバックまで含む順序に並べてください。</p>
+        <p class="quiz-intro">ドラッグ＆ドロップで、失敗時のロールバックまで含む順序に並べてください。</p>
         <div class="puzzle-question" id="serverstate-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
         <div class="puzzle-board">
           <div class="puzzle-source" id="serverstate-puzzle-source"></div>
