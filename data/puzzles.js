@@ -326,5 +326,17 @@ const puzzleData = {
     ],
     correctOrder: ["ss1", "ss2", "ss3", "ss4", "ss5"],
     explanation: "先にスナップショットを取り、楽観で書き換え、API 成功なら維持（またはサーバ応答で上書き）、失敗なら prev へ戻す。"
+  },
+  authclient: {
+    question: "以下を並べ替えて、401 受信時のセッション破棄フローを完成させてください。",
+    pieces: [
+      { id: "ac1", text: "if (res.status === 401) {" },
+      { id: "ac2", text: "  authStore.setSession(null);" },
+      { id: "ac3", text: "  queryCache.clear();" },
+      { id: "ac4", text: "  navigateToLogin();" },
+      { id: "ac5", text: "  throw new Error(\"unauthorized\");" }
+    ],
+    correctOrder: ["ac1", "ac2", "ac3", "ac4", "ac5"],
+    explanation: "セッションを落とし、キャッシュを殺し、ログインへ誘導し、呼び出し側へ失敗を伝播する。順序を崩すと古い写しが残る。"
   }
 };

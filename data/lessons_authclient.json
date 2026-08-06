@@ -1,0 +1,40 @@
+{
+  "chapterId": "authclient",
+  "title": "認証セッション × キャッシュ無効化（Auth on the client）",
+  "audience": "Python/バックエンドおよびインフラ知見を持つエンジニア",
+  "group": "frontend",
+  "lessons": [
+    {
+      "id": "authclient-1",
+      "title": "Cookie セッション vs Bearer — 保管場所と攻撃面",
+      "summary": "localStorage JWT の XSS 面と HttpOnly Cookie の役割分担"
+    },
+    {
+      "id": "authclient-2",
+      "title": "401/403 と Query キャッシュの clear",
+      "summary": "失効時の再ログイン誘導と全キャッシュ破棄"
+    },
+    {
+      "id": "authclient-3",
+      "title": "認可境界 — UI の role 分岐は装飾",
+      "summary": "IDOR は API が真実。フロントの if (role) だけでは防げない"
+    },
+    {
+      "id": "authclient-4",
+      "title": "実戦 — authStore + cache.clear + /me",
+      "summary": "型安全なセッション取得とログアウト時の一括無効化骨格"
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "authclient-q1",
+      "question": "ログアウトまたは 401 を受けた直後に必須なキャッシュ操作はどれか？",
+      "correct": "Query キャッシュを clear / invalidate し、前ユーザーの写しを残さない"
+    },
+    {
+      "id": "authclient-q2",
+      "question": "管理画面ボタンを role === 'admin' で隠すだけの対策の限界はどれか？",
+      "correct": "API 側の認可が無ければ IDOR で直接叩ける。UI 分岐は装飾にすぎない"
+    }
+  ]
+}

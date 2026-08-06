@@ -816,6 +816,58 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   color: #cffafe;
 }
 
+/* 認証 / キャッシュ章 — アンバー系ターミナル美学（章スコープのみ） */
+#content-authclient {
+  --authclient-amber: #f59e0b;
+  background: #000;
+  color: #fff7ed;
+}
+
+#content-authclient .authclient-prompt {
+  color: var(--authclient-amber);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  margin-right: 0.35rem;
+}
+
+#content-authclient .authclient-intro h2 {
+  color: #fff;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.02em;
+}
+
+#content-authclient .authclient-intro p,
+#content-authclient .authclient-banner p {
+  color: #fde68a;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.92rem;
+}
+
+#content-authclient .authclient-banner {
+  border-left: 3px solid var(--authclient-amber);
+  background: rgba(245, 158, 11, 0.06);
+}
+
+#content-authclient .authclient-banner h4 {
+  color: var(--authclient-amber);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.08em;
+}
+
+#content-authclient .lesson-card {
+  background: #050505;
+  border-color: rgba(245, 158, 11, 0.22);
+}
+
+#content-authclient .concept-box h4,
+#content-authclient .explanation-box h4 {
+  color: var(--authclient-amber);
+}
+
+#content-authclient pre,
+#content-authclient code {
+  color: #fef3c7;
+}
+
 /* ========================================
    LESSON CARDS
    ======================================== */

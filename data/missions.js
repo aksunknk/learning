@@ -859,4 +859,43 @@ except OSError as e:
       { id: "optimistic", label: "楽観更新とロールバックを設計できる" },
     ],
   },
+
+  authclient: {
+    beginner: {
+      title: "初級編ミニミッション",
+      minutes: 20,
+      goal: "トークン保管場所と攻撃面を対応づけられる",
+      tasks: [
+        "localStorage JWT と HttpOnly Cookie の得失を1つずつ書く",
+        "XSS 時にどちらがトークンを読まれるか説明する",
+        "自プロジェクトの保管方針を一文で決める",
+      ],
+    },
+    intermediate: {
+      title: "中級編ミニミッション",
+      minutes: 25,
+      goal: "401 時の clear フローを設計する",
+      tasks: [
+        "401 と 403 のフロント処理の違いを書く",
+        "logout で cache.clear する理由を説明する",
+        "キーに userId を入れる保険と clear の関係を述べる",
+      ],
+    },
+    advanced: {
+      title: "上級編ミニミッション",
+      minutes: 25,
+      goal: "/me + 認可境界を言語化できる",
+      tasks: [
+        "UI の role 分岐が認可にならない理由を書く",
+        "parseMe で境界検証する箇所を決める",
+        "面談用に『置き場・clear・API認可』を30秒で説明する",
+      ],
+    },
+    rubric: [
+      { id: "storage", label: "トークン保管と攻撃面を説明できる" },
+      { id: "clear", label: "401/ログアウトでキャッシュを破棄できる" },
+      { id: "authz", label: "UI 分岐と API 認可を区別できる" },
+      { id: "me", label: "/me とセッションの役割を言える" },
+    ],
+  },
 };
