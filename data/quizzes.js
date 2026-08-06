@@ -822,5 +822,34 @@ const quizData = {
       explanation:
         "楽観更新は仮の写し。失敗時はスナップショットへ戻すか invalidate で再取得し、クライアントだけが嘘を表示し続けないようにする。"
     }
+  ],
+
+  authclient: [
+    {
+      question:
+        "ログアウトまたは API が 401 を返した直後に、Query キャッシュに対して必須な操作はどれか？",
+      options: [
+        "staleTime を延ばして再取得を抑止する",
+        "Query キャッシュを clear / 全 invalidate し、前ユーザーの写しを残さない",
+        "localStorage にキャッシュを退避する",
+        "403 と同じく権限エラー UI だけ出す"
+      ],
+      correct: 1,
+      explanation:
+        "セッション終了後にサーバ状態の写しが残ると、次セッションや別ユーザーに古いデータが見える。原則は clear（または userId スコープごと破棄）。"
+    },
+    {
+      question:
+        "管理画面への導線を role === \"admin\" で隠すだけの対策について、正しい説明はどれか？",
+      options: [
+        "これで IDOR は完全に防げる",
+        "UI 分岐は装飾にすぎず、API 側の認可が無ければ直接叩ける",
+        "Bearer を localStorage に置けば十分",
+        "403 と 401 は同じ処理でよい"
+      ],
+      correct: 1,
+      explanation:
+        "フロントの表示制御は UX。所有者・権限の検証（認可）はサーバが行う。隠すことと守ることは別問題。"
+    }
   ]
 };

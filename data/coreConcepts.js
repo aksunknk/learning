@@ -208,5 +208,24 @@ function TaskList() {
   // mutation 後は invalidate(["tasks"])
 }`,
     },
+
+    authclient: {
+      title: "なぜそう書くのか — ログアウト後もキャッシュを残さない",
+      description:
+        "401 やログアウトのあと Query キャッシュが残ると、次セッションに前ユーザーの写しが見えます。セッション破棄と cache.clear を同じトランザクションにする。",
+      language: "TypeScript",
+      badCode: `// BAD: セッションだけ落としてキャッシュは残す
+function logout() {
+  authStore.setSession(null);
+  navigateToLogin();
+  // queryCache に tasks / me が残存 → 漏洩・誤表示
+}`,
+      goodCode: `// GOOD: セッションとキャッシュを同時に殺す
+function logout() {
+  authStore.setSession(null);
+  queryCache.clear();
+  navigateToLogin();
+}`,
+    },
   },
 };

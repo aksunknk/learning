@@ -298,6 +298,22 @@ const crossRefData = {
   ],
   "serverstate-4": [
     { tab: "reactarch", section: "reactarch-4", label: "型安全 fetch と状態分離" },
+    { tab: "authclient", section: "authclient-2", label: "401 と cache.clear" },
+  ],
+  "authclient-1": [
+    { tab: "security", section: "security-7", label: "セッションと JWT" },
+    { tab: "security", section: "security-9", label: "Cookie と CORS" },
+  ],
+  "authclient-2": [
+    { tab: "serverstate", section: "serverstate-1", label: "サーバ状態の分類" },
+    { tab: "serverstate", section: "serverstate-4", label: "Query 最小実装" },
+  ],
+  "authclient-3": [
+    { tab: "security", section: "security-6", label: "認可と IDOR" },
+    { tab: "webapi", section: "webapi-6", label: "REST リソース設計" },
+  ],
+  "authclient-4": [
+    { tab: "reactarch", section: "reactarch-2", label: "L7 型防衛" },
     { tab: "typescript", section: "typescript-16", label: "any を境界で止める" },
   ],
   "rust-10": [

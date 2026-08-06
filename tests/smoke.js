@@ -244,6 +244,7 @@ async function main() {
       "react",
       "reactarch",
       "serverstate",
+      "authclient",
       "rust",
     ]) {
       await window.switchTab(tab);
@@ -387,11 +388,11 @@ async function main() {
 
   // Assertions
   const failures = [...staticFailures];
-  if (tabs.length !== 26) failures.push(`expected 26 tabs, got ${tabs.length}`);
+  if (tabs.length !== 27) failures.push(`expected 27 tabs, got ${tabs.length}`);
 
   // Phase 3
-  if (results.roadmap.nodes !== 22)
-    failures.push(`expected 22 roadmap nodes, got ${results.roadmap.nodes}`);
+  if (results.roadmap.nodes !== 23)
+    failures.push(`expected 23 roadmap nodes, got ${results.roadmap.nodes}`);
   if (results.roadmap.firstTab !== "htmlcss")
     failures.push(`roadmap should start with htmlcss, got ${results.roadmap.firstTab}`);
   if (!results.search || results.search.count < 1)
@@ -595,6 +596,7 @@ async function main() {
     ["react", "useEffect"],
     ["reactarch", "アンマウント"],
     ["serverstate", "サーバ"],
+    ["authclient", "キャッシュ"],
     ["rust", "unwrap"],
   ]) {
     const title = results.topicCoreConcepts?.[tab] || "";
@@ -623,6 +625,8 @@ async function main() {
     failures.push("frontend group missing reactarch");
   if (!(results.groups.frontend || []).includes("serverstate"))
     failures.push("frontend group missing serverstate");
+  if (!(results.groups.frontend || []).includes("authclient"))
+    failures.push("frontend group missing authclient");
   if ((results.tabs.reactarch?.lessons || 0) < 4) {
     failures.push(
       `reactarch should have 4 lessons, got ${results.tabs.reactarch?.lessons}`
@@ -641,6 +645,16 @@ async function main() {
   if ((results.tabs.serverstate?.quizQuestions || 0) !== 2) {
     failures.push(
       `serverstate should have exactly 2 quiz questions, got ${results.tabs.serverstate?.quizQuestions}`
+    );
+  }
+  if ((results.tabs.authclient?.lessons || 0) < 4) {
+    failures.push(
+      `authclient should have 4 lessons, got ${results.tabs.authclient?.lessons}`
+    );
+  }
+  if ((results.tabs.authclient?.quizQuestions || 0) !== 2) {
+    failures.push(
+      `authclient should have exactly 2 quiz questions, got ${results.tabs.authclient?.quizQuestions}`
     );
   }
   if (!(results.groups.practice || []).includes("capstone"))

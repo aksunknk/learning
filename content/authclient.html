@@ -1,0 +1,240 @@
+      <div class="tab-intro authclient-intro">
+        <h2><span class="authclient-prompt">$</span> 認証 / キャッシュ</h2>
+        <p>セッションの寿命と Query キャッシュの寿命を同期させる。トークンの置き場・401 処理・認可の真実は API 側。</p>
+      </div>
+
+      <div class="explanation-box authclient-banner">
+        <h4>SCOPE</h4>
+        <p>serverstate 章の続き。<strong>ログアウト／トークン失効後も古いサーバ状態の写しが残る</strong>のが典型事故。Security・Web/API の用語をフロント運用に接続する。</p>
+      </div>
+
+      <article class="lesson-card" data-section="authclient-1" id="authclient-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>Cookie セッション vs Bearer — 保管場所と攻撃面</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('authclient-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>トークンの置き場 = 攻撃面の選択</h4>
+            <p><code>localStorage</code> に JWT を置くと、XSS 一本で Bearer ごと盗まれる。HttpOnly + Secure + SameSite の Cookie セッションは JS から読めない一方、CSRF 対策（トークン／SameSite）が必須になる。どちらかが「常に正しい」のではなく、<strong>選んだ保管場所に対応する防御を必ず載せる</strong>。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>対応表（面談用）</h4>
+            <pre><code>Bearer in localStorage / memory:
+  + SPA から付け替えやすい
+  - XSS → 即トークン漏洩
+  - タブ間共有・永続化の設計が雑になりがち
+
+HttpOnly Cookie セッション:
+  + XSS でも JS がトークンを読めない
+  - CSRF（POST 等）対策が必須
+  - クロスオリジンでは credentials 設計が要る
+
+実務の折衷（よくある）:
+  短期 access（memory）+ 長期 refresh（HttpOnly Cookie）
+  → refresh 経路だけ Cookie、API 呼び出しは短命トークン</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>SRE 視点</h4>
+            <p>インシデントで最初に聞くのは「トークンはどこにいたか」。置き場が決まっていないコードベースは、漏洩範囲の見積もりができない。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="authclient-2" id="authclient-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>401/403 と Query キャッシュの clear</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('authclient-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>セッション終了 = キャッシュの死亡時刻</h4>
+            <p>401（未認証）や明示ログアウトの直後に Query キャッシュを残すと、<strong>次のユーザー（または同一端末の別セッション）に前ユーザーの写しが見える</strong>。invalidate 個別キーでは足りないことが多い。原則は <code>clear()</code>（全破棄）またはユーザー ID をキー接頭辞にして丸ごと捨てる。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>// fetch ラッパの概念
+async function apiFetch(input: RequestInfo, init?: RequestInit) {
+  const res = await fetch(input, { credentials: "include", ...init });
+  if (res.status === 401) {
+    authStore.setSession(null);
+    queryCache.clear(); // 前ユーザーのサーバ状態を残さない
+    navigateToLogin();
+    throw new Error("unauthorized");
+  }
+  if (res.status === 403) {
+    // 認証は有効だが権限不足 — キャッシュ全消しは通常不要
+    throw new Error("forbidden");
+  }
+  return res;
+}
+
+function logout() {
+  authStore.setSession(null);
+  queryCache.clear();
+  // サーバ側セッション破棄 API も呼ぶ
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>401 と 403 を混ぜない</h4>
+            <pre><code>401 Unauthorized … 誰かが分からない／セッション無効 → 再ログイン + clear
+403 Forbidden   … 誰かは分かるが許可されない → 権限 UI / エラー表示
+                  （誤って clear すると UX が壊れる）</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="authclient-3" id="authclient-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>認可境界 — UI の role 分岐は装飾</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('authclient-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>隠すこと ≠ 守れていること</h4>
+            <p><code>{role === "admin" &amp;&amp; &lt;AdminPanel /&gt;}</code> は UX 最適化であり認可ではない。DevTools や直接 API 呼び出しで突破される。真実の認可はサーバ（所有者チェック・権限）。フロントは「見えないようにする」だけを担当する。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>IDOR をフロントだけで防がない</h4>
+            <pre><code>BAD:
+  /tasks/123 を「自分の一覧に無い ID はリンクしない」
+  → 攻撃者は 124, 125 を直接 GET する
+
+GOOD:
+  API が resource.owner_id === session.user_id を検証
+  フロントは 403/404 を正しく表示するだけ
+
+/me の役割:
+  表示名や role のヒントを返す
+  それでも各 mutation の認可はサーバが再検証する</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>キャッシュキーに userId を入れる理由</h4>
+            <p>同一ブラウザでユーザー切替があり得るなら、キーを <code>["tasks", userId]</code> のようにスコープする。clear 忘れの保険になるが、<strong>clear 自体を省略する理由にはならない</strong>。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="authclient-4" id="authclient-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>実戦 — authStore + cache.clear + /me</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('authclient-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>最小運用骨格</h4>
+            <p>セッションはクライアント状態（誰として操作しているか）。<code>/me</code> のプロフィールはサーバ状態。ログアウトは両方を同時に殺す。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>type Session = { userId: string; role: "user" | "admin" };
+
+type Me = { id: string; name: string; role: Session["role"] };
+
+function parseMe(input: unknown): Me {
+  if (!input || typeof input !== "object") throw new Error("contract");
+  const o = input as Record&lt;string, unknown&gt;;
+  if (typeof o.id !== "string" || typeof o.name !== "string") {
+    throw new Error("contract");
+  }
+  if (o.role !== "user" &amp;&amp; o.role !== "admin") throw new Error("contract");
+  return { id: o.id, name: o.name, role: o.role };
+}
+
+// 概念的 authStore（実装は context / zustand 等）
+const authStore = {
+  session: null as Session | null,
+  setSession(s: Session | null) {
+    this.session = s;
+  },
+};
+
+async function bootstrapSession(cache: { clear: () =&gt; void; fetchQuery: Function }) {
+  try {
+    const res = await fetch("/api/me", { credentials: "include" });
+    if (res.status === 401) {
+      authStore.setSession(null);
+      cache.clear();
+      return null;
+    }
+    if (!res.ok) throw new Error(`http_${res.status}`);
+    const me = parseMe(await res.json());
+    authStore.setSession({ userId: me.id, role: me.role });
+    // /me 自体もサーバ状態としてキャッシュしてよい
+    await cache.fetchQuery(["me", me.id], async () =&gt; me);
+    return me;
+  } catch {
+    authStore.setSession(null);
+    cache.clear();
+    return null;
+  }
+}
+
+function logout(cache: { clear: () =&gt; void }) {
+  void fetch("/api/logout", { method: "POST", credentials: "include" });
+  authStore.setSession(null);
+  cache.clear();
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>面談で一言で言うなら</h4>
+            <p>「トークンの置き場で攻撃面が決まる。401 とログアウトではキャッシュを殺す。role 分岐は UX、認可は API。」</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="quiz-section" id="authclient-quiz">
+        <div class="quiz-header"><h3>🧠 実務セキュリティ・設計チェック</h3></div>
+        <p class="quiz-intro">キャッシュ破棄と認可の境界 — 2 問。</p>
+        <div id="authclient-quiz-container"></div>
+        <div class="quiz-result" id="authclient-quiz-result"></div>
+      </div>
+
+      <div class="puzzle-section" id="authclient-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 401 受信時の順序</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで、セッション破棄から再ログイン誘導までの順序に並べてください。</p>
+        <div class="puzzle-question" id="authclient-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="authclient-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="authclient-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップして完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('authclient')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('authclient')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="authclient-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
