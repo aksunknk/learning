@@ -1,0 +1,266 @@
+      <div class="tab-intro fronttest-intro">
+        <h2><span class="fronttest-prompt">$</span> フロント境界テスト</h2>
+        <p>Query・認証で設計した「状態の分かれ道」を、テストで固定する章です。ライブラリ名の暗記より、<strong>何をモックし、画面に何が見えれば合格か</strong>を言葉にします。</p>
+      </div>
+
+      <div class="explanation-box fronttest-banner">
+        <h4>この章の位置づけ</h4>
+        <p>直前までのフロント編（CFG → Query → 認証）は「どう設計するか」でした。テスト設計章には Playwright や RTL の概要がありますが、<strong>サーバ状態の loading/error、楽観更新の失敗、ログアウト後のキャッシュ破棄</strong>を具体的にどう断言するかは未接続です。この章がその橋です。</p>
+        <p><strong>RTL</strong>（React Testing Library）は、ボタンの有無やテキストなど「ユーザーが画面で見ること・操作すること」を中心にコンポーネントを検証するテスト用ライブラリです。<strong>MSW</strong>（Mock Service Worker）は、テスト中の <code>fetch</code> を横取りし、偽の API 応答を返す仕組みです。本物のサーバを立てなくても、成功や 401 を意図どおり再現できます。</p>
+      </div>
+
+      <article class="lesson-card" data-section="fronttest-1" id="fronttest-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>なぜ loading / error / empty を分けてテストするか</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('fronttest-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>画面は「状態機械」——各ノードをユーザー視点で固定する</h4>
+            <p>サーバ状態を扱う画面は、だいたい次の状態を行き来します。<strong>loading</strong>（読み込み中）、<strong>error</strong>（失敗してメッセージを出す）、<strong>empty</strong>（成功したが件数がゼロ）、<strong>ready</strong>（一覧や詳細が見える）。CFG / Query 章で「loading と error を同じ変数に詰め込まない」と言ったのは、UI 分岐がこのノードごとに分かれるからです。</p>
+            <p>テストも同様に分けます。「データがあるとき一覧が出る」だけ通しても、失敗時にスピナーが永遠に回り続けるバグは検知できません。<strong>アサーション</strong>（assertion：期待どおりかを確かめる文）は、実装の内部変数名ではなく、<code>getByText("読み込み中")</code> や <code>getByRole("alert")</code> のように、ユーザーが知覚する結果に書きます。これが RTL の流儀です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>用語メモ</h4>
+            <pre><code>RTL (React Testing Library)
+  … 画面に出るもの・操作を中心にコンポーネントをテストするライブラリ
+アサーション
+  … 「こうなっていてほしい」をコードで確認すること（expect など）
+状態機械
+  … 取りうる状態と、状態間の遷移を明示したモデル
+E2E (End-to-End)
+  … ブラウザごとアプリ全体を動かす重いテスト（Playwright 等）
+  … 本章の RTL + MSW は「境界の薄い層」。ログイン〜決済の一本道は E2E に残す</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>最低限そろえるケース表</h4>
+            <pre><code>loading → 「読み込み中」相当が見える / 一覧はまだ無い
+error   → エラー文言が見える / 一覧は出さない
+empty   → 「0件」や空の案内が見える
+ready   → タスク名など実データが見える
+
+やってはいけない:
+  実装の state.status === "loading" を直接覗くだけ
+  → リファクタで壊れ、ユーザー体験とずれる</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="fronttest-2" id="fronttest-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>MSW で成功・401・500 を固定する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('fronttest-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>ネットワーク境界を「台本」にする</h4>
+            <p>コンポーネントテストで本物のバックエンドに依存すると、サーバの起動・データの初期状態・ネットワーク揺らぎでテストが赤くなったり緑になったりします（フレーク）。<strong>モック</strong>とは、本物の代わりに用意する偽の応答です。MSW はブラウザ／Node のネットワーク層に近いところで <code>fetch</code> を横取りするため、アプリコードは本番と同じ <code>fetch("/api/tasks")</code> のまま、応答だけ台本に差し替えられます。</p>
+            <p>認証章で扱った <strong>401</strong>（未ログイン）、サーバ障害の <strong>500</strong>、成功の 200 をケースごとに切り替えると、「成功パスだけ通るテスト」から卒業できます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>用語メモ</h4>
+            <pre><code>MSW (Mock Service Worker)
+  … fetch を横取りして偽レスポンスを返すテスト用ツール
+ハンドラ
+  … 「この URL にはこの JSON / ステータスを返す」という台本の1行
+フレーク
+  … 同じコードなのに実行ごとに成功・失敗がぶれるテスト</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
+import { render, screen, waitFor } from "@testing-library/react";
+import { TaskList } from "./TaskList";
+
+const server = setupServer(
+  http.get("/api/tasks", () =>
+    HttpResponse.json([{ id: "1", title: "ship" }])
+  )
+);
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+test("成功時はタスク名が見える", async () => {
+  render(&lt;TaskList /&gt;);
+  expect(await screen.findByText("ship")).toBeInTheDocument();
+});
+
+test("401 のときはログイン誘導が見える", async () => {
+  server.use(
+    http.get("/api/tasks", () =>
+      new HttpResponse(null, { status: 401 })
+    )
+  );
+  render(&lt;TaskList /&gt;);
+  expect(await screen.findByText(/ログイン/i)).toBeInTheDocument();
+});
+
+test("500 のときはエラー表示になる", async () => {
+  server.use(
+    http.get("/api/tasks", () =>
+      new HttpResponse(null, { status: 500 })
+    )
+  );
+  render(&lt;TaskList /&gt;);
+  expect(await screen.findByRole("alert")).toBeInTheDocument();
+});</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4><code>findBy*</code> と <code>getBy*</code></h4>
+            <p>非同期で後から現れる要素には <code>findByText</code>（内部で待機）を使います。最初からあるべき要素には <code>getByText</code> です。loading のあとに ready へ変わる画面では、だいたい <code>findBy</code> が主役になります。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="fronttest-3" id="fronttest-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>楽観更新の失敗とロールバックを断言する</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('fronttest-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>「一度進んだ UI」が戻ることを合格条件にする</h4>
+            <p>Query 章の<strong>楽観更新</strong>は、サーバ応答前に画面を先に進める手法でした。テストで成功パスだけ見ると、失敗時にロールバックしないバグが残ります。手順は次のとおりです。</p>
+            <p>1. 初期表示は「未完了」<br>2. ユーザーがトグル（切り替え）する → いったん「完了」に見える（楽観）<br>3. MSW が PATCH を 500 などで失敗させる<br>4. 最終的にまた「未完了」に戻っている（ロールバック）</p>
+            <p><strong>userEvent</strong>（Testing Library の操作ヘルパ）でクリックを再現し、<code>waitFor</code> で非同期の戻りを待ちます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>import userEvent from "@testing-library/user-event";
+
+test("PATCH 失敗後は完了表示が元に戻る", async () => {
+  const user = userEvent.setup();
+  server.use(
+    http.get("/api/tasks", () =>
+      HttpResponse.json([{ id: "1", title: "ship", done: false }])
+    ),
+    http.patch("/api/tasks/1", () =>
+      new HttpResponse(null, { status: 500 })
+    )
+  );
+
+  render(&lt;TaskList /&gt;);
+  const checkbox = await screen.findByRole("checkbox", { name: /ship/i });
+  expect(checkbox).not.toBeChecked();
+
+  await user.click(checkbox);
+  // 楽観的に一度チェックが付く実装なら、ここで一時的に checked でもよい
+  await waitFor(() => {
+    expect(checkbox).not.toBeChecked(); // 最終的にロールバック
+  });
+  expect(screen.getByRole("alert")).toBeInTheDocument();
+});</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>成功パスも1本は残す</h4>
+            <p>失敗だけテストすると、成功時に画面が更新されない退化に気づけません。MSW で 200 を返し、最終的に checked になるケースを対で持ちます。契約テスト（OpenAPI）は「形」、本章は「画面の振る舞い」——テスト設計章の薄いフロント結合層と同じ役割分担です。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lesson-card" data-section="fronttest-4" id="fronttest-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>ログアウト後に旧キャッシュが見えない回帰</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('fronttest-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>認証章の clear を、テストで忘れないようにする</h4>
+            <p>認証 / キャッシュ章の要点は「401 やログアウトで Query キャッシュを空にする」でした。これは設計メモだけでは腐ります。<strong>回帰テスト</strong>（一度直したバグが戻っていないかを確かめるテスト）として、次のシナリオを固定します。</p>
+            <p>1. ユーザー A のタスク「secret-A」が表示される<br>2. ログアウト（または 401）する<br>3. ユーザー B として入り直す（MSW の応答を B 用に切り替える）<br>4. 画面に「secret-A」が<strong>出ない</strong>ことを断言する</p>
+            <p>出てはいけないものには <code>queryByText</code> / <code>findBy</code> の否定、<code>waitFor</code> で「しばらく経っても現れない」を使います。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>test("ログアウト後に前ユーザーのタスクが見えない", async () => {
+  const user = userEvent.setup();
+  server.use(
+    http.get("/api/tasks", () =>
+      HttpResponse.json([{ id: "a", title: "secret-A" }])
+    )
+  );
+  const { rerender } = render(&lt;App /&gt;);
+  expect(await screen.findByText("secret-A")).toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: /ログアウト/i }));
+
+  server.use(
+    http.get("/api/tasks", () =>
+      HttpResponse.json([{ id: "b", title: "task-B" }])
+    ),
+    http.get("/api/me", () =>
+      HttpResponse.json({ id: "b", name: "Bob", role: "user" })
+    )
+  );
+  // ログインし直したあと（アプリの導線に合わせて操作）
+  await user.click(screen.getByRole("button", { name: /ログイン/i }));
+
+  expect(await screen.findByText("task-B")).toBeInTheDocument();
+  expect(screen.queryByText("secret-A")).not.toBeInTheDocument();
+});</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>面談で一言で言うなら</h4>
+            <p>「画面の状態ノード（loading/error/empty/ready）をユーザー視点で断言する。API は MSW で台本化する。楽観更新は失敗時の戻りを必ず見る。ログアウト後に旧キャッシュが出ないことを回帰で止める。」</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="quiz-section" id="fronttest-quiz">
+        <div class="quiz-header"><h3>🧠 境界テスト・チェック</h3></div>
+        <p class="quiz-intro">モックの目的と楽観更新の失敗断言 — 2 問。</p>
+        <div id="fronttest-quiz-container"></div>
+        <div class="quiz-result" id="fronttest-quiz-result"></div>
+      </div>
+
+      <div class="puzzle-section" id="fronttest-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 楽観更新テストの順序</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで、失敗時ロールバックを確かめる手順に並べてください。</p>
+        <div class="puzzle-question" id="fronttest-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="fronttest-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="fronttest-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップして完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('fronttest')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('fronttest')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="fronttest-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>

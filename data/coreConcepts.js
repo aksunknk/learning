@@ -227,5 +227,25 @@ function logout() {
   navigateToLogin();
 }`,
     },
+
+    fronttest: {
+      title: "なぜそう書くのか — 成功パスだけで境界をテストしない",
+      description:
+        "API 成功だけを断言すると、401・500・楽観更新の失敗ロールバックが壊れても検知できません。MSW で応答を台本化し、ユーザーが画面で見る結果を状態ごとに固定します。",
+      language: "TypeScript",
+      badCode: `// BAD: 成功レスポンスだけ
+test("一覧が出る", async () => {
+  render(<TaskList />);
+  expect(await screen.findByText("ship")).toBeInTheDocument();
+});`,
+      goodCode: `// GOOD: 失敗も台本化して断言
+test("500 ならエラーが見える", async () => {
+  server.use(http.get("/api/tasks", () =>
+    new HttpResponse(null, { status: 500 })
+  ));
+  render(<TaskList />);
+  expect(await screen.findByRole("alert")).toBeInTheDocument();
+});`,
+    },
   },
 };

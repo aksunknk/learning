@@ -314,7 +314,23 @@ const crossRefData = {
   ],
   "authclient-4": [
     { tab: "reactarch", section: "reactarch-2", label: "L7 型防衛" },
-    { tab: "typescript", section: "typescript-16", label: "any を境界で止める" },
+    { tab: "fronttest", section: "fronttest-4", label: "ログアウト後の回帰テスト" },
+  ],
+  "fronttest-1": [
+    { tab: "serverstate", section: "serverstate-1", label: "クライアント vs サーバ状態" },
+    { tab: "testing", section: "testing-1", label: "テスト設計の地図" },
+  ],
+  "fronttest-2": [
+    { tab: "testing", section: "testing-12", label: "契約テストとフロント結合" },
+    { tab: "webapi", section: "webapi-9", label: "エラー応答の扱い" },
+  ],
+  "fronttest-3": [
+    { tab: "serverstate", section: "serverstate-3", label: "楽観更新とロールバック" },
+    { tab: "serverstate", section: "serverstate-4", label: "Query 最小実装" },
+  ],
+  "fronttest-4": [
+    { tab: "authclient", section: "authclient-2", label: "401 と cache.clear" },
+    { tab: "authclient", section: "authclient-4", label: "authStore と /me" },
   ],
   "rust-10": [
     { tab: "rust", section: "rust-15", label: "unwrap を ? にリファクタ" },

@@ -338,5 +338,17 @@ const puzzleData = {
     ],
     correctOrder: ["ac1", "ac2", "ac3", "ac4", "ac5"],
     explanation: "セッションを落とし、キャッシュを殺し、ログインへ誘導し、呼び出し側へ失敗を伝播する。順序を崩すと古い写しが残る。"
+  },
+  fronttest: {
+    question: "以下を並べ替えて、楽観更新の失敗ロールバックを確かめるテスト手順を完成させてください。",
+    pieces: [
+      { id: "ft1", text: "MSW で初期 GET を成功応答にする" },
+      { id: "ft2", text: "画面を render し初期の未完了を確認" },
+      { id: "ft3", text: "PATCH を 500 にするハンドラを server.use" },
+      { id: "ft4", text: "userEvent でトグルをクリック" },
+      { id: "ft5", text: "waitFor で未完了へ戻ったことを断言" }
+    ],
+    correctOrder: ["ft1", "ft2", "ft3", "ft4", "ft5"],
+    explanation: "初期成功で土台を作り、失敗ハンドラを差し込み、操作したあと最終状態がロールバックされていることを待つ。"
   }
 };
