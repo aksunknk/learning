@@ -868,6 +868,58 @@ strong { color: var(--color-text-primary); font-weight: 600; }
   color: #fef3c7;
 }
 
+/* フロント境界テスト章 — ティール系ターミナル美学（章スコープのみ） */
+#content-fronttest {
+  --fronttest-teal: #2dd4bf;
+  background: #000;
+  color: #ecfdf5;
+}
+
+#content-fronttest .fronttest-prompt {
+  color: var(--fronttest-teal);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  margin-right: 0.35rem;
+}
+
+#content-fronttest .fronttest-intro h2 {
+  color: #fff;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.02em;
+}
+
+#content-fronttest .fronttest-intro p,
+#content-fronttest .fronttest-banner p {
+  color: #99f6e4;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.92rem;
+}
+
+#content-fronttest .fronttest-banner {
+  border-left: 3px solid var(--fronttest-teal);
+  background: rgba(45, 212, 191, 0.06);
+}
+
+#content-fronttest .fronttest-banner h4 {
+  color: var(--fronttest-teal);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.08em;
+}
+
+#content-fronttest .lesson-card {
+  background: #050505;
+  border-color: rgba(45, 212, 191, 0.22);
+}
+
+#content-fronttest .concept-box h4,
+#content-fronttest .explanation-box h4 {
+  color: var(--fronttest-teal);
+}
+
+#content-fronttest pre,
+#content-fronttest code {
+  color: #ccfbf1;
+}
+
 /* ========================================
    LESSON CARDS
    ======================================== */

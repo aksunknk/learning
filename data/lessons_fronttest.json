@@ -1,0 +1,40 @@
+{
+  "chapterId": "fronttest",
+  "title": "フロント境界テスト（MSW + RTL）",
+  "audience": "Python/バックエンドおよびインフラ知見を持つエンジニア",
+  "group": "frontend",
+  "lessons": [
+    {
+      "id": "fronttest-1",
+      "title": "なぜ loading / error / empty を分けてテストするか",
+      "summary": "状態機械の各ノードをユーザー視点の断言で固定する"
+    },
+    {
+      "id": "fronttest-2",
+      "title": "MSW で成功・401・500 を固定する",
+      "summary": "ネットワーク境界をモックし、再現可能な失敗を作る"
+    },
+    {
+      "id": "fronttest-3",
+      "title": "楽観更新の失敗とロールバックを断言する",
+      "summary": "先に進んだ UI が API 失敗後に戻ることをテストで保証する"
+    },
+    {
+      "id": "fronttest-4",
+      "title": "ログアウト後に旧キャッシュが見えない回帰",
+      "summary": "clear 忘れを防ぐ実務テスト骨格"
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "fronttest-q1",
+      "question": "コンポーネントテストで本物のバックエンドに依存しない主な理由はどれか？",
+      "correct": "成功・失敗を再現可能に固定し、境界の振る舞いだけを検証するため"
+    },
+    {
+      "id": "fronttest-q2",
+      "question": "楽観更新のテストで必ず確認すべき失敗経路はどれか？",
+      "correct": "API 失敗後に UI / キャッシュが更新前の写しへ戻ること"
+    }
+  ]
+}

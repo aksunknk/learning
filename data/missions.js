@@ -898,4 +898,43 @@ except OSError as e:
       { id: "me", label: "/me とセッションの役割を言える" },
     ],
   },
+
+  fronttest: {
+    beginner: {
+      title: "初級編ミニミッション",
+      minutes: 20,
+      goal: "loading / error / empty / ready のケース表を書ける",
+      tasks: [
+        "手元の一覧画面で4状態の期待表示を表にする",
+        "アサーションをユーザー視点の文言・role にする",
+        "内部 state を直接覗く案を捨てる理由を書く",
+      ],
+    },
+    intermediate: {
+      title: "中級編ミニミッション",
+      minutes: 25,
+      goal: "MSW で 200 / 401 / 500 を切り替える",
+      tasks: [
+        "成功ハンドラと server.use での上書きを書く",
+        "findBy と getBy の使い分けを一文で説明する",
+        "フレークの原因を1つ挙げて防ぐ",
+      ],
+    },
+    advanced: {
+      title: "上級編ミニミッション",
+      minutes: 25,
+      goal: "楽観失敗とログアウト後キャッシュを回帰にする",
+      tasks: [
+        "ロールバック断言の手順を5ステップで書く",
+        "secret-A が B ログイン後に出ないケースを設計する",
+        "面談用に『状態ノード・MSW・回帰』を30秒で説明する",
+      ],
+    },
+    rubric: [
+      { id: "states", label: "画面状態を分けてテストできる" },
+      { id: "msw", label: "MSW で境界を固定できる" },
+      { id: "optimistic", label: "楽観失敗のロールバックを断言できる" },
+      { id: "logout", label: "ログアウト後の漏洩を回帰で止められる" },
+    ],
+  },
 };

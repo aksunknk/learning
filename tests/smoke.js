@@ -245,6 +245,7 @@ async function main() {
       "reactarch",
       "serverstate",
       "authclient",
+      "fronttest",
       "rust",
     ]) {
       await window.switchTab(tab);
@@ -388,11 +389,11 @@ async function main() {
 
   // Assertions
   const failures = [...staticFailures];
-  if (tabs.length !== 27) failures.push(`expected 27 tabs, got ${tabs.length}`);
+  if (tabs.length !== 28) failures.push(`expected 28 tabs, got ${tabs.length}`);
 
   // Phase 3
-  if (results.roadmap.nodes !== 23)
-    failures.push(`expected 23 roadmap nodes, got ${results.roadmap.nodes}`);
+  if (results.roadmap.nodes !== 24)
+    failures.push(`expected 24 roadmap nodes, got ${results.roadmap.nodes}`);
   if (results.roadmap.firstTab !== "htmlcss")
     failures.push(`roadmap should start with htmlcss, got ${results.roadmap.firstTab}`);
   if (!results.search || results.search.count < 1)
@@ -597,6 +598,7 @@ async function main() {
     ["reactarch", "アンマウント"],
     ["serverstate", "サーバ"],
     ["authclient", "キャッシュ"],
+    ["fronttest", "成功パス"],
     ["rust", "unwrap"],
   ]) {
     const title = results.topicCoreConcepts?.[tab] || "";
@@ -627,6 +629,8 @@ async function main() {
     failures.push("frontend group missing serverstate");
   if (!(results.groups.frontend || []).includes("authclient"))
     failures.push("frontend group missing authclient");
+  if (!(results.groups.frontend || []).includes("fronttest"))
+    failures.push("frontend group missing fronttest");
   if ((results.tabs.reactarch?.lessons || 0) < 4) {
     failures.push(
       `reactarch should have 4 lessons, got ${results.tabs.reactarch?.lessons}`
@@ -655,6 +659,16 @@ async function main() {
   if ((results.tabs.authclient?.quizQuestions || 0) !== 2) {
     failures.push(
       `authclient should have exactly 2 quiz questions, got ${results.tabs.authclient?.quizQuestions}`
+    );
+  }
+  if ((results.tabs.fronttest?.lessons || 0) < 4) {
+    failures.push(
+      `fronttest should have 4 lessons, got ${results.tabs.fronttest?.lessons}`
+    );
+  }
+  if ((results.tabs.fronttest?.quizQuestions || 0) !== 2) {
+    failures.push(
+      `fronttest should have exactly 2 quiz questions, got ${results.tabs.fronttest?.quizQuestions}`
     );
   }
   if (!(results.groups.practice || []).includes("capstone"))
