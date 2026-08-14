@@ -148,7 +148,7 @@ useEffect(() => {
     reactarch: {
       title: "なぜそう書くのか — アンマウント後も fetch を生かさない",
       description:
-        "I/O はコンポーネント寿命より長く生き得る。AbortController で通信を殺し、古い応答による Race Condition を断つ。",
+        "useEffect 内の fetch はコンポーネントより長く生き得ます。AbortController で通信を打ち切り、アンマウント後の setState と Race Condition（古い応答による上書き）を防ぎます。",
       language: "TypeScript",
       badCode: `// BAD: クリーンアップ無し
 useEffect(() => {
