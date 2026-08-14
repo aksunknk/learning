@@ -1,11 +1,12 @@
       <div class="tab-intro reactarch-intro">
         <h2><span class="reactarch-prompt">$</span> React / TypeScript アーキテクチャ</h2>
-        <p>制御フロー(CFG)と UI 防衛設計 — BE/インフラ経験者向け。文法解説は省略し、データフロー・境界・レンダリングコストの理由だけを残す。</p>
+        <p>文法の暗記ではなく、「データがどう流れるか」「どこで型を守るか」「副作用をいつ殺すか」を、用語を一つずつ押さえながら整理する章です。Python / バックエンド / インフラの経験がある人向けです。</p>
       </div>
 
       <div class="explanation-box reactarch-banner">
-        <h4>SCOPE</h4>
-        <p>面談・実案件で問われるのは「なぜその境界か」。Action から Paint までの CFG、L7 での契約検証、副作用の寿命管理を一本の線で説明できる状態を目標にする。</p>
+        <h4>この章の位置づけ</h4>
+        <p>React 章で文法（JSX・useState 等）を学んだあと、実案件や面談で問われる<strong>設計の理由</strong>を扱います。後続の「サーバ状態 / Query」「認証 / キャッシュ」「フロント境界テスト」章の土台になるので、ここで用語を固定しておくと読みやすくなります。</p>
+        <p><strong>CFG</strong>（Control Flow Graph：制御フロー図）は、プログラムが「どの順でどの処理を通るか」をノードと矢印で表したものです。障害調査では「どのノードで分岐したか」を追うので、React でも更新の流れを CFG として説明できると強いです。</p>
       </div>
 
       <article class="lesson-card" data-section="reactarch-1" id="reactarch-lesson-1">
@@ -23,31 +24,47 @@
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>CFG としての React ランタイム</h4>
-            <p>React の更新は双方向バインディングではない。<strong>情報は一方向にしか流れない</strong>。逆方向（DOM → 勝手に State）を許すと、観測不能な状態分岐が増え、障害時の再現グラフが爆発する。</p>
+            <h4>React の更新は「一方向」——双方向バインディングではない</h4>
+            <p>古い UI フレームワークには<strong>双方向バインディング</strong>（画面とデータが互いに直接つながり、どちらを変えてももう一方が追従する仕組み）がありました。React は意図的にそうしません。<strong>単方向データフロー</strong>とは、情報が決められた方向にしか流れない設計のことです。典型は次の流れです。</p>
+            <p>ユーザー操作（Action）→ イベントハンドラ → （必要なら）非同期 I/O → State の更新 → 画面の再描画。DOM（ブラウザ上の HTML 要素）を読んで State を「推測で」埋める逆流は避けます。逆流を許すと、どのタイミングで画面が変わったか追いにくくなり、障害時の再現グラフ（CFG 上の分岐）が爆発しやすくなります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>用語メモ</h4>
+            <pre><code>Action（アクション）
+  … ユーザーの操作やシステムイベント（クリック、送信など）
+Event Handler（イベントハンドラ）
+  … 操作を受け取り「何をしたいか」を決める関数
+State（状態）
+  … 画面を描くためにコンポーネントが覚えている値
+Virtual DOM / Reconciliation（仮想 DOM / 調整）
+  … 前回の UI と今回の State の差分を計算し、必要な部分だけ DOM を更新する処理
+Commit / Repaint（コミット / 再描画）
+  … 差分を実際のブラウザ画面に反映すること
+Side Effect（副作用）
+  … 描画以外の仕事（fetch、タイマー、ログ出力など）</code></pre>
           </div>
           <div class="explanation-box">
             <h4>正規パス（簡略 CFG）</h4>
             <pre><code>User Action
   → Event Handler（同期の意思決定）
-  → Side Effect / Async I/O（fetch, WS, timer）
-  → setState / dispatch（意図の宣言）
+  → Side Effect / Async I/O（fetch, WebSocket, timer）
+  → setState / dispatch（「こうなってほしい」と宣言）
   → Virtual DOM diff（Reconciliation）
   → Commit → Browser Repaint
 
-禁止に近い逆流:
-  DOM を読んで State を「推測で」埋める
-  Effect 内で無制限に Effect を連鎖させる（観測不能ループ）</code></pre>
+避けたい逆流:
+  DOM を読んで State を推測で埋める
+  useEffect 内で無制限に Effect を連鎖させる（観測不能ループ）</code></pre>
           </div>
           <div class="explanation-box">
-            <h4>SRE 視点</h4>
-            <p>インシデントで追うのは「どのノードで分岐したか」。Handler で分岐したのか、I/O 失敗後の再試行か、Reconciliation の結果 UI が古いのか。単方向制約は<strong>障害グラフの辺を減らす</strong>ための設計制約である。</p>
+            <h4>障害調査の視点</h4>
+            <p>本番で「画面がおかしい」とき、追うのは「どのノードで分岐したか」です。Handler で分岐したのか、I/O 失敗後の再試行なのか、Reconciliation の結果として古い UI が残っているのか。単方向制約は、<strong>障害グラフの辺（分岐）を減らす</strong>ための設計ルールです。SRE やバックエンドのログ追跡と同型の思考です。</p>
           </div>
           <div class="code-block">
             <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
             <pre><code>// Handler は「意図」だけを書く。描画は State の写像に任せる。
-function onRetry(dispatch: (a: Action) => void) {
-  dispatch({ type: "logs/retry" }); // → reducer/effect が I/O を担う
+function onRetry(dispatch: (a: Action) =&gt; void) {
+  dispatch({ type: "logs/retry" }); // reducer / effect が I/O を担う
 }</code></pre>
           </div>
         </div>
@@ -68,19 +85,29 @@ function onRetry(dispatch: (a: Action) => void) {
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>型は UI 内部の便利機能ではない — L7 の契約壁</h4>
-            <p>FastAPI / OpenAPI がサーバ境界でスキーマを強制するのと同様、ブラウザ側の TypeScript Interface/Type（＋実行時 parse）は<strong>不当ペイロードをアプリ核に入れない防衛壁</strong>である。<code>any</code> はその壁に穴を開ける。</p>
+            <h4>型は UI の便利機能ではない — ネットワーク境界の契約壁</h4>
+            <p>OSI 参照モデルの<strong>Layer 7（アプリケーション層）</strong>は、HTTP や JSON など「アプリが意味を持つデータ」の層です。バックエンドでは FastAPI の <code>response_model</code> や OpenAPI が「この形の JSON だけ返す」と契約します。フロントエンドでも、API から届いた JSON をそのまま信じ込むと、壊れたデータが UI 核まで入り込みます。</p>
+            <p>TypeScript の <strong>Interface / Type</strong>（型定義）に加え、必要なら実行時の <strong>parse（検証）</strong>を境界に置くと、「不当なペイロード（想定外の JSON）をアプリの中に入れない防衛壁」になります。<code>any</code> はその壁に穴を開け、コンパイラのチェックを無効化する型です。</p>
           </div>
           <div class="explanation-box">
-            <h4>なぜ any をパージするか</h4>
+            <h4>用語メモ</h4>
+            <pre><code>Interface / Type … オブジェクトの形を表す TypeScript の契約
+any              … 型チェックをオフにする（防衛壁の撤去）
+unknown          … 「何かは来たが形は未確定」。検証前の受け口
+parse / 検証     … 実行時にフィールドの有無・型を確かめる処理
+Zod 等           … スキーマ検証ライブラリの代表例
+キャスト (as T)  … コンパイラへ「T だ」と伝えるだけ。検証ではない</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>なぜ any を避けるか</h4>
             <pre><code>any を付けた瞬間:
 - 存在しないフィールド参照がコンパイルを通る
 - バックエンドの破壊的変更が「静かに」UI へ侵入する
-- 障害時、型が「嘘のドキュメント」になる
+- 障害時、型定義が「嘘のドキュメント」になる
 
 境界の正しい受け口:
-  unknown（または Zod 等）→ 検証 → 契約型 T
-内側（描画・ドメイン）は T だけを信じる。</code></pre>
+  unknown（または Zod）→ 検証 → 契約型 T
+内側（描画・ドメイン）は T だけを信じる</code></pre>
           </div>
           <div class="code-block">
             <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
@@ -102,7 +129,7 @@ function parseBook(input: unknown): Book {
           </div>
           <div class="explanation-box">
             <h4>運用メモ</h4>
-            <p><code>as Book</code> だけのキャストは検証ではない。コンパイルは通っても実行時は壊れる。OpenAPI 生成型があっても、<strong>ネットワーク境界では一度 parse</strong>する。</p>
+            <p><code>as Book</code> だけのキャストは検証ではありません。コンパイルは通っても実行時は壊れます。OpenAPI から型を自動生成していても、<strong>ネットワーク境界では一度 parse する</strong>のが安全です。Web/API 章の契約思考と TypeScript 章の unknown 議論と同じ線です。</p>
           </div>
         </div>
       </article>
@@ -122,14 +149,25 @@ function parseBook(input: unknown): Book {
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>副作用には寿命がある</h4>
-            <p>fetch はコンポーネント寿命より長く生き得る。アンマウント後の <code>setState</code> はリーク警告と Race Condition（遅い応答が新しい画面を上書き）の原因になる。<code>AbortController</code> で I/O 自体を殺すのが正攻法。</p>
+            <h4>副作用には「寿命」がある — コンポーネントより長く生きてはいけない</h4>
+            <p><strong>useEffect</strong> は React のフックの一つで、「描画のあとに副作用を実行する」ための仕組みです。典型例は API の fetch です。fetch はネットワーク上で時間がかかるため、<strong>コンポーネントの寿命</strong>（画面に表示されている間）より長く生きることがあります。</p>
+            <p>ユーザーが画面を離れた（<strong>アンマウント</strong>：コンポーネントがツリーから外れること）あとに fetch が返ってきて <code>setState</code> すると、React は警告を出し、最悪はメモリリークや<strong>Race Condition（競合状態）</strong>（遅い古い応答が、新しい画面の State を上書きする現象）を起こします。</p>
+            <p><strong>AbortController</strong> は、進行中の fetch などを「もう要らない」と打ち切るブラウザ標準の API です。useEffect の<strong>クリーンアップ</strong>（return で返す関数：コンポーネントの片付け時に実行される処理）で <code>abort()</code> するのが正攻法です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>用語メモ</h4>
+            <pre><code>useEffect     … 描画後に副作用を走らせる React フック
+依存配列 []   … 空ならマウント時のみ / 値を入れるとその値が変わったとき再実行
+アンマウント    … コンポーネントが画面から消えること
+AbortController … 進行中の fetch をキャンセルする仕組み
+AbortError      … 意図的に abort したとき fetch が投げるエラー（無視してよい）
+再レンダリング  … State 変更などでコンポーネント関数が再度実行され UI が更新されること</code></pre>
           </div>
           <div class="code-block">
             <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
-            <pre><code>useEffect(() => {
+            <pre><code>useEffect(() =&gt; {
   const ac = new AbortController();
-  (async () => {
+  (async () =&gt; {
     try {
       const res = await fetch(`/api/logs?q=${q}`, { signal: ac.signal });
       const json: unknown = await res.json();
@@ -139,19 +177,21 @@ function parseBook(input: unknown): Book {
       setError("fetch_failed");
     }
   })();
-  return () => ac.abort();
+  return () =&gt; ac.abort(); // アンマウント時に通信を打ち切る
 }, [q]);</code></pre>
           </div>
           <div class="explanation-box">
-            <h4>状態のエントロピーを下げる</h4>
+            <h4>State は「可能な限り狭く」——再描画コストを下げる</h4>
+            <p><strong>再レンダリング</strong>は State や親の更新のたびにコンポーネント関数が再実行されることです。State を親や Context（ツリー全体に値を配る仕組み）に無闇に上げると、関係ない子まで再描画されやすくなります。</p>
             <pre><code>原則:
 - State は「可能な限り狭く・ローカルに」
-- 親が持つ理由がない値を Context/グローバルへ上げない
-- 子の再描画コスト = props 参照の安定性 × 部分木の大きさ
+- 親が持つ理由がない値を Context / グローバルへ上げない
+- 子の再描画コスト ≈ props の参照の安定性 × 部分木の大きさ
 
-低エントロピー設計:
-  List は items だけ受け、選択状態は行コンポーネント内
-  サーバキャッシュは専用レイヤ（Query 等）へ追い出し、画面 State を薄くする</code></pre>
+低エントロピー（散らばりの少ない）設計:
+  List は items だけ受け、行の選択状態は行コンポーネント内
+  サーバ由来データは専用キャッシュ（Query 等）へ追い出し、画面 State を薄くする
+  → 次章「サーバ状態 / Query」で詳述</code></pre>
           </div>
         </div>
       </article>
@@ -171,8 +211,16 @@ function parseBook(input: unknown): Book {
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>運用レベル最小骨格</h4>
-            <p>loading / error / data を同一変数に詰めない。UI 分岐が CFG 上の別ノードになるよう、状態機械として分離する。</p>
+            <h4>loading / error / data を混ぜない — 状態機械として分離する</h4>
+            <p>実運用の fetch 画面では、少なくとも次の状態を区別します。<strong>loading</strong>（取得中）、<strong>error</strong>（失敗）、<strong>ready</strong>（データ表示）。これらを1つの変数に無理やり詰めると、UI 分岐が複雑になり、バグ（例: エラーなのに古い一覧が残る）が入りやすくなります。</p>
+            <p>TypeScript の<strong>判別可能ユニオン</strong>（<code>status</code> フィールドで分岐できる型の組み合わせ）を使うと、CFG 上のノードごとに型が絞り込まれ、描画コードが読みやすくなります。境界では <code>unknown</code> で JSON を受け、<code>parseBooks</code> で契約型に変換します。I/O 中は AbortController で打ち切り可能にします。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>用語メモ</h4>
+            <pre><code>LoadState / 状態機械 … idle / loading / error / ready など取りうる状態の集合
+判別可能ユニオン   … status などの共通フィールドで型を区別する書き方
+parseBooks        … API JSON を unknown から Book[] 契約へ変換する境界関数
+res.ok            … HTTP ステータスが 200 台かどうか（false ならエラー扱いが一般的）</code></pre>
           </div>
           <div class="code-block">
             <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
@@ -185,7 +233,7 @@ type LoadState =
 
 function parseBooks(input: unknown): Book[] {
   if (!Array.isArray(input)) throw new Error("contract");
-  return input.map((row) => {
+  return input.map((row) =&gt; {
     if (!row || typeof row !== "object") throw new Error("contract");
     const o = row as Record&lt;string, unknown&gt;;
     if (typeof o.id !== "string" || typeof o.title !== "string") {
@@ -198,10 +246,10 @@ function parseBooks(input: unknown): Book[] {
 function BookPanel() {
   const [state, setState] = useState&lt;LoadState&gt;({ status: "idle" });
 
-  useEffect(() => {
+  useEffect(() =&gt; {
     const ac = new AbortController();
     setState({ status: "loading" });
-    (async () => {
+    (async () =&gt; {
       try {
         const res = await fetch("/api/books", { signal: ac.signal });
         if (!res.ok) throw new Error(`http_${res.status}`);
@@ -215,7 +263,7 @@ function BookPanel() {
         });
       }
     })();
-    return () => ac.abort();
+    return () =&gt; ac.abort();
   }, []);
 
   if (state.status === "loading" || state.status === "idle") {
@@ -226,7 +274,7 @@ function BookPanel() {
   }
   return (
     &lt;ul className="term"&gt;
-      {state.books.map((b) => (
+      {state.books.map((b) =&gt; (
         &lt;li key={b.id}&gt;{b.title}&lt;/li&gt;
       ))}
     &lt;/ul&gt;
@@ -235,7 +283,7 @@ function BookPanel() {
           </div>
           <div class="explanation-box">
             <h4>面談で一言で言うなら</h4>
-            <p>「UI は契約型の写像。I/O は Abort 可能な副作用。状態は局所化し、loading/error/data を混ぜない。」</p>
+            <p>「UI は契約型の写像。I/O は Abort 可能な副作用。State は局所化し、loading / error / data を混ぜない。サーバ由来の一覧は次章以降、Query キャッシュへ追い出す。」</p>
           </div>
         </div>
       </article>
