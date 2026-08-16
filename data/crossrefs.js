@@ -331,6 +331,29 @@ const crossRefData = {
   "fronttest-4": [
     { tab: "authclient", section: "authclient-2", label: "401 と cache.clear" },
     { tab: "authclient", section: "authclient-4", label: "authStore と /me" },
+    { tab: "capstone", section: "capstone-8", label: "キャップストーンの境界テスト" },
+    { tab: "pathway", section: "pathway-8", label: "TaskBoard の境界テスト" },
+  ],
+  "capstone-7": [
+    { tab: "reactarch", section: "reactarch-2", label: "L7 型防衛（parse）" },
+    { tab: "serverstate", section: "serverstate-4", label: "Query 最小実装" },
+    { tab: "authclient", section: "authclient-2", label: "401 と cache.clear" },
+  ],
+  "capstone-8": [
+    { tab: "fronttest", section: "fronttest-1", label: "loading/error/ready" },
+    { tab: "fronttest", section: "fronttest-4", label: "ログアウト後の回帰" },
+    { tab: "pathway", section: "pathway-8", label: "TaskBoard のテスト" },
+  ],
+  "pathway-7": [
+    { tab: "reactarch", section: "reactarch-4", label: "LoadState と型安全 fetch" },
+    { tab: "serverstate", section: "serverstate-1", label: "サーバ状態の分類" },
+    { tab: "authclient", section: "authclient-4", label: "authStore + clear" },
+    { tab: "capstone", section: "capstone-7", label: "キャップストーンのフロント接続" },
+  ],
+  "pathway-8": [
+    { tab: "fronttest", section: "fronttest-2", label: "MSW で 401/500 固定" },
+    { tab: "testing", section: "testing-12", label: "契約とフロント結合" },
+    { tab: "capstone", section: "capstone-8", label: "キャップストーンのテスト" },
   ],
   "rust-10": [
     { tab: "rust", section: "rust-15", label: "unwrap を ? にリファクタ" },

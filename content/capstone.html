@@ -1,7 +1,7 @@
 
       <div class="tab-intro">
         <h2>🏗️ キャップストーン — 認証付きTODOアプリをゼロから公開まで</h2>
-        <p>ここまで学んだ全知識を接続する総合演習です。FastAPI + SQLite + React + TypeScript で認証付きTODOアプリを構築し、テストを書き、Docker化し、CI/CDで自動デプロイするまでを10ステップで完走します。各レッスンのコードは実際に手元で動かしながら進めてください。</p>
+        <p>ここまで学んだ全知識を接続する総合演習です。FastAPI + SQLite + React + TypeScript で認証付きTODOアプリを構築し、テストを書き、Docker化し、CI/CDで自動デプロイするまでを10ステップで完走します。フロント側は <strong>CFG/UI防衛 → Query → 認証/キャッシュ → 境界テスト</strong> 章で学んだ型防衛・キャッシュ・401 時 clear を L7 以降に反映します。各レッスンのコードは実際に手元で動かしながら進めてください。</p>
       </div>
 
       <article class="lesson-card" data-section="capstone-1" id="capstone-lesson-1">
@@ -297,79 +297,186 @@ app.add_middleware(
       </article>
 
       <article class="lesson-card" data-section="capstone-7" id="capstone-lesson-7">
-        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">07</span><h3>フロントエンド接続 — React + TypeScriptでAPIを叩く</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
+        <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">07</span><h3>フロントエンド接続 — Query・型防衛・401 時 cache clear</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-7')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
-          <div class="concept-box"><h4>💡 API通信は「型付きの関数」に閉じ込める — コンポーネントの中に fetch を散らばらせない</h4></div>
-          <div class="code-block"><div class="code-header"><span class="code-lang">TypeScript — frontend/src/api.ts（API層）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
-            <pre><code>const BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+          <div class="concept-box"><h4>💡 React 章の useState + useEffect 直書きはここでは卒業 — サーバ状態はキャッシュ、境界は parse、401 は clear</h4>
+            <p>TODO 一覧は<strong>サーバ状態</strong>です。各コンポーネントが <code>useState</code> で抱え込むと、画面間で写しがバラけ、ログアウト後も古い一覧が残りやすくなります（認証 / キャッシュ章）。ここでは教育用の最小 Query キャッシュに載せ、UI は <strong>LoadState</strong>（loading / error / ready）で分岐します。API JSON は <code>unknown</code> で受け、<code>parseTodo</code> で契約型へ（CFG/UI防衛章）。fetch は <code>AbortController</code> で打ち切り可能にします。</p>
+          </div>
+          <div class="explanation-box" style="border-left: 4px solid #39ff14; background: rgba(57,255,20,0.06);">
+            <h4>🔗 フロント編との対応</h4>
+            <p><code>reactarch</code>（境界 parse / Abort）→ <code>serverstate</code>（Query キャッシュ）→ <code>authclient</code>（401 と cache.clear）→ <code>fronttest</code>（RTL + MSW で固定）。JWT を <code>localStorage</code> に置く簡略構成は学習用です。本番では HttpOnly Cookie 等を検討してください（authclient 章）。</p>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">TypeScript — frontend/src/parse.ts（L7 境界）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>export type Todo = { id: number; title: string; done: boolean };
 
-export interface Todo {
-  id: number;
-  title: string;
-  done: boolean;
+export function parseTodo(input: unknown): Todo {
+  if (!input || typeof input !== "object") throw new Error("contract");
+  const o = input as Record&lt;string, unknown&gt;;
+  if (typeof o.id !== "number" || typeof o.title !== "string") {
+    throw new Error("contract");
+  }
+  if (typeof o.done !== "boolean") throw new Error("contract");
+  return { id: o.id, title: o.title, done: o.done };
 }
+
+export function parseTodos(input: unknown): Todo[] {
+  if (!Array.isArray(input)) throw new Error("contract");
+  return input.map(parseTodo);
+}</code></pre>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">TypeScript — frontend/src/queryCache.ts（最小 Query）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>type Entry&lt;T&gt; = {
+  data?: T;
+  error?: unknown;
+  updatedAt: number;
+  promise?: Promise&lt;T&gt;;
+  listeners: Set&lt;() =&gt; void&gt;;
+};
+
+export class QueryCache {
+  private map = new Map&lt;string, Entry&lt;unknown&gt;&gt;();
+
+  subscribe(key: string, fn: () =&gt; void) {
+    let e = this.map.get(key);
+    if (!e) {
+      e = { updatedAt: 0, listeners: new Set() };
+      this.map.set(key, e);
+    }
+    e.listeners.add(fn);
+    return () =&gt; e!.listeners.delete(fn);
+  }
+
+  clear() {
+    this.map.clear(); // 401 / ログアウト時に前ユーザーの写しを消す
+  }
+
+  async fetchQuery&lt;T&gt;(
+    key: string,
+    fetcher: (signal: AbortSignal) =&gt; Promise&lt;T&gt;,
+    staleTime = 30_000
+  ): Promise&lt;T&gt; {
+    const e = (this.map.get(key) as Entry&lt;T&gt;) ?? { updatedAt: 0, listeners: new Set() };
+    this.map.set(key, e as Entry&lt;unknown&gt;);
+    const fresh = Date.now() - e.updatedAt &lt;= staleTime &amp;&amp; e.data !== undefined;
+    if (fresh) return e.data as T;
+    if (e.promise) return e.promise;
+    const ac = new AbortController();
+    const p = fetcher(ac.signal).then((data) =&gt; {
+      e.data = data;
+      e.error = undefined;
+      e.updatedAt = Date.now();
+      e.promise = undefined;
+      e.listeners.forEach((l) =&gt; l());
+      return data;
+    });
+    e.promise = p;
+    return p;
+  }
+
+  invalidate(key: string) {
+    const e = this.map.get(key);
+    if (!e) return;
+    e.updatedAt = 0;
+    e.listeners.forEach((l) =&gt; l());
+  }
+}
+
+export const cache = new QueryCache();</code></pre>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">TypeScript — frontend/src/api.ts（API 層 + 401）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>import { cache } from "./queryCache";
+import { parseTodo, parseTodos, type Todo } from "./parse";
+
+const BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
 function authHeaders(): HeadersInit {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-async function request&lt;T&gt;(path: string, init?: RequestInit): Promise&lt;T&gt; {
+async function request(path: string, init?: RequestInit, signal?: AbortSignal) {
   const res = await fetch(`${BASE}${path}`, {
     ...init,
-    headers: { "Content-Type": "application/json",
-               ...authHeaders(), ...init?.headers },
+    signal,
+    headers: { "Content-Type": "application/json", ...authHeaders(), ...init?.headers },
   });
-  if (res.status === 401) {              // トークン切れ → ログインへ
+  if (res.status === 401) {
     localStorage.removeItem("token");
+    cache.clear(); // 認証章: セッションとキャッシュを同時に消す
     location.href = "/login";
+    throw new Error("unauthorized");
   }
   if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json() as Promise&lt;T&gt;;
+  return res.json() as Promise&lt;unknown&gt;;
 }
 
 export const api = {
-  listTodos: ()            =&gt; request&lt;Todo[]&gt;("/todos"),
+  listTodos: (signal?: AbortSignal) =&gt;
+    request("/todos", undefined, signal).then(parseTodos),
   createTodo: (title: string) =&gt;
-    request&lt;Todo&gt;("/todos", { method: "POST",
-                              body: JSON.stringify({ title }) }),
+    request("/todos", { method: "POST", body: JSON.stringify({ title }) }).then(parseTodo),
   toggleTodo: (id: number) =&gt;
-    request&lt;Todo&gt;(`/todos/${id}`, { method: "PATCH" }),
+    request(`/todos/${id}`, { method: "PATCH" }).then(parseTodo),
 };</code></pre>
           </div>
           <div class="code-block"><div class="code-header"><span class="code-lang">TypeScript — frontend/src/TodoList.tsx</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
             <pre><code>import { useEffect, useState } from "react";
 import { api, type Todo } from "./api";
+import { cache } from "./queryCache";
+
+type LoadState =
+  | { status: "loading" | "idle" }
+  | { status: "error"; message: string }
+  | { status: "ready"; todos: Todo[] };
+
+const TODOS_KEY = "todos:me";
 
 export function TodoList() {
-  const [todos, setTodos] = useState&lt;Todo[]&gt;([]);
+  const [state, setState] = useState&lt;LoadState&gt;({ status: "idle" });
   const [title, setTitle] = useState("");
-  const [error, setError] = useState&lt;string | null&gt;(null);
 
   useEffect(() =&gt; {
-    api.listTodos().then(setTodos).catch(e =&gt; setError(e.message));
+    let alive = true;
+    setState({ status: "loading" });
+    cache
+      .fetchQuery(TODOS_KEY, (signal) =&gt; api.listTodos(signal))
+      .then((todos) =&gt; alive &amp;&amp; setState({ status: "ready", todos }))
+      .catch((e) =&gt; {
+        if (!alive || (e as { name?: string }).name === "AbortError") return;
+        setState({ status: "error", message: String(e) });
+      });
+    return () =&gt; {
+      alive = false;
+    };
   }, []);
 
   async function add() {
     if (!title.trim()) return;
-    const todo = await api.createTodo(title);
-    setTodos(prev =&gt; [...prev, todo]);     // 新しい配列を作って更新
+    await api.createTodo(title);
+    cache.invalidate(TODOS_KEY);
+    await cache.fetchQuery(TODOS_KEY, (signal) =&gt; api.listTodos(signal));
     setTitle("");
   }
 
   async function toggle(id: number) {
-    const updated = await api.toggleTodo(id);
-    setTodos(prev =&gt; prev.map(t =&gt; (t.id === id ? updated : t)));
+    await api.toggleTodo(id);
+    cache.invalidate(TODOS_KEY);
+    await cache.fetchQuery(TODOS_KEY, (signal) =&gt; api.listTodos(signal));
   }
 
-  if (error) return &lt;p role="alert"&gt;読み込みに失敗しました: {error}&lt;/p&gt;;
+  if (state.status === "loading" || state.status === "idle") {
+    return &lt;p role="status"&gt;読み込み中…&lt;/p&gt;;
+  }
+  if (state.status === "error") {
+    return &lt;p role="alert"&gt;読み込みに失敗しました: {state.message}&lt;/p&gt;;
+  }
 
   return (
     &lt;div&gt;
-      &lt;input value={title} onChange={e =&gt; setTitle(e.target.value)} /&gt;
+      &lt;input value={title} onChange={(e) =&gt; setTitle(e.target.value)} /&gt;
       &lt;button onClick={add}&gt;追加&lt;/button&gt;
       &lt;ul&gt;
-        {todos.map(t =&gt; (
+        {state.todos.map((t) =&gt; (
           &lt;li key={t.id} onClick={() =&gt; toggle(t.id)}&gt;
             {t.done ? "✅" : "⬜"} {t.title}
           &lt;/li&gt;
@@ -379,14 +486,16 @@ export function TodoList() {
   );
 }</code></pre>
           </div>
-          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Todo型がバックエンドのTodoOutと二重管理になっている点に注目:</strong> 実務規模ではこれが破綻の温床になるため、FastAPIが自動生成するOpenAPIスキーマから <code>openapi-typescript</code> でTS型を自動生成します。「バックエンドの変更がフロントの型エラーとして即座に現れる」状態が理想です。</p></div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>Todo 型の二重管理:</strong> 学習段階では手書き parse で十分です。規模が上がったら FastAPI の OpenAPI から <code>openapi-typescript</code> で型を生成し、Zod で実行時検証を足します（TypeScript / Web/API 章）。<strong>本番では TanStack Query</strong> に置き換えてよいですが、「キー・invalidate・401 clear」の語彙は同じです。</p></div>
         </div>
       </article>
 
       <article class="lesson-card" data-section="capstone-8" id="capstone-lesson-8">
         <div class="lesson-header" onclick="toggleSection(this)"><div class="lesson-title-area"><span class="lesson-number">08</span><h3>テスト — pytestとVitestで「壊れたら気づける」状態を作る</h3></div><div class="lesson-controls"><button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('capstone-8')" title="完了にする"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button><span class="chevron">▼</span></div></div>
         <div class="lesson-body">
-          <div class="concept-box"><h4>💡 テストは「未来の自分への保険」— リファクタリングできるコードとできないコードの分かれ目</h4></div>
+          <div class="concept-box"><h4>💡 テストは「未来の自分への保険」— バックは pytest、フロントは API 層 + 境界（RTL + MSW）</h4>
+            <p>バックエンドは認証・認可・CRUD を pytest で固定します。フロントは <strong>2 層</strong>に分けます。(1) <code>parse.ts</code> / <code>api.ts</code> のユニットテスト（Vitest）(2) <code>TodoList</code> の loading / error / 401 後の表示を RTL + MSW で固定（fronttest 章）。E2E（Playwright）はログイン〜主要 CRUD の一本道だけに残します。</p>
+          </div>
           <div class="code-block"><div class="code-header"><span class="code-lang">Python — backend/tests/test_todos.py</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
             <pre><code>import pytest
 from fastapi.testclient import TestClient
@@ -423,33 +532,70 @@ def test_cannot_touch_others_todo(auth_header):
     res = client.patch("/todos/99999", headers=auth_header)
     assert res.status_code == 404</code></pre>
           </div>
-          <div class="code-block"><div class="code-header"><span class="code-lang">TypeScript — frontend/src/api.test.ts（Vitest）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
-            <pre><code>import { describe, it, expect, vi, beforeEach } from "vitest";
-import { api } from "./api";
+          <div class="code-block"><div class="code-header"><span class="code-lang">TypeScript — frontend/src/parse.test.ts（Vitest）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>import { describe, it, expect } from "vitest";
+import { parseTodo, parseTodos } from "./parse";
 
-beforeEach(() =&gt; {
-  vi.stubGlobal("fetch", vi.fn());   // 本物の通信はしない
-});
-
-describe("api.listTodos", () =&gt; {
-  it("returns parsed todos", async () =&gt; {
-    (fetch as ReturnType&lt;typeof vi.fn&gt;).mockResolvedValue({
-      ok: true, status: 200,
-      json: () =&gt; Promise.resolve([{ id: 1, title: "test", done: false }]),
-    });
-    const todos = await api.listTodos();
+describe("parseTodos", () =&gt; {
+  it("accepts valid array", () =&gt; {
+    const todos = parseTodos([{ id: 1, title: "test", done: false }]);
     expect(todos).toHaveLength(1);
     expect(todos[0].title).toBe("test");
   });
 
-  it("throws on server error", async () =&gt; {
-    (fetch as ReturnType&lt;typeof vi.fn&gt;).mockResolvedValue({
-      ok: false, status: 500, json: () =&gt; Promise.resolve({}) });
-    await expect(api.listTodos()).rejects.toThrow("API error: 500");
+  it("rejects broken payload", () =&gt; {
+    expect(() =&gt; parseTodos({ items: [] })).toThrow("contract");
   });
 });</code></pre>
           </div>
-          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>何をテストすべきか迷ったら「壊れたら困る順」:</strong> ①認証・認可（事故ると即インシデント）②お金・データを扱うロジック ③バグ修正した箇所（回帰防止）。UIの見た目のテストは費用対効果が低いので後回しで構いません。カバレッジ100%より「重要な20%を確実に」が実務の解です。</p></div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">TypeScript — frontend/src/TodoList.test.tsx（RTL + MSW）</span><button class="copy-btn" onclick="copyCode(this)">📋 コピー</button></div>
+            <pre><code>import { render, screen, waitFor } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
+import { TodoList } from "./TodoList";
+import { cache } from "./queryCache";
+
+const server = setupServer(
+  http.get("http://localhost:8000/todos", () =&gt;
+    HttpResponse.json([{ id: 1, title: "牛乳を買う", done: false }])
+  )
+);
+
+beforeAll(() =&gt; server.listen());
+afterEach(() =&gt; {
+  server.resetHandlers();
+  cache.clear();
+});
+afterAll(() =&gt; server.close());
+
+test("ready: 一覧が表示される", async () =&gt; {
+  render(&lt;TodoList /&gt;);
+  expect(screen.getByRole("status")).toHaveTextContent(/読み込み中/);
+  expect(await screen.findByText("牛乳を買う")).toBeInTheDocument();
+});
+
+test("error: 500 では alert が出る", async () =&gt; {
+  server.use(
+    http.get("http://localhost:8000/todos", () =&gt;
+      HttpResponse.json({}, { status: 500 })
+    )
+  );
+  render(&lt;TodoList /&gt;);
+  expect(await screen.findByRole("alert")).toHaveTextContent(/失敗/);
+});
+
+test("401: cache.clear 後に旧データが残らない", async () =&gt; {
+  localStorage.setItem("token", "expired");
+  server.use(
+    http.get("http://localhost:8000/todos", () =&gt;
+      HttpResponse.json({ detail: "invalid token" }, { status: 401 })
+    )
+  );
+  render(&lt;TodoList /&gt;);
+  await waitFor(() =&gt; expect(localStorage.getItem("token")).toBeNull());
+});</code></pre>
+          </div>
+          <div class="explanation-box"><h4>💼 Tips：実務で遭遇する現場の勘所</h4><p><strong>何をテストすべきか迷ったら「壊れたら困る順」:</strong> ①認証・認可（事故ると即インシデント）②境界 parse（壊れた JSON の侵入）③loading/error/ready の画面分岐 ④バグ修正した箇所（回帰防止）。UI のピクセル一致より、fronttest 章と同じ「ユーザーが知覚する結果」を断言します。</p></div>
         </div>
       </article>
 

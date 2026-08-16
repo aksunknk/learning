@@ -1,6 +1,6 @@
       <div class="tab-intro pathway-intro">
         <h2>🧵 通しプロジェクト</h2>
-        <p>同一アプリ TaskBoard を、HTML → JS → API/DB → React → Docker → CI/CD → セキュリティ点検まで一本で繋ぐ縦糸演習です。他チャプターは辞書、この章は組み立て図として使います。</p>
+        <p>同一アプリ TaskBoard を、HTML → JS → API/DB → React（Query・認証・境界テスト）→ Docker → CI/CD → セキュリティ点検まで一本で繋ぐ縦糸演習です。他チャプターは辞書、この章は組み立て図として使います。</p>
       </div>
 
       <!-- ===== 初級編 セパレータ ===== -->
@@ -64,6 +64,10 @@ Non-goals（今はやらない）:
 Step B  JS + localStorage（オフラインで完結）
 Step C  REST API + DB（永続化をサーバーへ）
 Step D  React/TS クライアントへ置換
+  D-1  境界 parse + LoadState 分離（reactarch）
+  D-2  サーバ状態を Query キャッシュへ（serverstate）
+  D-3  401 / ログアウトで cache.clear（authclient）
+  D-4  RTL + MSW で loading/error/401 を固定（fronttest）
 Step E  Docker → CI/CD → セキュリティ点検 → 公開</code></pre>
           </div>
 
@@ -295,7 +299,7 @@ git commit -m "Add TaskBoard static UI with localStorage"
       <!-- ===== 中級編 セパレータ ===== -->
       <div class="explanation-box" style="margin: 2rem 0; border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.08);">
         <h4>🔶 中級編 — サーバー・DB・モダンフロントへ接続する</h4>
-        <p>localStorage の状態形を REST + DB に移し、React/TypeScript クライアントとテストで固めます。</p>
+        <p>localStorage の状態形を REST + DB に移し、React/TypeScript クライアントとテストで固めます。Step D ではフロント編4章（CFG → Query → Auth → 境界テスト）の型・キャッシュ・401 clear を TaskBoard に接続します。</p>
       </div>
 
       <!-- Lesson 5 -->
@@ -440,7 +444,7 @@ curl -s -X POST localhost:8000/api/tasks \
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
             <span class="lesson-number">07</span>
-            <h3>Step D — React + TypeScript クライアントへ置換する</h3>
+            <h3>Step D — React + TypeScript + Query でクライアントを置換する</h3>
           </div>
           <div class="lesson-controls">
             <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-7')" title="完了にする">
@@ -451,12 +455,12 @@ curl -s -X POST localhost:8000/api/tasks \
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>💡 同じ契約のまま UI 技術だけ替える</h4>
-            <p><strong>素の JS 版を捨てるのではなく、状態と API 呼び出しを React に移します。</strong> 型 <code>Task</code> を共有し、loading / error / data を分けます。CORS が必要なら API 側で開発オリジンだけ許可します（本番はリバースプロキシで同一オリジンが理想）。</p>
+            <h4>💡 同じ契約のまま UI 技術だけ替える — サーバ状態は useState に戻さない</h4>
+            <p><strong>素の JS 版を捨てるのではなく、状態と API 呼び出しを React に移します。</strong> 型 <code>Task</code> は境界で <code>parse</code> し、一覧は Query キャッシュ（キー例: <code>["tasks", userId]</code>）に載せます。UI は loading / error / ready を <strong>LoadState</strong> で分岐します。401 やログアウトでは <code>cache.clear()</code> を必ず呼びます。CORS が必要なら API 側で開発オリジンだけ許可します（本番はリバースプロキシで同一オリジンが理想）。</p>
           </div>
           <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
-            <h4>🔗 関連チャプター</h4>
-            <p>このステップの詳細学習: <code>react</code>（React） / <code>typescript</code>（TypeScript） / <code>webapi</code>（Web/API）</p>
+            <h4>🔗 関連チャプター（Step D の地図）</h4>
+            <p><code>reactarch</code>（parse / Abort / LoadState）→ <code>serverstate</code>（Query キャッシュ）→ <code>authclient</code>（401 と clear）→ <code>fronttest</code>（RTL + MSW）。文法は <code>react</code> / <code>typescript</code>、契約は <code>webapi</code>。</p>
           </div>
 
           <div class="code-block">
@@ -466,21 +470,35 @@ curl -s -X POST localhost:8000/api/tasks \
             </div>
             <pre><code>type Task = { id: string; title: string; done: boolean };
 
-async function fetchTasks(): Promise&lt;Task[]&gt; {
-  const res = await fetch("/api/tasks");
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
-  return data.items;
+function parseTasks(input: unknown): Task[] {
+  if (!Array.isArray(input)) throw new Error("contract");
+  return input.map((row) =&gt; {
+    if (!row || typeof row !== "object") throw new Error("contract");
+    const o = row as Record&lt;string, unknown&gt;;
+    if (typeof o.id !== "string" || typeof o.title !== "string") {
+      throw new Error("contract");
+    }
+    return { id: o.id, title: o.title, done: Boolean(o.done) };
+  });
 }
 
-// コンポーネント側の状態イメージ
-// const [tasks, setTasks] = useState&lt;Task[]&gt;([]);
-// const [status, setStatus] = useState&lt;"idle"|"loading"|"error"&gt;("idle");</code></pre>
+type LoadState =
+  | { status: "loading" }
+  | { status: "error"; message: string }
+  | { status: "ready"; tasks: Task[] };
+
+// サーバ状態は Query キャッシュへ（serverstate 章の最小スケルトン）
+const TASKS_KEY = "tasks:me";
+// cache.fetchQuery(TASKS_KEY, (signal) =&gt;
+//   fetch("/api/tasks", { signal }).then(r =&gt; r.json()).then(parseTasks)
+// );
+
+// 401 時: localStorage.removeItem("token"); cache.clear();</code></pre>
           </div>
 
           <div class="explanation-box">
             <h4>🎯 Mini Mission（自己採点）</h4>
-            <p>[ ] 一覧取得が表示できる<br>[ ] 追加・完了・削除が API 経由で動く<br>[ ] 通信中とエラー時の UI がある</p>
+            <p>[ ] 一覧取得が LoadState で loading / error / ready を分けている<br>[ ] タスク一覧を useState 直持ちではなく Query キャッシュに載せた<br>[ ] 追加・完了・削除後に invalidate または refetch している<br>[ ] 401 / ログアウトで cache.clear している<br>[ ] parse で unknown → Task[] に変換している</p>
           </div>
 
           <div class="explanation-box">
@@ -495,7 +513,7 @@ async function fetchTasks(): Promise&lt;Task[]&gt; {
         <div class="lesson-header" onclick="toggleSection(this)">
           <div class="lesson-title-area">
             <span class="lesson-number">08</span>
-            <h3>回帰を止める — API テストを先に赤くする</h3>
+            <h3>回帰を止める — API テスト + フロント境界テスト</h3>
           </div>
           <div class="lesson-controls">
             <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('pathway-8')" title="完了にする">
@@ -506,12 +524,12 @@ async function fetchTasks(): Promise&lt;Task[]&gt; {
         </div>
         <div class="lesson-body">
           <div class="concept-box">
-            <h4>💡 縦糸の結び目をテストで固定する</h4>
-            <p><strong>結合が進むほど、手動確認だけでは守れません。</strong> 最低でも「作成→一覧に出る」「削除→404」「空 title→422」を自動テストにします。CI に載せる前に、ローカルで緑にしてください。</p>
+            <h4>💡 縦糸の結び目をテストで固定する — バックは pytest、フロントは RTL + MSW</h4>
+            <p><strong>結合が進むほど、手動確認だけでは守れません。</strong> バックエンドは「作成→一覧に出る」「削除→404」「空 title→422」を pytest にします。フロントは Step D で入れた Query / LoadState を、<strong>loading・error・401 後に旧データが出ない</strong>ことを RTL + MSW で固定します（fronttest 章）。CI に載せる前に、ローカルで緑にしてください。</p>
           </div>
           <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
             <h4>🔗 関連チャプター</h4>
-            <p>このステップの詳細学習: <code>testing</code>（テスト設計） / <code>python</code>（Python）</p>
+            <p>バック: <code>testing</code> / <code>python</code>。フロント境界: <code>fronttest</code>（MSW / RTL）。キャップストーンでも同型の <code>TodoList.test.tsx</code> を使います。</p>
           </div>
 
           <div class="code-block">
@@ -534,9 +552,35 @@ def test_empty_title_rejected():
     assert r.status_code == 422</code></pre>
           </div>
 
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TypeScript — TaskList.test.tsx（RTL + MSW）</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// fronttest 章と同型: API は MSW、断言はユーザー視点
+test("loading → ready", async () =&gt; {
+  server.use(
+    http.get("/api/tasks", () =&gt;
+      HttpResponse.json({ items: [{ id: "1", title: "demo", done: false }] })
+    )
+  );
+  render(&lt;TaskList /&gt;);
+  expect(screen.getByText(/読み込み中/)).toBeInTheDocument();
+  expect(await screen.findByText("demo")).toBeInTheDocument();
+});
+
+test("401 後に旧タスクが残らない", async () =&gt; {
+  server.use(
+    http.get("/api/tasks", () =&gt; HttpResponse.json({}, { status: 401 }))
+  );
+  render(&lt;TaskList /&gt;);
+  expect(screen.queryByText("secret-task")).not.toBeInTheDocument();
+});</code></pre>
+          </div>
+
           <div class="explanation-box">
             <h4>🎯 Mini Mission（自己採点）</h4>
-            <p>[ ] API テストが 3 本以上ある<br>[ ] npm test または pytest がローカルで緑<br>[ ] 意図的に壊すとテストが赤くなることを確認した</p>
+            <p>[ ] API テストが 3 本以上ある<br>[ ] フロントで loading / error / ready を RTL で 1 本ずつ固定した<br>[ ] 401 またはログアウト後に旧タスクが出ないテストがある<br>[ ] npm test または pytest がローカルで緑<br>[ ] 意図的に壊すとテストが赤くなることを確認した</p>
           </div>
         </div>
       </article>
@@ -707,8 +751,8 @@ jobs:
           </div>
 
           <div class="explanation-box">
-            <h4>認証を足すなら（任意の次ステップ）</h4>
-            <p>登録/ログイン → タスクに user_id → すべての CRUD で所有者チェック。ここまでやるとキャップストーン級です。</p>
+            <h4>認証を足すなら（キャップストーンへの助走）</h4>
+            <p>登録/ログイン → タスクに user_id → すべての CRUD で所有者チェック。フロントでは <code>authclient</code> 章どおり <strong>401 / ログアウトで Query cache.clear</strong>、キャッシュキーに userId を含めます。ここまでやると <code>capstone</code> の L5–L7 と同型です。</p>
           </div>
 
           <div class="explanation-box">
@@ -735,7 +779,7 @@ jobs:
         <div class="lesson-body">
           <div class="concept-box">
             <h4>💡 一本通った経験を、次の大型課題の型にする</h4>
-            <p><strong>動く URL（またはローカル Compose 手順）と、学習ログがあればこの章は完了です。</strong> 振り返りでは「どの層で最も詰まったか」を書き、キャップストーンでは認証・認可・テスト・デプロイを最初から設計に含めます。</p>
+            <p><strong>動く URL（またはローカル Compose 手順）と、学習ログがあればこの章は完了です。</strong> 振り返りでは「どの層で最も詰まったか」を書き、キャップストーンでは認証・Query キャッシュ・境界テスト・デプロイを最初から設計に含めます。</p>
           </div>
           <div class="explanation-box" style="border-left: 4px solid #0f766e; background: rgba(15,118,110,0.08);">
             <h4>🔗 関連チャプター</h4>
@@ -753,8 +797,8 @@ jobs:
               <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
             </div>
             <pre><code>1. ライブ URL または docker compose 手順
-2. アーキテクチャ図（ブラウザ / API / DB）
-3. 進化の記録（Step B → C → D の差分説明）
+2. アーキテクチャ図（ブラウザ / API / DB / Query キャッシュ）
+3. 進化の記録（Step B → C → D-1〜D-4 の差分説明）
 4. 既知の制限と次にやるセキュリティ項目</code></pre>
           </div>
 
@@ -770,6 +814,8 @@ jobs:
             </div>
             <pre><code>- なぜ最初に localStorage 版を作ったのか？
 - API の契約を先に決めて何が楽になったか？
+- タスク一覧を useState ではなく Query に載せた理由は？
+- 401 / ログアウトで cache.clear しないと何が起きるか？
 - 本番障害が起きたら、まずどのログを見るか？
 - 他人のタスクが読めないことをどう保証するか？</code></pre>
           </div>
