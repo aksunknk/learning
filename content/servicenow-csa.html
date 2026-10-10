@@ -291,3 +291,27 @@
           </div>
         </div>
       </article>
+
+      <div class="quiz-section" id="servicenow-csa-quiz">
+        <div class="quiz-header"><h3>🧠 理解度チェック</h3></div>
+        <p class="quiz-intro">CSA認定試験のコア知識を確認しましょう。</p>
+        <div id="servicenow-csa-quiz-container"></div>
+        <div class="quiz-result" id="servicenow-csa-quiz-result"></div>
+      </div>
+
+      <div class="puzzle-section" id="servicenow-csa-puzzle-wrapper" style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+        <div class="quiz-header"><h3>🧩 コード組み立てパズル</h3></div>
+        <p class="quiz-intro">ドラッグ＆ドロップで正しい順序にコードを組み立ててください。</p>
+        <div class="puzzle-question" id="servicenow-csa-puzzle-question" style="font-weight:bold; margin-bottom: 1rem; color: var(--color-text-primary);"></div>
+        <div class="puzzle-board">
+          <div class="puzzle-source" id="servicenow-csa-puzzle-source"></div>
+          <div class="puzzle-dropzone" id="servicenow-csa-puzzle-dropzone">
+            <div class="dropzone-placeholder">ここにドロップしてコードを完成させる</div>
+          </div>
+        </div>
+        <div class="puzzle-controls" style="margin-top: 1rem; display: flex; gap: 1rem;">
+          <button class="check-btn" onclick="checkPuzzle('servicenow-csa')" style="background: var(--color-primary); color: #fff; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;">判定する</button>
+          <button class="reset-btn" onclick="loadPuzzle('servicenow-csa')" style="background: var(--color-surface); color: var(--color-text-primary); padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--color-border); cursor: pointer;">リセット</button>
+        </div>
+        <div class="quiz-result" id="servicenow-csa-puzzle-result" style="margin-top: 1rem;"></div>
+      </div>
