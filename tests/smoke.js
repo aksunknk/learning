@@ -389,7 +389,7 @@ async function main() {
 
   // Assertions
   const failures = [...staticFailures];
-  if (tabs.length !== 28) failures.push(`expected 28 tabs, got ${tabs.length}`);
+  if (tabs.length !== 30) failures.push(`expected 30 tabs, got ${tabs.length}`);
 
   // Phase 3
   if (results.roadmap.nodes !== 24)
