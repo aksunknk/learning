@@ -1,0 +1,190 @@
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="typescript-6" id="typescript-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>型の柔軟性（ジェネリクス/Generics）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 どんな型でも受け入れつつ、型安全を保つ魔法</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>ジェネリクスとは？</h4>
+            <p>関数やクラスを作るときに「後から型を決める」仕組みです。配列の定義によく見る Array<string> もジェネリクスの一種です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 型引数Tを受け取る関数
+function getFirstItem<T>(arr: T[]): T | undefined {
+  return arr[0];
+}
+
+// 使うときに型が決まる
+const num = getFirstItem<number>([1, 2, 3]); // num は number 型
+const str = getFirstItem<string>(['a', 'b']); // str は string 型</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="typescript-7" id="typescript-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>型の合成と防衛（Union型、Intersection型、Interface）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 複雑なデータを正確に表現する</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>Union（ユニオン）とIntersection（インターセクション）</h4>
+            <p>Union型は「A または B」、Intersection型は「A かつ B」を表します。実務ではAPIのステータス表現などで非常に多く使われます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// Union型（パイプライン記号）
+type Status = 'loading' | 'success' | 'error';
+let currentStatus: Status = 'loading';
+
+// Intersection型（アンパサンド記号）
+type User = { id: number; name: string };
+type Admin = { privileges: string[] };
+
+type AdminUser = User & Admin; // 両方のプロパティを持つ</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="typescript-8" id="typescript-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>よくあるエラーとアンチパターン</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 TypeScriptを使う意味をなくしてしまう書き方</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>any型への逃避</h4>
+            <p>型エラーが解決できないとき、とりあえず any を使ってしまうのは最悪のアンチパターンです。型チェックが完全に無効になり、バグの温床になります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ❌ anyの濫用
+function processData(data: any) {
+  return data.toUpperCase(); // 実行時にdataが数値ならクラッシュする
+}
+
+// ✅ unknown型を使って安全にチェックする
+function safeProcess(data: unknown) {
+  if (typeof data === 'string') {
+    return data.toUpperCase();
+  }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>Object is possibly null</h4>
+            <p>APIのレスポンスやDOMの取得など、「値が存在しないかもしれない（null/undefined）」ケースでそのままプロパティにアクセスしようとすると怒られます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ❌ エラーになる
+// const el = document.getElementById('my-btn');
+// el.click(); // Object is possibly 'null'
+
+// ✅ オプショナルチェーン（?.）を使う
+document.getElementById('my-btn')?.click();</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="typescript-9" id="typescript-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>Final Mission: Todoアプリ構築（結合・API通信編）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 フロントとバックエンドを型で繋ぐ</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>InterfaceによるAPIスキーマの定義</h4>
+            <p>FastAPIのPydanticモデル（Task）と全く同じ構造をTypeScriptのInterfaceで定義することで、通信データを安全に扱えます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>interface Task {
+  id: number;
+  title: string;
+  completed: boolean;
+}
+
+// fetch通信にも型をつける
+async function fetchTasks(): Promise<Task[]> {
+  const response = await fetch('http://localhost:8000/tasks');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return await response.json();
+}</code></pre>
+          </div>
+        </div>
+      </article>
+

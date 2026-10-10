@@ -1,0 +1,96 @@
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="python-10" id="python-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>上級編: デコレータの魔法</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 関数の外側から機能を「トッピング」する技術</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>デコレータとは？</h4>
+            <p>FastAPIの @app.get('/') などで頻出するデコレータは、既存の関数を変更せずに、実行前後の処理（ログ出力や権限チェック）を追加する仕組みです。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>def my_logger(func):
+    def wrapper(*args, **kwargs):
+        print(f'{func.__name__} が呼ばれました')
+        result = func(*args, **kwargs)
+        print(f'{func.__name__} が終了しました')
+        return result
+    return wrapper
+
+@my_logger
+def say_hello(name):
+    print(f'Hello, {name}!')
+
+say_hello('Alice')
+# 出力:
+# say_hello が呼ばれました
+# Hello, Alice!
+# say_hello が終了しました</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="python-11" id="python-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>上級編: ジェネレータとメモリ節約</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 大量のデータを少しずつ処理するエコな仕組み</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>yield キーワード</h4>
+            <p>AIのチャット応答が「少しずつ流れてくる」のもジェネレータの仕組みです。リストで全件を一度にメモリに載せるのではなく、必要な分だけ順番に取り出します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>def count_up_to(max_num):
+    count = 1
+    while count <= max_num:
+        yield count  # ここで一時停止して値を返す
+        count += 1
+
+counter = count_up_to(3)
+print(next(counter))  # 1
+print(next(counter))  # 2
+
+# forループでも使える
+for num in count_up_to(5):
+    pass</code></pre>
+          </div>
+        </div>
+      </article>
+

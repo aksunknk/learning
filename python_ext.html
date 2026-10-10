@@ -1,0 +1,196 @@
+      <!-- Lesson 6 -->
+      <article class="lesson-card" data-section="python-6" id="python-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>データ構造の極意（辞書とタプルの使い分け）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 リストだけでは対応できない実務のデータ設計</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>なぜリスト以外が必要なのか？</h4>
+            <p>リストは「順番のあるデータの列」を扱うのには最適ですが、「名前で検索したい」「絶対に書き換えられたくない」場合には不向きです。実務では辞書（dict）やタプル（tuple）を使い分けます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>user = {'id': 1, 'name': 'Alice'}
+point = (10, 20)  # 一度作ったら変更できない（イミュータブル）</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>辞書の高度な使い方</h4>
+            <p>APIのJSONレスポンスはPythonではほぼ辞書として扱われます。キーの存在確認やデフォルト値の取得は、エラーを防ぐ基本です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ❌ キーがないとエラーになる
+# name = user['nickname']
+
+# ✅ getメソッドで安全に取得
+nickname = user.get('nickname', '名無し')
+
+# キーと値のループ
+for key, value in user.items():
+    print(f'{key}: {value}')</code></pre>
+          </div>
+      <!-- Lesson 7 -->
+      <article class="lesson-card" data-section="python-7" id="python-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>堅牢なコードの要（try-exceptによる例外処理）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 AIのコードによく欠けている「エラー発生時の備え」</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>プログラムを止めないためのtry-except</h4>
+            <p>API通信のエラー、ファイルの読み込み失敗、0での割り算など、予期せぬエラーでアプリ全体がクラッシュするのを防ぎます。AIは正常系のコードを書きがちなので、手動で補強するスキルが重要です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>try:
+    result = 10 / 0
+except ZeroDivisionError as e:
+    print(f'ゼロで割れません: {e}')
+except Exception as e:
+    print(f'予期せぬエラー: {e}')
+finally:
+    print('処理が終了しました')</code></pre>
+          </div>
+      <!-- Lesson 8 -->
+      <article class="lesson-card" data-section="python-8" id="python-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>よくあるエラーとアンチパターン</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 初学者が陥りやすい罠と解決策</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>インデントエラーとスコープ</h4>
+            <p>Pythonはインデント（字下げ）でブロックを認識します。スペース4つが標準ですが、タブとスペースが混在するとエラーになります。また、ループの中で変数を定義すると思わぬ上書き（スコープの汚染）が起きます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code># ❌ 悪い例（リストの破壊的変更）
+nums = [1, 2, 3]
+for n in nums:
+    if n == 2:
+        nums.remove(n)  # ループ中に要素を消すと挙動がおかしくなる
+
+# ✅ 良い例（新しいリストを作る）
+new_nums = [n for n in nums if n != 2]</code></pre>
+          </div>
+      <!-- Lesson 9 -->
+      <article class="lesson-card" data-section="python-9" id="python-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>Final Mission: FastAPIによるTodoバックエンド構築</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('python-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 APIサーバーを作って、フロントと通信してみよう</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>FastAPIとPydanticの連携</h4>
+            <p>実際のAPIでは、「どんなデータが送られてくるか」をPydanticのSchema（型）で定義し、FastAPIのルーターと結びつけます。これにより、自動的にバリデーション（入力値チェック）が行われます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List
+
+app = FastAPI()
+
+class Task(BaseModel):
+    id: int
+    title: str
+    completed: bool = False
+
+tasks_db = []
+
+@app.get('/tasks', response_model=List[Task])
+def get_tasks():
+    return tasks_db
+
+@app.post('/tasks', response_model=Task)
+def create_task(task: Task):
+    tasks_db.append(task)
+    return task</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>CORS（Cross-Origin Resource Sharing）の設定</h4>
+            <p>Reactなどのフロントエンド（例: localhost:3000）からAPI（localhost:8000）を呼び出す場合、ポート番号が違うためブラウザが通信をブロックします。これを許可するのがCORS設定です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">PYTHON</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],  # 実際はフロントのURLを指定する
+    allow_methods=['*'],
+    allow_headers=['*'],
+)</code></pre>
+          </div>

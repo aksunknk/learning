@@ -1,0 +1,416 @@
+      <article class="lesson-card" data-section="servicenow-1" id="servicenow-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>ServiceNowの正体 — なぜ「クラウド上の巨大Django Admin」なのか</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 ServiceNowの本質は「PaaS型の超巨大RDB + ワークフロー基盤」</h4>
+            <p>ServiceNow（SN）は、単なるITヘルプデスクのSaaSではありません。Python（Django/FastAPI）などでWebアプリを自作した経験があるなら、SNを<b>「超高機能なDjango Admin画面が最初から乗っている、単一の巨大リレーショナルデータベース（MariaDBベース）」</b>と考えると最も実態に近いです。</p><p>通常のSaaSがテナント間でDBを共有するのに対し、SNは<b>「マルチインスタンス」</b>アーキテクチャを採用しています。顧客ごとに独立したDBとアプリケーションノードが割り当てられるため、他の顧客の負荷に引きずられず、極めてセキュアで高度なカスタマイズが可能です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>📊 既存のWeb開発との対応表</h4>
+            <table style="width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.92em;"><tr style="background:rgba(99,102,241,0.15);"><td style="padding:0.45rem; font-weight:bold;">概念</td><td style="padding:0.45rem; font-weight:bold;">一般的なWeb開発</td><td style="padding:0.45rem; font-weight:bold;">ServiceNowでの呼称 / 機能</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">DBテーブル</td><td style="padding:0.4rem; vertical-align:top;">RDB Table / ORM Model</td><td style="padding:0.4rem; vertical-align:top;"><b>Table</b> (<code>sys_db_object</code>)</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">レコード/行</td><td style="padding:0.4rem; vertical-align:top;">Row</td><td style="padding:0.4rem; vertical-align:top;"><b>Record</b></td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">カラム/列</td><td style="padding:0.4rem; vertical-align:top;">Column / Field</td><td style="padding:0.4rem; vertical-align:top;"><b>Field</b></td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">CRUD画面</td><td style="padding:0.4rem; vertical-align:top;">React/Vue + API + HTML/CSS</td><td style="padding:0.4rem; vertical-align:top;"><b>List</b> (一覧) / <b>Form</b> (詳細) / <b>Workspace</b></td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">DBトリガー</td><td style="padding:0.4rem; vertical-align:top;">RDB Trigger / ORM Post-save</td><td style="padding:0.4rem; vertical-align:top;"><b>Business Rule</b> (サーバーサイドスクリプト)</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">フロントエンドJS</td><td style="padding:0.4rem; vertical-align:top;">React useEffect / Event Listener</td><td style="padding:0.4rem; vertical-align:top;"><b>Client Script</b> (ブラウザ側スクリプト)</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">API/バッチ連携</td><td style="padding:0.4rem; vertical-align:top;">Celery / REST API</td><td style="padding:0.4rem; vertical-align:top;"><b>Integration Hub</b> / <b>Scripted REST API</b></td></tr></table>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            ServiceNowの開発は「ゼロからコードを書く」のではなく、<b>「すでに完成している巨大なERP/CRMシステムの振る舞いを、設定とスクリプト（JavaScript）で上書き（Override）していく」</b>作業です。そのため、既存のアーキテクチャ（テーブルや標準スクリプト）に逆らってフルスクラッチのUIを作ろうとすると、アップデート時の保守コストが跳ね上がり破綻します。<b>「プラットフォームのレールに乗る（Stay Out-of-the-Box）」</b>ことがシニアSNエンジニアの鉄則です。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-2" id="servicenow-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>データ層：テーブルと継承モデル（Task と Incident）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 ServiceNowの心臓部は「Task [task]」テーブル</h4>
+            <p>ServiceNowの最も強力な機能の一つが<b>「テーブルの継承（Table Extension）」</b>です。RDBにおいて、共通の属性（「アサイン先」「ステータス」「作成日」など）を持つテーブルを設計する際、SNでは基底テーブルである <code>Task [task]</code> テーブルを継承して新しいテーブルを作成します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">SQL vs ServiceNowのテーブル関係</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>-- もしゼロからSQLでIncidentテーブルを作るなら：
+CREATE TABLE incident (
+    id VARCHAR(32) PRIMARY KEY, -- ServiceNowでは sys_id (32桁のGUID)
+    short_description VARCHAR(255),
+    state INT,
+    assigned_to VARCHAR(32) REFERENCES sys_user(id)
+    -- ...
+);
+
+/* ServiceNowの継承モデルの概念：
+ * Incident (インシデント), Problem (問題), Change Request (変更要求) は
+ * 全て Task (task) テーブルを「継承」している。
+ * 
+ * [task] テーブル (親)
+ *   ├── state, assigned_to, short_description, sys_created_on などを保持
+ *   │
+ *   ├── [incident] テーブル (子)
+ *   │     └── caller_id (起票者) など、インシデント特有のフィールドを追加
+ *   │
+ *   └── [change_request] テーブル (子)
+ *         └── risk (リスクレベル) など、変更要求特有のフィールドを追加
+ */</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔑 sys_id と カスタムプレフィックス</h4>
+            <p>ServiceNow内の<b>すべてのレコードは、必ず <code>sys_id</code> という32文字のグローバル一意識別子（GUID）</b>を持ちます。これは絶対に一意であり、外部キー（Reference）として他のテーブルから参照される際のキーになります。</p><p>また、開発者が独自に追加したテーブルやフィールドには、必ず <code>u_</code> (グローバルスコープ) または <code>x_</code> (Scoped App) というプレフィックスが自動付与されます（例：<code>u_custom_table</code>）。これにより、将来のシステムアップデートで同名の標準テーブルが追加されても衝突しません。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            実務では「Incident一覧を出して」と言われたら <code>incident</code> テーブルをクエリしますが、「自分にアサインされている全ての作業（IncidentもTaskもChangeも）を出して」と言われたら、親である <b><code>task</code> テーブルに対してクエリ（<code>assigned_to=自分のsys_id</code>）を投げます</b>。継承の概念を理解していないと、テーブルごとに個別クエリを投げる非効率な設計になってしまいます。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-3" id="servicenow-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>CMDBと構成アイテム（CI）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 CMDBは「ITインフラの設計図（デジタルツイン）」</h4>
+            <p>CMDB（Configuration Management Database：構成管理データベース）は、企業内のサーバー、PC、ソフトウェア、ネットワーク機器、さらには「メールサービス」といった無形のサービスまで、IT資産のすべてを<b>構成アイテム（CI：Configuration Item）</b>として格納する巨大なツリー構造のテーブル群です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>🌲 cmdb_ci のクラス階層</h4>
+            <p>CMDBも強力な継承モデルを持っています。頂点にあるのが <code>cmdb_ci</code> テーブルです。</p><ul><li><code>cmdb_ci</code> (すべてのCIの親)<ul><li><code>cmdb_ci_hardware</code> (ハードウェア)<ul><li><code>cmdb_ci_computer</code> (コンピュータ) <ul><li><code>cmdb_ci_server</code> (サーバー / Windows, Linux等)</li></ul></li></ul></li><li><code>cmdb_ci_appl</code> (アプリケーション)</li></ul></li></ul><p>さらに、これらのCI間には<b>関係性（Relationship）</b>が定義されます。（例：「Linux Server A」は「Oracle DB B」を <i>Runs on（上で動かしている）</i>）。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            Incident（障害）が発生した際、影響範囲を特定するために「どのCIで障害が起きたのか」をレコードに紐づけます（<code>incident.cmdb_ci</code> フィールド）。CMDBの関係性を辿る（Dependency Views）ことで、「このDBサーバーが落ちたら、上のWebサービス、ひいては社内の稟議システム全体が停止する」という影響を瞬時に可視化できるのが、SNを単なるチケット管理ツールから「エンタープライズIT基盤」に押し上げている最大の理由です。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-4" id="servicenow-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>画面層：List・Form・Viewの仕組み</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 スキーマ駆動のUI自動生成</h4>
+            <p>ReactやVueで画面を作る場合、HTML/CSSとデータバインディングを自作しますが、SNの基本UI（UI16 / Next Experience）では、<b>テーブルのスキーマ（カラム定義）を作成した瞬間に、List（一覧画面）とForm（詳細・編集画面）が自動生成</b>されます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>🎨 View（ビュー）による画面の切り替え</h4>
+            <p>同じ <code>incident</code> テーブルのデータでも、「一般ユーザーが見る画面」と「システム管理者が調査する画面」では、表示すべきフィールドが異なります。SNではこれを<b>View（ビュー）</b>という概念で解決します。</p><ul><li><b>Default View</b>: 担当者向けのフル機能フォーム。</li><li><b>Self Service View (ess)</b>: エンドユーザー向けのシンプルなフォーム（専門用語や内部ステータスを隠す）。</li><li><b>Mobile View</b>: モバイルアプリ用のコンパクトな表示。</li></ul>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            「このフィールドを画面の右上に配置して、背景を赤くして…」といったピクセルパーフェクトなUI要件は、標準のForm/Listでは実現困難（あるいは多大なDOMハックが必要で負債になる）です。そうしたBtoCのような柔軟なUIが必要な場合は、標準画面をいじるのではなく、<b>Service Portal (AngularJSベース)</b> や <b>UI Builder (Next Experience)</b> を用いて専用のポータル画面を構築するのがアーキテクチャの正解です。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-5" id="servicenow-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>クライアントサイド制御：Client Script と UI Policy</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 ブラウザ側で動くJS ＋ ノーコード制御</h4>
+            <p>ユーザーがForm画面を開いた時や、入力フィールドの値を変更した瞬間に「動的」に画面を制御（フィールドを隠す、必須入力にする、アラートを出す等）するための仕組みがクライアントサイド制御です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Client Script (JavaScript) の例</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// onChange Client Script
+// 「Category」フィールドが "Software" に変更された時だけ動くスクリプト
+
+function onChange(control, oldValue, newValue, isLoading, isTemplate) {
+    if (isLoading || newValue === '') {
+        return;
+    }
+
+    if (newValue == 'software') {
+        g_form.setDisplay('subcategory', true);
+        g_form.setMandatory('subcategory', true);
+        g_form.addInfoMessage('ソフトウェアの問題ですね。OSの種類を忘れずに記載してください。');
+    } else {
+        g_form.setMandatory('subcategory', false);
+        g_form.setDisplay('subcategory', false);
+    }
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>⚖️ UI Policy vs Client Script</h4>
+            <p>上記のJSと全く同じこと（フィールドの表示/非表示、必須化、読取専用化）は、コードを書かずに<b>UI Policy</b>（ノーコード設定）でも実現可能です。</p><p><b>ルール：</b> 「UI Policyで実現できることは、絶対にClient Scriptで書かない」</p><p>UI Policyはブラウザ上で高速に評価され、保守も容易（一覧で条件が見える）です。Client Scriptは、UI Policyでは不可能な複雑な計算、外部API(GlideAjax)の呼び出し、ダイアログ(GlideDialogWindow)の表示などに限定して使用します。</p>
+          </div>
+          <div class="warning-box">
+            <h4>⚠️ 実行順序の罠</h4>
+            画面ロード時の実行順序は <b>Client Script (onLoad) → UI Policy</b> の順です。Client Scriptで一生懸命フィールドを表示させても、その直後にUI Policyの条件に合致して非表示に上書きされる、というバグが初学者の「あるある」です。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-6" id="servicenow-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>サーバーサイド制御①：Business Rule</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 データベースのTriggerに相当するサーバー処理</h4>
+            <p>レコードがデータベースに保存される「直前（Before）」や「直後（After）」に発火するサーバースクリプトが<b>Business Rule (BR)</b>です。ユーザーが画面から保存ボタンを押した時だけでなく、外部からのREST API経由の更新や、インポート処理など、<b>すべてのDB更新ルートで確実に実行される</b>ため、データ整合性を担保する最強の番人となります。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Before Update Business Rule の例</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>(function executeRule(current, previous /*null when async*/) {
+    if (current.close_notes.nil()) {
+        gs.addErrorMessage('インシデントを解決済みとするには、解決手順(Close Notes)の入力が必須です。');
+        current.setAbortAction(true);
+    }
+})(current, previous);</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>⏱️ Business Rule の 4つの実行タイミング</h4>
+            <ul><li><b>Before</b>: DBに書き込まれる直前。バリデーション（データチェック）や、フィールドの自動計算（例：A+Bの値をCにセットして保存）に最適。</li><li><b>After</b>: DBに書き込まれた直後。他テーブルのレコードを連動して更新する場合（例：Incidentが作られたら、紐づくProblemの件数をカウントアップする）に使用。</li><li><b>Async</b>: Afterと同じくDB保存後だが、非同期（バックグラウンドワーカー）で実行。ユーザーの画面応答を待たせないため、外部API連携など時間のかかる処理に必須。</li><li><b>Display</b>: ユーザーがフォームを「開いた時（DBからReadした直後）」。Client Script（ブラウザ）にサーバー側の事前データを渡す（<code>g_scratchpad</code>変数）ために使う特殊なBR。</li></ul>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            Before BRの中で <code>current.update()</code> を呼ぶのは<b>最悪のアンチパターン（無限ループの引き金）</b>です。Beforeは「これから自動でDBにUpdateされる直前のオブジェクトを操作している」状態なので、変数に値を代入する（<code>current.u_my_field = 'x';</code>）だけで、その後の自動Update処理で勝手にDBに保存されます。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-7" id="servicenow-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>サーバーサイド制御②：GlideRecord と Script Include</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 ServiceNow専用のORM：GlideRecord</h4>
+            <p>ServiceNowでデータベースにクエリを投げたりCRUD操作を行うためのコアAPIが<b>GlideRecord</b>です。SQLを直接書くことは許されておらず、すべてこのオブジェクト指向ラッパーを経由します。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">GlideRecordによるクエリと更新</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>var grInc = new GlideRecord('incident');
+grInc.addQuery('priority', 1);
+grInc.addQuery('active', true);
+grInc.query();
+
+while (grInc.next()) {
+    gs.info('Critical Incident Found: ' + grInc.number);
+    grInc.work_notes = 'システム管理者による一斉パトロールチェック済み';
+    grInc.update();
+}</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🧩 Script Include（共通クラスライブラリ）</h4>
+            <p>Business Ruleの中に長々としたビジネスロジックを書くと、他のルールから再利用できずスパゲティ化します。そこで、<b>再利用可能な関数群やクラス定義を「Script Include」として切り出し</b>、Business Ruleからはそれを呼び出す設計にするのがベストプラクティスです。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            GlideRecordで <code>next()</code> ループを回しながら <code>update()</code> や <code>deleteRecord()</code> を連続で叩くと、巨大なテーブルではパフォーマンスが死にます。条件に合致するものを一括更新したい場合は、<code>updateMultiple()</code> を使いましょう。SQLの <code>UPDATE table SET x=y WHERE z</code> に相当し、RDBレイヤーで一括処理されるため劇的に高速です。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-8" id="servicenow-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>クライアント・サーバー非同期通信：GlideAjax</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 画面を固めずにサーバー処理を呼び出す</h4>
+            <p>「画面（Client Script）でユーザーが入力したIDをもとに、サーバー（DB）を参照してユーザーの部署名を取得し、画面に自動セットしたい」── こうしたフロント⇔バックエンド通信の王道が<b>GlideAjax</b>です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">GlideAjaxの実装パターン（Client → Script Include）</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// ==============================================
+// 1. サーバー側: Script Include (必ず "Client callable" にチェックを入れる)
+// ==============================================
+var UserAjaxUtils = Class.create();
+UserAjaxUtils.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+    getDepartment: function() {
+        var userId = this.getParameter('sysparm_user_id');
+        var gr = new GlideRecord('sys_user');
+        if (gr.get(userId)) {
+            return gr.department.getDisplayValue();
+        }
+        return '';
+    },
+    type: 'UserAjaxUtils'
+});
+
+// ==============================================
+// 2. クライアント側: Client Script (onChange等)
+// ==============================================
+function onChange(control, oldValue, newValue, isLoading, isTemplate) {
+    if (isLoading || newValue === '') return;
+    var ga = new GlideAjax('UserAjaxUtils');
+    ga.addParam('sysparm_name', 'getDepartment');
+    ga.addParam('sysparm_user_id', newValue);
+    
+    ga.getXMLAnswer(function(answer) {
+        if (answer) {
+            g_form.setValue('u_department_name', answer);
+        }
+    });
+}</code></pre>
+          </div>
+          <div class="warning-box">
+            <h4>⚠️ getReference()の罠</h4>
+            クライアントスクリプトには <code>g_form.getReference('caller_id')</code> という、指定した参照先のレコード情報を丸ごと取ってくる便利関数があります。しかし、これは<b>バックグラウンドで不要なカラム（数十〜数百個）まで全てDBから引っ張ってくる（SELECT * 状態）ため、通信量が肥大化しパフォーマンス劣化の温床</b>になります。必要な1〜2カラムだけを <code>GlideAjax</code> でピンポイントに取得するのがシニアエンジニアの流儀です。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-9" id="servicenow-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>自動化層：Flow Designer</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 スクリプトから「ノーコード・ワークフロー」へのパラダイムシフト</h4>
+            <p>従来、複雑な承認プロセスやタスクの自動生成はBusiness Rule等でJavaScriptを書き殴って実装されていました。これを<b>可視化されたノーコードGUIで定義できるようにした最新エンジンが Flow Designer</b> です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>🔄 Flow Designer の基本構造</h4>
+            <ul><li><b>Trigger (トリガー)</b>: フローが発火する条件。（例：「IncidentテーブルにレコードがInsertされた時」）</li><li><b>Action (アクション)</b>: 実行する処理。（例：「レコードを作成」「承認要求（Ask for Approval）」「メール送信」）</li><li><b>Data Pill (データピル)</b>: 画面右側のペインから、前段のアクションで取得したデータをドラッグ＆ドロップで後段のアクションの引数として渡す仕組み。</li></ul>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            Flow Designerを使う最大のメリットは<b>「状態（State）の待機」</b>が極めて簡単に書けることです。例えば「上長の承認を待つ」というActionを配置すると、フローはそこで一旦スリープ状態になり、誰かが承認ボタンを押した瞬間に再開します。これをスクリプト（BR等）で実装しようとすると、状態をDBフラグで管理してバッチで監視する…といった非常に泥臭くバグの出やすい実装になります。<b>「待機・承認・通知」が絡むロジックは迷わずFlow Designer</b>を選択しましょう。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-10" id="servicenow-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>外部連携層：Integration Hub と REST API</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 ServiceNowを「Hub」として企業システムを連結する</h4>
+            <p>ServiceNowは単体で完結せず、企業のあらゆるSaaS（Slack, Teams, Salesforce, SAP, AWS, ADなど）のオーケストレーターとして機能します。これをノーコードで実現する強力な拡張機能が <b>Integration Hub (IH)</b> です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">Scripted REST API ── 外部からSNを叩かせる独自エンドポイント</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+    var body = request.body.data;
+    var slackMsg = body.text;
+    var slackUser = body.user_name;
+    
+    var grInc = new GlideRecord('incident');
+    grInc.initialize();
+    grInc.short_description = 'Slack発: ' + slackMsg;
+    grInc.caller_id.setDisplayValue(slackUser);
+    var newSysId = grInc.insert();
+    
+    response.setStatus(201);
+    response.setBody({
+        "status": "success",
+        "incident_number": grInc.number,
+        "sys_id": newSysId
+    });
+})(request, response);</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>🔌 Inbound と Outbound の使い分け</h4>
+            <ul><li><b>Outbound (SN → 外部へ)</b>:<br>SNのレコードが更新されたらSlackに通知する等。Flow Designer + Integration Hubの「Spoke (各SaaS用プラグイン)」を使うのがモダンなアプローチ。</li><li><b>Inbound (外部 → SNへ)</b>:<br>外部システムがSNのデータを作成・取得する。標準の Table APIがデフォルトで開いているため基本はそちらを利用。標準APIで要件を満たせない場合のみ <b>Scripted REST API</b> を作成する。</li></ul>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            外部連携の実装で最も危険なのは「同期処理で外部APIを叩く」ことです。Business Rule (Before/After) の中で外部APIを呼ぶと、外部の応答が遅い（タイムアウト）場合に、ユーザーの画面（Saveボタンを押した直後）も数秒〜数十秒フリーズします。<b>外部通信は必ず「Async Business Rule」や「Flow Designer」の非同期ワーカーに投げさせる</b>のがアーキテクチャの絶対条件です。
+          </div>
+        </div>
+      </article>

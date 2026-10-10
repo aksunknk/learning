@@ -1,0 +1,104 @@
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="react-10" id="react-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>上級編: カスタムフック（Custom Hooks）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 複雑なロジックを切り出してコンポーネントをスッキリさせる</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>ロジックの再利用</h4>
+            <p>APIの取得処理や、ローカルストレージの管理など、複数のコンポーネントで使い回す処理を「自分専用のHook（use○○）」として独立させます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import { useState, useEffect } from 'react';
+
+// カスタムフックの定義
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(url).then(res => res.json()).then(data => {
+      setData(data);
+      setLoading(false);
+    });
+  }, [url]);
+
+  return { data, loading };
+}
+
+// 使う側はとてもシンプルに
+function UserProfile() {
+  const { data, loading } = useFetch('/api/user');
+  if (loading) return <div>Loading...</div>;
+  return <div>{data.name}</div>;
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="react-11" id="react-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>上級編: パフォーマンス最適化（メモ化）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('react-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 不要な再レンダリングを防ぎ、アプリを高速に保つ</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>useMemo と useCallback</h4>
+            <p>Reactは親が再描画されると子も全て再描画されます。重い計算結果を保存する useMemo や、関数の再生成を防ぐ useCallback を使いこなすとプロレベルに近づきます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">REACT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>import { useState, useMemo, useCallback } from 'react';
+
+function HeavyComponent({ list }) {
+  // listが変わらない限り、この重いソート処理はスキップされる
+  const sortedList = useMemo(() => {
+    return list.sort((a, b) => b.score - a.score);
+  }, [list]);
+
+  // 関数もメモ化して、子コンポーネントの不要な再描画を防ぐ
+  const handleClick = useCallback((id) => {
+    console.log('Clicked', id);
+  }, []);
+
+  return <Child items={sortedList} onClick={handleClick} />;
+}</code></pre>
+          </div>
+        </div>
+      </article>
+

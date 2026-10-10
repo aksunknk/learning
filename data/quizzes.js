@@ -880,5 +880,19 @@ const quizData = {
       explanation:
         "楽観更新は先に画面を進める。失敗時に戻らないと嘘の表示が残る。ロールバック（または再同期）を断言する。"
     }
-  ]
+  ],
+  "servicenow": [
+    {"question": "ServiceNowのアーキテクチャの根幹であり、すべてのレコードを一意に識別するための32文字のGUIDを格納するフィールド名は何ですか？", "options": ["sys_id", "u_id", "primary_key", "record_id"], "correct": 0, "explanation": "すべてのレコードは必ず「sys_id」という32文字のグローバル一意識別子を持ちます。外部キー参照の際もこの値が使われます。"},
+    {"question": "IncidentテーブルやProblemテーブルの「親」にあたり、基本的なステータスやアサイン先のフィールドを定義している基底テーブルはどれですか？", "options": ["cmdb_ci", "sys_user", "task", "service_catalog"], "correct": 2, "explanation": "SNの強力な継承モデルにおいて、作業やチケット系のほとんどのテーブルは Task [task] テーブルを継承しています。"},
+    {"question": "ブラウザ上で動作し、フォームの特定のフィールド値が変更された瞬間に発火するJavaScriptスクリプトのタイプはどれですか？", "options": ["Business Rule", "Script Include", "UI Policy", "Client Script (onChange)"], "correct": 3, "explanation": "Client Scriptはブラウザ（クライアント）側で動作するスクリプトです。onChangeは特定のフィールド値が変更された時に発火します。UI Policyも画面制御を行いますがノーコード設定です。"},
+    {"question": "DBに保存される直前（Before）または直後（After）に発火し、データ整合性を守るサーバーサイドスクリプトは何ですか？", "options": ["Client Script", "Business Rule", "UI Action", "GlideAjax"], "correct": 1, "explanation": "Business Ruleはデータベースのトリガーに相当し、APIやリスト画面など全ての更新経路で確実に実行される強力なサーバースクリプトです。"},
+    {"question": "Client Scriptからサーバー側のScript Includeを非同期で呼び出し、画面をフリーズさせずにデータだけを取得するためのベストプラクティスAPIはどれですか？", "options": ["g_form.getReference()", "GlideRecord", "GlideAjax", "RESTMessageV2"], "correct": 2, "explanation": "非同期のフロント⇔サーバー間通信にはGlideAjaxを使用します。getReference()は不要な全カラムを取得してしまうためパフォーマンスの観点から非推奨です。"}
+  ],
+  "servicenow-csa": [
+    {"question": "CSA試験において、ユーザーへ権限を付与する際のベストプラクティス（黄金律）はどれですか？", "options": ["ユーザーに直接Roleを付与する", "ユーザーをGroupに所属させ、Groupに対してRoleを付与する", "UserテーブルのRoleフィールドに手入力する", "すべてのユーザーにadminロールを付与する"], "correct": 1, "explanation": "人事異動時の権限剥奪漏れを防ぐため、「ユーザーに直接Roleは付与せず、Group経由で継承させる」のがSNの絶対的なベストプラクティスです。"},
+    {"question": "リスト一覧画面で、自分（ログインユーザー自身）だけの表示カラムを変更する機能はどれですか？", "options": ["Configure > List Layout", "Personalize List (歯車アイコン)", "View Management", "UI Policy"], "correct": 1, "explanation": "歯車アイコンの「Personalize List」は個人設定であり、システム全体には影響しません。逆に「Configure > List Layout」はシステム全体のデフォルトレイアウトを変更します。"},
+    {"question": "Service Catalogでアイテムを注文（Submit）した際、自動生成される3階層のレコードの正しい順番（親→子→孫）はどれですか？", "options": ["REQ (Request) → RITM (Requested Item) → SCTASK (Catalog Task)", "RITM → REQ → SCTASK", "SCTASK → REQ → RITM", "Incident → Problem → Change"], "correct": 0, "explanation": "全体の注文(REQ) → 個別の品目(RITM) → 実作業タスク(SCTASK) の3階層が自動生成されます。これは試験頻出ポイントです。"},
+    {"question": "Import Setにおいて、Target Table内の既存レコードを「更新」するか、新しいレコードとして「挿入」するか（UPSERT挙動）を決定する一意キー設定を何と呼びますか？", "options": ["Primary Key", "Foreign Key", "Coalesce", "Transform Map"], "correct": 2, "explanation": "Transform Mapの設定で特定のフィールドに「Coalesce = true」を設定することで、それが一意キーとして扱われ、既存ならUPDATE、未存在ならINSERTされるようになります。"},
+    {"question": "Update Set（sys_update_set）に「記録されない（移行対象外となる）」ものは次のうちどれですか？", "options": ["Business Rule", "Client Script", "Incident レコード等の業務データ", "Table と Field の定義"], "correct": 2, "explanation": "Update Setはシステムの「構成変更（カスタマイズ）」をキャプチャします。Incident、User、Groupなどの日々の業務データは記録されず移行対象外です。"}
+  ],
 };

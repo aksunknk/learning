@@ -1,0 +1,293 @@
+      <article class="lesson-card" data-section="servicenow-csa-1" id="servicenow-csa-lesson-1">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">01</span>
+            <h3>CSA試験の構造と学習戦略</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-csa-1')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 CSA（Certified System Administrator）の現在地</h4>
+            <p>CSAは、ServiceNowプラットフォーム全体の構造・ナビゲーション・テーブル管理・セキュリティ・自動化の基礎知識を問う、すべてのSN資格の登竜門（必須前提資格）です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>📊 試験の基本スペックと出題傾向</h4>
+            <ul><li><b>形式:</b> 60問 (90分間)。単一選択、または複数選択（チェックボックス）。</li><li><b>出題範囲:</b><ul><li>ユーザーインターフェース＆ナビゲーション (約20%)</li><li>コラボレーション (Task, 通知, レポート) (約20%)</li><li>データベース管理 (Table, Field, Import Set, CMDB) (約30%) ★最重要</li><li>セルフサービス＆プロセスの自動化 (Catalog, Flow Designer) (約20%)</li><li>開発入門 (Update Set, スクリプト基本原則) (約10%)</li></ul></li></ul>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            CSA試験は「開発者」ではなく「システム管理者」の視点が問われます。そのため、複雑なJavaScriptのコードを書かせる問題は出ません。その代わり、<b>「UI PolicyとData Policyの違い」「TableとViewの構成権限」「ACLの評価順序」</b>など、プラットフォームの根幹となる『仕様と用語の厳密な定義』が徹底的に問われます。PDI（個人開発環境）を触りながら、英語のメニュー名とセットで暗記するのが最速の学習法です。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-csa-2" id="servicenow-csa-lesson-2">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">02</span>
+            <h3>UIナビゲーションと画面カスタマイズの鉄則</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-csa-2')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 「Personalize」と「Configure」の決定的違い</h4>
+            <p>CSA試験で確実に出題されるのが、ユーザー自身のための画面設定（パーソナライズ）と、システム全体への設定変更（コンフィギュレーション）の境界線です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>⚙️ List (一覧画面) のカスタマイズ権限</h4>
+            <p>インシデント一覧画面（List）の左上にある「歯車アイコン（Personalize List）」と、ヘッダー右クリックメニューにある「Configure > List Layout」。この2つの違いを明確に説明できなければなりません。</p><table style="width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.92em;"><tr style="background:rgba(99,102,241,0.15);"><td style="padding:0.45rem; font-weight:bold;">操作名称</td><td style="padding:0.45rem; font-weight:bold;">アイコン/メニュー</td><td style="padding:0.45rem; font-weight:bold;">影響範囲</td><td style="padding:0.45rem; font-weight:bold;">必要なRole</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;"><b>Personalize List</b><br>(リストの個人設定)</td><td style="padding:0.4rem; vertical-align:top;">歯車アイコン⚙️</td><td style="padding:0.4rem; vertical-align:top;"><b>自分(ログインユーザー)だけ</b>の表示カラム変更。システムには影響しない。</td><td style="padding:0.4rem; vertical-align:top;">なし (全ユーザー可能)</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;"><b>Configure > List Layout</b><br>(リストレイアウトの構成)</td><td style="padding:0.4rem; vertical-align:top;">列見出しのハンバーガーメニュー等</td><td style="padding:0.4rem; vertical-align:top;"><b>システム全体（全ユーザー）</b>のデフォルトの表示カラム変更。</td><td style="padding:0.4rem; vertical-align:top;">admin または personalize_list 等の権限</td></tr></table>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            試験のひっかけ問題パターン：「あるユーザーが、歯車アイコンから『ステータス』列を非表示にしました。直後にAdminがList Layoutから『ステータス』列を追加しました。このユーザーの画面に『ステータス』列は表示されますか？」<br><b>正解：表示されません。</b> Personalize（個人設定）はシステム全体のConfigureを常に上書き（優先）します。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-csa-3" id="servicenow-csa-lesson-3">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">03</span>
+            <h3>ユーザー・グループ・ロール管理のベストプラクティス</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-csa-3')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 「Roleは絶対にユーザーへ直接付与してはいけない」</h4>
+            <p>ServiceNowの権限モデルは <b>User(ユーザー)</b>、<b>Group(グループ)</b>、<b>Role(ロール：権限の塊)</b> の3要素で構成されます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>🛡️ 権限付与の黄金律（Best Practice）</h4>
+            <p>SNの公式ベストプラクティスであり、CSA試験で最も重要な原則は以下です。</p><div style='background:rgba(255,255,255,0.05); padding:1rem; border-left:3px solid var(--accent);'><b>ユーザー（個人）に対して直接Roleを付与してはならない。Roleは必ずGroupに付与し、ユーザーをそのGroupに所属させることで間接的にRoleを継承させる。</b></div><p>なぜか？ 企業において異動や退職は日常茶飯事です。Aさんに直接ロールを付けてしまうと、異動時に剥奪を忘れ、セキュリティインシデントに直結します。『Service Desk』グループにロールを付与しておけば、人事DBとの連携でAさんをグループから外すだけで全ての関連権限が即座に無効化されます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            もう一つの試験頻出ポイントが<b>「Base system roles (標準ロール)」</b>の階層です。<br>・<b>admin</b>: 神。すべての機能にアクセス可能。<br>・<b>itil</b>: 一般的なヘルプデスク要員。インシデントや変更管理のチケットを操作可能。<br>・<b>ess (Employee Self Service)</b>: ロールを持たない一般ユーザー。Service Portalから自分のチケットやカタログを見るだけ。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-csa-4" id="servicenow-csa-lesson-4">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">04</span>
+            <h3>ACL（アクセス制御リスト）の評価アルゴリズム</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-csa-4')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 誰が、どのテーブルの、どのフィールドを読める/書けるか</h4>
+            <p>ACL（Access Control List）は、ServiceNowのセキュリティの心臓部です。画面のUI Policy等でフィールドを隠しても、API経由でアクセスされれば筒抜けです。<b>真のアクセス制御はデータベースレイヤーに直結したACLで行われます。</b></p>
+          </div>
+          <div class="explanation-box">
+            <h4>🔐 ACL通過の3つの関門（AND条件）</h4>
+            <p>あるACLルールが許可（Grant）されるためには、設定された以下の3つの条件<b>すべて（AND）</b>を満たすか、空(評価スキップ)である必要があります。</p><ul><li><b>Role (ロール):</b> ユーザーが指定されたRoleを持っているか？</li><li><b>Condition (条件):</b> レコードの特定条件を満たしているか？</li><li><b>Script (スクリプト):</b> 高度な評価JS。最終的に変数 <code>answer = true;</code> を返すか？</li></ul>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">ACLの評価順序（Table → Field）</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>// 1. [Table-level] incident テーブル全体の Write 権限はあるか？
+//    → YES (突破)
+//    → NO  (拒否: フィールドレベルの評価は行われずアクセス不可)
+// 
+// 2. [Field-level] incident テーブルの "comments" フィールドの Write 権限はあるか？
+//    → YES (突破！ここで初めて書き込み成功)
+//    → NO  (拒否: コメント欄だけは読取専用になる)</code></pre>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            CSA試験では、「ACLが評価される順序」を選ぶ問題が定番です。正解は<b>「Table-level (most specific) → Table-level (wildcard) → Field-level (most specific) → Field-level (wildcard)」</b>の順番です。特定指定が先、*指定が後と暗記してください。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-csa-5" id="servicenow-csa-lesson-5">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">05</span>
+            <h3>ITSMコアプロセス（Incident / Problem / Change）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-csa-5')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 ITSMの3本柱の「目的」を切り分ける</h4>
+            <p>ITILに準拠するSNでは、この3つの違いを業務要件レベルで理解しているかが問われます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>🔄 Incident・Problem・Change の役割分担</h4>
+            <table style="width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.92em;"><tr style="background:rgba(99,102,241,0.15);"><td style="padding:0.45rem; font-weight:bold;">プロセス</td><td style="padding:0.45rem; font-weight:bold;">目的・ゴール</td><td style="padding:0.45rem; font-weight:bold;">ServiceNow上での振る舞い・キーワード</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;"><b>Incident</b><br>(インシデント管理)</td><td style="padding:0.4rem; vertical-align:top;"><b>「いち早く通常のサービス状態に復旧させること」</b></td><td style="padding:0.4rem; vertical-align:top;">システムダウン等。根本原因が不明でも、サーバー再起動で直るならまずは復旧(Resolve)を優先。SLAが厳しく計測される。</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;"><b>Problem</b><br>(問題管理)</td><td style="padding:0.4rem; vertical-align:top;"><b>「根本原因（Root Cause）の特定と恒久対策」</b></td><td style="padding:0.4rem; vertical-align:top;">複数の類似Incidentから1つのProblemを起票。原因調査を行い、回避策(Workaround)を見つける。</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;"><b>Change</b><br>(変更管理)</td><td style="padding:0.4rem; vertical-align:top;"><b>「リスクを最小限に抑えながらシステムを変更すること」</b></td><td style="padding:0.4rem; vertical-align:top;">承認(Approval)プロセスが重厚。CAB(変更諮問委員会)のレビューを経る。</td></tr></table>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            試験頻出のキーワード紐付け：「Workaround (回避策)」と来たら→ <b>Problem</b>。「CAB (Change Advisory Board)」と来たら→ <b>Change</b>。「SLA」によるエスカレーション（警告タイマー）と来たら→ <b>Incident (またはTask全般)</b>。このキーワード反射神経を鍛えてください。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-csa-6" id="servicenow-csa-lesson-6">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">06</span>
+            <h3>CMDBとCSDM（共通サービスデータモデル）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-csa-6')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 CMDBの関係性を可視化する機能</h4>
+            <p>CMDBのデータを「どうやって見るか・管理するか」の機能名称が問われます。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>🔍 CMDB関連の主要ツール（試験頻出）</h4>
+            <ul><li><b>Dependency Views (依存関係ビュー)</b>:<br>あるCIを中心にして、それが依存しているDBサーバーや影響を与える提供サービスなどを<b>グラフィカルなネットワーク図（マップ）</b>で表示する機能。障害時の影響調査で使用。</li><li><b>Schema Map (スキーママップ)</b>:<br>CIの「データ」の関係ではなく、テーブルそのものの<b>「テーブル間リレーション（参照先）や継承関係」</b>をグラフィカルに表示する開発者向け機能。</li><li><b>CI Class Manager</b>:<br>CMDBの複雑なクラス階層をツリー形式で俯瞰し、各クラスの属性や識別ルールを一元的に設定・管理するための管理者向けインターフェース。</li></ul>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            「データの依存関係を見たい」→ Dependency Views。「テーブル構造の親戚関係を見たい」→ Schema Map。問題文に「グラフィカルに(graphically)」という単語が出たら、このどちらかを聞かれている確率が高いです。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-csa-7" id="servicenow-csa-lesson-7">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">07</span>
+            <h3>サービスカタログ（Service Catalog）と要求管理</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-csa-7')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 Amazonのような社内向けショッピングカート</h4>
+            <p>Service Catalogは、PCの支給申請など、社内の様々な「リクエスト」をメニュー化して提供する機能です。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>🛒 カタログアイテムと生成される3階層のレコード</h4>
+            <p>Catalog Itemをカートに入れて注文すると、裏側で以下の<b>3階層のレコード</b>が自動生成されます。</p><ul><li><b>Request [sc_request] (REQ...):</b> 注文の「全体」を束ねる親。Amazonでいう「注文番号123（合計金額）」に相当。</li><li><b>Requested Item [sc_req_item] (RITM...):</b> リクエスト内の「個別の品目」。PC本体と、追加マウスの2つを頼んだらRITMは2つ作られる。</li><li><b>Catalog Task [sc_task] (SCTASK...):</b> RITMを実現するための「作業タスク」。キッティング作業員への指示チケット等。</li></ul>
+          </div>
+          <div class="warning-box">
+            <h4>⚠️ Record Producer（レコードプロデューサー）との違い</h4>
+            見た目はCatalog Itemと全く同じフォームですが、カートの概念がなく、Submitした瞬間に<b>REQ/RITM/TASKではなく、直接IncidentやChange Requestのレコードを生成する</b>仕組みを <b>Record Producer</b> と呼びます。ヘルプデスクへの障害報告フォームなどで使われます。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-csa-8" id="servicenow-csa-lesson-8">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">08</span>
+            <h3>データインポート（Import Sets）とTransform Map</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-csa-8')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 外部データ（Excel/CSV/DB）を安全に取り込むアーキテクチャ</h4>
+            <p>SNに大量の外部データをロードする際、直接本番テーブルにINSERTするのは極めて危険です。SNでは、<b>一時領域のテーブルを噛ませて、マッピング（変換）ルールを通してから本番に書き込む「Import Sets」</b>という仕組みを必ず通ります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>🛤️ データインポートの4ステップ</h4>
+            <ol><li><b>Data Source (データソース):</b> 取り込み元を定義。</li><li><b>Import Set Table (ステージングテーブル):</b> 取り込んだ生データを「一旦そのまま」格納する一時テーブル。</li><li><b>Transform Map (変換マップ):</b> 一時テーブルから本番テーブルへのマッピングルール。</li><li><b>Target Table (ターゲットテーブル):</b> 最終的な書き込み先（<code>incident</code> 等）。</li></ol>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            CSA試験の超・頻出キーワードが <b>Coalesce（コアレス：合体・癒着の意）</b> です。Transform Mapの設定で特定のフィールドに「Coalesce = true」をセットすると、それが<b>「一意キー（プライマリキー）」</b>として扱われます。インポート時、Target Tableに同じキーが存在すれば<b>UPDATE（更新）</b>し、存在しなければ<b>INSERT（新規作成）</b>する、という「UPSERT」挙動になります。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-csa-9" id="servicenow-csa-lesson-9">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">09</span>
+            <h3>移行管理（Update Sets）の境界線</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-csa-9')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 開発環境から本番環境への「変更のパッキング」</h4>
+            <p>ServiceNowにはGitのようなソース管理の代わりに、<b>Update Set（<code>sys_update_set</code>）</b>という強力なXMLパッケージによる移行の仕組みがあります。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>📦 Update Setに『入るもの』と『入らないもの』の完全暗記</h4>
+            <p>Update Setは「システムの構成変更・カスタマイズ」を記録します。逆に「日々の業務データ」は記録しません。</p><table style="width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.92em;"><tr style="background:rgba(99,102,241,0.15);"><td style="padding:0.45rem; font-weight:bold;">Update Set に自動記録【される】もの<br>（Customization / Configuration）</td><td style="padding:0.45rem; font-weight:bold;">Update Set に【されない】もの<br>（Data / Instance specific）</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">・Tables, Fields (スキーマ変更)<br>・Business Rules, Client Scripts<br>・Views, List Layouts, Form Layouts<br>・UI Policies, Data Policies<br>・Workflows, Flow Designer</td><td style="padding:0.4rem; vertical-align:top;">・<b>レコードデータ</b> (Incident, User, Groupなど)<br>・<b>Schedules / Scheduled Jobs</b> (環境依存のため)<br>・<b>Homepages</b> (※Dashboardsは移行可能)<br>・<b>CI (Configuration Items)</b> データ</td></tr></table>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            本番環境への適用（Commit）手順も頻出です。<b>「Retrieve (開発環境からXMLを取得) → Preview (競合やエラーがないか確認) → Commit (本番へ実際に適用)」</b>の順番を必ず暗記してください。
+          </div>
+        </div>
+      </article>
+      <article class="lesson-card" data-section="servicenow-csa-10" id="servicenow-csa-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>CSA頻出シナリオ＆ひっかけ問題対策マトリクス</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('servicenow-csa-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 🎯 試験会場で迷わないための「最終暗記リスト」</h4>
+            <p>これまでの総まとめとして、試験で問われる「微妙な用語の使い分け」や「ベストプラクティスの判断」を整理します。</p>
+          </div>
+          <div class="explanation-box">
+            <h4>🧠 判断チャート</h4>
+            <table style="width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.92em;"><tr style="background:rgba(99,102,241,0.15);"><td style="padding:0.45rem; font-weight:bold;">要件 / シナリオ</td><td style="padding:0.45rem; font-weight:bold;">選ぶべき答え / キーワード</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">フォームのフィールドを「必須」や「読取専用」にしたいが、<b>コードは書きたくない</b>。</td><td style="padding:0.4rem; vertical-align:top;"><b>UI Policy</b> または <b>Data Policy</b><br>※API経由の更新も防ぎたい場合は Data Policy を選ぶ。</td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">既存のテーブル（Task等）の機能を継承して、<b>新しい要件のテーブルを作りたい</b>。</td><td style="padding:0.4rem; vertical-align:top;"><b>Table Extension (継承)</b></td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">ユーザーがチケットを起票したら、<b>自動的にメールで通知を送りたい</b>。</td><td style="padding:0.4rem; vertical-align:top;"><b>Notifications (通知)</b></td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">ナレッジベースの記事を公開する前に、<b>マネージャーの承認プロセスを入れたい</b>。</td><td style="padding:0.4rem; vertical-align:top;"><b>Knowledge Workflows / Publish workflow</b></td></tr><tr style="border-bottom:1px solid var(--color-border);"><td style="padding:0.4rem; vertical-align:top;">グラフや表を作って、<b>ダッシュボードに貼り付けたい</b>。</td><td style="padding:0.4rem; vertical-align:top;"><b>Reports (レポート)</b></td></tr></table>
+          </div>
+          <div class="explanation-box">
+            <h4>💼 Tips：実務・試験で遭遇する勘所と落とし穴</h4>
+            CSA試験の最大のアドバイス：<b>「単語の英語名を覚えておくこと」</b>。日本語受験でも、翻訳が不自然だったり、バージョンによって訳語が変わることがあります。例えば「Coalesce(合体)」「Dictionary Override(辞書の上書き)」「Record Producer」など、コアな概念は英語の表記で即座に脳内変換できるようにしておくと、得点率が格段に安定します。Good Luck！
+          </div>
+        </div>
+      </article>

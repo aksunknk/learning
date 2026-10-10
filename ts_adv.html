@@ -1,0 +1,98 @@
+      <!-- Lesson 10 -->
+      <article class="lesson-card" data-section="typescript-10" id="typescript-lesson-10">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">10</span>
+            <h3>上級編: ユーティリティ型（Utility Types）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-10')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 既存の型をパズルのように変形して使い回す</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>Partial, Omit, Pick</h4>
+            <p>「あの型のIDだけ抜いた型が欲しい」「全ての項目を任意（?）にした型が欲しい」といった実務の要求に、一瞬で応えることができる組み込みの機能です。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>interface User {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;
+}
+
+// Partial: すべてのプロパティを任意（?付き）にする
+type UpdateUserDto = Partial<User>;
+
+// Omit: 指定したプロパティ（id）だけを除外する
+type CreateUserDto = Omit<User, 'id'>;
+
+// Pick: 指定したプロパティ（name, email）だけを抽出する
+type ContactInfo = Pick<User, 'name' | 'email'>;</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lesson 11 -->
+      <article class="lesson-card" data-section="typescript-11" id="typescript-lesson-11">
+        <div class="lesson-header" onclick="toggleSection(this)">
+          <div class="lesson-title-area">
+            <span class="lesson-number">11</span>
+            <h3>上級編: 型ガードと絞り込み（Type Narrowing）</h3>
+          </div>
+          <div class="lesson-controls">
+            <button class="complete-btn" onclick="event.stopPropagation(); toggleComplete('typescript-11')" title="完了にする">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+            </button>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="concept-box">
+            <h4>💡 不確実なデータを安全な型に「確定」させる</h4>
+          </div>
+          <div class="explanation-box">
+            <h4>ユーザー定義型ガード</h4>
+            <p>APIから取得した unknown なデータが、本当に目的の型（Interface）を満たしているかを実行時にチェックし、TypeScriptに「これは安全だ」と教えます。</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">TYPESCRIPT</span>
+              <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+            </div>
+            <pre><code>interface Bird {
+  fly: () => void;
+}
+
+// 戻り値の「obj is Bird」が型ガードの印
+function isBird(obj: any): obj is Bird {
+  return obj !== null && typeof obj.fly === 'function';
+}
+
+function move(animal: unknown) {
+  if (isBird(animal)) {
+    // ここに入ると animal は完全に Bird 型として扱われる
+    animal.fly();
+  } else {
+    console.log('飛べません');
+  }
+}</code></pre>
+          </div>
+        </div>
+      </article>
+

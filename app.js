@@ -45,6 +45,8 @@ const TABS = {
   sysdesign:     { label: "システム設計",     short: "設計",   icon: "📐", group: "practice", lessons: 16, accent: "#7c3aed",                glow: "rgba(124,58,237,0.35)" },
   pathway:       { label: "通しプロジェクト", short: "縦糸",   icon: "🧵", group: "practice", lessons: 12, accent: "#0f766e",                glow: "rgba(15,118,110,0.35)" },
   genai:         { label: "生成AIパスポート", short: "AI",     icon: "🤖", group: "practice", lessons: 8,  accent: "var(--genai-purple)",    glow: "rgba(156,39,176,0.35)" },
+  servicenow:    { label: "ServiceNow",       short: "SN",     icon: "⚙️", group: "backend",   lessons: 10, accent: "#293e40",                glow: "rgba(41,62,64,0.35)" },
+  "servicenow-csa": { label: "SN-CSA",  short: "CSA",    icon: "📜", group: "practice",  lessons: 10, accent: "#81b5a1",                glow: "rgba(129,181,161,0.35)" },
   capstone:      { label: "キャップストーン", short: "Cap",    icon: "🏗️", group: "practice", lessons: 10, accent: "var(--capstone-gold)",   glow: "rgba(255,179,0,0.35)" },
 };
 

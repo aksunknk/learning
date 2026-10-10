@@ -350,5 +350,32 @@ const puzzleData = {
     ],
     correctOrder: ["ft1", "ft2", "ft3", "ft4", "ft5"],
     explanation: "初期成功で土台を作り、失敗ハンドラを差し込み、操作したあと最終状態がロールバックされていることを待つ。"
-  }
+  },
+  "servicenow": {
+    question: "GlideRecordを使って、Priorityが1（Critical）のActiveなIncidentを検索し、ステータスを更新するスクリプトを正しい順序に並べ替えてください。",
+    pieces: [
+      { id: "sn-p1", text: "var grInc = new GlideRecord('incident');" },
+      { id: "sn-p2", text: "grInc.addQuery('priority', 1);" },
+      { id: "sn-p3", text: "grInc.addQuery('active', true);" },
+      { id: "sn-p4", text: "grInc.query();" },
+      { id: "sn-p5", text: "while (grInc.next()) {" },
+      { id: "sn-p6", text: "    grInc.work_notes = '一斉チェック済み';" },
+      { id: "sn-p7", text: "    grInc.update();" },
+      { id: "sn-p8", text: "}" }
+    ],
+    correctOrder: ["sn-p1", "sn-p2", "sn-p3", "sn-p4", "sn-p5", "sn-p6", "sn-p7", "sn-p8"],
+    explanation: "GlideRecordの基本サイクルです：インスタンス化(new) → WHERE句組み立て(addQuery) → クエリ発行(query) → ループ(while next) → 値変更 → 保存(update) の順番になります。"
+  },
+  "servicenow-csa": {
+    question: "Update Setを用いて、開発環境から本番環境へ構成変更を移行する際の正しい手順（ステータスの遷移）に並べ替えてください。",
+    pieces: [
+      { id: "csa-p1", text: "[開発環境] Update Setを作成し、状態を In progress にする" },
+      { id: "csa-p2", text: "[開発環境] カスタマイズ作業を行い、状態を Complete にする" },
+      { id: "csa-p3", text: "[本番環境] Update Source を設定し、Retrieve (取得) を実行する" },
+      { id: "csa-p4", text: "[本番環境] Preview (プレビュー) を実行し、競合エラーがないか確認する" },
+      { id: "csa-p5", text: "[本番環境] Commit (コミット) を実行し、本番へ適用する" }
+    ],
+    correctOrder: ["csa-p1", "csa-p2", "csa-p3", "csa-p4", "csa-p5"],
+    explanation: "Update Set移行の王道フローです。開発側でCompleteにした後、本番側で Retrieve → Preview → Commit の3ステップを踏むことはCSA試験で必ず問われます。"
+  },
 };
